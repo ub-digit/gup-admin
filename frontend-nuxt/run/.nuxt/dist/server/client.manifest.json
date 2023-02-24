@@ -1,0 +1,15 @@
+{
+  "@vite/client": {
+    "isEntry": true,
+    "file": "@vite/client",
+    "css": [],
+    "module": true,
+    "resourceType": "script"
+  },
+  "/Users/johanlarsson/Dev/databaser/frontend-nuxt-3/node_modules/nuxt/dist/app/entry.mjs": {
+    "resourceType": "script",
+    "module": true,
+    "isEntry": true,
+    "file": "/Users/johanlarsson/Dev/databaser/frontend-nuxt-3/node_modules/nuxt/dist/app/entry.mjs"
+  }
+}

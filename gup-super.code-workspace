@@ -1,0 +1,21 @@
+{
+    "folders": [
+    {
+    "path": "data"
+    },
+    {
+    "path": "backend"
+    },
+
+    {
+      "path": "frontend-nuxt"
+    },
+    {
+    "path": "docker"
+    },
+    {
+    "path": "db"
+    }
+    ],
+    "settings": {}
+    }
