@@ -1,0 +1,34 @@
+version: '3.7'
+
+services:
+  backend:
+    container_name: gup-backend
+    image: docker.ub.gu.se/gup-super:${GIT_REVISION}
+    ports:
+      - "${BACKEND_HOST_PORT}:4000"
+    environment:
+      ELASTIC_SEARCH_URL: "${ELASTIC_SEARCH_URL}"
+      ALERT_MESSAGE_FILE_PATH: "${ALERT_MESSAGE_FILE_PATH}"
+    restart: always
+    volumes:
+      - "${HOST_ALERT_MESSAGE_FILE_PATH}:${ALERT_MESSAGE_FILE_PATH}"
+  frontend:
+    container_name: gup-frontend
+    # frontend-admin: 
+    #  container_name: db-list-frontend-admin
+  db:
+    image: postgres:12
+    environment:
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+      POSTGRES_DB: "${DB_NAME}"
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - "${DB_INIT_PATH}:/docker-entrypoint-initdb.d"
+    restart: always
+  elasticsearch:
+    image: docker.ub.gu.se/gup-super:${GIT_REVISION}
+    environment:
+      - xpack.security.enabled=false
+      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"

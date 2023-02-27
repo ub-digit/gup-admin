@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  db: 
+    volumes:
+      - ${DB_DATA_PATH}:/var/lib/postgresql/data/pgdata
+  frontend:
+    image: docker.ub.gu.se/gup-super-frontend:${GIT_REVISION}
+    environment:
+      GUP_SUPER_BACKEND_URL: "${GUP_SUPER_BACKEND_URL}"
+      GUP_SUPER_ALERT_URL: "${GUP_SUPER_ALERT_URL}"
+    ports:
+      - ${FRONTEND_HOST_PORT}:80
+  
