@@ -8,7 +8,6 @@ import { provider, isWindows } from 'file:///Users/johanlarsson/Dev/gup-super/fr
 import { eventHandler, setHeaders, sendRedirect, defineEventHandler, handleCacheHeaders, createEvent, getRequestHeader, getRequestHeaders, setResponseHeader, createApp, createRouter as createRouter$1, lazyEventHandler, toNodeListener, getQuery, createError } from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/h3/dist/index.mjs';
 import { createRenderer } from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/vue-bundle-renderer/dist/runtime.mjs';
 import devalue from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/@nuxt/devalue/dist/devalue.mjs';
-import { renderToString } from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/vue/server-renderer/index.mjs';
 import { parseURL, withQuery, joinURL } from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/ufo/dist/index.mjs';
 import destr from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/destr/dist/index.mjs';
 import { snakeCase } from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/scule/dist/index.mjs';
@@ -454,20 +453,30 @@ const errorHandler = (async function errorhandler(error, event) {
   event.node.res.end(await res.text());
 });
 
+const _lazy_uDsGY6 = () => Promise.resolve().then(function () { return store_pubtypes$1; });
+const _lazy_gG5sAk = () => Promise.resolve().then(function () { return store_imported$1; });
+const _lazy_3Qdxo3 = () => Promise.resolve().then(function () { return store_gup$1; });
 const _lazy_mQMJvZ = () => Promise.resolve().then(function () { return pubtypes$1; });
-const _lazy_dwkq8t = () => Promise.resolve().then(function () { return posts$1; });
-const _lazy_0OiwGR = () => Promise.resolve().then(function () { return _id_$1; });
-const _lazy_csMBXy = () => Promise.resolve().then(function () { return popular$1; });
-const _lazy_ac4GWb = () => Promise.resolve().then(function () { return dublin_core$1; });
+const _lazy_IPllUq = () => Promise.resolve().then(function () { return posts_imported$1; });
+const _lazy_y9LNm6 = () => Promise.resolve().then(function () { return posts_gup_by_title$1; });
+const _lazy_aOKPqY = () => Promise.resolve().then(function () { return posts_gup_by_id$1; });
+const _lazy_TCuosi = () => Promise.resolve().then(function () { return _id_$3; });
+const _lazy_1xxd7m = () => Promise.resolve().then(function () { return _id__delete$1; });
+const _lazy_cuqRRW = () => Promise.resolve().then(function () { return _id_$1; });
 const _lazy_HlWbGA = () => Promise.resolve().then(function () { return alert$1; });
 const _lazy_UZ5qVd = () => Promise.resolve().then(function () { return renderer$1; });
 
 const handlers = [
+  { route: '/api/store_pubtypes', handler: _lazy_uDsGY6, lazy: true, middleware: false, method: undefined },
+  { route: '/api/store_imported', handler: _lazy_gG5sAk, lazy: true, middleware: false, method: undefined },
+  { route: '/api/store_gup', handler: _lazy_3Qdxo3, lazy: true, middleware: false, method: undefined },
   { route: '/api/pubtypes', handler: _lazy_mQMJvZ, lazy: true, middleware: false, method: undefined },
-  { route: '/api/posts', handler: _lazy_dwkq8t, lazy: true, middleware: false, method: undefined },
-  { route: '/api/post/:id', handler: _lazy_0OiwGR, lazy: true, middleware: false, method: undefined },
-  { route: '/api/popular', handler: _lazy_csMBXy, lazy: true, middleware: false, method: undefined },
-  { route: '/api/dublin_core', handler: _lazy_ac4GWb, lazy: true, middleware: false, method: undefined },
+  { route: '/api/posts_imported', handler: _lazy_IPllUq, lazy: true, middleware: false, method: undefined },
+  { route: '/api/posts_gup_by_title', handler: _lazy_y9LNm6, lazy: true, middleware: false, method: undefined },
+  { route: '/api/posts_gup_by_id', handler: _lazy_aOKPqY, lazy: true, middleware: false, method: undefined },
+  { route: '/api/post_imported/:id', handler: _lazy_TCuosi, lazy: true, middleware: false, method: undefined },
+  { route: '/api/post_imported/:id', handler: _lazy_1xxd7m, lazy: true, middleware: false, method: "delete" },
+  { route: '/api/post_gup/:id', handler: _lazy_cuqRRW, lazy: true, middleware: false, method: undefined },
   { route: '/api/alert', handler: _lazy_HlWbGA, lazy: true, middleware: false, method: undefined },
   { route: '/__nuxt_error', handler: _lazy_UZ5qVd, lazy: true, middleware: false, method: undefined },
   { route: '/**', handler: _lazy_UZ5qVd, lazy: true, middleware: false, method: undefined }
@@ -546,9 +555,159 @@ server.listen(listenAddress, () => {
   process.on("uncaughtException", (err) => console.error("[nitro] [dev] [uncaughtException]", err));
 }
 
+const store_pubtypes = defineEventHandler(async (event) => {
+  const data = ["journal_article", "review_article", "magazine_article", "editorial_letter"];
+  return data;
+});
+
+const store_pubtypes$1 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  'default': store_pubtypes
+});
+
+const store_imported = defineEventHandler(async (event) => {
+  const query = getQuery(event);
+  const data = [
+    {
+      "id": "1",
+      "title": "Publikationstitel 1 (importerad)",
+      "doi": "http://doi.org/10.1",
+      "creator": "xljoha",
+      "authors": [{
+        "id": "333",
+        "name": "L\xE5ngeP\xE4r",
+        "x-account": "xlpero"
+      }],
+      "gup_id": null,
+      "scopus_id": "1",
+      "date": "2021",
+      "pubtype": "Artikel i vetenskaplig tidskrift, refereegranskad",
+      "number_of_authors": "5"
+    },
+    {
+      "id": "2",
+      "title": "Publikationstitel 2 (importerad)",
+      "doi": "http://doi.org/10.2",
+      "creator": "xljoha",
+      "authors": [{
+        "id": "333",
+        "name": "L\xE5ngeP\xE4r",
+        "x-account": "xlpero"
+      }],
+      "gup_id": "2",
+      "scopus_id": "2",
+      "date": "2022",
+      "pubtype": "Artikel i vetenskaplig tidskrift, refereegranskad",
+      "number_of_authors": "2"
+    },
+    {
+      "id": "3",
+      "title": "Publikationstitel 3 (importerad)",
+      "doi": "http://doi.org/10.2",
+      "creator": "xljoha",
+      "authors": [{
+        "id": "333",
+        "name": "L\xE5ngeP\xE4r",
+        "x-account": "xlpero"
+      }],
+      "gup_id": "4",
+      "scopus_id": "2",
+      "date": "2022",
+      "pubtype": "Artikel i vetenskaplig tidskrift, refereegranskad",
+      "number_of_authors": "2"
+    },
+    {
+      "id": "5",
+      "title": "Publikationstitel 4 (importerad)",
+      "doi": "http://doi.org/10.2",
+      "creator": "xljoha",
+      "authors": [{
+        "id": "333",
+        "name": "L\xE5ngeP\xE4r",
+        "x-account": "xlpero"
+      }],
+      "gup_id": "2",
+      "scopus_id": "2",
+      "date": "2022",
+      "pubtype": "Artikel i vetenskaplig tidskrift, refereegranskad",
+      "number_of_authors": "2"
+    }
+  ];
+  let res = null;
+  if (query.id) {
+    res = data.find((post) => {
+      if (post.id === query.id) {
+        return post;
+      }
+    });
+  } else {
+    res = data;
+  }
+  return res;
+});
+
+const store_imported$1 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  'default': store_imported
+});
+
+const store_gup = defineEventHandler(async (event) => {
+  const query = getQuery(event);
+  const data = [
+    {
+      "id": "1",
+      "title": "Publikationstitel 1 (gup)",
+      "doi": "http://doi.org/10.1",
+      "creator": "xljoha",
+      "authors": [{
+        "id": "333",
+        "name": "L\xE5ngeP\xE4r",
+        "x-account": "xlpero"
+      }],
+      "gup_id": "1",
+      "scopus_id": "1",
+      "date": "2021",
+      "pubtype": "Artikel i vetenskaplig tidskrift, refereegranskad",
+      "number_of_authors": "5"
+    },
+    {
+      "id": "2",
+      "title": "Publikationstitel 2 (gup)",
+      "doi": "http://doi.org/10.2",
+      "creator": "xljoha",
+      "authors": [{
+        "id": "333",
+        "name": "L\xE5ngeP\xE4r",
+        "x-account": "xlpero"
+      }],
+      "gup_id": "2",
+      "scopus_id": "2",
+      "date": "2022",
+      "pubtype": "Artikel i vetenskaplig tidskrift, refereegranskad",
+      "number_of_authors": "2"
+    }
+  ];
+  let res = null;
+  if (query.id) {
+    res = data.find((post) => {
+      if (post.id === query.id) {
+        return post;
+      }
+    });
+  } else {
+    res = data;
+  }
+  return res;
+});
+
+const store_gup$1 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  'default': store_gup
+});
+
 const pubtypes = defineEventHandler(async (event) => {
   getQuery(event);
-  const res = ["journal_article", "review_article", "magazine_article", "editorial_letter"];
+  const res = await $fetch("/api/store_pubtypes/", {});
   return res;
 });
 
@@ -557,57 +716,79 @@ const pubtypes$1 = /*#__PURE__*/Object.freeze({
   'default': pubtypes
 });
 
-const posts = defineEventHandler(async (event) => {
-  const query = getQuery(event);
-  console.log(query);
-  const res = [
-    { "title": "Publikationstitel", "gup_id": "214124", "date": "2021", "pubtype": "Artikel i vetenskaplig tidskrift, refereegranskad", "number_of_authors": "5" },
-    { "title": "Publikationstitel", "gup_id": "21412423324", "date": "2021", "pubtype": "Artikel i vetenskaplig tidskrift, refereegranskad", "number_of_authors": "5" },
-    { "title": "Publikationstitel", "gup_id": "21412334", "date": "2021", "pubtype": "Artikel i vetenskaplig tidskrift, refereegranskad", "number_of_authors": "5" },
-    { "title": "Publikationstitel", "gup_id": "21413333324", "date": "2021", "pubtype": "Artikel i vetenskaplig tidskrift, refereegranskad", "number_of_authors": "5" }
-  ];
+const posts_imported = defineEventHandler(async (event) => {
+  getQuery(event);
+  const res = $fetch("/api/store_imported/", {});
   return res;
 });
 
-const posts$1 = /*#__PURE__*/Object.freeze({
+const posts_imported$1 = /*#__PURE__*/Object.freeze({
   __proto__: null,
-  'default': posts
+  'default': posts_imported
+});
+
+const posts_gup_by_title = defineEventHandler(async (event) => {
+  getQuery(event);
+  const res = $fetch("/api/store_gup/", {});
+  return res;
+});
+
+const posts_gup_by_title$1 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  'default': posts_gup_by_title
+});
+
+const posts_gup_by_id = defineEventHandler(async (event) => {
+  const query = getQuery(event);
+  const id = event.context.params.id;
+  console.log(query);
+  const res = $fetch("/api/store_gup/", { query: { id } });
+  return res;
+});
+
+const posts_gup_by_id$1 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  'default': posts_gup_by_id
+});
+
+const _id_$2 = defineEventHandler(async (event) => {
+  getQuery(event);
+  const id = event.context.params.id;
+  const res = $fetch("/api/store_imported/", {
+    query: { id }
+  });
+  return res;
+});
+
+const _id_$3 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  'default': _id_$2
+});
+
+const _id__delete = defineEventHandler(async (event) => {
+  getQuery(event);
+  event.context.params.id;
+  console.log("deleted");
+  return true;
+});
+
+const _id__delete$1 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  'default': _id__delete
 });
 
 const _id_ = defineEventHandler(async (event) => {
   getQuery(event);
-  event.context.params.id;
-  const res = { "title": "Publikationstitel", "gup_id": "214124", "date": "2021", "pubtype": "Artikel i vetenskaplig tidskrift, refereegranskad", "number_of_authors": "5" };
+  const id = event.context.params.id;
+  const res = $fetch("/api/store_gup/", {
+    query: { id }
+  });
   return res;
 });
 
 const _id_$1 = /*#__PURE__*/Object.freeze({
   __proto__: null,
   'default': _id_
-});
-
-const popular = defineEventHandler(async (event) => {
-  const config = useRuntimeConfig();
-  const query = getQuery(event);
-  const res = await $fetch(config.API_BASE_URL + "databases/popular/", { params: query });
-  return res;
-});
-
-const popular$1 = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  'default': popular
-});
-
-const dublin_core = defineEventHandler(async (event) => {
-  const config = useRuntimeConfig();
-  const query = getQuery(event);
-  const res = await $fetch(config.API_BASE_URL + "/dublin_core", { params: query });
-  return res;
-});
-
-const dublin_core$1 = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  'default': dublin_core
 });
 
 const alert = defineEventHandler(async (event) => {
@@ -640,31 +821,6 @@ globalThis.__buildAssetsURL = buildAssetsURL;
 globalThis.__publicAssetsURL = publicAssetsURL;
 const getClientManifest = () => import('/Users/johanlarsson/Dev/gup-super/frontend-nuxt/.nuxt/dist/server/client.manifest.mjs').then((r) => r.default || r).then((r) => typeof r === "function" ? r() : r);
 const getStaticRenderedHead = () => Promise.resolve().then(function () { return _virtual__headStatic$1; }).then((r) => r.default || r);
-const getServerEntry = () => import('/Users/johanlarsson/Dev/gup-super/frontend-nuxt/.nuxt/dist/server/server.mjs').then((r) => r.default || r);
-const getSSRRenderer = lazyCachedFunction(async () => {
-  const manifest = await getClientManifest();
-  if (!manifest) {
-    throw new Error("client.manifest is not available");
-  }
-  const createSSRApp = await getServerEntry();
-  if (!createSSRApp) {
-    throw new Error("Server bundle is not available");
-  }
-  const options = {
-    manifest,
-    renderToString: renderToString$1,
-    buildAssetsURL
-  };
-  const renderer = createRenderer(createSSRApp, options);
-  async function renderToString$1(input, context) {
-    const html = await renderToString(input, context);
-    if (process.env.NUXT_VITE_NODE_OPTIONS) {
-      renderer.rendererContext.updateManifest(await getClientManifest());
-    }
-    return `<${appRootTag} id="${appRootId}">${html}</${appRootTag}>`;
-  }
-  return renderer;
-});
 const getSPARenderer = lazyCachedFunction(async () => {
   const manifest = await getClientManifest();
   const options = {
@@ -706,17 +862,17 @@ const renderer = defineRenderHandler(async (event) => {
     url = url.substring(0, url.lastIndexOf("/")) || "/";
     event.node.req.url = url;
   }
-  const routeOptions = getRouteRules(event);
+  getRouteRules(event);
   const ssrContext = {
     url,
     event,
     runtimeConfig: useRuntimeConfig(),
-    noSSR: !!event.node.req.headers["x-nuxt-no-ssr"] || routeOptions.ssr === false || (false),
+    noSSR: !!true   ,
     error: !!ssrError,
     nuxt: void 0,
     payload: ssrError ? { error: ssrError } : {}
   };
-  const renderer = ssrContext.noSSR ? await getSPARenderer() : await getSSRRenderer();
+  const renderer = await getSPARenderer() ;
   const _rendered = await renderer.renderToString(ssrContext).catch((error) => {
     throw !ssrError && ssrContext.payload?.error || error;
   });
