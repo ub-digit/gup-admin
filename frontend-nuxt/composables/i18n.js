@@ -7,37 +7,59 @@ export const useLocaleStore = defineStore('locale', {
       localeURLname: "lang",
       isWatched: false,
       en: {
-        "seo.application_title": 'GUP - superduperadmin',
-        "appheader.logo_link": "http://gu.se/",
-        "appheader.header_level1_link": "http://www.ub.gu.se/sv",
-        "appheader.header_level1": "Göteborgs universitetsbibliotek",
-        "appheader.header_level2": "Superduperadmin",
-
-        "views.home.title": "Superduperadmin",
-
-        "appfooter.contact_link": "https://www.ub.gu.se/node/189487/",
-        "appfooter.contact_link_text": "Kontakta oss om GUP superduperadmin",
-
-
         "locale.other_lang": "Svenska",
         "locale.other_locale_code": "sv",
       },
       sv:{
-        "seo.application_title": 'GUP - superduperadmin',
+        "seo.application_title": 'Göteborgs universitetsbibliotek - GUP-ADMIN',
         "appheader.logo_link": "http://gu.se/",
         "appheader.header_level1_link": "http://www.ub.gu.se/sv",
         "appheader.header_level1": "Göteborgs universitetsbibliotek",
-        "appheader.header_level2": "Superduperadmin",
+        "appheader.header_level2": "GUP-ADMIN",
 
-        "views.home.title": "Superduperadmin",
+        "views.index.card.publications.header": "Publikationer",
+        "views.index.card.publications.body": "Hantera importer av publikationer",
+        "views.index.card.publications.link_text": "Gå till hantera publikationer",
 
-        "views.home.form.needs_attention": "Needs attention",
-        "views.home.form.source_header": "Visa från",
-        "views.home.form.scopus_title": "Scopus",
-        "views.home.form.wos_title": "Web of Science",
-        "views.home.form.manual_title": "Manuellt inlagda",
-        "views.home.form.title_label": "Titel",
-        "views.home.form.pub_type_select_label": "Publikationstyp",
+        "views.index.card.people.header": "Personer",
+        "views.index.card.people.body": "Hantera personer",
+        "views.index.card.people.link_text": "Gå till hantera personer",
+
+        "views.index.card.all_data.header": "All data",
+        "views.index.card.all_data.body": "Hantera all data",
+        "views.index.card.all_data.link_text": "Gå till hantera all data",
+
+
+
+        "views.publications.title": "Superduperadmin",
+
+        "views.publications.form.needs_attention": "Needs attention",
+        "views.publications.form.source_header": "Visa från",
+        "views.publications.form.scopus_title": "Scopus",
+        "views.publications.form.wos_title": "WoS",
+        "views.publications.form.manual_title": "Manuellt inlagda",
+        "views.publications.form.title_label": "Titel",
+        "views.publications.form.pub_type_select_label": "Publikationstyp",
+
+        "views.publications.post.needs_attention": "Needs attention",
+        "views.publications.post.import_from_scopus": "Import Scopus",
+        "views.publications.post.import_from_wos": "Import WoS",
+        "views.publications.post.by": "av",
+        "views.publications.post.result_list.header": "Möjliga dubletter",
+        "views.publications.post.result_list_by_id.header": "Dubletter på id",
+        "views.publications.post.result_list_by_title.header": "Dubletter på titel",
+        "views.publications.post.fields.pubtype": "Publikationstyp",
+        "views.publications.post.fields.published_in": "Publicerad i",
+        "views.publications.post.fields.pubyear": "Publikationsår",
+        "views.publications.post.fields.author": "Författare",
+        "views.publications.post.fields.doi": "DOI",
+        "views.publications.post.fields.scopus": "Scopus-ID",
+        "views.publications.post.fields.scopus_missing": "Saknas",
+
+
+        
+        
+
 
         "appfooter.contact_link": "https://www.ub.gu.se/node/189487/",
         "appfooter.contact_link_text": "Kontakta oss om GUP superduperadmin",

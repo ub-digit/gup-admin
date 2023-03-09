@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-    ssr: true,
+    ssr: false,
     runtimeConfig: {
         
         API_BASE_URL: 'https://databaser-server-staging.ub.gu.se/',   

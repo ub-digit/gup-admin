@@ -1,0 +1,50 @@
+<template>
+<div>
+  <Head>
+    <title>{{t('seo.application_title')}}</title>
+    <Meta name="description" :content="t('seo.application_title')" />
+  </Head>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-4">
+          <div class="row">
+            <Filters :pendingImportedPosts="pendingImportedPosts" />
+          </div>
+          <div id="result-list-by-id" class="row">
+            <div class="col" :class="{'opacity-50': pendingImportedPosts}">
+              <div  class="list-group list-group-flush border-bottom">
+                  <PostRow v-for="post in importedPosts" :post="post" :key="post.id"/>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="row">
+            <NuxtPage/>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+</template>
+
+<script setup>
+import { useImportedPostsStore } from '~/store/imported_posts'
+import { storeToRefs } from 'pinia'
+import _ from "lodash";
+const {t, getLocale} = useI18n();
+const config = useRuntimeConfig();
+const route = useRoute();
+const router = useRouter();
+
+const importedPostsStore = useImportedPostsStore()
+const { fetchImportedPosts } = importedPostsStore
+const { importedPosts, pendingImportedPosts } = storeToRefs(importedPostsStore)
+await fetchImportedPosts();
+
+</script>
+
+<style lang="scss">
+.router-link-active {
+}
+</style>  

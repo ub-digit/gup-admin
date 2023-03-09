@@ -2,11 +2,15 @@
 declare module 'nitropack' {
   type Awaited<T> = T extends PromiseLike<infer U> ? Awaited<U> : T
   interface InternalApi {
+    '/api/store_pubtypes': Awaited<ReturnType<typeof import('../../server/api/store_pubtypes').default>>
+    '/api/store_imported': Awaited<ReturnType<typeof import('../../server/api/store_imported').default>>
+    '/api/store_gup': Awaited<ReturnType<typeof import('../../server/api/store_gup').default>>
     '/api/pubtypes': Awaited<ReturnType<typeof import('../../server/api/pubtypes').default>>
-    '/api/posts': Awaited<ReturnType<typeof import('../../server/api/posts').default>>
-    '/api/post/:id': Awaited<ReturnType<typeof import('../../server/api/post/[id]').default>>
-    '/api/popular': Awaited<ReturnType<typeof import('../../server/api/popular').default>>
-    '/api/dublin_core': Awaited<ReturnType<typeof import('../../server/api/dublin_core').default>>
+    '/api/posts_imported': Awaited<ReturnType<typeof import('../../server/api/posts_imported').default>>
+    '/api/posts_gup_by_title': Awaited<ReturnType<typeof import('../../server/api/posts_gup_by_title').default>>
+    '/api/posts_gup_by_id': Awaited<ReturnType<typeof import('../../server/api/posts_gup_by_id').default>>
+    '/api/post_imported/:id': Awaited<ReturnType<typeof import('../../server/api/post_imported/[id]').default>> | Awaited<ReturnType<typeof import('../../server/api/post_imported/[id].delete').default>>
+    '/api/post_gup/:id': Awaited<ReturnType<typeof import('../../server/api/post_gup/[id]').default>>
     '/api/alert': Awaited<ReturnType<typeof import('../../server/api/alert').default>>
     '/__nuxt_error': Awaited<ReturnType<typeof import('../../node_modules/nuxt/dist/core/runtime/nitro/renderer').default>>
   }

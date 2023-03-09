@@ -1,6 +1,7 @@
 export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig();
     const query = getQuery(event);
-    const res = await $fetch(config.API_BASE_URL + 'databases/popular/', {params: query})
+    //console.log(query.title);
+    const res = $fetch('/api/store_gup/', {});
     return res;
 })

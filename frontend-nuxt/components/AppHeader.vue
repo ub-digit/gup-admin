@@ -1,20 +1,16 @@
     <template>
     <div>
         <header>
-          <div class="container-md">
+          <div class="container-fluid">
             <div class="row">
-              <div class="col-auto">
-                <a :href="getLogoURL" aria-label="Gothenburg University"><div class="logo" :class="getLocale()"></div></a>
-                <div style="display:none" class="addfont">NNNNNNNNNN</div>
-              </div>
               <div class="col">
                 <div class="header">
                   <div class="header-level-1">
-                    <a :href="getHeaderURL">
-                    {{ t("appheader.header_level1") }}
-                    </a>
+                    <LangLink to="/">
+                      {{ t("appheader.header_level1") }}
+                    </LangLink>
                   </div>
-                  <div class="header-level-2 d-none">
+                  <div class="header-level-2">
                     {{ t("appheader.header_level2") }}
                   </div>
                 </div>
@@ -58,11 +54,8 @@
 
     .header {
       text-transform: uppercase;
-      padding-top: 16px;
-      @media (min-width: 768px) {
-        padding-top: 32px;
+        padding-top: 20px;
         padding-left: 10px;
-      }
 
       .header-level-1 {
         font-family: NimbusSanNovCon-Bol, "Nimbus Sans Novus Cond Bold",
