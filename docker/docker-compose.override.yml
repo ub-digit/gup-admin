@@ -4,9 +4,6 @@ services:
   db:
     ports:
       - "127.0.0.1:5433:5432"
-  backend-admin:
-    volumes:
-      - ../backend-admin:/release/backend-admin/
   backend:
     volumes:
       - ../backend:/release/backend/
@@ -25,13 +22,3 @@ services:
       - ${FRONTEND_HOST_PORT}:8080
     command: "bash -c 'npm install && npm run serve'"
     working_dir: /code 
- ## frontend-admin:
-   ## image: node:16
-    ##environment:
-     ## VUE_APP_API_BASE_URL: "${DB_LIST_BACKEND_ADMIN_URL}"
-   ## volumes:
-    ##  - ../frontend-admin:/code
-   ## ports:
-    ##  - ${FRONTEND_ADMIN_HOST_PORT}:3000
-   ## command: "bash -c 'yarn install && yarn run dev -- --host 0.0.0.0'"
-   ## working_dir: /code 

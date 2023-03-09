@@ -1,0 +1,20 @@
+version: '3.7'
+services:
+  # frontend:
+  #   image: docker.ub.gu.se/gup-super-frontend:${GIT_REVISION}
+  #   build:
+  #     context: ./frontend
+  #     args:
+  #       - GIT_REPO_URL=${GIT_REPO_URL}
+  #       - GIT_REVISION=${GIT_REVISION}
+  # backend:
+  #   image: docker.ub.gu.se/gup-super-backend:${GIT_REVISION}
+  #   build:
+  #     context: ./backend
+  #     args:
+  #       - GIT_REPO_URL=${GIT_REPO_URL}
+  #       - GIT_REVISION=${GIT_REVISION}
+  elasticsearch:
+    image: docker.ub.gu.se/gup-super-elasticsearch:${GIT_REVISION}
+    build:
+      context: ./elasticsearch
