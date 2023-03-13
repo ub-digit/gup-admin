@@ -18,6 +18,7 @@ defmodule GupAdminWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    get "/publication_types", PublicationTypeController, :index
   end
 
   # Other scopes may use custom stacks.
