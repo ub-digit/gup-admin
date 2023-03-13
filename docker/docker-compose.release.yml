@@ -4,11 +4,10 @@ services:
   db: 
     volumes:
       - ${DB_DATA_PATH}:/var/lib/postgresql/data/pgdata
-  frontend:
-    image: docker.ub.gu.se/gup-super-frontend:${GIT_REVISION}
+  frontend-nuxt:
+    image: docker.ub.gu.se/gup-admin-frontend-nuxt-3:${GIT_REVISION}
     environment:
-      GUP_SUPER_BACKEND_URL: "${GUP_SUPER_BACKEND_URL}"
-      GUP_SUPER_ALERT_URL: "${GUP_SUPER_ALERT_URL}"
+      NUXT_API_BASE_URL: "http://backend:4000/"
+      NUXT_API_ALERT_URL: "${ALERT_URL}"
     ports:
-      - ${FRONTEND_HOST_PORT}:80
-  
+      - ${FRONTEND_HOST_PORT}:3000

@@ -29,7 +29,7 @@ export const useGupPostsStore = defineStore('gupPostsStore', () => {
   async function fetchGupPostById(id) {
     try {
       pendingGupPostById.value = true;
-      const { data, error } = await  useFetch(`/api/post_imported/${id}`)
+      const { data, error } = await  useFetch(`/api/post_gup/${id}`)
       pendingGupPostById.value = false;
       gupPostById.value = data.value;
     } catch (error) {

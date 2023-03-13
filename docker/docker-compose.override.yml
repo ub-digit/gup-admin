@@ -11,11 +11,11 @@ services:
     ports:
       - "127.0.0.1:9200:9200"
       - "127.0.0.1:9300:9300"
-  frontend:
+  frontend-nuxt:
     image: node:16
     environment:
-      VUE_APP_API_BASE_URL: "${DB_LIST_BACKEND_URL}"
-      VUE_APP_ALERT_URL: "${DB_LIST_ALERT_URL}"
+      NUXT_API_BASE_URL: "http://backend:4000/"
+      NUXT_API_ALERT_URL: "${ALERT_URL}"
     volumes:
       - ../frontend:/code
     ports:
