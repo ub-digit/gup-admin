@@ -1,4 +1,5 @@
 <template>
+
       <div class="col-6">
         <div class="row">
           <div class="col" :class="{'opacity-50' :pendingImportedPostById}">
@@ -26,7 +27,8 @@
         <div class="row pb-4">
           <div class="col">
             <h4 class="mb-1 text-muted">{{ t('views.publications.post.result_list_by_id.header') }}</h4>
-            <div :class="{'opacity-50' :pendingGupPostsById}" class="list-group list-group-flush border-bottom">
+            <div v-if="!gupPostsById.length">{{ t('views.publications.post.result_list.no_gup_posts_by_id_found') }}</div>
+            <div v-else :class="{'opacity-50' :pendingGupPostsById}" class="list-group list-group-flush border-bottom">
               <PostRowGup v-for="post in gupPostsById" :post="post" :refresh="$route.query" :key="post.gup_id"/>
             </div>
           </div>
@@ -46,7 +48,8 @@
               <div class="col">
                 <label class="d-none" for="title-search">Sök på titel</label>
                 <input id="title-search" class="form-control mb-3" type="search" v-model="searchTitleStr">
-                <div :class="{'opacity-50': pendingGupPostsByTitle}" class="list-group list-group-flush border-bottom">
+                <div v-if="!gupPostsByTitle.length">{{ t('views.publications.post.result_list.no_gup_posts_by_title_found') }}</div>
+                <div v-else :class="{'opacity-50': pendingGupPostsByTitle}" class="list-group list-group-flush border-bottom">
                   <PostRowGup v-for="post in gupPostsByTitle" :post="post" :key="post.id"/>
                 </div>
               </div>

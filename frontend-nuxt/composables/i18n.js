@@ -48,7 +48,9 @@ export const useLocaleStore = defineStore('locale', {
         "views.publications.post.by": "av",
         "views.publications.post.result_list.header": "Möjliga dubletter",
         "views.publications.post.result_list_by_id.header": "Dubletter på id",
+        "views.publications.post.result_list.no_gup_posts_by_id_found": "Inga gup-poster med dubletter på id hittades",
         "views.publications.post.result_list_by_title.header": "Dubletter på titel",
+        "views.publications.post.result_list.no_gup_posts_by_title_found": "Inga gup-poster med dubletter på titel hittades",
         "views.publications.post.fields.pubtype": "Publikationstyp",
         "views.publications.post.fields.published_in": "Publicerad i",
         "views.publications.post.fields.pubyear": "Publikationsår",
@@ -68,11 +70,6 @@ export const useLocaleStore = defineStore('locale', {
         "buttons.remove": "Ta bort",
         "buttons.merge": "Slå ihop",
         "buttons.edit": "Redigera",
-
-        "pubtypes.journal_article": "journal_article",
-        "pubtypes.review_article": "review_article",
-        "pubtypes.magazine_article": "magazine_article",
-        "pubtypes.editorial_letter": "editorial_letter",    
     
         "locale.other_lang": "English",
         "locale.other_locale_code": "en",
