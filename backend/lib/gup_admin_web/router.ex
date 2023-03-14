@@ -19,6 +19,8 @@ defmodule GupAdminWeb.Router do
 
     get "/", PageController, :index
     get "/publication_types", PublicationTypeController, :index
+    get "/posts", PostController, :index
+    get "/posts/:id", PostController, :show
   end
 
   # Other scopes may use custom stacks.
