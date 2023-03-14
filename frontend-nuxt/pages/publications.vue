@@ -12,7 +12,8 @@
           </div>
           <div id="result-list-by-id" class="row">
             <div class="col" :class="{'opacity-50': pendingImportedPosts}">
-              <div  class="list-group list-group-flush border-bottom">
+              <div v-if="!importedPosts.length">{{ t('views.publications.result_list.no_imported_posts_found') }}</div>
+              <div v-else class="list-group list-group-flush border-bottom">
                   <PostRow v-for="post in importedPosts" :post="post" :key="post.id"/>
               </div>
             </div>
