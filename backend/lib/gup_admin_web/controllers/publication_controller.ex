@@ -1,4 +1,4 @@
-defmodule GupAdminWeb.PostController do
+defmodule GupAdminWeb.PublicationController do
   use GupAdminWeb, :controller
   alias GupAdmin.Resource.Search
 

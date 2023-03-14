@@ -158,10 +158,293 @@ defmodule Experiment do
 
   def init do
     create_index("publications")
-
-    data()
+    data_set()
     |> Enum.map(fn data ->
-      Elastix.Document.index(@elastic_url, "publications", "_doc", data.id, data, [])
+      Elastix.Document.index(@elastic_url, "publications", "_doc", data["id"], data, [])
     end)
+  end
+
+  def data_set do
+    [
+      %{
+        "id" => "1",
+        "title" => "The X Factor",
+        "doi" => "http://doi.org/10.2",
+        "creator" => "1johndoe",
+        "authors" => [
+          %{
+            "id" => "1",
+            "name" => "Alex Smith",
+            "x-account" => "1alexsmith"
+          }
+        ],
+        "gup_id" => "1",
+        "scopus_id" => "1",
+        "date" => "1999",
+        "pubtype" => "11",
+        "number_of_authors" => 1
+      },
+      %{
+        "id" => "2",
+        "title" => "The X-Files",
+        "doi" => "http://doi.org/10.2",
+        "creator" => "2johndoe",
+        "authors" => [
+          %{
+            "id" => "2",
+            "name" => "Brianna Lee",
+            "x-account" => "2briannalee"
+          }
+        ],
+        "gup_id" => "2",
+        "scopus_id" => "2",
+        "date" => "2008",
+        "pubtype" => "10",
+        "number_of_authors" => 1
+      },
+      %{
+        "id" => "3",
+        "title" => "X Marks the Spot",
+        "doi" => "http://doi.org/10.2",
+        "creator" => "3johndoe",
+        "authors" => [
+          %{
+            "id" => "3",
+            "name" => "Caroline Kim",
+            "x-account" => "3carolinekim"
+          }
+        ],
+        "gup_id" => "3",
+        "scopus_id" => "3",
+        "date" => "2015",
+        "pubtype" => "22",
+        "number_of_authors" => 1
+      },
+      %{
+        "id" => "4",
+        "title" => "The X-Men",
+        "doi" => "http://doi.org/10.2",
+        "creator" => "4johndoe",
+        "authors" => [
+          %{
+            "id" => "4",
+            "name" => "David Rodriguez",
+            "x-account" => "4davidrodriguez"
+          }
+        ],
+        "gup_id" => "4",
+        "wos_id" => "4",
+        "date" => "2006",
+        "pubtype" => "18",
+        "number_of_authors" => 1
+      },
+      %{
+        "id" => "5",
+        "title" => "The X-periment: Part I",
+        "doi" => "http://doi.org/10.2",
+        "creator" => "5johndoe",
+        "authors" => [
+          %{
+            "id" => "5",
+            "name" => "Elizabeth Taylor",
+            "x-account" => "5elizabethtaylor"
+          }
+        ],
+        "gup_id" => "5",
+        "wos_id" => "5",
+        "date" => "1988",
+        "pubtype" => "9",
+        "number_of_authors" => 1
+      },
+      %{
+        "id" => "6",
+        "title" => "X-Treme Sports",
+        "doi" => "http://doi.org/10.2",
+        "creator" => "6johndoe",
+        "authors" => [
+          %{
+            "id" => "6",
+            "name" => "Franklin Lee",
+            "x-account" => "6franklinlee"
+          }
+        ],
+        "gup_id" => "6",
+        "scopus_id" => "6",
+        "date" => "1995",
+        "pubtype" => "3",
+        "number_of_authors" => 1
+      },
+      %{
+        "id" => "7",
+        "title" => "X-Ray Vision",
+        "doi" => "http://doi.org/10.2",
+        "creator" => "7johndoe",
+        "authors" => [
+          %{
+            "id" => "7",
+            "name" => "Grace Kim",
+            "x-account" => "7gracekim"
+          }
+        ],
+        "gup_id" => "7",
+        "scopus_id" => "7",
+        "date" => "2003",
+        "pubtype" => "12",
+        "number_of_authors" => 1
+      },
+      %{
+        "id" => "8",
+        "title" => "Xylophone Adventures",
+        "doi" => "http://doi.org/10.2",
+        "creator" => "8johndoe",
+        "authors" => [
+          %{
+            "id" => "8",
+            "name" => "Hannah Nguyen",
+            "x-account" => "8hannahnguyen"
+          }
+        ],
+        "gup_id" => "8",
+        "scopus_id" => "8",
+        "date" => "2017",
+        "pubtype" => "4",
+        "number_of_authors" => 1
+      },
+      %{
+        "id" => "9",
+        "title" => "The X-perience",
+        "doi" => "http://doi.org/10.2",
+        "creator" => "9johndoe",
+        "authors" => [
+          %{
+            "id" => "9",
+            "name" => "Ivy Johnson",
+            "x-account" => "9ivyjohnson"
+          }
+        ],
+        "gup_id" => "9",
+        "wos_id" => "9",
+        "date" => "2019",
+        "pubtype" => "14",
+        "number_of_authors" => 1
+      },
+      %{
+        "id" => "10",
+        "title" => "The X-Factor: A Guide to Success",
+        "doi" => "http://doi.org/10.2",
+        "creator" => "10johndoe",
+        "authors" => [
+          %{
+            "id" => "10",
+            "name" => "Jacob Lee",
+            "x-account" => "10jacoblee"
+          }
+        ],
+        "gup_id" => "10",
+        "wos_id" => "10",
+        "date" => "2022",
+        "pubtype" => "23",
+        "number_of_authors" => 1
+      },
+      %{
+        "id" => "20",
+        "title" => "The Power of Networking",
+        "doi" => "http://doi.org/10.3",
+        "creator" => "20janedoe",
+        "authors" => [
+          %{
+            "id" => "20",
+            "name" => "Emily Chang",
+            "x-account" => "20emilychang"
+          }
+        ],
+        "gup_id" => "20",
+        "date" => "2021",
+        "pubtype" => "18",
+        "number_of_authors" => 1,
+        "source" => "manual"
+      },
+      %{
+        "id" => "21",
+        "title" => "Leadership in the Digital Age",
+        "doi" => "http://doi.org/10.4",
+        "creator" => "21johndoe",
+        "authors" => [
+          %{
+            "id" => "21",
+            "name" => "Olivia Chen",
+            "x-account" => "21oliviachen"
+          }
+        ],
+        "gup_id" => "21",
+        "date" => "2023",
+        "pubtype" => "14",
+        "number_of_authors" => 1,
+        "source" => "manual"
+      },
+      %{
+        "id" => "22",
+        "title" => "Navigating the Gig Economy",
+        "doi" => "http://doi.org/10.5",
+        "creator" => "22johndoe",
+        "authors" => [
+          %{
+            "id" => "22",
+            "name" => "Sophia Rodriguez",
+            "x-account" => "22sophiarodriguez"
+          }
+        ],
+        "gup_id" => "22",
+        "date" => "2020",
+        "pubtype" => "11",
+        "number_of_authors" => 1,
+        "source" => "manual"
+      },
+      %{
+        "id" => "23",
+        "title" => "The Art of Negotiation",
+        "doi" => "http://doi.org/10.6",
+        "creator" => "23johndoe",
+        "authors" => [
+          %{
+            "id" => "23",
+            "name" => "Isabella Kim",
+            "x-account" => "23isabellakim"
+          }
+        ],
+        "gup_id" => "23",
+        "date" => "2019",
+        "pubtype" => "19",
+        "number_of_authors" => 1,
+        "source" => "manual"
+      },
+      %{
+        "id" => "24",
+        "title" => "Innovative Marketing Strategies",
+        "doi" => "http://doi.org/10.7",
+        "creator" => "24johndoe",
+        "authors" => [
+          %{
+            "id" => "24",
+            "name" => "Ethan Lee",
+            "x-account" => "24ethanlee"
+          }
+        ],
+        "gup_id" => "24",
+        "date" => "2022",
+        "pubtype" => "12",
+        "number_of_authors" => 1,
+        "source" => "manual"
+      }
+    ]
+    |> Enum.map(fn item -> set_source(item) end)
+  end
+
+  def set_source(%{"source" => _} = item), do: item
+  def set_source(item) do
+    case Map.has_key?(item, "wos_id") do
+      true -> Map.put(item, "source", "wos")
+      false -> Map.put(item, "source", "scopus")
+    end
   end
 end

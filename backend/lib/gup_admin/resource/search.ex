@@ -14,6 +14,7 @@ defmodule GupAdmin.Resource.Search do
     |> Filter.add_filter(Filter.build_filter(params["filter"]))
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
     hits
+    |> remap()
   end
 
   def remap_params(params) do
@@ -38,7 +39,13 @@ defmodule GupAdmin.Resource.Search do
       {"scopus", params["scopus"] || nil},
       {"manual", params["manual"] || nil}
     ]
+    |> IO.inspect(label: "source list")
     |> Enum.filter(fn {_, val} -> not is_nil(val) end)
     |> Enum.map(fn {name, _} -> name end)
+  end
+
+  def remap(hits) do
+    hits
+    |> Enum.map(fn hit -> hit["_source"] end)
   end
 end
