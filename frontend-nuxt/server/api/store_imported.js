@@ -1,6 +1,7 @@
 export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig();
     const query = getQuery(event);
+	console.log(query)
     const data = [{
 		"id": "1",
 		"title": "Publikationstitel 1 (importerad)",

@@ -20,7 +20,7 @@ import unstorage_47drivers_47fs from 'file:///Users/johanlarsson/Dev/gup-super/f
 import defu from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/defu/dist/defu.mjs';
 import { toRouteMatcher, createRouter } from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/radix3/dist/index.mjs';
 
-const _runtimeConfig = {"app":{"baseURL":"/","buildAssetsDir":"/_nuxt/","cdnURL":""},"nitro":{"routeRules":{"/__nuxt_error":{"cache":false}},"envPrefix":"NUXT_"},"public":{},"API_BASE_URL":"https://databaser-server-staging.ub.gu.se/"};
+const _runtimeConfig = {"app":{"baseURL":"/","buildAssetsDir":"/_nuxt/","cdnURL":""},"nitro":{"routeRules":{"/__nuxt_error":{"cache":false}},"envPrefix":"NUXT_"},"public":{},"API_BASE_URL":"http://127.0.0.1:4000"};
 const ENV_PREFIX = "NITRO_";
 const ENV_PREFIX_ALT = _runtimeConfig.nitro.envPrefix ?? process.env.NITRO_ENV_PREFIX ?? "_";
 const getEnv = (key) => {
@@ -567,6 +567,7 @@ const store_pubtypes$1 = /*#__PURE__*/Object.freeze({
 
 const store_imported = defineEventHandler(async (event) => {
   const query = getQuery(event);
+  console.log(query);
   const data = [
     {
       "id": "1",
@@ -706,8 +707,10 @@ const store_gup$1 = /*#__PURE__*/Object.freeze({
 });
 
 const pubtypes = defineEventHandler(async (event) => {
-  getQuery(event);
-  const res = await $fetch("/api/store_pubtypes/", {});
+  const config = useRuntimeConfig();
+  const query = getQuery(event);
+  console.log(query);
+  const res = await $fetch(`${config.API_BASE_URL}/publication_types`, query);
   return res;
 });
 
@@ -717,7 +720,8 @@ const pubtypes$1 = /*#__PURE__*/Object.freeze({
 });
 
 const posts_imported = defineEventHandler(async (event) => {
-  getQuery(event);
+  const query = getQuery(event);
+  console.log(query);
   const res = $fetch("/api/store_imported/", {});
   return res;
 });

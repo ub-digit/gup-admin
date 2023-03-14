@@ -10,11 +10,10 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
   const pendingImportedPosts= ref(null);
   const pendingImportedPostById = ref(null);
   const pendingRemoveImportedPost = ref(null);
-  const filters_for_s = {...filters.value}
   async function fetchImportedPosts() {
     try {
-        console.log("atempt to fetch")
         pendingImportedPosts.value = true;
+        console.log(filters.value)
         const { data, error } = await useFetch("/api/posts_imported", {
             params: {...filters.value},
             onRequest({ request, options }) {

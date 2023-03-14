@@ -29,8 +29,8 @@
               </div>
               <select class="form-select mb-3" v-model="filters.pubtype" :aria-label="t('views.publications.form.pub_type_select_label')">
                 <option value="" selected>{{ t('views.publications.form.pub_type_select_label') }}</option>
-                <option v-for="pubtype in publicationTypes" :value="pubtype" :key="pubtype">
-                  {{ t('pubtypes.' +  pubtype) }}
+                <option v-for="pubtype in publicationTypes" :value="pubtype.id" :key="pubtype.id">
+                  {{ pubtype.display_name }}
                 </option>
               </select>
 
@@ -48,16 +48,15 @@ import { usePublicationTypesStore } from '~/store/publication_types'
 import { storeToRefs } from 'pinia'
 import { useDebounceFn } from '@vueuse/core'
 const props = defineProps(['pendingImportedPosts'])
-const {t} = useI18n();
+const {t, getLocale} = useI18n();
 
 const publicationTypesStore = usePublicationTypesStore()
 const { fetchPublicationTypes } = publicationTypesStore
 const { publicationTypes, pendingPublicationTypes } = storeToRefs(publicationTypesStore)
-fetchPublicationTypes();
+await fetchPublicationTypes({lang: getLocale()});
 
 const filterStore = useFilterStore();
 const {filters} = storeToRefs(filterStore);
-
 
 const title_str = ref("");
 

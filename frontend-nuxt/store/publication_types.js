@@ -4,13 +4,13 @@ export const usePublicationTypesStore = defineStore('publicationTypesStore', () 
   const publicationTypes = ref([])
   const pendingPublicationTypes = ref(null);
 
-  async function fetchPublicationTypes() {
+  async function fetchPublicationTypes(params) {
     try {
       pendingPublicationTypes.value = true;
-      const {data, pending, error} = await useFetch("/api/pubtypes", {
+      const {data, error} = await useFetch("/api/pubtypes", {params
       });
       pendingPublicationTypes.value = false;
-      publicationTypes.value = data.value;
+      publicationTypes.value = data.value.publication_types;
     } catch (error) {
       console.log("Something went wrong: fetchPublicationTypes")
     }
