@@ -33,9 +33,10 @@ defmodule GupAdmin.Resource.Search do
       #"needs_attention" => params["needs_attention"] || nil,
     }
     |> Enum.filter(fn {_, val} -> not is_nil(val) end)
-    |> Enum.filter(fn {_, val} -> validate_parameter(String.trim(val)) end)
+    |> Enum.filter(fn {_, val} -> validate_parameter(val) end)
   end
 
+  def validate_parameter(val) when is_list(val), do: true
   def validate_parameter(val) when is_integer(val), do: val > 0
   def validate_parameter(val) when is_bitstring(val), do: String.length(val) > 0
 
