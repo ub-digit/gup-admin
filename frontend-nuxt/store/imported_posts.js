@@ -3,10 +3,11 @@ import { useFilterStore } from '~/store/filter'
 import { storeToRefs } from 'pinia'
 export const useImportedPostsStore = defineStore('importedPostsStore', () => {
   const filterStore = useFilterStore();
-  const {filters, filters_for_api} = storeToRefs(filterStore);
+  const {filters} = storeToRefs(filterStore);
 
   const importedPosts = ref([])
-  const importedPostById = ref({});
+  const importedPostById = ref(null);
+  const errorImportedPostById = ref(null);
   const pendingImportedPosts= ref(null);
   const pendingImportedPostById = ref(null);
   const pendingRemoveImportedPost = ref(null);
@@ -38,10 +39,17 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
 
   async function fetchImportedPostById(id) {
     try {
+      errorImportedPostById.value = null;
       pendingImportedPostById.value = true;
       const { data, error } = await  useFetch(`/api/post_imported/${id}`)
       pendingImportedPostById.value = false;
-      importedPostById.value = data.value;
+      if (error.value) {
+        errorImportedPostById.value = error.value.data;
+        console.log("from fetchImportedPostById",errorImportedPostById)
+      } else {
+        importedPostById.value = data.value;
+      }
+      pendingImportedPostById.value = false;
     } catch (error) {
       console.log("Something went wrong: fetchImportedPostById")
     }
@@ -76,5 +84,5 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
   function $reset() {
     // manually reset store here
   }
-  return { importedPosts,fetchImportedPosts, pendingImportedPosts, removeImportedPost, fetchImportedPostById, importedPostById, pendingImportedPostById, pendingRemoveImportedPost}
+  return { importedPosts,fetchImportedPosts, pendingImportedPosts, removeImportedPost, fetchImportedPostById, importedPostById, errorImportedPostById,  pendingImportedPostById, pendingRemoveImportedPost}
 })

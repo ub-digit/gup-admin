@@ -4,6 +4,7 @@ export const useGupPostsStore = defineStore('gupPostsStore', () => {
   const gupPostsByTitle = ref([])
   const gupPostsById = ref([])
   const gupPostById = ref({});
+  const errorGupPostById = ref({});
   const pendingGupPostsByTitle= ref(null);
   const pendingGupPostsById= ref(null);
   const pendingGupPostById= ref(null);
@@ -30,9 +31,14 @@ export const useGupPostsStore = defineStore('gupPostsStore', () => {
     try {
       pendingGupPostById.value = true;
       const { data, error } = await  useFetch(`/api/post_gup/${id}`)
+      if (error.value) {
+        errorGupPostById.value = error.value.data;
+      } else {
+        gupPostById.value = data.value;
+      }
       pendingGupPostById.value = false;
-      gupPostById.value = data.value;
     } catch (error) {
+      //return createError({ statusCode: 404, statusMessage: 'Post Not Found' })
       console.log("Something went wrong: fetchGupPostById")
     }
 
@@ -72,5 +78,5 @@ export const useGupPostsStore = defineStore('gupPostsStore', () => {
   function $reset() {
     // manually reset store here
   }
-  return { gupPostsByTitle,fetchGupPostsByTitle, pendingGupPostsByTitle, gupPostsById,fetchGupPostsById, pendingGupPostsById, gupPostById, fetchGupPostById, pendingGupPostById}
+  return { gupPostsByTitle,fetchGupPostsByTitle, pendingGupPostsByTitle, gupPostsById,fetchGupPostsById, pendingGupPostsById, gupPostById, errorGupPostById, fetchGupPostById, pendingGupPostById}
 })

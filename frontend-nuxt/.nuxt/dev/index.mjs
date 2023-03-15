@@ -8,6 +8,7 @@ import { provider, isWindows } from 'file:///Users/johanlarsson/Dev/gup-super/fr
 import { eventHandler, setHeaders, sendRedirect, defineEventHandler, handleCacheHeaders, createEvent, getRequestHeader, getRequestHeaders, setResponseHeader, createApp, createRouter as createRouter$1, lazyEventHandler, toNodeListener, getQuery, createError } from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/h3/dist/index.mjs';
 import { createRenderer } from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/vue-bundle-renderer/dist/runtime.mjs';
 import devalue from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/@nuxt/devalue/dist/devalue.mjs';
+import { renderToString } from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/vue/server-renderer/index.mjs';
 import { parseURL, withQuery, joinURL } from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/ufo/dist/index.mjs';
 import destr from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/destr/dist/index.mjs';
 import { snakeCase } from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/scule/dist/index.mjs';
@@ -757,10 +758,8 @@ const posts_gup_by_id$1 = /*#__PURE__*/Object.freeze({
 
 const _id_$2 = defineEventHandler(async (event) => {
   getQuery(event);
-  const id = event.context.params.id;
-  const res = $fetch("/api/store_imported/", {
-    query: { id }
-  });
+  event.context.params.id;
+  const res = createError({ statusCode: 404, statusMessage: "Post Not Found" });
   return res;
 });
 
@@ -783,10 +782,8 @@ const _id__delete$1 = /*#__PURE__*/Object.freeze({
 
 const _id_ = defineEventHandler(async (event) => {
   getQuery(event);
-  const id = event.context.params.id;
-  const res = $fetch("/api/store_gup/", {
-    query: { id }
-  });
+  event.context.params.id;
+  const res = createError({ statusCode: 404, statusMessage: "Post Not Found" });
   return res;
 });
 
@@ -825,6 +822,31 @@ globalThis.__buildAssetsURL = buildAssetsURL;
 globalThis.__publicAssetsURL = publicAssetsURL;
 const getClientManifest = () => import('/Users/johanlarsson/Dev/gup-super/frontend-nuxt/.nuxt/dist/server/client.manifest.mjs').then((r) => r.default || r).then((r) => typeof r === "function" ? r() : r);
 const getStaticRenderedHead = () => Promise.resolve().then(function () { return _virtual__headStatic$1; }).then((r) => r.default || r);
+const getServerEntry = () => import('/Users/johanlarsson/Dev/gup-super/frontend-nuxt/.nuxt/dist/server/server.mjs').then((r) => r.default || r);
+const getSSRRenderer = lazyCachedFunction(async () => {
+  const manifest = await getClientManifest();
+  if (!manifest) {
+    throw new Error("client.manifest is not available");
+  }
+  const createSSRApp = await getServerEntry();
+  if (!createSSRApp) {
+    throw new Error("Server bundle is not available");
+  }
+  const options = {
+    manifest,
+    renderToString: renderToString$1,
+    buildAssetsURL
+  };
+  const renderer = createRenderer(createSSRApp, options);
+  async function renderToString$1(input, context) {
+    const html = await renderToString(input, context);
+    if (process.env.NUXT_VITE_NODE_OPTIONS) {
+      renderer.rendererContext.updateManifest(await getClientManifest());
+    }
+    return `<${appRootTag} id="${appRootId}">${html}</${appRootTag}>`;
+  }
+  return renderer;
+});
 const getSPARenderer = lazyCachedFunction(async () => {
   const manifest = await getClientManifest();
   const options = {
@@ -866,17 +888,17 @@ const renderer = defineRenderHandler(async (event) => {
     url = url.substring(0, url.lastIndexOf("/")) || "/";
     event.node.req.url = url;
   }
-  getRouteRules(event);
+  const routeOptions = getRouteRules(event);
   const ssrContext = {
     url,
     event,
     runtimeConfig: useRuntimeConfig(),
-    noSSR: !!true   ,
+    noSSR: !!event.node.req.headers["x-nuxt-no-ssr"] || routeOptions.ssr === false || (false),
     error: !!ssrError,
     nuxt: void 0,
     payload: ssrError ? { error: ssrError } : {}
   };
-  const renderer = await getSPARenderer() ;
+  const renderer = ssrContext.noSSR ? await getSPARenderer() : await getSSRRenderer();
   const _rendered = await renderer.renderToString(ssrContext).catch((error) => {
     throw !ssrError && ssrContext.payload?.error || error;
   });

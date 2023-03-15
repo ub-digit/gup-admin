@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-    ssr: false,
+    ssr: true,
     runtimeConfig: {
         
         API_BASE_URL: 'http://127.0.0.1:4000',   
