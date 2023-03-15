@@ -10,7 +10,7 @@ defmodule GupAdminWeb.PublicationController do
 
   # get one post
   def show(conn, %{"id" => id}) do
-    post = Search.search(%{"q" => "id:#{id}"})
+    post = Search.show(id)
     json conn, post
   end
 end

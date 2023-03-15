@@ -8,6 +8,15 @@ defmodule GupAdmin.Resource.Search do
     System.get_env("ELASTIC_URL") || "http://localhost:9200"
   end
 
+  def show(id) do
+    q = Query.base("")
+    |> put_in(["query", "bool", "filter"],  %{"match" => %{"id" => id}})
+    {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
+    hits
+    |> remap()
+    |> List.first()
+  end
+
   def search(params) do
     params = remap_params(params)
     q = Query.base(params["title"])
