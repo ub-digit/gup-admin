@@ -25,23 +25,34 @@ defmodule GupAdmin.Resource.Search do
   end
 
   def clense_filter(params) do
+    params
+    |> IO.inspect(label: "params")
     %{
       "source" => get_source_list(params),
       "pubtype" => params["pubtype"] || nil,
-      "needs_attention" => params["needs_attention"] || nil,
+      #"needs_attention" => params["needs_attention"] || nil,
     }
     |> Enum.filter(fn {_, val} -> not is_nil(val) end)
+    |> Enum.filter(fn {_, val} -> validate_parameter(String.trim(val)) end)
   end
 
+  def validate_parameter(val) when is_integer(val), do: val > 0
+  def validate_parameter(val) when is_bitstring(val), do: String.length(val) > 0
+
+
   def get_source_list(params) do
-    [
+    list = [
       {"wos", params["wos"] || nil},
       {"scopus", params["scopus"] || nil},
       {"manual", params["manual"] || nil}
     ]
-    |> IO.inspect(label: "source list")
     |> Enum.filter(fn {_, val} -> not is_nil(val) end)
     |> Enum.map(fn {name, _} -> name end)
+
+    case length(list) do
+      0 -> nil
+      _ -> list
+    end
   end
 
   def remap(hits) do

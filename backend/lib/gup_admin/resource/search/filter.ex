@@ -2,6 +2,7 @@
 defmodule GupAdmin.Resource.Search.Filter do
   def build_filter(filter) do
     filter
+    #|> IO.inspect(label: "filter")
     |> Enum.map(fn {key, val} -> format_filter_item({key, val}) end)
   end
 
@@ -11,7 +12,7 @@ defmodule GupAdmin.Resource.Search.Filter do
   def add_filter(query, filter) do
     query
     |> put_in(["query", "bool", "filter"], filter)
-    |> IO.inspect(label: "query")
+   # |> IO.inspect(label: "query")
   end
 
   def format_filter_item({key, v}) when is_list(v) do
