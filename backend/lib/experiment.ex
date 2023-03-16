@@ -139,7 +139,16 @@ defmodule Experiment do
               "max_gram" => 20,
               "token_chars" => [
                 "letter",
-                "digit"
+                "digit",
+                "custom"
+              ], "custom_token_chars" => [
+                "å",
+                "ä",
+                "ö",
+                "Å",
+                "Ä",
+                "Ö",
+                "-"
               ]
             }
           }

@@ -25,7 +25,8 @@ defmodule GupAdmin.Resource.Search.Query do
       "query_string" => %{
         "default_operator" => "AND",
         "fields" => ["title^15"],
-        "query" => term
+        "query" => term,
+        "analyzer" => "edge_ngram_analyzer"
       }
     }
   end
