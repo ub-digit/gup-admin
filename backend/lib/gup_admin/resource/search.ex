@@ -69,4 +69,35 @@ defmodule GupAdmin.Resource.Search do
     hits
     |> Enum.map(fn hit -> hit["_source"] end)
   end
+
+  # def get_duplicates(%{"mode" => "id", "id" => id}) do
+  #   post = show(id)
+  #   q = Query.base("")
+  #   |> Filter.add_filter(Filter.build_duplicate_filter(post))
+  #   |> IO.inspect(label: "q")
+  #   {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
+
+  #   hits
+  #   |> remap()
+  #   |> length()
+
+  # end
+
+  def get_duplicates(%{"mode" => "id", "id" => id}) do
+    q = Query.base("")
+    {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
+
+    hits
+    |> remap()
+    |> Enum.take(2)
+  end
+
+  def get_duplicates(%{"mode" => "title", "id" => id}) do
+    q = Query.base("")
+    {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
+
+    hits
+    |> remap()
+    |> Enum.take(2)
+  end
 end

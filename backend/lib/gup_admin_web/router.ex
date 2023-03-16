@@ -21,6 +21,8 @@ defmodule GupAdminWeb.Router do
     get "/publication_types", PublicationTypeController, :index
     get "/publications", PublicationController, :index
     get "/publications/:id", PublicationController, :show
+    get "/publications/duplicates/:id", PublicationController, :get_duplicates
+
   end
 
   # Other scopes may use custom stacks.

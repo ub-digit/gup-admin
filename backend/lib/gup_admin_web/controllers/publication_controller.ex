@@ -13,4 +13,8 @@ defmodule GupAdminWeb.PublicationController do
     post = Search.show(id)
     json conn, post
   end
+
+  def get_duplicates(conn, params) do
+    json conn, Search.get_duplicates(params)
+  end
 end
