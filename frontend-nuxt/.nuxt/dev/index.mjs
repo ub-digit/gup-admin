@@ -455,9 +455,7 @@ const errorHandler = (async function errorhandler(error, event) {
 });
 
 const _lazy_uDsGY6 = () => Promise.resolve().then(function () { return store_pubtypes$1; });
-const _lazy_gG5sAk = () => Promise.resolve().then(function () { return store_imported$1; });
 const _lazy_3Qdxo3 = () => Promise.resolve().then(function () { return store_gup$1; });
-const _lazy_mQMJvZ = () => Promise.resolve().then(function () { return pubtypes$1; });
 const _lazy_IPllUq = () => Promise.resolve().then(function () { return posts_imported$1; });
 const _lazy_y9LNm6 = () => Promise.resolve().then(function () { return posts_gup_by_title$1; });
 const _lazy_aOKPqY = () => Promise.resolve().then(function () { return posts_gup_by_id$1; });
@@ -469,9 +467,7 @@ const _lazy_UZ5qVd = () => Promise.resolve().then(function () { return renderer$
 
 const handlers = [
   { route: '/api/store_pubtypes', handler: _lazy_uDsGY6, lazy: true, middleware: false, method: undefined },
-  { route: '/api/store_imported', handler: _lazy_gG5sAk, lazy: true, middleware: false, method: undefined },
   { route: '/api/store_gup', handler: _lazy_3Qdxo3, lazy: true, middleware: false, method: undefined },
-  { route: '/api/pubtypes', handler: _lazy_mQMJvZ, lazy: true, middleware: false, method: undefined },
   { route: '/api/posts_imported', handler: _lazy_IPllUq, lazy: true, middleware: false, method: undefined },
   { route: '/api/posts_gup_by_title', handler: _lazy_y9LNm6, lazy: true, middleware: false, method: undefined },
   { route: '/api/posts_gup_by_id', handler: _lazy_aOKPqY, lazy: true, middleware: false, method: undefined },
@@ -566,93 +562,6 @@ const store_pubtypes$1 = /*#__PURE__*/Object.freeze({
   'default': store_pubtypes
 });
 
-const store_imported = defineEventHandler(async (event) => {
-  const query = getQuery(event);
-  console.log(query);
-  const data = [
-    {
-      "id": "1",
-      "title": "Publikationstitel 1 (importerad)",
-      "doi": "http://doi.org/10.1",
-      "creator": "xljoha",
-      "authors": [{
-        "id": "333",
-        "name": "L\xE5ngeP\xE4r",
-        "x-account": "xlpero"
-      }],
-      "gup_id": null,
-      "scopus_id": "1",
-      "date": "2021",
-      "pubtype": "Artikel i vetenskaplig tidskrift, refereegranskad",
-      "number_of_authors": "5"
-    },
-    {
-      "id": "2",
-      "title": "Publikationstitel 2 (importerad)",
-      "doi": "http://doi.org/10.2",
-      "creator": "xljoha",
-      "authors": [{
-        "id": "333",
-        "name": "L\xE5ngeP\xE4r",
-        "x-account": "xlpero"
-      }],
-      "gup_id": "2",
-      "scopus_id": "2",
-      "date": "2022",
-      "pubtype": "Artikel i vetenskaplig tidskrift, refereegranskad",
-      "number_of_authors": "2"
-    },
-    {
-      "id": "3",
-      "title": "Publikationstitel 3 (importerad)",
-      "doi": "http://doi.org/10.2",
-      "creator": "xljoha",
-      "authors": [{
-        "id": "333",
-        "name": "L\xE5ngeP\xE4r",
-        "x-account": "xlpero"
-      }],
-      "gup_id": "4",
-      "scopus_id": "2",
-      "date": "2022",
-      "pubtype": "Artikel i vetenskaplig tidskrift, refereegranskad",
-      "number_of_authors": "2"
-    },
-    {
-      "id": "5",
-      "title": "Publikationstitel 4 (importerad)",
-      "doi": "http://doi.org/10.2",
-      "creator": "xljoha",
-      "authors": [{
-        "id": "333",
-        "name": "L\xE5ngeP\xE4r",
-        "x-account": "xlpero"
-      }],
-      "gup_id": "2",
-      "scopus_id": "2",
-      "date": "2022",
-      "pubtype": "Artikel i vetenskaplig tidskrift, refereegranskad",
-      "number_of_authors": "2"
-    }
-  ];
-  let res = null;
-  if (query.id) {
-    res = data.find((post) => {
-      if (post.id === query.id) {
-        return post;
-      }
-    });
-  } else {
-    res = data;
-  }
-  return res;
-});
-
-const store_imported$1 = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  'default': store_imported
-});
-
 const store_gup = defineEventHandler(async (event) => {
   const query = getQuery(event);
   const data = [
@@ -707,23 +616,13 @@ const store_gup$1 = /*#__PURE__*/Object.freeze({
   'default': store_gup
 });
 
-const pubtypes = defineEventHandler(async (event) => {
+const posts_imported = defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
   const query = getQuery(event);
   console.log(query);
-  const res = await $fetch(`${config.API_BASE_URL}/publication_types`, query);
-  return res;
-});
-
-const pubtypes$1 = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  'default': pubtypes
-});
-
-const posts_imported = defineEventHandler(async (event) => {
-  const query = getQuery(event);
-  console.log(query);
-  const res = $fetch("/api/store_imported/", {});
+  const res = await $fetch(`${config.API_BASE_URL}/publications`, {
+    params: query
+  });
   return res;
 });
 
@@ -757,9 +656,10 @@ const posts_gup_by_id$1 = /*#__PURE__*/Object.freeze({
 });
 
 const _id_$2 = defineEventHandler(async (event) => {
+  const config = useRuntimeConfig();
   getQuery(event);
-  event.context.params.id;
-  const res = createError({ statusCode: 404, statusMessage: "Post Not Found" });
+  const id = event.context.params.id;
+  const res = await $fetch(`${config.API_BASE_URL}/publications/${id}`);
   return res;
 });
 

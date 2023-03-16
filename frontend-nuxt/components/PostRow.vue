@@ -6,7 +6,7 @@
                 <small v-if="post.gup_id" class="text-muted">GUP-ID: {{ post.gup_id }}</small>
             </div>
             <p class="mb-0">{{post.date}}</p>
-            <small>{{post.pubtype}}<br>
+            <small>Pubtype: {{post.pubtype}}<br>
             {{ post.number_of_authors }} författare</small>
         </NuxtLink>
     </div>

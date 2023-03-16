@@ -60,10 +60,6 @@ export const useLocaleStore = defineStore('locale', {
         "views.publications.post.fields.scopus_missing": "Saknas",
 
 
-        
-        
-
-
         "appfooter.contact_link": "https://www.ub.gu.se/node/189487/",
         "appfooter.contact_link_text": "Kontakta oss om GUP superduperadmin",
 

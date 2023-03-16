@@ -15,7 +15,7 @@
                 {{ t('views.publications.post.fields.published_in') }}
             </template>
             <template v-slot:content>
-                {{ post.pubtype }}
+                {{ post.published_in }}
             </template>
             </PostField>
             <PostField>
@@ -23,7 +23,7 @@
                 {{ t('views.publications.post.fields.pubyear') }}
             </template>
             <template v-slot:content>
-                {{ post.pubtype }}
+                {{ post.date }}
             </template>
             </PostField>
             <PostField>
@@ -55,7 +55,7 @@
                 <a :href="post.scopus_id">{{ post.scopus_id }}</a>
                 </span>
                 <span class="badge bg-danger" v-else>
-                {{ t('views.home.post.fields.scopus_missing')  }}
+                {{ t('views.publications.post.fields.scopus_missing')  }}
                 </span>
             </template>
             </PostField>

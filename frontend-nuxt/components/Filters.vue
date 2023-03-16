@@ -58,7 +58,7 @@ await fetchPublicationTypes({lang: getLocale()});
 const filterStore = useFilterStore();
 const {filters} = storeToRefs(filterStore);
 
-const title_str = ref("");
+const title_str = ref(filters.value.title);
 
 // throttle input
 const debouncedFn = useDebounceFn(() => {
