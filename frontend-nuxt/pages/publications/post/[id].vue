@@ -30,7 +30,7 @@
               <h4 class="mb-1 text-muted">{{ t('views.publications.post.result_list_by_id.header') }}</h4>
               <div v-if="!gupPostsById.length">{{ t('views.publications.post.result_list.no_gup_posts_by_id_found') }}</div>
               <div v-else :class="{'opacity-50' :pendingGupPostsById}" class="list-group list-group-flush border-bottom">
-                <PostRowGup v-for="post in gupPostsById" :post="post" :refresh="$route.query" :key="post.gup_id"/>
+                <PostRowGup v-for="post in gupPostsById" :post="post" :refresh="$route.query" :key="post.id"/>
               </div>
             </div>
           </div>
@@ -57,6 +57,7 @@
               </div>
             </div>
           </div>
+
         </div>
       </div>
       <div class="col-6">
@@ -89,11 +90,9 @@ const searchTitleStr = ref(null);
   searchTitleStr.value = importedPostById.value ? importedPostById.value.title : "";
   
   if (importedPostById.value) {
-    await fetchGupPostsById({ids: [{scopus_id: gupPostById.value.scopus_id, gup_id:gupPostById.value.gup_id }]});
-    await fetchGupPostsByTitle({title: gupPostById.value.title});
+    await fetchGupPostsById(importedPostById.value.id);
+    await fetchGupPostsByTitle(importedPostById.value.id, importedPostById.value.title);
   }
-
-  
   
   
   const debounceFn = useDebounceFn(() => {

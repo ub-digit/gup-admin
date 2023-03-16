@@ -9,19 +9,31 @@ export const useGupPostsStore = defineStore('gupPostsStore', () => {
   const pendingGupPostsById= ref(null);
   const pendingGupPostById= ref(null);
 
-  async function fetchGupPostsById(params) {
+  async function fetchGupPostsById(id) {
     try {
       pendingGupPostsById.value = true;
       const { data, error } = await useFetch("/api/posts_gup_by_id", {
-          params: params,
-          onRequest({ request, options }) {
-            paramsSerializer(options.params);
-          }
+          params: {"id": id}
       });
       pendingGupPostsById.value = false;
       gupPostsById.value = data.value;
     } catch (error) {
       console.log("Something went wrong: fetchGupPostsById")
+    }
+
+  }
+
+
+  async function fetchGupPostsByTitle(id, title) {
+    try {
+      pendingGupPostsByTitle.value = true;
+        const { data, error } = await useFetch("/api/posts_gup_by_title", {
+            params: {"id": id, "title": title }
+          });
+          pendingGupPostsByTitle.value = false;
+      gupPostsByTitle.value = data.value;
+    } catch (error) {
+      console.log("Something went wrong: fetchGupPostsByTitle")
     }
 
   }
@@ -44,22 +56,7 @@ export const useGupPostsStore = defineStore('gupPostsStore', () => {
 
   }
 
-  async function fetchGupPostsByTitle(params) {
-    try {
-      pendingGupPostsByTitle.value = true;
-        const { data, error } = await useFetch("/api/posts_gup_by_title", {
-            params: params,
-            onRequest({ request, options }) {
-              paramsSerializer(options.params);
-            }
-          });
-          pendingGupPostsByTitle.value = false;
-      gupPostsByTitle.value = data.value;
-    } catch (error) {
-      console.log("Something went wrong: fetchGupPostsByTitle")
-    }
 
-  }
   
   function paramsSerializer(params) {
     //https://github.com/unjs/ufo/issues/62
