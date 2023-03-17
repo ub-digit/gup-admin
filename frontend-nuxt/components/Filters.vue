@@ -70,7 +70,6 @@ const debouncedFn = useDebounceFn(() => {
 
 onUnmounted(() => {
   $reset();
-  console.log(`the uncomponent is now mounted.`)
 })
 
 watch(

@@ -29,12 +29,12 @@ export const useFilterStore = defineStore('filterStore', () => {
     });
 
     function $reset() {
-      filters.needs_attention = getNeedsAttentionBoolean(route.query.needs_attention),
-      filters.scopus = getBoolean(route.query.scopus),
-      filters.wos = getBoolean(route.query.wos),
-      filters.manual = getBoolean(route.query.manual),
-      filters.pubtype = route.query.pubtype ? route.query.pubtype : "",
-      filters.title = route.query.title ? route.query.title : undefined
+      filters.needs_attention = true,
+      filters.scopus = false,
+      filters.wos = false,
+      filters.manual = false,
+      filters.pubtype = "",
+      filters.title = undefined
     }
   
 
