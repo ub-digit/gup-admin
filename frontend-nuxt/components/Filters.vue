@@ -44,6 +44,7 @@
 
 <script setup>
 import { useFilterStore} from '~/store/filter'
+import { onMounted, onUnmounted } from 'vue'
 import { usePublicationTypesStore } from '~/store/publication_types'
 import { storeToRefs } from 'pinia'
 import { useDebounceFn } from '@vueuse/core'
@@ -56,6 +57,7 @@ const { publicationTypes, pendingPublicationTypes } = storeToRefs(publicationTyp
 await fetchPublicationTypes({lang: getLocale()});
 
 const filterStore = useFilterStore();
+const {$reset} = filterStore;
 const {filters} = storeToRefs(filterStore);
 
 const title_str = ref(filters.value.title);
@@ -65,6 +67,11 @@ const debouncedFn = useDebounceFn(() => {
   filters.value.title = title_str.value;
 }, 500)
 
+
+onUnmounted(() => {
+  $reset();
+  console.log(`the uncomponent is now mounted.`)
+})
 
 watch(
   title_str, 

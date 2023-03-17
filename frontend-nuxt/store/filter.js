@@ -27,7 +27,17 @@ export const useFilterStore = defineStore('filterStore', () => {
         pubtype: route.query.pubtype ? route.query.pubtype : "",
         title: route.query.title ? route.query.title : undefined
     });
-        
+
+    function $reset() {
+      filters.needs_attention = getNeedsAttentionBoolean(route.query.needs_attention),
+      filters.scopus = getBoolean(route.query.scopus),
+      filters.wos = getBoolean(route.query.wos),
+      filters.manual = getBoolean(route.query.manual),
+      filters.pubtype = route.query.pubtype ? route.query.pubtype : "",
+      filters.title = route.query.title ? route.query.title : undefined
+    }
+  
+
     watch(
         filters,
         () => {
@@ -42,5 +52,5 @@ export const useFilterStore = defineStore('filterStore', () => {
         return deepClone;
     }); 
             
-    return { filters, filters_for_api }
+    return { filters, filters_for_api, $reset }
 })

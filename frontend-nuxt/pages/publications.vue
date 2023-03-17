@@ -11,7 +11,7 @@
             <Filters :pendingImportedPosts="pendingImportedPosts" />
           </div>
           <div id="result-list-by-id" class="row">
-            <div class="col" :class="{'opacity-50': pendingImportedPosts}">
+            <div class="col scroll" :class="{'opacity-50': pendingImportedPosts}">
               <div v-if="!importedPosts.length">{{ t('views.publications.result_list.no_imported_posts_found') }}</div>
               <div v-else class="list-group list-group-flush border-bottom">
                   <PostRow v-for="post in importedPosts" :post="post" :key="post.id"/>
@@ -46,6 +46,9 @@ await fetchImportedPosts();
 </script>
 
 <style lang="scss">
-.router-link-active {
+.scroll {
+  max-height: 800px;
+  overflow-y: scroll;
 }
+
 </style>  
