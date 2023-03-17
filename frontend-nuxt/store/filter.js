@@ -27,10 +27,7 @@ export const useFilterStore = defineStore('filterStore', () => {
         pubtype: route.query.pubtype ? route.query.pubtype : "",
         title: route.query.title ? route.query.title : undefined
     });
-
-
-    
-    
+        
     watch(
         filters,
         () => {

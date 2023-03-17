@@ -688,10 +688,12 @@ const _id_$3 = /*#__PURE__*/Object.freeze({
 });
 
 const _id__delete = defineEventHandler(async (event) => {
+  const config = useRuntimeConfig();
   getQuery(event);
-  event.context.params.id;
   console.log("deleted");
-  return true;
+  const id = event.context.params.id;
+  const res = $fetch(`${config.API_BASE_URL}/publications/${id}`, { method: "DELETE" });
+  return res;
 });
 
 const _id__delete$1 = /*#__PURE__*/Object.freeze({

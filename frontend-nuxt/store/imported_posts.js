@@ -21,12 +21,14 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
               paramsSerializer(options.params);
             }
           });
-      pendingImportedPosts.value = false;
-      importedPosts.value = data.value;
-    } catch (error) {
-      console.log("Something went wrong: fetchImportedPosts")
-    }
-
+          importedPosts.value = data.value;
+        } catch (error) {
+          console.log("Something went wrong: fetchImportedPosts")
+        }
+        finally {
+          
+          pendingImportedPosts.value = false;
+        }
   }
 
   watch(
@@ -49,9 +51,11 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
       } else {
         importedPostById.value = data.value;
       }
-      pendingImportedPostById.value = false;
     } catch (error) {
       console.log("Something went wrong: fetchImportedPostById")
+    }
+    finally {
+      pendingImportedPostById.value = false;
     }
 
   }
@@ -60,9 +64,11 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
     try {
         pendingRemoveImportedPost.value = true;
         const { data, error } = useFetch(`/api/post_imported/${id}`, {method: 'DELETE'})
-        pendingRemoveImportedPost.value = false;
-    } catch (error) {
-      console.log("Something went wrong: removeImportedPost")
+      } catch (error) {
+        console.log("Something went wrong: removeImportedPost")
+      }
+    finally {
+      pendingRemoveImportedPost.value = false;
     }
 
   }

@@ -15,10 +15,12 @@ export const useGupPostsStore = defineStore('gupPostsStore', () => {
       const { data, error } = await useFetch("/api/posts_gup_by_id", {
           params: {"id": id}
       });
-      pendingGupPostsById.value = false;
       gupPostsById.value = data.value;
     } catch (error) {
       console.log("Something went wrong: fetchGupPostsById")
+    }
+    finally {
+      pendingGupPostsById.value = false;
     }
 
   }
@@ -27,13 +29,15 @@ export const useGupPostsStore = defineStore('gupPostsStore', () => {
   async function fetchGupPostsByTitle(id, title) {
     try {
       pendingGupPostsByTitle.value = true;
-        const { data, error } = await useFetch("/api/posts_gup_by_title", {
+      const { data, error } = await useFetch("/api/posts_gup_by_title", {
             params: {"id": id, "title": title }
           });
-          pendingGupPostsByTitle.value = false;
       gupPostsByTitle.value = data.value;
     } catch (error) {
       console.log("Something went wrong: fetchGupPostsByTitle")
+    }
+    finally {
+      pendingGupPostsByTitle.value = false;
     }
 
   }
@@ -48,10 +52,12 @@ export const useGupPostsStore = defineStore('gupPostsStore', () => {
       } else {
         gupPostById.value = data.value;
       }
-      pendingGupPostById.value = false;
     } catch (error) {
       //return createError({ statusCode: 404, statusMessage: 'Post Not Found' })
       console.log("Something went wrong: fetchGupPostById")
+    }
+    finally {
+      pendingGupPostById.value = false;
     }
 
   }
