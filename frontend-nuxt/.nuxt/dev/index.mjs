@@ -702,9 +702,10 @@ const _id__delete$1 = /*#__PURE__*/Object.freeze({
 });
 
 const _id_ = defineEventHandler(async (event) => {
+  const config = useRuntimeConfig();
   getQuery(event);
-  event.context.params.id;
-  const res = createError({ statusCode: 404, statusMessage: "Post Not Found" });
+  const id = event.context.params.id;
+  const res = await $fetch(`${config.API_BASE_URL}/publications/${id}`);
   return res;
 });
 

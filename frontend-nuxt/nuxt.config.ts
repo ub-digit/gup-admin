@@ -28,6 +28,7 @@ export default defineNuxtConfig({
     css: [
         // SCSS file in the project
         '@/assets/main.scss',
-        '@fortawesome/fontawesome-svg-core/styles.css'
+        '@fortawesome/fontawesome-svg-core/styles.css',
+        'vue-toast-notification/dist/theme-default.css'
       ],
 })

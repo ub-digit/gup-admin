@@ -63,6 +63,9 @@ export const useLocaleStore = defineStore('locale', {
         "appfooter.contact_link": "https://www.ub.gu.se/node/189487/",
         "appfooter.contact_link_text": "Kontakta oss om GUP superduperadmin",
 
+
+        "messages.remove_success": "Posten togs bort!",
+        "messages.confirm_remove": "Är du säker på att du vill ta bort den importerade posten?",
         "buttons.remove": "Ta bort",
         "buttons.merge": "Slå ihop",
         "buttons.edit": "Redigera",

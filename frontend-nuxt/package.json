@@ -23,6 +23,7 @@
     "marked": "^4.2.12",
     "pinia": "^2.0.29",
     "sass": "^1.57.1",
-    "sass-loader": "^13.2.0"
+    "sass-loader": "^13.2.0",
+    "vue-toast-notification": "^3.0"
   }
 }

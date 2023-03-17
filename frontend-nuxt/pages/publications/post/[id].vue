@@ -75,6 +75,7 @@ const {t} = useI18n();
 const route = useRoute();
 const router = useRouter();
 const searchTitleStr = ref(null);
+const { $toast } = useNuxtApp();
 
   const filterStore = useFilterStore();
 
@@ -112,10 +113,12 @@ function mergePosts() {
   alert("merge")
 }
 async function removePost() {
-  const ok = confirm("Är du säker på att du vill ta bort den importerade posten?")
+  const ok = confirm(t('messages.confirm_remove'))
   if (ok) {
     const res = await removeImportedPost(importedPostById.value.id);
     fetchImportedPosts();
+
+    $toast.success(t('messages.remove_success'));
     router.push({ path: '/publications', query: { ...route.query } })
   }
 }

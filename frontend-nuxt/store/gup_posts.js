@@ -4,7 +4,7 @@ export const useGupPostsStore = defineStore('gupPostsStore', () => {
   const gupPostsByTitle = ref([])
   const gupPostsById = ref([])
   const gupPostById = ref({});
-  const errorGupPostById = ref({});
+  const errorGupPostById = ref(null);
   const pendingGupPostsByTitle= ref(null);
   const pendingGupPostsById= ref(null);
   const pendingGupPostById= ref(null);
