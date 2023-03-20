@@ -2,8 +2,6 @@
 declare module 'nitropack' {
   type Awaited<T> = T extends PromiseLike<infer U> ? Awaited<U> : T
   interface InternalApi {
-    '/api/store_pubtypes': Awaited<ReturnType<typeof import('../../server/api/store_pubtypes').default>>
-    '/api/store_gup': Awaited<ReturnType<typeof import('../../server/api/store_gup').default>>
     '/api/pubtypes': Awaited<ReturnType<typeof import('../../server/api/pubtypes').default>>
     '/api/posts_imported': Awaited<ReturnType<typeof import('../../server/api/posts_imported').default>>
     '/api/posts_gup_by_title': Awaited<ReturnType<typeof import('../../server/api/posts_gup_by_title').default>>

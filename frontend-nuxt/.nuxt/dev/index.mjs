@@ -454,8 +454,6 @@ const errorHandler = (async function errorhandler(error, event) {
   event.node.res.end(await res.text());
 });
 
-const _lazy_uDsGY6 = () => Promise.resolve().then(function () { return store_pubtypes$1; });
-const _lazy_3Qdxo3 = () => Promise.resolve().then(function () { return store_gup$1; });
 const _lazy_mQMJvZ = () => Promise.resolve().then(function () { return pubtypes$1; });
 const _lazy_IPllUq = () => Promise.resolve().then(function () { return posts_imported$1; });
 const _lazy_y9LNm6 = () => Promise.resolve().then(function () { return posts_gup_by_title$1; });
@@ -467,8 +465,6 @@ const _lazy_HlWbGA = () => Promise.resolve().then(function () { return alert$1; 
 const _lazy_UZ5qVd = () => Promise.resolve().then(function () { return renderer$1; });
 
 const handlers = [
-  { route: '/api/store_pubtypes', handler: _lazy_uDsGY6, lazy: true, middleware: false, method: undefined },
-  { route: '/api/store_gup', handler: _lazy_3Qdxo3, lazy: true, middleware: false, method: undefined },
   { route: '/api/pubtypes', handler: _lazy_mQMJvZ, lazy: true, middleware: false, method: undefined },
   { route: '/api/posts_imported', handler: _lazy_IPllUq, lazy: true, middleware: false, method: undefined },
   { route: '/api/posts_gup_by_title', handler: _lazy_y9LNm6, lazy: true, middleware: false, method: undefined },
@@ -553,70 +549,6 @@ server.listen(listenAddress, () => {
   process.on("unhandledRejection", (err) => console.error("[nitro] [dev] [unhandledRejection]", err));
   process.on("uncaughtException", (err) => console.error("[nitro] [dev] [uncaughtException]", err));
 }
-
-const store_pubtypes = defineEventHandler(async (event) => {
-  const data = ["journal_article", "review_article", "magazine_article", "editorial_letter"];
-  return data;
-});
-
-const store_pubtypes$1 = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  'default': store_pubtypes
-});
-
-const store_gup = defineEventHandler(async (event) => {
-  const query = getQuery(event);
-  const data = [
-    {
-      "id": "1",
-      "title": "Publikationstitel 1 (gup)",
-      "doi": "http://doi.org/10.1",
-      "creator": "xljoha",
-      "authors": [{
-        "id": "333",
-        "name": "L\xE5ngeP\xE4r",
-        "x-account": "xlpero"
-      }],
-      "gup_id": "1",
-      "scopus_id": "1",
-      "date": "2021",
-      "pubtype": "Artikel i vetenskaplig tidskrift, refereegranskad",
-      "number_of_authors": "5"
-    },
-    {
-      "id": "2",
-      "title": "Publikationstitel 2 (gup)",
-      "doi": "http://doi.org/10.2",
-      "creator": "xljoha",
-      "authors": [{
-        "id": "333",
-        "name": "L\xE5ngeP\xE4r",
-        "x-account": "xlpero"
-      }],
-      "gup_id": "2",
-      "scopus_id": "2",
-      "date": "2022",
-      "pubtype": "Artikel i vetenskaplig tidskrift, refereegranskad",
-      "number_of_authors": "2"
-    }
-  ];
-  let res = null;
-  if (query.id) {
-    res = data.find((post) => {
-      if (post.id === query.id) {
-        return post;
-      }
-    });
-  } else {
-    res = data;
-  }
-  return res;
-});
-
-const store_gup$1 = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  'default': store_gup
-});
 
 const pubtypes = defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
