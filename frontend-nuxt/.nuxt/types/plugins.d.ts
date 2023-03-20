@@ -8,17 +8,20 @@ type InjectionType<A extends Plugin> = A extends Plugin<infer T> ? Decorate<T> :
 type NuxtAppInjections = 
   InjectionType<typeof import("../../node_modules/@pinia/nuxt/dist/runtime/plugin.vue3").default> &
   InjectionType<typeof import("../components.plugin").default> &
-  InjectionType<typeof import("../../node_modules/nuxt/dist/head/runtime/lib/vueuse-head.plugin").default> &
-  InjectionType<typeof import("../../node_modules/nuxt/dist/pages/runtime/router").default> &
+  InjectionType<typeof import("../../node_modules/nuxt/dist/head/runtime/plugins/unhead").default> &
+  InjectionType<typeof import("../../node_modules/nuxt/dist/head/runtime/plugins/vueuse-head-polyfill").default> &
+  InjectionType<typeof import("../../node_modules/nuxt/dist/pages/runtime/plugins/router").default> &
+  InjectionType<typeof import("../../node_modules/nuxt/dist/pages/runtime/plugins/prefetch.client").default> &
+  InjectionType<typeof import("../../node_modules/nuxt/dist/app/plugins/chunk-reload.client").default> &
   InjectionType<typeof import("../../plugins/fontawesome").default> &
-  InjectionType<typeof import("../../plugins/toaster").default> &
+  InjectionType<typeof import("../../plugins/toaster.client").default> &
   InjectionType<typeof import("../../plugins/vue-gtag.client").default>
 
 declare module '#app' {
   interface NuxtApp extends NuxtAppInjections { }
 }
 
-declare module '@vue/runtime-core' {
+declare module 'vue' {
   interface ComponentCustomProperties extends NuxtAppInjections { }
 }
 

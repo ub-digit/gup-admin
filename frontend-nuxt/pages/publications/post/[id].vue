@@ -117,7 +117,8 @@ async function removePost() {
   if (ok) {
     const res = await removeImportedPost(importedPostById.value.id);
     fetchImportedPosts();
-
+   
+    //$toast.success('Yay!!!')
     $toast.success(t('messages.remove_success'));
     router.push({ path: '/publications', query: { ...route.query } })
   }
