@@ -1,13 +1,13 @@
 version: '3.7'
 
 services:
-  db: 
-    volumes:
-      - ${DB_DATA_PATH}:/var/lib/postgresql/data/pgdata
+#  db: 
+#    volumes:
+#- ${DB_DATA_PATH}:/var/lib/postgresql/data/pgdata
   frontend-nuxt:
-    image: docker.ub.gu.se/gup-admin-frontend-nuxt-3:${GIT_REVISION}
+    image: docker.ub.gu.se/gup-admin-frontend-nuxt:${GIT_REVISION}
     environment:
-      NUXT_API_BASE_URL: "http://backend:4000/"
+      NUXT_API_BASE_URL: "http://192.168.32.7:8001/"  # change to http://backend:8001 when backend is dockerized
       NUXT_API_ALERT_URL: "${ALERT_URL}"
     ports:
       - ${FRONTEND_HOST_PORT}:3000

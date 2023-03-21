@@ -11,14 +11,3 @@ services:
     ports:
       - "127.0.0.1:9200:9200"
       - "127.0.0.1:9300:9300"
-  frontend-nuxt:
-    image: node:16
-    environment:
-      NUXT_API_BASE_URL: "http://backend:4000/"
-      NUXT_API_ALERT_URL: "${ALERT_URL}"
-    volumes:
-      - ../frontend:/code
-    ports:
-      - ${FRONTEND_HOST_PORT}:8080
-    command: "bash -c 'npm install && npm run serve'"
-    working_dir: /code 

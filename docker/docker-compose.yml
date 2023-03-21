@@ -1,29 +1,32 @@
 version: '3.7'
 
 services:
-  backend:
-    image: docker.ub.gu.se/gup-admin-backend:${GIT_REVISION}
-    ports:
-      - "${BACKEND_HOST_PORT}:4000"
-    environment:
-      ELASTIC_SEARCH_URL: "${ELASTIC_SEARCH_URL}"
-      ALERT_MESSAGE_FILE_PATH: "${ALERT_MESSAGE_FILE_PATH}"
-    restart: always
-    volumes:
-      - "${HOST_ALERT_MESSAGE_FILE_PATH}:${ALERT_MESSAGE_FILE_PATH}"
-  db:
-    image: postgres:12
-    environment:
-      POSTGRES_USER: "${DB_USER}"
-      POSTGRES_PASSWORD: "${DB_PASSWORD}"
-      POSTGRES_DB: "${DB_NAME}"
-      PGDATA: /var/lib/postgresql/data/pgdata
-    volumes:
-      - "${DB_INIT_PATH}:/docker-entrypoint-initdb.d"
-    restart: always
+  #backend:
+  #  image: docker.ub.gu.se/gup-admin-backend:${GIT_REVISION}
+  #  ports:
+  #    - "${BACKEND_HOST_PORT}:4000"
+  #  environment:
+  #    ELASTIC_SEARCH_URL: "${ELASTIC_SEARCH_URL}"
+  #    ALERT_MESSAGE_FILE_PATH: "${ALERT_MESSAGE_FILE_PATH}"
+  #  restart: always
+  #  volumes:
+  #    - "${HOST_ALERT_MESSAGE_FILE_PATH}:${ALERT_MESSAGE_FILE_PATH}"
+ # db:
+ #   image: postgres:12
+ #   environment:
+ #     POSTGRES_USER: "${DB_USER}"
+ #     POSTGRES_PASSWORD: "${DB_PASSWORD}"
+ #     POSTGRES_DB: "${DB_NAME}"
+ #     PGDATA: /var/lib/postgresql/data/pgdata
+ #   volumes:
+ #     - "${DB_INIT_PATH}:/docker-entrypoint-initdb.d"
+ #   restart: always
   elasticsearch:
     container_name: gup-elasticsearch
     image: docker.ub.gu.se/gup-super-elasticsearch:${GIT_REVISION}
+    ports:
+      - "127.0.0.1:9200:9200"
+      - "127.0.0.1:9300:9300"
     environment:
       - xpack.security.enabled=false
       - "discovery.type=single-node"
