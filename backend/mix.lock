@@ -1,4 +1,5 @@
 %{
+  "benchwarmer": {:hex, :benchwarmer, "0.0.2", "902e5c020608647b07c38b82103e4af6d2667dfd5d5d13c67382238de6943136", [:mix], [], "hexpm", "8b98b39c1c50df624f9c2d13ca953eeed465eed6feda975da26b479df2b4c9f5"},
   "castore": {:hex, :castore, "1.0.0", "c25cd0794c054ebe6908a86820c8b92b5695814479ec95eeff35192720b71eec", [:mix], [], "hexpm", "577d0e855983a97ca1dfa33cbb8a3b6ece6767397ffb4861514343b078fc284b"},
   "certifi": {:hex, :certifi, "2.9.0", "6f2a475689dd47f19fb74334859d460a2dc4e3252a3324bd2111b8f0429e7e21", [:rebar3], [], "hexpm", "266da46bdb06d6c6d35fde799bcb28d36d985d424ad7c08b5bb48f5b5cdd4641"},
   "connection": {:hex, :connection, "1.1.0", "ff2a49c4b75b6fb3e674bfc5536451607270aac754ffd1bdfe175abe4a6d7a68", [:mix], [], "hexpm", "722c1eb0a418fbe91ba7bd59a47e28008a189d47e37e0e7bb85585a016b2869c"},
