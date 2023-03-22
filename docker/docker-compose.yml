@@ -11,6 +11,8 @@ services:
    restart: always
    volumes:
      - "${HOST_ALERT_MESSAGE_FILE_PATH}:${ALERT_MESSAGE_FILE_PATH}"
+     # Temporary fix until real index is in place
+     - ../data/_source:/release/data/_source
   db:
     container_name: gup-db
     image: postgres:12
