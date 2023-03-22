@@ -1,17 +1,20 @@
 version: '3.7'
 
 services:
-  #backend:
-  #  image: docker.ub.gu.se/gup-admin-backend:${GIT_REVISION}
-  #  ports:
-  #    - "${BACKEND_HOST_PORT}:4000"
-  #  environment:
-  #    ELASTIC_SEARCH_URL: "${ELASTIC_SEARCH_URL}"
-  #    ALERT_MESSAGE_FILE_PATH: "${ALERT_MESSAGE_FILE_PATH}"
-  #  restart: always
-  #  volumes:
-  #    - "${HOST_ALERT_MESSAGE_FILE_PATH}:${ALERT_MESSAGE_FILE_PATH}"
+  backend:
+   image: docker.ub.gu.se/gup-admin-backend:${GIT_REVISION}
+   ports:
+     - "${BACKEND_HOST_PORT}:4000"
+   environment:
+     ELASTIC_SEARCH_URL: "${ELASTIC_SEARCH_URL}"
+     ALERT_MESSAGE_FILE_PATH: "${ALERT_MESSAGE_FILE_PATH}"
+   restart: always
+   volumes:
+     - "${HOST_ALERT_MESSAGE_FILE_PATH}:${ALERT_MESSAGE_FILE_PATH}"
+     # Temporary fix until real index is in place
+     - ../data/_source:/release/data/_source
   db:
+    container_name: gup-db
     image: postgres:12
     environment:
       POSTGRES_USER: "${DB_USER}"
@@ -20,12 +23,10 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - "${DB_INIT_PATH}:/docker-entrypoint-initdb.d"
-    ports:
-      - "5432:5432"
     restart: always
   elasticsearch:
     container_name: gup-elasticsearch
-    image: docker.ub.gu.se/gup-super-elasticsearch:${GIT_REVISION}
+    image: docker.ub.gu.se/gup-admin-elasticsearch:${GIT_REVISION}
     ports:
       - "127.0.0.1:9200:9200"
       - "127.0.0.1:9300:9300"
