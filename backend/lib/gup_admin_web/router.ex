@@ -22,6 +22,7 @@ defmodule GupAdminWeb.Router do
     get "/publications", PublicationController, :index
     get "/publications/:id", PublicationController, :show
     get "/publications/duplicates/:id", PublicationController, :get_duplicates
+    get "/index", IndexController, :index
 
   end
 
