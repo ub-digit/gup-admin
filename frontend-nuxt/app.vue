@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- <NuxtLoadingIndicator color="#025da6" />  -->
     <AppHeader />
     <NuxtPage />
 <!--     <AppFooter/> -->
