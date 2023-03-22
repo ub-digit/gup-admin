@@ -24,7 +24,7 @@ services:
     restart: always
   elasticsearch:
     container_name: gup-elasticsearch
-    image: docker.ub.gu.se/gup-super-elasticsearch:${GIT_REVISION}
+    image: docker.ub.gu.se/gup-admin-elasticsearch:${GIT_REVISION}
     ports:
       - "127.0.0.1:9200:9200"
       - "127.0.0.1:9300:9300"
