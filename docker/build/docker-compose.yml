@@ -7,13 +7,13 @@ services:
       args:
         - GIT_REPO_URL=${GIT_REPO_URL}
         - GIT_REVISION=${GIT_REVISION}
-  # backend:
-  #   image: docker.ub.gu.se/gup-super-backend:${GIT_REVISION}
-  #   build:
-  #     context: ./backend
-  #     args:
-  #       - GIT_REPO_URL=${GIT_REPO_URL}
-  #       - GIT_REVISION=${GIT_REVISION}
+  backend:
+    image: docker.ub.gu.se/gup-admin-backend:${GIT_REVISION}
+    build:
+      context: ./backend
+      args:
+        - GIT_REPO_URL=${GIT_REPO_URL}
+        - GIT_REVISION=${GIT_REVISION}
   elasticsearch:
     image: docker.ub.gu.se/gup-admin-elasticsearch:${GIT_REVISION}
     build:

@@ -5,7 +5,7 @@ defmodule GupAdmin.Resource.Search do
   alias GupAdmin.Resource.Search.Filter
   # get elastic url from config
   def elastic_url do
-    System.get_env("ELASTIC_URL") || "http://localhost:9200"
+    System.get_env("ELASTIC_SEARCH_URL") || "http://localhost:9200"
   end
 
   def show(id) do

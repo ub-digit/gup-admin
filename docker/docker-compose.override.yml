@@ -1,11 +1,15 @@
 version: '3.7'
 
-#services:
-#  db:
-#    ports:
-#      - "127.0.0.1:5433:5432"
-  #backend:
-  #  volumes:
+services:
+ db:
+   ports:
+     - "127.0.0.1:5433:5432"
+ elasticsearch: 
+    ports:
+      - "127.0.0.1:9200:9200"
+      - "127.0.0.1:9300:9300"
+ #backend:
+  
   #    - ../backend:/release/backend/
   #elasticsearch: 
   #  ports:
