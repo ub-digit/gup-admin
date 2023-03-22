@@ -1,8 +1,6 @@
-# gup-super (to be gup-admin)
+# gup-admin 
 
 ## TODO
-* Rename repo to gup-admin 
-
 
 
 ## FRONTEND 
