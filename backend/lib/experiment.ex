@@ -1,6 +1,9 @@
 defmodule Experiment do
-  @elastic_url "http://localhost:9200"
   @index "publications"
+
+  def elastic_url do
+    System.get_env("ELASTIC_URL") || "http://localhost:9200"
+  end
 
 
   def create_index(name) do
@@ -55,9 +58,9 @@ defmodule Experiment do
       }
     }
 
-    Elastix.Index.delete(@elastic_url, name)
+    Elastix.Index.delete(elastic_url(), name)
 
-    Elastix.Index.create(@elastic_url, name, config)
+    Elastix.Index.create(elastic_url(), name, config)
     |> case do
       {:ok, %{body: %{"error" => reason}}} -> {:error, reason}
       {:ok, res} -> {:ok, res}
@@ -88,7 +91,7 @@ defmodule Experiment do
     create_index(@index)
     init_with_json(publications_count)
     |> Enum.map(fn data ->
-      Elastix.Document.index(@elastic_url, "publications", "_doc", data["id"], data, [])
+      Elastix.Document.index(elastic_url(), "publications", "_doc", data["id"], data, [])
     end)
 
   end
