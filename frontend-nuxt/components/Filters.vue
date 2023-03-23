@@ -29,8 +29,8 @@
               </div>
               <select class="form-select mb-3" v-model="filters.pubtype" :aria-label="t('views.publications.form.pub_type_select_label')">
                 <option value="" selected>{{ t('views.publications.form.pub_type_select_label') }}</option>
-                <option v-for="pubtype in publicationTypes" :value="pubtype.publications_type_label" :key="pubtype.publications_type_id">
-                  {{ pubtype.publications_type_label }}
+                <option v-for="pubtype in publicationTypes" :value="pubtype.publication_type_code" :key="pubtype.publication_type_id">
+                  {{ pubtype.publication_type_label }}
                 </option>
               </select>
 

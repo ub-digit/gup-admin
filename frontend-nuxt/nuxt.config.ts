@@ -3,7 +3,7 @@ export default defineNuxtConfig({
     ssr: true,
     runtimeConfig: {
         
-        API_BASE_URL: 'http://localhost:8001',
+        API_BASE_URL: 'http://localhost:4000',
         public: {
             
         }
