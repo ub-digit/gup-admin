@@ -10,7 +10,7 @@ services:
      ALERT_MESSAGE_FILE_PATH: "${ALERT_MESSAGE_FILE_PATH}"
    restart: always
    volumes:
-     - "${HOST_ALERT_MESSAGE_FILE_PATH}:${ALERT_MESSAGE_FILE_PATH}"
+#     - "${HOST_ALERT_MESSAGE_FILE_PATH}:${ALERT_MESSAGE_FILE_PATH}"
      # Temporary fix until real index is in place
      - ../data/_source:/release/data/_source
   db:
@@ -23,6 +23,8 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - "${DB_INIT_PATH}:/docker-entrypoint-initdb.d"
+    ports:
+     - "127.0.0.1:5433:5432"
     restart: always
   elasticsearch:
     container_name: gup-elasticsearch
