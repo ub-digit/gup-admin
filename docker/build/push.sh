@@ -7,7 +7,5 @@ if [ -n "$1" ]; then
 fi
 
 docker push docker.ub.gu.se/gup-admin-elasticsearch:${GIT_REVISION} && \
-docker push docker.ub.gu.se/gup-admin-backend-admin:${GIT_REVISION} && \
 docker push docker.ub.gu.se/gup-admin-backend:${GIT_REVISION} && \
-docker push docker.ub.gu.se/gup-admin-frontend-admin:${GIT_REVISION}
-docker push docker.ub.gu.se/gup-admin-frontend-nuxt-3:${GIT_REVISION}
+docker push docker.ub.gu.se/gup-admin-frontend-nuxt:${GIT_REVISION}
