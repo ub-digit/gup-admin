@@ -232,39 +232,43 @@ defmodule Experiment do
 
 
   def db_txt() do
-    "  1 | conference_other
-    2 | conference_paper
-    3 | conference_poster
-    5 | publication_journal-article
-    7 | publication_magazine-article
-    8 | publication_edited-book
-    9 | publication_book
-   10 | publication_book-chapter
-   13 | intellectual-property_patent
-   16 | publication_report
-   17 | publication_doctoral-thesis
-   18 | publication_book-review
-   19 | publication_licentiate-thesis
-   21 | other
-   22 | publication_review-article
-   23 | artistic-work_scientific_and_development
-   28 | publication_textcritical-edition
-   30 | publication_textbook
-   34 | artistic-work_original-creative-work
-   40 | publication_editorial-letter
-   41 | publication_report-chapter
-   42 | publication_newspaper-article
-   43 | publication_encyclopedia-entry
-   44 | publication_journal-issue
-   45 | conference_proceeding
-   46 | publication_working-paper"
+    "30 | publication_textbook                     | Lärobok
+    28 | publication_textcritical-edition         | Textkritisk utgåva
+    21 | other                                    | Annan publikation
+    17 | publication_doctoral-thesis              | Doktorsavhandling
+    16 | publication_report                       | Rapport
+     2 | conference_paper                         | Paper i proceeding
+     1 | conference_other                         | Konferensbidrag (offentliggjort, men ej förlagsutgivet)
+     8 | publication_edited-book                  | Samlingsverk (red.)
+    41 | publication_report-chapter               | Kapitel i rapport
+    42 | publication_newspaper-article            | Artikel i dagstidning
+    43 | publication_encyclopedia-entry           | Bidrag till encyklopedi
+    19 | publication_licentiate-thesis            | Licentiatsavhandling
+    44 | publication_journal-issue                | Special / temanummer av tidskrift (red.)
+     3 | conference_poster                        | Poster (konferens)
+    45 | conference_proceeding                    | Proceeding (red.)
+    13 | intellectual-property_patent             | Patent
+    23 | artistic-work_scientific_and_development | Konstnärligt forsknings- och utvecklingsarbete
+    10 | publication_book-chapter                 | Kapitel i bok
+    22 | publication_review-article               | Forskningsöversiktsartikel (Review article)
+     5 | publication_journal-article              | Artikel i vetenskaplig tidskrift
+    40 | publication_editorial-letter             | Inledande text i tidskrift
+    18 | publication_book-review                  | Recension
+     7 | publication_magazine-article             | Artikel i övriga tidskrifter
+     9 | publication_book                         | Bok
+    46 | publication_working-paper                | Working paper
+    34 | artistic-work_original-creative-work     | Konstnärligt arbete"
   |> String.split("\n")
   |> Enum.map(fn line ->
+     line = line |> String.split("|") |> List.to_tuple()
+
     %{
-      "publications_type_id" => line |> String.split("|") |> List.first() |> String.trim() |> String.to_integer(),
-      "publications_type_label" => line |> String.split("|") |> List.last() |> String.trim()
+      "publication_type_id" => elem(line, 0) |> String.trim() |> String.to_integer(),
+      "publication_type_code" => elem(line, 1) |> String.trim(),
+      "publication_type_label" => elem(line, 2) |> String.trim()
     }
     end)
+    |> Enum.sort_by(fn pub_type -> pub_type["publication_type_label"] end)
   end
 
 end
