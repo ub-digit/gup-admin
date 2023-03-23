@@ -16,3 +16,7 @@
 * ./build.sh frontend-nuxt
 * cd ..  
 * ./docker-compose-release.sh up
+
+
+### DOCKER LAB
+* Läser in temp-filer (json) för att få data till elasticsearch under utveckling. För att få indexet uppdatterat kör skript ./index.sh efter att elasticsearch är igång
