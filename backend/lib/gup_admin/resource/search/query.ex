@@ -30,4 +30,19 @@ defmodule GupAdmin.Resource.Search.Query do
       }
     }
   end
+
+  def show_base(id) do
+    %{
+      "size" => @query_limit,
+      "query" => %{
+        "bool" => %{
+          "must" => %{
+            "match" => %{
+              "id.keyword" => id
+            }
+          }
+        }
+      }
+    }
+  end
 end
