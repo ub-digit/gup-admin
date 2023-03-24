@@ -66,7 +66,7 @@ defmodule GupAdmin.Resource.Search do
   def remap(hits) do
     hits
     |> Enum.map(fn hit -> hit["_source"] end)
-    |> Enum.map(fn item -> %{"id" => item["id"], "title" => item["title"] } end)
+    #|> Enum.map(fn item -> %{"id" => item["id"], "title" => item["title"] } end)
   end
 
   # def get_duplicates(%{"mode" => "id", "id" => id}) do
