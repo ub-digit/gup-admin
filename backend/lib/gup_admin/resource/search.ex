@@ -9,9 +9,7 @@ defmodule GupAdmin.Resource.Search do
   end
 
   def show(id) do
-    q = Query.base("")
-    |> put_in(["query", "bool", "filter"],  %{"match" => %{"id" => id}})
-    {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
+    {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], Query.show_base(id))
     hits
     |> remap()
     |> List.first()
@@ -68,6 +66,7 @@ defmodule GupAdmin.Resource.Search do
   def remap(hits) do
     hits
     |> Enum.map(fn hit -> hit["_source"] end)
+    |> Enum.map(fn item -> %{"id" => item["id"], "title" => item["title"] } end)
   end
 
   # def get_duplicates(%{"mode" => "id", "id" => id}) do
