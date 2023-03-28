@@ -48,7 +48,7 @@ export const useGupPostsStore = defineStore('gupPostsStore', () => {
       pendingGupPostById.value = true;
       const { data, error } = await  useFetch(`/api/post_gup/${id}`)
       if (error.value) {
-        errorGupPostById.value = error.value.data;
+        errorGupPostById.value =  error.value.data.data.error;;
       } else {
         gupPostById.value = data.value;
       }
