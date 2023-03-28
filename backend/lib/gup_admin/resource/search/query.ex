@@ -45,4 +45,33 @@ defmodule GupAdmin.Resource.Search.Query do
       }
     }
   end
+
+  def get_duplicates_base(id) do
+    %{
+      "size" => @query_limit,
+      "query" => %{
+        "bool" => %{
+          "must" => %{
+            "match" => %{
+              "publication_identifiers.id" => id
+            }
+          }
+        }
+      }
+    }
+  end
+
+  def get_duplicates_by_title_base(title) do
+    %{
+      "query" => %{
+        "fuzzy" => %{
+          "title" => %{
+            "value" => title,
+            "fuzziness" => "AUTO"
+          }
+        }
+      }
+    }
+
+  end
 end

@@ -121,9 +121,11 @@ defmodule Experiment do
 
     scopus_duplicates = Enum.take(gup, floor(split_count / 4))
     |> Enum.map(fn item ->
+      id = item["id"]
       item
-      |> Map.put("id", "scopus:" <> Integer.to_string(item["id"]))
+      |> Map.put("id", "scopus:" <> Integer.to_string(id))
       |> Map.put("source", "scopus")
+      |> put_in(["publication_identifiers"], %{"id" => id, "identifier_code" => "gup", "identifier_value" => id, "identifier_label" => "GUP"})
     end)
 
     # Add source and id to gup publications
@@ -133,6 +135,7 @@ defmodule Experiment do
       |> Map.put("id", "gup:" <> Integer.to_string(item["id"]))
       |> Map.put("source", "gup")
     end)
+
 
 
     [gup, scopus, scopus_duplicates]

@@ -1,6 +1,7 @@
 # this module will query elasticsearch for posts with filter on origin
 defmodule GupAdmin.Resource.Search do
   @index "publications"
+  alias ElixirLS.LanguageServer.Experimental.Protocol.Proto.Macros.Json
   alias GupAdmin.Resource.Search.Query
   alias GupAdmin.Resource.Search.Filter
   # get elastic url from config
@@ -69,34 +70,21 @@ defmodule GupAdmin.Resource.Search do
     #|> Enum.map(fn item -> %{"id" => item["id"], "title" => item["title"] } end)
   end
 
-  # def get_duplicates(%{"mode" => "id", "id" => id}) do
-  #   post = show(id)
-  #   q = Query.base("")
-  #   |> Filter.add_filter(Filter.build_duplicate_filter(post))
-  #   |> IO.inspect(label: "q")
-  #   {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
-
-  #   hits
-  #   |> remap()
-  #   |> length()
-
-  # end
-
   def get_duplicates(%{"mode" => "id", "id" => id}) do
-    q = Query.base("")
-    {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
-
+   id = String.split(id, ":") |> List.last()
+   q = Query.get_duplicates_base(id)
+   {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
     hits
     |> remap()
-    |> Enum.take(2)
   end
 
   def get_duplicates(%{"mode" => "title", "id" => id}) do
-    q = Query.base("")
-    {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
-
-    hits
-    |> remap()
-    |> Enum.take(2)
+    post = show(id)
+    IO.inspect(post["title"], label: "TITLE")
+    q = Query.get_duplicates_by_title_base(post["title"])
+    |> IO.inspect(label: "QUERY")
+    #{:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
+    #hits
+    #|> remap()
   end
 end
