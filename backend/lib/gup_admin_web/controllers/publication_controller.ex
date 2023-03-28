@@ -1,5 +1,6 @@
 defmodule GupAdminWeb.PublicationController do
   use GupAdminWeb, :controller
+  alias ElixirLS.LanguageServer.Experimental.Protocol.Proto.Macros.Json
   alias GupAdmin.Resource.Search
 
   # GET /posts
@@ -13,7 +14,7 @@ defmodule GupAdminWeb.PublicationController do
     post = Search.show(id)
     |> IO.inspect(label: "post")
     |> case do
-      :error -> Plug.Conn.put_status(conn, 404); json conn, %{"statusCode" => 404, "statusMessage" => "Post not found"}
+      :error -> conn |> send_resp(404, Jason.encode!(%{error: %{"message" => "Post not found", "code" => 404}}))
       res -> json conn, res
     end
   end
