@@ -31,7 +31,7 @@
                     {{ t('views.publications.post.fields.author') }}
                 </template>
                 <template v-slot:content>
-                    <ul class="list-unstyled mb-0">
+                    <ul v-if="post.authors" class="list-unstyled mb-0">
                     <li v-for="(author, index) in post.authors" :key="author.id">
                         <span v-if="index < numberOfAuthorsToList">
                             {{ author.name }}
