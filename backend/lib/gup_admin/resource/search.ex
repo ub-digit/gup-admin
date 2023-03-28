@@ -23,6 +23,7 @@ defmodule GupAdmin.Resource.Search do
     params = remap_params(params)
     q = Query.base(params["title"])
     |> Filter.add_filter(Filter.build_filter(params["filter"]))
+    |> IO.inspect(label: "q")
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
     hits
     |> remap()
@@ -40,11 +41,21 @@ defmodule GupAdmin.Resource.Search do
     |> IO.inspect(label: "params")
     %{
       "source" => get_source_list(params),
-      "pubtype" => params["pubtype"] || nil,
+      #"pubtype" => params["pubtype"] || nil,
+      # TBD: Have frontend send pubtype_id instead of pubtype_code?
+      "publication_type_id" => get_pub_type_id(params["pubtype"]) || nil,
       #"needs_attention" => params["needs_attention"] || nil,
     }
     |> Enum.filter(fn {_, val} -> not is_nil(val) end)
     |> Enum.filter(fn {_, val} -> validate_parameter(val) end)
+  end
+
+  def get_pub_type_id(nil), do: nil
+
+  def get_pub_type_id(pubtype_code) do
+    GupAdmin.Resource.PublicationType.get_publication_types()
+    |> Enum.find(fn pt -> pt["publication_type_code"] == pubtype_code end)
+    |> Map.fetch!("publication_type_id")
   end
 
   def validate_parameter(val) when is_list(val), do: true
