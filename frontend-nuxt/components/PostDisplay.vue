@@ -26,15 +26,18 @@
                     {{ post.pubyear }}
                 </template>
             </PostField>
-            <PostField>
+            <PostField style="min-height: 100px"> 
                 <template v-slot:label>
                     {{ t('views.publications.post.fields.author') }}
                 </template>
                 <template v-slot:content>
                     <ul class="list-unstyled mb-0">
-                    <li v-for="author in post.authors" :key="author.id">
-                        {{ author.name }}
+                    <li v-for="(author, index) in post.authors" :key="author.id">
+                        <span v-if="index < numberOfAuthorsToList">
+                            {{ author.name }}
+                        </span>
                     </li>
+                    <li v-if="post.authors.length > numberOfAuthorsToList">+ {{ post.authors.length - numberOfAuthorsToList }}  {{ t('views.publications.post.more_authors') }}</li>
                     </ul>
                 </template>
             </PostField>
@@ -72,6 +75,7 @@
 <script setup>
 const {t} = useI18n();
 const props = defineProps(['post']);
+const numberOfAuthorsToList = 3;
 
 
 function getPrefixURL(code) {
