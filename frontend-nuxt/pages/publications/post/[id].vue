@@ -1,7 +1,7 @@
 <template>
       <div class="col-6">
          <ErrorLoadingPost v-if="errorImportedPostById" :error="errorImportedPostById"/> 
-        <div v-else>
+        <div v-if="importedPostById">
           <div class="row">
             <div class="col" :class="{'opacity-50' :pendingImportedPostById}">
               <h2 class="pb-0 mb-4">{{ importedPostById.title }}</h2>
@@ -117,8 +117,6 @@ async function removePost() {
   if (ok) {
     const res = await removeImportedPost(importedPostById.value.id);
     fetchImportedPosts();
-   
-    //$toast.success('Yay!!!')
     $toast.success(t('messages.remove_success'));
     router.push({ path: '/publications', query: { ...route.query } })
   }
