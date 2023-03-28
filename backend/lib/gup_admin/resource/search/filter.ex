@@ -2,7 +2,7 @@
 defmodule GupAdmin.Resource.Search.Filter do
   def build_filter(filter) do
     filter
-    #|> IO.inspect(label: "filter")
+    |> IO.inspect(label: "filter")
     |> Enum.map(fn {key, val} -> format_filter_item({key, val}) end)
   end
 
