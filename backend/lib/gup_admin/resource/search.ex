@@ -13,6 +13,10 @@ defmodule GupAdmin.Resource.Search do
     hits
     |> remap()
     |> List.first()
+    |> case do
+      nil -> :error
+      res -> res
+    end
   end
 
   def search(params) do

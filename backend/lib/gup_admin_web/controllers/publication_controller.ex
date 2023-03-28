@@ -11,7 +11,11 @@ defmodule GupAdminWeb.PublicationController do
   # get one post
   def show(conn, %{"id" => id}) do
     post = Search.show(id)
-    json conn, post
+    |> IO.inspect(label: "post")
+    |> case do
+      :error -> Plug.Conn.put_status(conn, 404); json conn, %{"statusCode" => 404, "statusMessage" => "Post not found"}
+      res -> json conn, res
+    end
   end
 
   def get_duplicates(conn, params) do
