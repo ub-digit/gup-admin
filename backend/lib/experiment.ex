@@ -126,12 +126,13 @@ defmodule Experiment do
       |> Map.put("source", "scopus")
     end)
 
-    # Add source and id to gup publications
+    # Add source and id to gup publications and needs_attention
     gup = gup
     |> Enum.map(fn item ->
       item
       |> Map.put("id", "gup:" <> Integer.to_string(item["id"]))
       |> Map.put("source", "gup")
+      |> Map.put("attended", false)
     end)
 
 
