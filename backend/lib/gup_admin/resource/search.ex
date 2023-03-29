@@ -23,6 +23,7 @@ defmodule GupAdmin.Resource.Search do
     params = remap_params(params)
     q = Query.base(params["title"])
     |> Filter.add_filter(Filter.build_filter(params["filter"]))
+    |> IO.inspect(label: "query")
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
     hits
     |> remap()
@@ -86,8 +87,17 @@ defmodule GupAdmin.Resource.Search do
   end
 
   def remap(hits) do
-    hits
+    hits = hits
     |> Enum.map(fn hit -> hit["_source"] end)
+
+    total = length(hits)
+    data = Enum.take(hits, 50)
+    showing = length(data)
+    %{
+      "total" => total,
+      "data" => data,
+      "showing" => showing
+    }
     #|> Enum.map(fn item -> %{"id" => item["id"], "title" => item["title"] } end)
   end
 
