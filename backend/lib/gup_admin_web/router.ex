@@ -6,7 +6,7 @@ defmodule GupAdminWeb.Router do
     plug :fetch_session
     plug :fetch_live_flash
     plug :put_root_layout, {GupAdminWeb.LayoutView, :root}
-    plug :protect_from_forgery
+    #plug :protect_from_forgery
     plug :put_secure_browser_headers
   end
 
@@ -21,6 +21,7 @@ defmodule GupAdminWeb.Router do
     get "/publication_types", PublicationTypeController, :index
     get "/publications", PublicationController, :index
     get "/publications/:id", PublicationController, :show
+    delete "/publications/:id", PublicationController, :delete
     get "/publications/duplicates/:id", PublicationController, :get_duplicates
     get "/index", IndexController, :index
 

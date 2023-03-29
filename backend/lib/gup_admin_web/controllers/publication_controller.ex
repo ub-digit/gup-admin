@@ -22,4 +22,8 @@ defmodule GupAdminWeb.PublicationController do
   def get_duplicates(conn, params) do
     json conn, Search.get_duplicates(params)
   end
+
+  def delete(conn, %{"id" => id}) do
+    json conn, Search.mark_as_deleted(id)
+  end
 end
