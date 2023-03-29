@@ -115,6 +115,7 @@ defmodule Experiment do
       |> Map.put("id", "scopus:" <> Integer.to_string(item["id"] + 10000))
       |> Map.put("source", "scopus")
       |> Map.put("title", Experiment.NameGen.generate())
+      |> Map.put("attended", true)
     end)
 
     # generate duplicate scopus publications
@@ -124,6 +125,7 @@ defmodule Experiment do
       item
       |> Map.put("id", "scopus:" <> Integer.to_string(item["id"]))
       |> Map.put("source", "scopus")
+      |> Map.put("attended", true)
     end)
 
     # Add source and id to gup publications and needs_attention
@@ -132,8 +134,9 @@ defmodule Experiment do
       item
       |> Map.put("id", "gup:" <> Integer.to_string(item["id"]))
       |> Map.put("source", "gup")
-      |> Map.put("attended", false)
+      |> Map.put("attended", true)
     end)
+    |> Enum.map_every(2, fn item -> Map.put(item, "attended", false) end)
 
 
     [gup, scopus, scopus_duplicates]
