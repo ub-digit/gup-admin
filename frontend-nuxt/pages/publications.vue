@@ -10,11 +10,14 @@
           <div class="row">
             <Filters :pendingImportedPosts="pendingImportedPosts" />
           </div>
+          <div class="row">
+            <div class="col text-center mb-4">Visar <strong>{{importedPosts.showing}}</strong> av <strong>{{ importedPosts.total }}</strong> poster</div>
+          </div>
           <div id="result-list-by-id" class="row">
             <div class="col scroll" :class="{'opacity-50': pendingImportedPosts}">
-              <div v-if="importedPosts && !importedPosts.length">{{ t('views.publications.result_list.no_imported_posts_found') }}</div>
+              <div v-if="importedPosts.data && !importedPosts.data.length">{{ t('views.publications.result_list.no_imported_posts_found') }}</div>
               <div v-else class="list-group list-group-flush border-bottom">
-                  <PostRow v-for="post in importedPosts" :post="post" :key="post.id"/>
+                  <PostRow v-for="post in importedPosts.data" :post="post" :key="post.id"/>
               </div>
             </div>
           </div>
