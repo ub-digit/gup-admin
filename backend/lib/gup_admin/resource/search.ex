@@ -12,6 +12,7 @@ defmodule GupAdmin.Resource.Search do
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], Query.show_base(id))
     hits
     |> remap()
+    |> Map.get("data")
     |> List.first()
     |> case do
       nil -> :error
