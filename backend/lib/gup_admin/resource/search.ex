@@ -42,7 +42,9 @@ defmodule GupAdmin.Resource.Search do
       "source" => get_source_list(params),
       # TBD: Have frontend send pubtype_id instead of pubtype_code?
       "publication_type_id" => get_pub_type_id(params["pubtype"]) || nil,
-      "attended" => get_attended_param(params)
+      "attended" => get_attended_param(params),
+      "deleted" => params["deleted"] || false,
+
     }
     |> Enum.filter(fn {_, val} -> not is_nil(val) end)
     |> Enum.filter(fn {_, val} -> validate_parameter(val) end)
@@ -131,5 +133,24 @@ defmodule GupAdmin.Resource.Search do
     hits = hits
     |> Enum.take(2)
     |> remap()
+  end
+
+  def mark_as_deleted(id) do
+    show(id)
+    |> case do
+      :error -> :error
+      res -> update_index(res)
+    end
+  end
+
+  def update_index(post) do
+    post = post
+    |> Map.put("deleted", true)
+    |> Map.put("needs_attention", false)
+    |> Map.put("deleted_at", DateTime.utc_now())
+    |> IO.inspect(label: "post")
+    Elastix.Document.index(elastic_url(), @index, "_doc", post["id"], post)
+    {:ok, %{body: body}} = Elastix.Index.refresh(elastic_url(), @index)
+    %{"message" => "Publication marked as deleted"}
   end
 end
