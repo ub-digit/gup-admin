@@ -119,17 +119,17 @@ defmodule GupAdmin.Resource.Search do
     q = Query.base("")
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
 
-    hits
-    |> remap()
+    hits = hits
     |> Enum.take(2)
+    |> remap()
   end
 
   def get_duplicates(%{"mode" => "title", "id" => id}) do
     q = Query.base("")
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
 
-    hits
-    |> remap()
+    hits = hits
     |> Enum.take(2)
+    |> remap()
   end
 end
