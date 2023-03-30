@@ -676,9 +676,9 @@ const _id_$3 = /*#__PURE__*/Object.freeze({
 const _id__delete = defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
   getQuery(event);
-  console.log("deleted");
   const id = event.context.params.id;
   const res = $fetch(`${config.API_BASE_URL}/publications/${id}`, { method: "DELETE" });
+  console.log(res);
   return res;
 });
 

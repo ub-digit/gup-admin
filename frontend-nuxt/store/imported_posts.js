@@ -63,7 +63,8 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
   async function removeImportedPost(id) {
     try {
         pendingRemoveImportedPost.value = true;
-        const { data, error } = useFetch(`/api/post_imported/${id}`, {method: 'DELETE'})
+        const { data, error } = await useFetch(`/api/post_imported/${id}`, {method: 'DELETE'})
+        return data;
       } catch (error) {
         console.log("Something went wrong: removeImportedPost")
       }

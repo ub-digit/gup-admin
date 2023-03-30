@@ -115,8 +115,9 @@ function mergePosts() {
 async function removePost() {
   const ok = confirm(t('messages.confirm_remove'))
   if (ok) {
-    const res = await removeImportedPost(importedPostById.value.id);
+    const response = await removeImportedPost(importedPostById.value.id);
     fetchImportedPosts();
+   
     $toast.success(t('messages.remove_success'));
     router.push({ path: '/publications', query: { ...route.query } })
   }
