@@ -10,6 +10,8 @@
 * yarn run dev
 * yarn run build (to test build outside docker)
 
+## BACKEND
+* iex -S mix phx.server 
 
 ### FRONTEND DOCKER 
 * CD docker/build
