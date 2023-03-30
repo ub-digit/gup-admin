@@ -11,7 +11,8 @@
             <Filters :pendingImportedPosts="pendingImportedPosts" />
           </div>
           <div class="row">
-            <div class="col text-center mb-4">Visar <strong>{{importedPosts.showing}}</strong> av <strong>{{ importedPosts.total }}</strong> poster</div>
+            <div class="col opacity-50 text-center mb-4"> <strong>
+              {{importedPosts.showing}} {{t('views.publications.result_list.meta.of')}} {{ importedPosts.total }} {{ t('views.publications.result_list.meta.posts') }}</strong></div>
           </div>
           <div id="result-list-by-id" class="row">
             <div class="col scroll" :class="{'opacity-50': pendingImportedPosts}">
