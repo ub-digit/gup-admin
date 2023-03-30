@@ -1,7 +1,9 @@
 <template>
-    <div :class="props.columnSize" class="card">
-        <div class="card-body d-flex align-items-center justify-content-center ">
-            <font-awesome-icon  class="inline-block text-muted fa-10x" icon="fa-regular fa-file" />
+    <div :class="props.columnSize">
+        <div class="card">
+            <div class="card-body d-flex align-items-center justify-content-center ">
+                <font-awesome-icon  class="inline-block text-muted fa-10x" icon="fa-regular fa-file" />
+            </div>
         </div>
     </div>
 </template>
