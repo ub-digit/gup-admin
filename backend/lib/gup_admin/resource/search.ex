@@ -46,8 +46,11 @@ defmodule GupAdmin.Resource.Search do
       "deleted" => params["deleted"] || false,
 
     }
+
     |> Enum.filter(fn {_, val} -> not is_nil(val) end)
     |> Enum.filter(fn {_, val} -> validate_parameter(val) end)
+    |> Enum.into(%{})
+    |> IO.inspect(label: "clense_filter")
 
   end
 
@@ -71,7 +74,7 @@ defmodule GupAdmin.Resource.Search do
   def validate_parameter(val) when is_list(val), do: true
   def validate_parameter(val) when is_integer(val), do: val > 0
   def validate_parameter(val) when is_bitstring(val), do: String.length(val) > 0
-  def validate_parameter(val) when is_boolean(val), do: val
+  def validate_parameter(val) when is_boolean(val), do: true
 
 
   def get_source_list(params) do
