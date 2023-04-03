@@ -90,6 +90,7 @@ defmodule Experiment do
   def init(publications_count \\ 500) do
     create_index(@index)
     init_with_json(publications_count)
+    # |> Enum.map(fn data -> %{"title" => data["title"], "id" => data["id"], "attended" => data["attended"], "deleted" => data["deleted"]} end)
     |> Enum.map(fn data ->
       Elastix.Document.index(elastic_url(), "publications", "_doc", data["id"], data, [])
     end)
@@ -141,6 +142,7 @@ defmodule Experiment do
 
     [gup, scopus, scopus_duplicates]
     |> List.flatten()
+    |> Enum.map(fn p -> Map.put(p, "deleted", false) end)
     # |> Enum.map(fn item ->
     #   %{"title" => item["title"],
     #   "source" => item["source"],
