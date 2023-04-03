@@ -4,7 +4,7 @@
       <div v-else>
         <div class="row">
           <div class="col">
-            <h2 class="pb-0 mb-4">{{ gupPostById.title }}</h2>
+            <PostDisplayTitle :title="gupPostById.title"/>
           </div>
           <div v-if="pendingGupPostById" class="col-auto">
             <Spinner class="me-4"/>            

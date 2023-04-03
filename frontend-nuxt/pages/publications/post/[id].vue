@@ -3,11 +3,14 @@
          <ErrorLoadingPost v-if="errorImportedPostById" :error="errorImportedPostById"/> 
         <div v-if="importedPostById">
           <div class="row">
-            <div class="col" :class="{'opacity-50' :pendingImportedPostById}">
-              <h2 class="pb-0 mb-4">{{ importedPostById.title }}</h2>
-            </div>
-            <div class="col-auto">
-              <Spinner v-if="pendingGupPostsByTitle || pendingGupPostsById || pendingImportedPostById" class="me-4"/>            
+              <div class="col" :class="{'opacity-50' :pendingImportedPostById}">
+                <PostDisplayTitle :title="importedPostById.title"/>
+  <!--              <div class="post-title truncate">
+                  <h2 class="pb-0 mb-4">{{ post_title_truncated }}</h2>
+                </div> -->
+              </div>
+              <div class="col-auto">
+                <Spinner v-if="pendingGupPostsByTitle || pendingGupPostsById || pendingImportedPostById" class="me-4"/>            
               </div>
           </div>
           <div class="row">
@@ -109,6 +112,7 @@ const { $toast } = useNuxtApp();
   }
 )
 
+
 function mergePosts() {
   alert("merge")
 }
@@ -128,5 +132,7 @@ function editPost() {
 </script>
 
 <style lang="scss" scoped>
+.post-title {
 
+}
 </style>
