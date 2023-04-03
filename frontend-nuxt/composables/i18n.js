@@ -47,9 +47,10 @@ export const useLocaleStore = defineStore('locale', {
 
 
         "views.publications.post.needs_attention": "Needs attention",
+        "views.publications.post.import_source": "Importkälla:",
         "views.publications.post.import_from_scopus": "Import Scopus",
         "views.publications.post.import_from_wos": "Import WoS",
-        "views.publications.post.by": "av",
+        "views.publications.post.created_by": "Skapad av:",
         "views.publications.post.result_list.header": "Möjliga dubletter",
         "views.publications.post.result_list_by_id.header": "Dubletter på id",
         "views.publications.post.result_list.no_gup_posts_by_id_found": "Inga gup-poster med dubletter på id hittades",

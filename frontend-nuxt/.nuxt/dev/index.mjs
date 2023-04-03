@@ -678,7 +678,6 @@ const _id__delete = defineEventHandler(async (event) => {
   getQuery(event);
   const id = event.context.params.id;
   const res = $fetch(`${config.API_BASE_URL}/publications/${id}`, { method: "DELETE" });
-  console.log(res);
   return res;
 });
 
