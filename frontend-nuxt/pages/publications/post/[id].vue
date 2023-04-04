@@ -22,7 +22,7 @@
             <div class="col text-end">
               <button type="button" class="btn btn-danger me-1" @click="removePost">{{t('buttons.remove')}}</button>
               <button type="button" class="btn btn-secondary me-1" @click="editPost">{{t('buttons.edit')}}</button>
-              <button type="button" class="btn btn-success" @click="mergePosts">{{t('buttons.merge')}}</button>
+              <button :disabled="!gupPostById.id" type="button" class="btn btn-success" @click="mergePosts">{{t('buttons.merge')}}</button>
             </div>
           </div>
 
