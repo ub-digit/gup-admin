@@ -38,7 +38,7 @@ export const useLocaleStore = defineStore('locale', {
         "views.publications.form.scopus_title": "Scopus",
         "views.publications.form.wos_title": "WoS",
         "views.publications.form.manual_title": "Manuellt inlagda",
-        "views.publications.form.title_label": "Titel",
+        "views.publications.form.title_label": "Sök på titel eller ID",
         "views.publications.form.pub_type_select_label": "Publikationstyp",
         "views.publications.result_list.no_imported_posts_found": "Inga importerade poster hittades.",
         "views.publications.result_list.meta.of": "av",
@@ -47,10 +47,12 @@ export const useLocaleStore = defineStore('locale', {
 
 
         "views.publications.post.needs_attention": "Needs attention",
-        "views.publications.post.import_source": "Importkälla:",
+        "views.publications.post.import_source": "Källa:",
         "views.publications.post.import_from_scopus": "Import Scopus",
         "views.publications.post.import_from_wos": "Import WoS",
         "views.publications.post.created_by": "Skapad av:",
+        "views.publications.post.updated": "Uppdaterad:",
+        "views.publications.post.updated_by": "av",
         "views.publications.post.result_list.header": "Möjliga dubletter",
         "views.publications.post.result_list_by_id.header": "Dubletter på id",
         "views.publications.post.result_list.no_gup_posts_by_id_found": "Inga gup-poster med dubletter på id hittades",
