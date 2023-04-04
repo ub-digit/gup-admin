@@ -82,7 +82,9 @@ function getPrefixURL(code) {
     if (code === "doi") {
         return "https://dx.doi.org/"
     } else if (code === "scopus-id") {
-        return "";
+        return "https://www.scopus.com/sourceid/";
+    } else if (code === "isi-id") {
+        return "https://www.webofscience.com/wos/woscc/full-record/WOS:"
     }
 }
 </script>
