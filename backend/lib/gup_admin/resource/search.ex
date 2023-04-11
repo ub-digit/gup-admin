@@ -79,9 +79,9 @@ defmodule GupAdmin.Resource.Search do
 
   def get_source_list(params) do
     list = [
-      {"wos", params["wos"] || nil},
-      {"scopus", params["scopus"] || nil},
-      {"manual", params["manual"] || nil}
+      {"wos", params["wos"] || false},
+      {"scopus", params["scopus"] || false},
+      {"manual", params["manual"] || false}
     ]
     |> Enum.filter(fn {_, val} -> not is_nil(val) end)
     |> Enum.map(fn {name, _} -> name end)
