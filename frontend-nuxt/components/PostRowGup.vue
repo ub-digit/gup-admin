@@ -4,10 +4,18 @@
             <div class="d-flex w-100 justify-content-between">
                 <h5 class="title mb-1">{{ post.title }}</h5>
             </div>
-            <p v-if="post.id" class="text-muted mb-2 small">ID: {{ post.id }}</p>
+            <p v-if="post.id" class="text-muted mb-2 d-none small">ID: {{ post.id }}</p>
             <p class="mb-0">{{post.pubyear}}</p>
             <small> {{post.publication_type_label}}<br>
-            {{ numerOfAuthors}} {{t('views.publications.post.fields.author')}}</small>
+                <ul v-if="post.authors" class="list-unstyled list-group list-group-horizontal mb-0">
+                    <li class="me-2" v-for="(author, index) in post.authors" :key="author.id">
+                        <span v-if="index < 3">
+                           <span class="badge bg-secondary">{{ author.name }} </span> 
+                        </span>
+                    </li>
+                    <li v-if="post.authors.length > 3">+ {{ post.authors.length - 3 }}  {{ t('views.publications.post.more_authors') }}</li>
+                </ul>
+            </small>
         </NuxtLink>
     </div>
 </template>
