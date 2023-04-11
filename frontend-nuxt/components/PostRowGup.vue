@@ -8,8 +8,8 @@
             <p class="mb-0">{{post.pubyear}}</p>
             <small> {{post.publication_type_label}}<br>
                 <ul v-if="post.authors" class="list-unstyled list-group list-group-horizontal mb-0">
-                    <li class="me-2" v-for="(author, index) in post.authors" :key="author.id">
-                        <span v-if="index < 3">
+                    <li v-for="(author, index) in post.authors" :key="author.id">
+                        <span class="me-2" v-if="index < 3">
                            <span class="badge bg-secondary">{{ author.name }} </span> 
                         </span>
                     </li>
