@@ -3,7 +3,7 @@
       <ErrorLoadingPost v-if="errorGupPostById" :error="errorGupPostById"/>
       <div v-else>
         <div class="row">
-          <div class="col" v-if="gupPostById">
+          <div class="col" v-if="gupPostById.id">
             <PostDisplayTitle :title="gupPostById.title" :url="gupURL"/>
      
           </div>
@@ -23,7 +23,6 @@
 <script setup>
 import { useGupPostsStore } from '~/store/gup_posts'
 import { storeToRefs } from 'pinia'
-import { onMounted, onUnmounted } from 'vue'
 const {t} = useI18n();
 const router = useRouter();
 const route = useRoute();
@@ -33,13 +32,10 @@ const { gupPostById, pendingGupPostById, errorGupPostById} = storeToRefs(gupPost
 await fetchGupPostById(route.params.gupid);
 
 const gupURL = computed(() => {
-  console.log(gupPostById)
   return `https://gup.ub.gu.se/publications/show/${gupPostById.value.publication_id}`; 
 })
 
-onUnmounted(() => {
-  $reset()
-})
+
 
 
 
