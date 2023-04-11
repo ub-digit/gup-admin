@@ -38,7 +38,7 @@ const gupURL = computed(() => {
 })
 
 onUnmounted(() => {
-  //$reset()
+  $reset()
 })
 
 
@@ -48,6 +48,6 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 .col {
-  
+
 }
 </style>

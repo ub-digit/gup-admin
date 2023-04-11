@@ -79,7 +79,14 @@ export const useGupPostsStore = defineStore('gupPostsStore', () => {
 
 
   function $reset() {
+   // gupPostsByTitle.value = []
+   // gupPostsById.value = []
+    gupPostById.value = {};
+    errorGupPostById.value = null;
+ //   pendingGupPostsByTitle.value = null;
+   // pendingGupPostsById.value = null;
+    pendingGupPostById.value = null;
     // manually reset store here
   }
-  return { gupPostsByTitle,fetchGupPostsByTitle, pendingGupPostsByTitle, gupPostsById,fetchGupPostsById, pendingGupPostsById, gupPostById, errorGupPostById, fetchGupPostById, pendingGupPostById}
+  return { gupPostsByTitle,fetchGupPostsByTitle, pendingGupPostsByTitle, gupPostsById,fetchGupPostsById, pendingGupPostsById, gupPostById, errorGupPostById, fetchGupPostById, pendingGupPostById, $reset}
 })
