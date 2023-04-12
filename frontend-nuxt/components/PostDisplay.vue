@@ -84,7 +84,7 @@ function getURL(code, value) {
     } else if (code === "scopus-id") {
         return `https://www.scopus.com/record/display.uri?eid=2-s2.0-${value}&origin=resultslist`; 
     } else if (code === "isi-id") {
-        return "https://www.webofscience.com/wos/woscc/full-record/WOS:" + identifier.identifier_value;
+        return "https://www.webofscience.com/wos/woscc/full-record/WOS:" + value;
     }
 }
 </script>
