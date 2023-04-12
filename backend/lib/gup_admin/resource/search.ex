@@ -57,8 +57,8 @@ defmodule GupAdmin.Resource.Search do
   def get_attended_param(params) do
     attended = params["needs_attention"]
     case attended do
-      "true" -> false
-      "false" -> true
+      true -> false
+      false -> true
       _ -> nil
     end
   end
