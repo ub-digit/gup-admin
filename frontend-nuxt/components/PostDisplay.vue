@@ -47,8 +47,8 @@
                     {{identifier.identifier_label}}
                 </template>
                 <template v-slot:content>
-                    <span v-if="getPrefixURL(identifier.identifier_code)" >
-                        <a :href="`${getPrefixURL(identifier.identifier_code)}${identifier.identifier_value}`" target="_blank">{{ identifier.identifier_value }}</a>
+                    <span v-if="getURL(identifier.identifier_code)" >
+                        <a :href="`${getURL(identifier.identifier_code, identifier.identifier_value)}`" target="_blank">{{ identifier.identifier_value }}</a>
                     </span>
                     <span v-else>
                         {{ identifier.identifier_value }}
@@ -78,13 +78,13 @@ const props = defineProps(['post']);
 const numberOfAuthorsToList = 3;
 
 
-function getPrefixURL(code) {
+function getURL(code, value) {
     if (code === "doi") {
-        return "https://dx.doi.org/"
+        return "https://dx.doi.org/" + value; 
     } else if (code === "scopus-id") {
-        return "https://www.scopus.com/sourceid/";
+        return `https://www.scopus.com/record/display.uri?eid=2-s2.0-${value}&origin=resultslist`; 
     } else if (code === "isi-id") {
-        return "https://www.webofscience.com/wos/woscc/full-record/WOS:"
+        return "https://www.webofscience.com/wos/woscc/full-record/WOS:" + identifier.identifier_value;
     }
 }
 </script>
