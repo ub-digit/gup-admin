@@ -90,7 +90,7 @@ defmodule Experiment do
   def init(publications_count \\ 500) do
     create_index(@index)
     init_with_json(publications_count)
-    |> Enum.map(fn data -> %{"title" => data["title"], "id" => data["id"], "attended" => data["attended"], "deleted" => data["deleted"], "source" => data["source"], "pubyear" => data["pubyear"]} end)
+    #|> Enum.map(fn data -> %{"title" => data["title"], "id" => data["id"], "attended" => data["attended"], "deleted" => data["deleted"], "source" => data["source"], "pubyear" => data["pubyear"]} end)
     |> Enum.map(fn data ->
       Elastix.Document.index(elastic_url(), "publications", "_doc", data["id"], data, [])
     end)

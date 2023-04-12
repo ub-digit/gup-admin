@@ -75,9 +75,11 @@ defmodule GupAdmin.Resource.Search do
   def validate_parameter(val) when is_integer(val), do: val > 0
   def validate_parameter(val) when is_bitstring(val), do: String.length(val) > 0
   def validate_parameter(val) when is_boolean(val), do: true
+  def validate_parameter(:error), do: false
 
 
   def get_source_list(params) do
+    IO.inspect(params, label: "get_source_list")
     list = [
       {"wos", params["wos"] || nil},
       {"scopus", params["scopus"] || nil},

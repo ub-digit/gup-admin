@@ -8,6 +8,13 @@ defmodule GupAdminWeb.Router do
     plug :put_root_layout, {GupAdminWeb.LayoutView, :root}
     #plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug GupAdminWeb.ParamPlug, %{
+      "scopus" => :boolean,
+      "wos" => :boolean,
+      "manual" => :boolean,
+      "year" => :integer,
+      "needs_attention" => :boolean,
+    }
   end
 
   pipeline :api do
