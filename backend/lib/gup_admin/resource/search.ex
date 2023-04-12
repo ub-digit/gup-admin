@@ -44,7 +44,7 @@ defmodule GupAdmin.Resource.Search do
       "publication_type_id" => get_pub_type_id(params["pubtype"]) || nil,
       "attended" => get_attended_param(params),
       "deleted" => params["deleted"] || false,
-
+      "pubyear" => params["year"] || nil
     }
 
     |> Enum.filter(fn {_, val} -> not is_nil(val) end)
@@ -81,9 +81,12 @@ defmodule GupAdmin.Resource.Search do
     list = [
       {"wos", params["wos"] || nil},
       {"scopus", params["scopus"] || nil},
-      {"manual", params["manual"] || nil}
+      {"manual", params["manual"] || nil},
+      {"gup", params["gup"] || nil},
     ]
-    |> Enum.filter(fn {_, val} -> not is_nil(val) end)
+    |> Enum.filter(fn {_, val} -> not is_nil(val) end) # remove nils
+    |> Enum.filter(fn {_, val} -> not is_binary(val) end) # remove binaries
+    |> Enum.filter(fn {_, val} -> val != :error end) # remove :error values
     |> Enum.map(fn {name, _} -> name end)
 
     case length(list) do
