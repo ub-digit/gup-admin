@@ -25,7 +25,8 @@ export const useFilterStore = defineStore('filterStore', () => {
         wos: getBoolean(route.query.wos),
         manual: getBoolean(route.query.manual),
         pubtype: route.query.pubtype ? route.query.pubtype : "",
-        title: route.query.title ? route.query.title : undefined
+        title: route.query.title ? route.query.title : undefined,
+        year: route.query.year ? route.query.year : "",
     });
 
     function $reset() {
@@ -34,7 +35,8 @@ export const useFilterStore = defineStore('filterStore', () => {
       filters.wos = false,
       filters.manual = false,
       filters.pubtype = "",
-      filters.title = undefined
+      filters.title = undefined,
+      filters.year = ""
     }
   
 

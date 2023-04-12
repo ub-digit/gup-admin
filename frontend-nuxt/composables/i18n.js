@@ -40,6 +40,7 @@ export const useLocaleStore = defineStore('locale', {
         "views.publications.form.manual_title": "Manuellt inlagda",
         "views.publications.form.title_label": "Sök på titel eller ID",
         "views.publications.form.pub_type_select_label": "Publikationstyp",
+        "views.publications.form.year_select_label": "År",
         "views.publications.result_list.no_imported_posts_found": "Inga importerade poster hittades.",
         "views.publications.result_list.meta.of": "av",
         "views.publications.result_list.meta.posts": "poster",

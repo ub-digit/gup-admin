@@ -27,18 +27,32 @@
                   <label class="form-check-label" for="manual">{{ t('views.publications.form.manual_title') }}</label>
                 </div>
               </div>
-              <select class="form-select mb-3" v-model="filters.pubtype" :aria-label="t('views.publications.form.pub_type_select_label')">
-                <option value="" selected>{{ t('views.publications.form.pub_type_select_label') }}</option>
-                <option v-for="pubtype in publicationTypes" :value="pubtype.publication_type_code" :key="pubtype.publication_type_id">
-                  {{ pubtype.publication_type_label }}
-                </option>
-              </select>
+              <div class="row">
+                <div class="col-8">
+                  <select class="form-select mb-3" v-model="filters.pubtype" :aria-label="t('views.publications.form.pub_type_select_label')">
+                    <option value="" selected>{{ t('views.publications.form.pub_type_select_label') }}</option>
+                    <option v-for="pubtype in publicationTypes" :value="pubtype.publication_type_code" :key="pubtype.publication_type_id">
+                      {{ pubtype.publication_type_label }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-4">
+                  <select class="form-select mb-3" v-model="filters.year" :aria-label="t('views.publications.form.year_select_label')">
+                    <option value="" selected>{{ t('views.publications.form.year_select_label') }}</option>
+                    <option v-for="year in yearsArray" :value="year" :key="year">
+                      {{ year }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+
 
               <div class="mb-3">
                 <label for="title" class="form-label visually-hidden">{{ t('views.publications.form.title_label') }}</label>
                 <input type="search" v-model="title_str" class="form-control" id="title" :placeholder="t('views.publications.form.title_label')">
               </div>
-            </form>
+        </form>
     </div>
 </template>
 
@@ -61,6 +75,19 @@ const {$reset} = filterStore;
 const {filters} = storeToRefs(filterStore);
 
 const title_str = ref(filters.value.title);
+
+
+const yearsArray = computed(() => {
+    let startYear = 1999;
+    const endDate = new Date().getFullYear();
+    let years = [];
+  
+    for (var i = startYear; i <= endDate; i++) {
+      years.push(startYear);
+      startYear++;
+    }
+    return years.reverse();
+});  
 
 // throttle input
 const debouncedFn = useDebounceFn(() => {
