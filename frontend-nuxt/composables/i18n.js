@@ -66,7 +66,10 @@ export const useLocaleStore = defineStore('locale', {
         "views.publications.post.fields.doi": "DOI",
         "views.publications.post.fields.scopus": "Scopus-ID",
         "views.publications.post.fields.scopus_missing": "Saknas",
+        "views.publications.post.fields.vol_issue_pages": "Vol/Issue/Pages",
+        "views.publications.post.fields.missing": "Saknas",
         "views.publications.post.more_authors": "ytterliggare författare",
+
 
 
 
