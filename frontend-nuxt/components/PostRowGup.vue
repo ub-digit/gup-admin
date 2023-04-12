@@ -2,7 +2,7 @@
     <div>
         <NuxtLink :to="{name:'publications-post-id-gup-gupid', query: $route.query, params: {gupid: post.id}}" class="list-group-item list-group-item-action">
             <div class="d-flex w-100 justify-content-between">
-                <h5 class="title mb-1">{{ post.title }}</h5>
+                <h5 class="title mb-1">{{ post_title_truncated }}</h5>
             </div>
             <p v-if="post.id" class="text-muted mb-2 d-none small">ID: {{ post.id }}</p>
             <p class="mb-0">{{post.pubyear}}</p>
@@ -23,6 +23,18 @@
 <script setup>
 const props = defineProps(['post', 'refresh'])
 const {t} = useI18n();
+
+
+const maxLength = 85;
+
+const post_title_truncated = computed(() => {
+  let resStr = props.post.title.substring(0, maxLength);
+  if ( props.post.title > resStr) {
+    resStr = resStr + "...";
+  }
+  return resStr;
+})
+
 
 const numerOfAuthors = computed(() => {
     return props.post.authors ? props.post.authors.length : 0;
