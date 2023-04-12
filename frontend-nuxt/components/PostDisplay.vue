@@ -26,6 +26,21 @@
                     {{ post.pubyear }}
                 </template>
             </PostField>
+
+            <PostField>
+                <template v-slot:label>
+                    {{ t('views.publications.post.fields.vol_issue_pages') }}
+                </template>
+                <template v-slot:content>
+                    <span v-if="post.sourcevolume">{{ post.sourcevolume }}</span>
+                    <span v-else> {{ t('views.publications.post.fields.missing') }}</span> | 
+                    <span v-if="post.sourceissue">{{ post.sourceissue }}</span> 
+                    <span v-else> {{ t('views.publications.post.fields.missing') }}</span> |
+                    <span v-if="post.sourcepages">{{ post.sourcepages }}</span>
+                    <span v-else> {{ t('views.publications.post.fields.missing') }}</span>
+                </template>
+            </PostField>
+
             <PostField style="min-height: 100px"> 
                 <template v-slot:label>
                     {{ t('views.publications.post.fields.author') }}
