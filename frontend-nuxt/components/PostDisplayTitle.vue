@@ -16,7 +16,7 @@
 
 <script setup>
 const props = defineProps(['title', 'url'])
-const maxLength = 85;
+const maxLength = 130;
 let isExpanded = ref(false);
 const showToggle = computed(()=> {
     if (props.title && (props.title.length > maxLength)) {
