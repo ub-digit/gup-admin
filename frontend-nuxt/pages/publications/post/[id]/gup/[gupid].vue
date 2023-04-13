@@ -30,9 +30,10 @@ const gupPostsStore = useGupPostsStore()
 const { fetchGupPostById, $reset} = gupPostsStore
 const { gupPostById, pendingGupPostById, errorGupPostById} = storeToRefs(gupPostsStore)
 await fetchGupPostById(route.params.gupid);
+const config = useRuntimeConfig();
 
 const gupURL = computed(() => {
-  return `https://gup.ub.gu.se/publications/show/${gupPostById.value.publication_id}`; 
+  return `${config.public.API_GUP_BASE_URL_SHOW}${gupPostById.value.publication_id}`; 
 })
 
 
