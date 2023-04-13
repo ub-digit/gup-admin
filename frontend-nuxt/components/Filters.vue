@@ -37,12 +37,14 @@
                   </select>
                 </div>
                 <div class="col-4">
-                  <select class="form-select mb-3" v-model="filters.year" :aria-label="t('views.publications.form.year_select_label')">
+                  <label for="title" class="form-label visually-hidden">{{ t('views.publications.form.year_select_label') }}</label>
+                  <input type="number" v-model="filters.year" class="form-control" id="year" :placeholder="t('views.publications.form.year_select_label')">
+<!--                   <select class="form-select mb-3" v-model="filters.year" :aria-label="t('views.publications.form.year_select_label')">
                     <option value="" selected>{{ t('views.publications.form.year_select_label') }}</option>
                     <option v-for="year in yearsArray" :value="year" :key="year">
                       {{ year }}
                     </option>
-                  </select>
+                  </select> -->
                 </div>
               </div>
 
