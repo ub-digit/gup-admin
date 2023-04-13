@@ -4,7 +4,9 @@ export default defineNuxtConfig({
     runtimeConfig: {
         API_BASE_URL: 'http://localhost:4000',
         public: {
-            
+          API_GUP_BASE_URL_EDIT: 'https://gup-lab.ub.gu.se/publications/show/',
+          API_GUP_BASE_URL_SHOW: 'https://gup-lab.ub.gu.se/publications/show/',
+        
         }
     },
     typescript: {
