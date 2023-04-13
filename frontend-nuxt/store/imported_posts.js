@@ -11,10 +11,27 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
   const pendingImportedPosts= ref(null);
   const pendingImportedPostById = ref(null);
   const pendingRemoveImportedPost = ref(null);
+  const pendingCreateImportedPostInGup = ref(null);
+
+
+  async function createImportedPostInGup(id) {
+    try {
+      pendingCreateImportedPostInGup.value = true;
+      const { data, error } = await useFetch(`/api/post_gup_create/${id}`, {
+          params: {},
+        });
+        return data.value;
+    } catch (error) {
+        console.log(error)
+    }
+    finally {
+      pendingCreateImportedPostInGup.value = false;
+    }
+  }
+
   async function fetchImportedPosts() {
     try {
         pendingImportedPosts.value = true;
-        console.log(filters.value)
         const { data, error } = await useFetch("/api/posts_imported", {
             params: {...filters.value},
             onRequest({ request, options }) {
@@ -91,5 +108,5 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
   function $reset() {
     // manually reset store here
   }
-  return { importedPosts,fetchImportedPosts, pendingImportedPosts, removeImportedPost, fetchImportedPostById, importedPostById, errorImportedPostById,  pendingImportedPostById, pendingRemoveImportedPost}
+  return {createImportedPostInGup, importedPosts,fetchImportedPosts, pendingImportedPosts, removeImportedPost, fetchImportedPostById, importedPostById, errorImportedPostById,  pendingImportedPostById, pendingRemoveImportedPost, pendingCreateImportedPostInGup}
 })

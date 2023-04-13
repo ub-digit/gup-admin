@@ -79,12 +79,13 @@ const route = useRoute();
 const router = useRouter();
 const searchTitleStr = ref(null);
 const { $toast } = useNuxtApp();
+const config = useRuntimeConfig();
 
   const filterStore = useFilterStore();
 
   const importedPostsStore = useImportedPostsStore();
-  const {fetchImportedPostById, removeImportedPost, fetchImportedPosts} = importedPostsStore;
-  const {importedPostById, pendingImportedPostById, errorImportedPostById} = storeToRefs(importedPostsStore) 
+  const {fetchImportedPostById, removeImportedPost, fetchImportedPosts, createImportedPostInGup} = importedPostsStore;
+  const {importedPostById, pendingImportedPostById, pendingCreateImportedPostInGup, errorImportedPostById} = storeToRefs(importedPostsStore) 
 
   const gupPostsStore = useGupPostsStore()
   const { fetchGupPostsByTitle, fetchGupPostsById } = gupPostsStore
@@ -126,8 +127,17 @@ async function removePost() {
     router.push({ path: '/publications', query: { ...route.query } })
   }
 }
-function editPost() {
-  alert("Edit in GUP")
+async function editPost() {
+  const ok = confirm(t('messages.confirm_create_in_gup'))
+  if (ok) {
+    const response = await createImportedPostInGup(importedPostById.value.id)
+    if (response) {
+      $toast.success(t('messages.create_in_gup_success') + `<br> GUP-ID: ${response.id}`, {duration: 0});
+      const url = config.public.API_GUP_BASE_URL_EDIT + response.id;
+      window.open(url, '_blank')
+      router.push({path: '/publications', query: {...route.query}})
+    }
+  }
 }
 </script>
 
