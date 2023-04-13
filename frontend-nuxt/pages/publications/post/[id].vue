@@ -1,4 +1,17 @@
 <template>
+
+
+        <!-- use the modal component, pass in the prop -->
+        <modal :show="showModal" @success="handleSuccess" @close="showModal = false">
+          <template #header>
+            <h4>{{t('messages.create_in_gup_success')}}</h4>
+          </template>
+          <template #body>
+            <p>{{t('messages.create_in_gup_success_body')}}</p>
+          </template>
+        </modal>
+
+
       <div class="col-6">
          <ErrorLoadingPost v-if="errorImportedPostById" :error="errorImportedPostById"/> 
         <div v-if="importedPostById">
@@ -80,6 +93,7 @@ const router = useRouter();
 const searchTitleStr = ref(null);
 const { $toast } = useNuxtApp();
 const config = useRuntimeConfig();
+const showModal = ref(false);
 
   const filterStore = useFilterStore();
 
@@ -122,20 +136,29 @@ async function removePost() {
   if (ok) {
     const response = await removeImportedPost(importedPostById.value.id);
     fetchImportedPosts();
-   
     $toast.success(t('messages.remove_success'));
     router.push({ path: '/publications', query: { ...route.query } })
   }
 }
+
+
+async function handleSuccess() {
+  const response = await removeImportedPost(importedPostById.value.id);
+  fetchImportedPosts();
+  showModal.value = false;
+  $toast.success(t('messages.remove_success'));
+  router.push({path: '/publications', query: {...route.query}})
+}
+
 async function editPost() {
   const ok = confirm(t('messages.confirm_create_in_gup'))
   if (ok) {
     const response = await createImportedPostInGup(importedPostById.value.id)
     if (response) {
-      $toast.success(t('messages.create_in_gup_success') + `<br> GUP-ID: ${response.id}`, {duration: 0});
+      //$toast.success(t('messages.create_in_gup_success') + `<br> GUP-ID: ${response.id}`, {duration: 0});
       const url = config.public.API_GUP_BASE_URL_EDIT + response.id;
       window.open(url, '_blank')
-      router.push({path: '/publications', query: {...route.query}})
+      showModal.value = true;
     }
   }
 }
