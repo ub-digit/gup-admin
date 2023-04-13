@@ -31,6 +31,7 @@ defmodule GupAdminWeb.Router do
     delete "/publications/:id", PublicationController, :delete
     get "/publications/duplicates/:id", PublicationController, :get_duplicates
     get "/index", IndexController, :index
+    post "publications/post_to_gup/:id", PublicationController, :post_to_gup
 
   end
 

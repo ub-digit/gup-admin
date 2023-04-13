@@ -1,7 +1,7 @@
 defmodule GupAdminWeb.PublicationController do
   use GupAdminWeb, :controller
-  alias ElixirLS.LanguageServer.Experimental.Protocol.Proto.Macros.Json
   alias GupAdmin.Resource.Search
+  alias GupAdmin.Resource.Publication
 
   # GET /posts
   def index(conn, params) do
@@ -11,7 +11,7 @@ defmodule GupAdminWeb.PublicationController do
 
   # get one post
   def show(conn, %{"id" => id}) do
-    post = Search.show(id)
+    Publication.show(id)
     |> IO.inspect(label: "post")
     |> case do
       :error -> conn |> send_resp(404, Jason.encode!(%{error: %{"message" => "Post not found", "code" => 404}}))
@@ -25,5 +25,17 @@ defmodule GupAdminWeb.PublicationController do
 
   def delete(conn, %{"id" => id}) do
     json conn, Search.mark_as_deleted(id)
+  end
+
+  def post_to_gup(conn, %{"id" => id}) do
+    Publication.post_publication_to_gup(id)
+    # |> case do
+    #   {:ok, %HTTPoison.Response{status_code: 200}} ->  conn |> send_resp(200, Jason.encode!(%{"message" => "Post successfully posted to GUP"}))
+    #   {:ok, %HTTPoison.Response{status_code: 400}} -> conn |> send_resp(400, Jason.encode!(%{error: %{"message" => "Post already exists in GUP", "code" => 400}}))
+    #   {:ok, %HTTPoison.Response{status_code: 500}} -> conn |> send_resp(500, Jason.encode!(%{error: %{"message" => "Internal server error", "code" => 500}}))
+    #   {:error, %HTTPoison.Error{reason: reason}} -> conn |> send_resp(500, Jason.encode!(%{error: %{"message" => reason, "code" => 500}}))
+    # end
+    #json conn, %{"message" => "Post successfully posted to GUP", "id" => id}
+    conn |> send_resp(200, Jason.encode!(%{"message" => "Post successfully posted to GUP", "id" => id}))
   end
 end
