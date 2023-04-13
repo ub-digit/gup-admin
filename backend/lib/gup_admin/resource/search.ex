@@ -3,22 +3,23 @@ defmodule GupAdmin.Resource.Search do
   @index "publications"
   alias GupAdmin.Resource.Search.Query
   alias GupAdmin.Resource.Search.Filter
+  alias GupAdmin.Resource.Publication
   # get elastic url from config
   def elastic_url do
     System.get_env("ELASTIC_SEARCH_URL") || "http://localhost:9200"
   end
 
-  def show(id) do
-    {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], Query.show_base(id))
-    hits
-    |> remap()
-    |> Map.get("data")
-    |> List.first()
-    |> case do
-      nil -> :error
-      res -> res
-    end
-  end
+  # def show(id) do
+  #   {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], Query.show_base(id))
+  #   hits
+  #   |> remap()
+  #   |> Map.get("data")
+  #   |> List.first()
+  #   |> case do
+  #     nil -> :error
+  #     res -> res
+  #   end
+  # end
 
   def search(params) do
     params = remap_params(params)
@@ -27,7 +28,7 @@ defmodule GupAdmin.Resource.Search do
     |> IO.inspect(label: "query")
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
     hits
-    |> remap()
+    |> Publication.remap()
   end
 
   def remap_params(params) do
@@ -97,20 +98,25 @@ defmodule GupAdmin.Resource.Search do
     end
   end
 
-  def remap(hits) do
-    hits = hits
-    |> Enum.map(fn hit -> hit["_source"] end)
-
-    total = length(hits)
-    data = Enum.take(hits, 50)
-    showing = length(data)
-    %{
-      "total" => total,
-      "data" => data,
-      "showing" => showing
-    }
-    #|> Enum.map(fn item -> %{"id" => item["id"], "title" => item["title"] } end)
+  def search_one(id) do
+    {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], Query.show_base(id))
+    hits
   end
+
+  # def remap(hits) do
+  #   hits = hits
+  #   |> Enum.map(fn hit -> hit["_source"] end)
+
+  #   total = length(hits)
+  #   data = Enum.take(hits, 50)
+  #   showing = length(data)
+  #   %{
+  #     "total" => total,
+  #     "data" => data,
+  #     "showing" => showing
+  #   }
+  #   #|> Enum.map(fn item -> %{"id" => item["id"], "title" => item["title"] } end)
+  # end
 
   # def get_duplicates(%{"mode" => "id", "id" => id}) do
   #   post = show(id)
@@ -131,7 +137,7 @@ defmodule GupAdmin.Resource.Search do
 
     hits = hits
     |> Enum.take(2)
-    |> remap()
+    |> Publication.remap()
   end
 
   def get_duplicates(%{"mode" => "title", "id" => id}) do
@@ -140,11 +146,11 @@ defmodule GupAdmin.Resource.Search do
 
     hits = hits
     |> Enum.take(2)
-    |> remap()
+    |> Publication.remap()
   end
 
   def mark_as_deleted(id) do
-    show(id)
+    Publication.show(id)
     |> case do
       :error -> :error
       res -> update_index(res)
