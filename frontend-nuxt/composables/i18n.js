@@ -82,6 +82,7 @@ export const useLocaleStore = defineStore('locale', {
         "messages.confirm_remove": "Är du säker på att du vill ta bort den importerade posten?",
         "messages.confirm_create_in_gup": "Är du säker på att du vill skapa den importerade posten i GUP?",
         "messages.create_in_gup_success": "Posten skapades i  GUP",
+        "messages.create_in_gup_success_body": "Vill du ta bort posten från GUP-ADMIN?",
         "buttons.remove": "Ta bort",
         "buttons.merge": "Slå ihop",
         "buttons.edit": "Redigera",
