@@ -38,7 +38,7 @@ defmodule GupAdmin.Resource.Search.Query do
         "bool" => %{
           "must" => %{
             "match" => %{
-              "id.keyword" => id
+              "id" => id
             }
           }
         }
