@@ -127,6 +127,9 @@ const showModal = ref(false);
   }
 )
 
+function sanitizeID(id) {
+  return  id.replace("gup:","");
+} 
 
 function mergePosts() {
   alert("merge")
@@ -153,14 +156,18 @@ async function handleSuccess() {
 async function editPost() {
   const ok = confirm(t('messages.confirm_create_in_gup'))
   if (ok) {
-    const response = await createImportedPostInGup(importedPostById.value.id)
-    if (response) {
-      //$toast.success(t('messages.create_in_gup_success') + `<br> GUP-ID: ${response.id}`, {duration: 0});
-      const url = config.public.API_GUP_BASE_URL_EDIT + response.id;
-      window.open(url, '_blank')
-      showModal.value = true;
+    if (importedPostById.value.source !== "gup") {
+      const response = await createImportedPostInGup(importedPostById.value.id)
+      if (response) {
+        //$toast.success(t('messages.create_in_gup_success') + `<br> GUP-ID: ${response.id}`, {duration: 0});
+        const url = config.public.API_GUP_BASE_URL_EDIT + response.id;
+        window.open(url, '_blank')
+        showModal.value = true;
+      }
+    } else if (importedPostById.value.source === "gup") {
+      window.open(`${config.public.API_GUP_BASE_URL_EDIT}${sanitizeID(importedPostById.value.id)}`, '_blank')
     }
-  }
+  } 
 }
 </script>
 
