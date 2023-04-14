@@ -1,5 +1,6 @@
 defmodule Experiment do
   @index "publications"
+  @index_url "http://localhost:9200"
 
   def elastic_url do
     System.get_env("ELASTIC_SEARCH_URL") || "http://localhost:9200"
@@ -7,60 +8,60 @@ defmodule Experiment do
 
 
   def create_index(name) do
-    config = %{
-      "mappings" => %{
-        "properties" => %{
-          "title" => %{
-            "fields" => %{
-              "sort" => %{
-                "type" => "icu_collation_keyword",
-                "language" => "sv",
-                "country" => "SE"
-              }
-            },
-            "type" => "text",
-            "analyzer" => "edge_ngram_analyzer",
-            "search_analyzer" => "standard"
-          }
-        }
-      },
-      "settings" => %{
-        "analysis" => %{
-          "analyzer" => %{
-            "edge_ngram_analyzer" => %{
-              "tokenizer" => "edge_ngram_tokenizer",
-              "filter" => [
-                "lowercase"
-              ]
-            }
-          },
-          "tokenizer" => %{
-            "edge_ngram_tokenizer" => %{
-              "type" => "edge_ngram",
-              "min_gram" => 2,
-              "max_gram" => 20,
-              "token_chars" => [
-                "letter",
-                "digit",
-                "custom"
-              ], "custom_token_chars" => [
-                "å",
-                "ä",
-                "ö",
-                "Å",
-                "Ä",
-                "Ö",
-                "-"
-              ]
-            }
-          }
-        }
-      }
-    }
+    # config = %{
+    #   "mappings" => %{
+    #     "properties" => %{
+    #       "title" => %{
+    #         "fields" => %{
+    #           "sort" => %{
+    #             "type" => "icu_collation_keyword",
+    #             "language" => "sv",
+    #             "country" => "SE"
+    #           }
+    #         },
+    #         "type" => "text",
+    #         "analyzer" => "edge_ngram_analyzer",
+    #         "search_analyzer" => "standard"
+    #       }
+    #     }
+    #   },
+    #   "settings" => %{
+    #     "analysis" => %{
+    #       "analyzer" => %{
+    #         "edge_ngram_analyzer" => %{
+    #           "tokenizer" => "edge_ngram_tokenizer",
+    #           "filter" => [
+    #             "lowercase"
+    #           ]
+    #         }
+    #       },
+    #       "tokenizer" => %{
+    #         "edge_ngram_tokenizer" => %{
+    #           "type" => "edge_ngram",
+    #           "min_gram" => 2,
+    #           "max_gram" => 20,
+    #           "token_chars" => [
+    #             "letter",
+    #             "digit",
+    #             "custom"
+    #           ], "custom_token_chars" => [
+    #             "å",
+    #             "ä",
+    #             "ö",
+    #             "Å",
+    #             "Ä",
+    #             "Ö",
+    #             "-"
+    #           ]
+    #         }
+    #       }
+    #     }
+    #   }
+    # }
 
     Elastix.Index.delete(elastic_url(), name)
 
-    Elastix.Index.create(elastic_url(), name, config)
+    Elastix.Index.create(elastic_url(), name, config())
     |> case do
       {:ok, %{body: %{"error" => reason}}} -> {:error, reason}
       {:ok, res} -> {:ok, res}
@@ -91,6 +92,7 @@ defmodule Experiment do
     create_index(@index)
     init_with_json(publications_count)
     #|> Enum.map(fn data -> %{"title" => data["title"], "id" => data["id"], "attended" => data["attended"], "deleted" => data["deleted"], "source" => data["source"], "pubyear" => data["pubyear"]} end)
+    #|> Enum.map(fn data -> %{"title" => data["title"], "id" => data["id"]} end)
     |> Enum.map(fn data ->
       Elastix.Document.index(elastic_url(), "publications", "_doc", data["id"], data, [])
     end)
@@ -113,7 +115,7 @@ defmodule Experiment do
     #generate mockup new scopus publications
     |> Enum.map(fn item ->
       item
-      |> Map.put("id", "scopus:" <> Integer.to_string(item["id"] + 10000))
+      |> Map.put("id", "scopus_" <> Integer.to_string(item["id"] + 10000))
       |> Map.put("source", "scopus")
       |> Map.put("title", Experiment.NameGen.generate())
       |> Map.put("attended", true)
@@ -124,7 +126,7 @@ defmodule Experiment do
     scopus_duplicates = Enum.take(gup, floor(split_count / 4))
     |> Enum.map(fn item ->
       item
-      |> Map.put("id", "scopus:" <> Integer.to_string(item["id"]))
+      |> Map.put("id", "scopus_" <> Integer.to_string(item["id"]))
       |> Map.put("source", "scopus")
       |> Map.put("attended", true)
     end)
@@ -133,7 +135,7 @@ defmodule Experiment do
     gup = gup
     |> Enum.map(fn item ->
       item
-      |> Map.put("id", "gup:" <> Integer.to_string(item["id"]))
+      |> Map.put("id", "gup_" <> Integer.to_string(item["id"]))
       |> Map.put("source", "gup")
       |> Map.put("attended", true)
     end)
@@ -156,7 +158,7 @@ defmodule Experiment do
     data
     |> Enum.map(fn item ->
       item
-      |> Map.put("id", "scopus:" <> Integer.to_string(item["id"] + 10000))
+      |> Map.put("id", "scopus_" <> Integer.to_string(item["id"] + 10000))
       |> Map.put("source", "scopus")
     end)
   end
@@ -274,8 +276,93 @@ defmodule Experiment do
       "publication_type_label" => elem(line, 2) |> String.trim()
     }
     end)
-    |> Enum.sort_by(fn pub_type -> pub_type["publication_type_label"] end)
-  end
+      |> Enum.sort_by(fn pub_type -> pub_type["publication_type_label"] end)
+    end
 
+    def i_test do
+      Elastix.Index.delete(@index_url, "search_test")
+      Elastix.Index.create(@index_url, "search_test", config())
+      mock_data()
+      |> IO.inspect(label: "mock_data")
+      |> Enum.map(fn item ->
+        Elastix.Document.index(@index_url, "search_test", "_doc", item["id"], item, [])
+      end)
+    end
+
+    def config do
+
+      %{
+        "settings" => %{
+          "analysis" => %{
+            "filter" => %{
+              "autocomplete_filter" => %{
+                "type" => "edge_ngram",
+                "min_gram" => 1,
+                "max_gram" => 20,
+                "token_chars" => [
+                              "letter",
+                              "digit",
+                              "custom"
+                            ], "custom_token_chars" => [
+                              "å",
+                              "ä",
+                              "ö",
+                              "Å",
+                              "Ä",
+                              "Ö",
+                              "-"
+                            ]
+              }
+            },
+            "analyzer" => %{
+              "autocomplete" => %{
+                "type" => "custom",
+                "tokenizer" => "standard",
+                "filter" => [
+                  "lowercase",
+                  "autocomplete_filter"
+                ]
+              }
+            }
+          }
+        },
+        "mappings" => %{
+          "properties" => %{
+            "title" => %{
+               "fields" => %{
+                 "sort" => %{
+                  "type" => "icu_collation_keyword",
+                  "language" => "sv",
+                  "country" => "SE"
+                }
+              },
+              "type" => "text",
+              "analyzer" => "autocomplete",
+              "search_analyzer" => "standard"
+            },
+            "id" => %{
+              "type" => "keyword"
+            }
+          }
+        }
+      }
+
+    end
+
+    def mock_data do
+      1..30
+      |> Enum.map(fn i -> %{ "id" => i, "title" => Experiment.NameGen.generate()} end)
+    end
+
+    def a | b do
+      merge_rules = fn key, a_val, b_val ->
+        case key do
+          "id" -> a_val
+          _ -> b_val
+        end
+
+      end
+      Map.merge(a, b, merge_rules)
+    end
 
   end
