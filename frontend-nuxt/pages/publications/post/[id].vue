@@ -128,7 +128,7 @@ const showModal = ref(false);
 )
 
 function sanitizeID(id) {
-  return  id.replace("gup:","");
+  return  id.replace("gup_","");
 } 
 
 function mergePosts() {
