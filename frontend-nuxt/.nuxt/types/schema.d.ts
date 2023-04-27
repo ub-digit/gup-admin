@@ -17,6 +17,8 @@ declare module 'nuxt/schema' {
    API_BASE_URL: string,
   }
   interface PublicRuntimeConfig {
+   API_GUP_BASE_URL_EDIT: string,
 
+   API_GUP_BASE_URL_SHOW: string,
   }
 }

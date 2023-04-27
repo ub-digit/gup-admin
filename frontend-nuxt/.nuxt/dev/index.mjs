@@ -27,7 +27,7 @@ const inlineAppConfig = {};
 
 const appConfig = defuFn(inlineAppConfig);
 
-const _runtimeConfig = {"app":{"baseURL":"/","buildAssetsDir":"/_nuxt/","cdnURL":""},"nitro":{"envPrefix":"NUXT_","routeRules":{"/__nuxt_error":{"cache":false}}},"public":{},"API_BASE_URL":"http://localhost:4000"};
+const _runtimeConfig = {"app":{"baseURL":"/","buildAssetsDir":"/_nuxt/","cdnURL":""},"nitro":{"envPrefix":"NUXT_","routeRules":{"/__nuxt_error":{"cache":false}}},"public":{"API_GUP_BASE_URL_EDIT":"https://gup-lab.ub.gu.se/publications/show/","API_GUP_BASE_URL_SHOW":"https://gup-lab.ub.gu.se/publications/show/"},"API_BASE_URL":"http://localhost:4000"};
 const ENV_PREFIX = "NITRO_";
 const ENV_PREFIX_ALT = _runtimeConfig.nitro.envPrefix ?? process.env.NITRO_ENV_PREFIX ?? "_";
 overrideConfig(_runtimeConfig);
@@ -501,6 +501,7 @@ const errorHandler = (async function errorhandler(error, event) {
 });
 
 const _lazy_HlWbGA = () => Promise.resolve().then(function () { return alert$1; });
+const _lazy_jzR9yF = () => Promise.resolve().then(function () { return _id_$5; });
 const _lazy_cuqRRW = () => Promise.resolve().then(function () { return _id_$3; });
 const _lazy_1xxd7m = () => Promise.resolve().then(function () { return _id__delete$1; });
 const _lazy_TCuosi = () => Promise.resolve().then(function () { return _id_$1; });
@@ -512,6 +513,7 @@ const _lazy_UZ5qVd = () => Promise.resolve().then(function () { return renderer$
 
 const handlers = [
   { route: '/api/alert', handler: _lazy_HlWbGA, lazy: true, middleware: false, method: undefined },
+  { route: '/api/post_gup_create/:id', handler: _lazy_jzR9yF, lazy: true, middleware: false, method: undefined },
   { route: '/api/post_gup/:id', handler: _lazy_cuqRRW, lazy: true, middleware: false, method: undefined },
   { route: '/api/post_imported/:id', handler: _lazy_1xxd7m, lazy: true, middleware: false, method: "delete" },
   { route: '/api/post_imported/:id', handler: _lazy_TCuosi, lazy: true, middleware: false, method: undefined },
@@ -658,6 +660,19 @@ const alert = defineEventHandler(async (event) => {
 const alert$1 = /*#__PURE__*/Object.freeze({
       __proto__: null,
       default: alert
+});
+
+const _id_$4 = defineEventHandler(async (event) => {
+  const config = useRuntimeConfig();
+  getQuery(event);
+  const id = event.context.params.id;
+  const res = await $fetch(`${config.API_BASE_URL}/publications/post_to_gup/${id}`, { method: "POST" });
+  return res;
+});
+
+const _id_$5 = /*#__PURE__*/Object.freeze({
+      __proto__: null,
+      default: _id_$4
 });
 
 const _id_$2 = defineEventHandler(async (event) => {
