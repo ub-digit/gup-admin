@@ -6,7 +6,7 @@
   </Head>
     <div class="container-fluid">
       <div class="row">
-        <div class="col-4">
+        <div class="col-4 me-2">
           <div class="row">
             <Filters :pendingImportedPosts="pendingImportedPosts" />
           </div>

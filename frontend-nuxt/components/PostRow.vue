@@ -1,7 +1,6 @@
 <template>
     <div>
-        
-        <NuxtLink :to="{name:'publications-post-id', query: $route.query, params: {id: post.id}}" class="list-group-item list-group-item-action">
+        <NuxtLink :to="{name:'publications-post-id-gup-gupid', query: $route.query, params: {id: post.id, gupid: 'empty'}}" class="list-group-item list-group-item-action">
             <div class="d-flex w-100 justify-content-between">
                 <h5 class="title mb-0">{{ post_title_truncated }}</h5>
             </div>
