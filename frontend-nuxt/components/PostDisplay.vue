@@ -4,6 +4,14 @@
         <div class="fields mb-4">
             <PostField>
                 <template v-slot:label>
+                {{ t('views.publications.post.fields.title') }}
+                </template>
+                <template v-slot:content>
+                    {{ post.title }}
+                </template>
+            </PostField>
+            <PostField>
+                <template v-slot:label>
                 {{ t('views.publications.post.fields.pubtype') }}
                 </template>
                 <template v-slot:content>
@@ -25,7 +33,7 @@
                 <template v-slot:content>
                     {{ post.pubyear }}
                 </template>
-            </PostField>
+            </PostField>´
 
             <PostField>
                 <template v-slot:label>
