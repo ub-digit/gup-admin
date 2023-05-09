@@ -29,13 +29,13 @@ defmodule GupAdminWeb.PublicationController do
 
   def post_to_gup(conn, %{"id" => id}) do
     Publication.post_publication_to_gup(id)
-    # |> case do
-    #   {:ok, %HTTPoison.Response{status_code: 200}} ->  conn |> send_resp(200, Jason.encode!(%{"message" => "Post successfully posted to GUP"}))
-    #   {:ok, %HTTPoison.Response{status_code: 400}} -> conn |> send_resp(400, Jason.encode!(%{error: %{"message" => "Post already exists in GUP", "code" => 400}}))
-    #   {:ok, %HTTPoison.Response{status_code: 500}} -> conn |> send_resp(500, Jason.encode!(%{error: %{"message" => "Internal server error", "code" => 500}}))
-    #   {:error, %HTTPoison.Error{reason: reason}} -> conn |> send_resp(500, Jason.encode!(%{error: %{"message" => reason, "code" => 500}}))
-    # end
-    #json conn, %{"message" => "Post successfully posted to GUP", "id" => id}
-    conn |> send_resp(200, Jason.encode!(%{"message" => "Post successfully posted to GUP", "id" => id}))
+    |> case do
+      {:ok, %HTTPoison.Response{status_code: 200}} ->  conn |> send_resp(200, Jason.encode!(%{"message" => "Post successfully posted to GUP"}))
+      {:ok, %HTTPoison.Response{status_code: 400}} -> conn |> send_resp(400, Jason.encode!(%{error: %{"message" => "Post already exists in GUP", "code" => 400}}))
+      {:ok, %HTTPoison.Response{status_code: 500}} -> conn |> send_resp(500, Jason.encode!(%{error: %{"message" => "Internal server error", "code" => 500}}))
+      {:error, %HTTPoison.Error{reason: reason}} -> conn |> send_resp(500, Jason.encode!(%{error: %{"message" => reason, "code" => 500}}))
+    end
+    # json conn, %{"message" => "Post successfully posted to GUP", "id" => id}
+    # conn |> send_resp(200, Jason.encode!(%{"message" => "Post successfully posted to GUP", "id" => id}))
   end
 end
