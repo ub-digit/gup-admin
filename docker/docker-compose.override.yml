@@ -5,6 +5,7 @@ services:
    ports:
      - "127.0.0.1:5433:5432"
  elasticsearch: 
+    image: foo:bar
     ports:
       - "127.0.0.1:9200:9200"
       - "127.0.0.1:9300:9300"
