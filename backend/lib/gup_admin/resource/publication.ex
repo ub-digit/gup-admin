@@ -175,12 +175,21 @@ defmodule GupAdmin.Resource.Publication do
             "display_title" => identifier["identifier_value"]
           }
         },
-        "display_label" => identifier["identifier_label"],
+        "display_label" => get_identifier_name_code(identifier["identifier_code"]),
         "display_type" => "url",
         "visibility" => get_visibility("identifier")
       }]
     end)
-    #container
+  end
+
+  def get_identifier_name_code(code) do
+    case code do
+      "doi" -> "doi"
+      "scopus-id" -> "scopus"
+      "isi-id" -> "isiid"
+      "pubmed" -> "pubmed"
+      _ -> "missing"
+    end
   end
 
   def get_identifier_url(identifier) do
