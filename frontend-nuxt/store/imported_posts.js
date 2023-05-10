@@ -13,7 +13,6 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
   const pendingRemoveImportedPost = ref(null);
   const pendingCreateImportedPostInGup = ref(null);
 
-
   async function createImportedPostInGup(id) {
     try {
       pendingCreateImportedPostInGup.value = true;
