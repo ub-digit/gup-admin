@@ -112,8 +112,10 @@ defmodule GupAdmin.Resource.Publication do
     [
       %{
         order => %{
-          "value" => value,
-          "url" => url
+          "value" => %{
+            "title" => value,
+            "url" => url
+          }
         },
         "display_label" => display_label,
         "display_type" => "title",
