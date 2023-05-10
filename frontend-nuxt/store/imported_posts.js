@@ -4,7 +4,6 @@ import { storeToRefs } from 'pinia'
 export const useImportedPostsStore = defineStore('importedPostsStore', () => {
   const filterStore = useFilterStore();
   const {filters} = storeToRefs(filterStore);
-
   const importedPosts = ref([])
   const importedPostById = ref(null);
   const errorImportedPostById = ref(null);
@@ -57,9 +56,11 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
     
     async function fetchImportedPostById(id) {    
     try {
-      errorImportedPostById.value = null;
+/*       errorImportedPostById.value = {code: '404', message: 'not found'};
+      return; */
       importedPostById.value = null;
       pendingImportedPostById.value = true;
+      errorImportedPostById.value = null;
       const { data, error } = await useFetch(`/api/post_imported/${id}`)
       if (error.value) {
         errorImportedPostById.value = error.value.data.data.error;
@@ -104,8 +105,12 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
   }
 
 
-  function $reset() {
+  function $importedReset() {
     // manually reset store here
+    importedPostById.value = null,
+    errorImportedPostById.value = null;
+
+
   }
-  return {createImportedPostInGup, importedPosts,fetchImportedPosts, pendingImportedPosts, removeImportedPost, fetchImportedPostById, importedPostById, errorImportedPostById,  pendingImportedPostById, pendingRemoveImportedPost, pendingCreateImportedPostInGup}
+  return {createImportedPostInGup, importedPosts,fetchImportedPosts, pendingImportedPosts, removeImportedPost, fetchImportedPostById, importedPostById, errorImportedPostById,  pendingImportedPostById, pendingRemoveImportedPost, pendingCreateImportedPostInGup, $importedReset}
 })
