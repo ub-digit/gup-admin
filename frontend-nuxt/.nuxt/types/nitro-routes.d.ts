@@ -5,6 +5,9 @@ declare module 'nitropack' {
     '/api/alert': {
       'default': Awaited<ReturnType<typeof import('../../server/api/alert').default>>
     }
+    '/api/post_gup_compare': {
+      'default': Awaited<ReturnType<typeof import('../../server/api/post_gup_compare').default>>
+    }
     '/api/post_gup_create/:id': {
       'default': Awaited<ReturnType<typeof import('../../server/api/post_gup_create/[id]').default>>
     }
