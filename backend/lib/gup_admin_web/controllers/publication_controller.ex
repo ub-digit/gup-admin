@@ -35,7 +35,5 @@ defmodule GupAdminWeb.PublicationController do
       {:ok, %HTTPoison.Response{status_code: 500}} -> conn |> send_resp(500, Jason.encode!(%{error: %{"message" => "Internal server error", "code" => 500}}))
       {:error, %HTTPoison.Error{reason: reason}} -> conn |> send_resp(500, Jason.encode!(%{error: %{"message" => reason, "code" => 500}}))
     end
-    # json conn, %{"message" => "Post successfully posted to GUP", "id" => id}
-    # conn |> send_resp(200, Jason.encode!(%{"message" => "Post successfully posted to GUP", "id" => id}))
   end
 end

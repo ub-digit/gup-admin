@@ -10,6 +10,7 @@ defmodule GupAdminWeb.Router do
     plug :put_secure_browser_headers
     plug GupAdminWeb.ParamPlug, %{
       "scopus" => :boolean,
+      "gup" => :boolean,
       "wos" => :boolean,
       "manual" => :boolean,
       "year" => :integer,
@@ -31,7 +32,7 @@ defmodule GupAdminWeb.Router do
     delete "/publications/:id", PublicationController, :delete
     get "/publications/duplicates/:id", PublicationController, :get_duplicates
     get "/index", IndexController, :index
-    post "publications/post_to_gup/:id", PublicationController, :post_to_gup
+    post "/publications/post_to_gup/:id", PublicationController, :post_to_gup
 
   end
 

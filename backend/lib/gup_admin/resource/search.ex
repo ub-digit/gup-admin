@@ -39,6 +39,7 @@ defmodule GupAdmin.Resource.Search do
   end
 
   def clense_filter(params) do
+    IO.inspect(params, label: "clense_filter params")
     %{
       "source" => get_source_list(params),
       # TBD: Have frontend send pubtype_id instead of pubtype_code?
@@ -84,8 +85,8 @@ defmodule GupAdmin.Resource.Search do
     list = [
       {"wos", params["wos"] || nil},
       {"scopus", params["scopus"] || nil},
-      {"manual", params["manual"] || nil},
-      {"gup", params["gup"] || nil},
+      #{"manual", params["manual"] || nil},
+      {"gup", params["gup"] || params["manual"] || nil},
     ]
     |> Enum.filter(fn {_, val} -> not is_nil(val) end) # remove nils
     |> Enum.filter(fn {_, val} -> not is_binary(val) end) # remove binaries
@@ -102,34 +103,6 @@ defmodule GupAdmin.Resource.Search do
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], Query.show_base(id))
     hits
   end
-
-  # def remap(hits) do
-  #   hits = hits
-  #   |> Enum.map(fn hit -> hit["_source"] end)
-
-  #   total = length(hits)
-  #   data = Enum.take(hits, 50)
-  #   showing = length(data)
-  #   %{
-  #     "total" => total,
-  #     "data" => data,
-  #     "showing" => showing
-  #   }
-  #   #|> Enum.map(fn item -> %{"id" => item["id"], "title" => item["title"] } end)
-  # end
-
-  # def get_duplicates(%{"mode" => "id", "id" => id}) do
-  #   post = show(id)
-  #   q = Query.base("")
-  #   |> Filter.add_filter(Filter.build_duplicate_filter(post))
-  #   |> IO.inspect(label: "q")
-  #   {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
-
-  #   hits
-  #   |> remap()
-  #   |> length()
-
-  # end
 
   def get_duplicates(%{"mode" => "id", "id" => id}) do
     q = Query.base("")
