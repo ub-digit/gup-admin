@@ -2,7 +2,7 @@ export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig();
     const query = getQuery(event);
     const id = event.context.params.id;
-    const res = [
+/*     const res = [
         { "first": { "value": 319932}, "diff": false, "display_type": "string", "visibility": "never", "display_label": "publication_id"  },
         { "first": { "value": "gup:319932" }, "diff": false, "display_type": "string", "visibility": "never", "display_label": "id" },
         { "first": { "value": { "title": "Cluelessness and rational choice: the case of effective altruism", "url": null} }, "diff": false, "display_type": "title", "visibility": "always", "display_label": "title" },
@@ -51,7 +51,7 @@ export default defineEventHandler(async (event) => {
         { "first": { "value": {"url": "http://https://www.scopus.com/record/display.uri?eid=2-s2.0-${value}&origin=resultslist", "display_title": "85128514182"}}, "diff": false, "display_type": "url", "visibility": "always", "display_label": "isiid"},
         { "first": { "value": {"url": "http://https://www.scopus.com/record/display.uri?eid=2-s2.0-${value}&origin=resultslist", "display_title": "85128514182"}}, "diff": false, "display_type": "url", "visibility": "always", "display_label": "doi"},
   
-      ]
-      // await $fetch(`${config.API_BASE_URL}/publications/${id}`);
+      ] */
+    const res = await $fetch(`${config.API_BASE_URL}/publications/${id}`);
     return res;
 })
