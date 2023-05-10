@@ -100,7 +100,8 @@ export const useGupPostsStore = defineStore('gupPostsStore', () => {
     // manually reset store here
    // gupPostsByTitle.value = []
    // gupPostsById.value = []
-    gupPostById.value = {};
+    gupPostById.value = null;
+    gupCompareImportedMatrix.value = null;
     errorGupPostById.value = null;
  //   pendingGupPostsByTitle.value = null;
    // pendingGupPostsById.value = null;
@@ -108,6 +109,6 @@ export const useGupPostsStore = defineStore('gupPostsStore', () => {
   }
   return { gupPostsByTitle,fetchGupPostsByTitle, pendingGupPostsByTitle, gupPostsById,fetchGupPostsById, 
     pendingGupPostsById, gupPostById, errorGupPostById, fetchGupPostById, 
-    pendingGupPostById, fetchCompareGupPostWithImported, gupCompareImportedMatrix, $reset
+    pendingGupPostById, fetchCompareGupPostWithImported, gupCompareImportedMatrix, pendingCompareGupPostWithImported, $reset
   }
 })

@@ -12,59 +12,64 @@
       </modal>
 
       <div v-if="route.params.gupid !== 'empty'"> 
+        <Spinner v-if="pendingCompareGupPostWithImported" class="me-4"/>        
         <PostDisplayCompare :dataMatrix="gupCompareImportedMatrix" />
       </div>
       <div class="row" v-else>
         <div class="col-6">
+          <Spinner v-if="pendingImportedPostById" class="me-4"/>
+          <ErrorLoadingPost v-if="errorImportedPostById" :error="errorImportedPostById"/>
           <PostDisplayCompare :dataMatrix="importedPostById" />
-       <!--   <ErrorLoadingPost v-if="errorImportedPostById" :error="errorImportedPostById"/>  -->
         </div> 
         <div class="col-6">
           <NothingSelected/>
         </div>
       </div>
   </div>
-  <div class="row pb-4 mt-4">
-      <div class="col-6 text-end">
-        <button type="button" class="btn btn-danger me-1" @click="removePost">{{t('buttons.remove')}}</button>
-        <button type="button" class="btn btn-secondary me-1" @click="editPost">{{t('buttons.edit')}}</button>
-        <button :disabled="!gupPostById.id" type="button" class="btn btn-success" @click="mergePosts">{{t('buttons.merge')}}</button>
-      </div>
-  </div>
-
-  <div class="row">
-    <div class="col-6">
-      <h3 class="mb-4">{{ t('views.publications.post.result_list.header') }}</h3>
+  <div v-if="!errorImportedPostById" class="action-bar">
+    <div class="row pb-4 mt-4">
+        <div class="col-6 text-end">
+          <button type="button" class="btn btn-danger me-1" @click="removePost">{{t('buttons.remove')}}</button>
+          <button type="button" class="btn btn-secondary me-1" @click="editPost">{{t('buttons.edit')}}</button>
+          <button :disabled="!gupCompareImportedMatrix" type="button" class="btn btn-success" @click="mergePosts">{{t('buttons.merge')}}</button>
+        </div>
     </div>
   </div>
-
-  <div class="row pb-4">
-    <div class="col-6">
-      <h4 class="mb-1 text-muted">{{ t('views.publications.post.result_list_by_id.header') }}</h4>
-      <div v-if="gupPostsById.data && !gupPostsById.data.length">{{ t('views.publications.post.result_list.no_gup_posts_by_id_found') }}</div>
-      <div v-else :class="{'opacity-50' :pendingGupPostsById}" class="list-group list-group-flush border-bottom">
-        <PostRowGup v-for="post in gupPostsById.data" :post="post" :refresh="$route.query" :key="post.id"/>
+  <div v-if="!errorImportedPostById" class="duplicates">
+    <div class="row">
+      <div class="col-6">
+        <h3 class="mb-4">{{ t('views.publications.post.result_list.header') }}</h3>
       </div>
     </div>
-  </div>
 
-  <div class="row">
-    <div class="col-6">
-      <div class="row">
-        <div class="col">
-          <h4 class="mb-1 text-muted">{{ t('views.publications.post.result_list_by_title.header') }}</h4>
-        </div>
-        <div class="col-auto">
-          <Spinner v-if="pendingGupPostsByTitle" class="me-4"/>            
+    <div class="row pb-4">
+      <div class="col-6">
+        <h4 class="mb-1 text-muted">{{ t('views.publications.post.result_list_by_id.header') }}</h4>
+        <div v-if="gupPostsById.data && !gupPostsById.data.length">{{ t('views.publications.post.result_list.no_gup_posts_by_id_found') }}</div>
+        <div v-else :class="{'opacity-50' :pendingGupPostsById}" class="list-group list-group-flush border-bottom">
+          <PostRowGup v-for="post in gupPostsById.data" :post="post" :refresh="$route.query" :key="post.id"/>
         </div>
       </div>
-      <div class="row">
-        <div class="col">
-          <label class="d-none" for="title-search">Sök på titel</label>
-          <input id="title-search" class="form-control mb-3" type="search" v-model="searchTitleStr">
-          <div v-if="gupPostsByTitle.data && !gupPostsByTitle.data.length">{{ t('views.publications.post.result_list.no_gup_posts_by_title_found') }}</div>
-          <div v-else :class="{'opacity-50': pendingGupPostsByTitle}" class="list-group list-group-flush border-bottom">
-            <PostRowGup v-for="post in gupPostsByTitle.data" :post="post" :key="post.id"/>
+    </div>
+
+    <div class="row">
+      <div class="col-6">
+        <div class="row">
+          <div class="col">
+            <h4 class="mb-1 text-muted">{{ t('views.publications.post.result_list_by_title.header') }}</h4>
+          </div>
+          <div class="col-auto">
+            <Spinner v-if="pendingGupPostsByTitle" class="me-4"/>            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label class="d-none" for="title-search">Sök på titel</label>
+            <input id="title-search" class="form-control mb-3" type="search" v-model="searchTitleStr">
+            <div v-if="gupPostsByTitle.data && !gupPostsByTitle.data.length">{{ t('views.publications.post.result_list.no_gup_posts_by_title_found') }}</div>
+            <div v-else :class="{'opacity-50': pendingGupPostsByTitle}" class="list-group list-group-flush border-bottom">
+              <PostRowGup v-for="post in gupPostsByTitle.data" :post="post" :key="post.id"/>
+            </div>
           </div>
         </div>
       </div>
@@ -80,49 +85,30 @@ import { useImportedPostsStore } from '~/store/imported_posts'
 import { useFilterStore } from '~~/store/filter'
 import { storeToRefs } from 'pinia'
 
+const {t} = useI18n();
+const route = useRoute();
+const router = useRouter();
+const searchTitleStr = ref(null);
+const { $toast } = useNuxtApp();
+const config = useRuntimeConfig();
+const showModal = ref(false);
 
-  const {t} = useI18n();
-  const route = useRoute();
-  const router = useRouter();
-  const searchTitleStr = ref(null);
-  const { $toast } = useNuxtApp();
-  const config = useRuntimeConfig();
-  const showModal = ref(false);
+const filterStore = useFilterStore();
+const importedPostsStore = useImportedPostsStore();
+const {fetchImportedPostById, removeImportedPost, fetchImportedPosts, createImportedPostInGup, $importedReset} = importedPostsStore;
+const {importedPostById, pendingImportedPostById, pendingCreateImportedPostInGup, errorImportedPostById} = storeToRefs(importedPostsStore) 
+const gupPostsStore = useGupPostsStore()
+const { fetchGupPostsByTitle, fetchGupPostsById, fetchCompareGupPostWithImported} = gupPostsStore
+const { gupPostsByTitle, pendingGupPostsByTitle, gupPostsById, pendingGupPostsById, gupPostById, gupCompareImportedMatrix, pendingCompareGupPostWithImported, pendingGupPostById, errorGupPostById } = storeToRefs(gupPostsStore)
 
-  const filterStore = useFilterStore();
 
-  const importedPostsStore = useImportedPostsStore();
-  const {fetchImportedPostById, removeImportedPost, fetchImportedPosts, createImportedPostInGup} = importedPostsStore;
-  const {importedPostById, pendingImportedPostById, pendingCreateImportedPostInGup, errorImportedPostById} = storeToRefs(importedPostsStore) 
-
-  const gupPostsStore = useGupPostsStore()
-  const { fetchGupPostsByTitle, fetchGupPostsById } = gupPostsStore
-  const { gupPostsByTitle, pendingGupPostsByTitle, gupPostsById, pendingGupPostsById, gupPostById, gupCompareImportedMatrix, pendingGupPostById, errorGupPostById } = storeToRefs(gupPostsStore)
-
-  await fetchImportedPostById(route.params.id);
-  
-  if (importedPostById.value) {
-    await fetchGupPostsById(importedPostById.value.id);
-    await fetchGupPostsByTitle(importedPostById.value.id, importedPostById.value.title);
-  }
-  
-  
-  const debounceFn = useDebounceFn(() => {
-    if (importedPostById ) {
+const debounceFn = useDebounceFn(() => {
+  if (importedPostById ) {
       fetchGupPostsByTitle({title: searchTitleStr.value});
     }
   }, 500)
  
-  watch(
-    searchTitleStr,
-  () => {
-    debounceFn();
-  }
-)
-
-function sanitizeID(id) {
-  return  id.replace("gup_","");
-} 
+  watch(searchTitleStr, () => {debounceFn();})
 
 function mergePosts() {
   alert("merge")
@@ -163,25 +149,37 @@ async function editPost() {
   } 
 }
 
-const { fetchCompareGupPostWithImported, $reset} = gupPostsStore
-if (route.params.gupid !== "empty") {
-  const res = await fetchCompareGupPostWithImported(route.params.id, route.params.gupid);
-} else {
-  $reset()
-}
-/* 
-const gupURL = computed(() => {
-  return `${config.public.API_GUP_BASE_URL_SHOW}${gupPostById.value.publication_id}`; 
-}) */
-
-
-if (route.params.gupid !== "empty") {
-    const item = gupCompareImportedMatrix.value.find(item => item.display_type === 'title')
-    searchTitleStr.value = item.first.value.title//importedPostById.value ? importedPostById.value.first.title : "";
+if (route.params.gupid === "empty") {
+    await fetchImportedPostById(route.params.id);
+    gupPostsStore.$reset();
   } else {
-    const item = importedPostById.value.find(item => item.display_type === 'title')
-    searchTitleStr.value = item.first.value.title;
+    await fetchCompareGupPostWithImported(route.params.id, route.params.gupid);
+    $importedReset();
   }
+
+
+
+if (route.params.gupid !== "empty") {
+    if (gupCompareImportedMatrix.value) {
+      const item = gupCompareImportedMatrix.value.find(item => item.display_type === 'title')
+      searchTitleStr.value = item.first.value.title//importedPostById.value ? importedPostById.value.first.title : "";
+    }
+  } else {
+    console.log(importedPostById)
+    if (importedPostById.value) {
+      const item = importedPostById.value.find(item => item.display_type === 'title')
+      searchTitleStr.value = item.first.value.title;
+    }
+  }
+
+if (route.params.gupid === "empty") {
+  if (importedPostById.value) {
+    const item_row_by_id = importedPostById.value.find(item => item.display_label === 'id')
+    await fetchGupPostsById(item_row_by_id.first.value.id);
+    await fetchGupPostsByTitle(item_row_by_id.first.value.id, searchTitleStr.value);
+  }
+}
+
 
 </script>
 
