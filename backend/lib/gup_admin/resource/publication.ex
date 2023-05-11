@@ -161,6 +161,10 @@ defmodule GupAdmin.Resource.Publication do
 
   def get_authors(data) do
     data["authors"]
+    |> case  do
+        nil -> []
+        authors -> authors
+    end
     |> Enum.map(fn author -> get_author_block(author["id"], author["name"], author["x-account"]) end)
   end
 
