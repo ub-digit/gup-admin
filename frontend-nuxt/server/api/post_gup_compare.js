@@ -81,6 +81,6 @@ export default defineEventHandler(async (event) => {
         { "first": { "value": {"url": "http://https://www.scopus.com/record/display.uri?eid=2-s2.0-${value}&origin=resultslist", "display_title": "85128514182"}}, "second": {"value": {"url": "http://https://www.scopus.com/record/display.uri?eid=2-s2.0-${value}&origin=resultslist", "display_title": "85128514182"}}, "diff": false, "display_type": "url", "visibility": "always", "display_label": "isiid"},
         { "first": { "value": {"url": "http://https://www.scopus.com/record/display.uri?eid=2-s2.0-${value}&origin=resultslist", "display_title": "85128514182"}}, "second": {"value": {"url": "http://https://www.scopus.com/record/display.uri?eid=2-s2.0-${value}&origin=resultslist", "display_title": "345435"}}, "diff": true, "display_type": "url", "visibility": "always", "display_label": "doi"},
       ]
-      //await $fetch(`${config.API_BASE_URL}/publications/compare/imported_id/${imported_id}/gup_id/${gup_id}`);
+      //await $fetch(`${config.API_BASE_URL}/publications/imported_id/${imported_id}/gup_id/${gup_id}`);
     return res;
 })
