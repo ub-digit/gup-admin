@@ -144,11 +144,11 @@
                         </div>
                     </template>
                     <template v-slot:content>
-                        <a href="{{ item.first.value.url }}">{{ item.first.value.display_title }}</a>
+                        <a target="_blank" :href="item.first.value.url">{{ item.first.value.display_title }}</a>
                     </template>
                     <template v-if="item.second" v-slot:content_second>
                         <div class="col">
-                            <a href="{{ item.second.value.url }}">{{ item.second.value.display_title }}</a>
+                            <a target="_blank" :href="item.second.value.url">{{ item.second.value.display_title }}</a>
                         </div>
                     </template>
                 </PostFieldString>
