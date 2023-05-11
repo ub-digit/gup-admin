@@ -63,20 +63,18 @@ defmodule GupAdmin.Resource.Publication do
   def compare_posts(id_1, id_2) do
     post_1 = show(id_1)
     post_2 = show(id_2)
-    IO.inspect(post_2, label: "post_2 length")
-    # post_1
-    # |> Enum.with_index()
-    # |> Enum.map(fn {first, index} ->
-    #   compare(first, Enum.at(post_2, index))
-    # end)
+    post_1
+    |> Enum.with_index()
+    |> Enum.map(fn {first, index} ->
+      compare(first, Enum.at(post_2, index))
+    end)
   end
 
   def compare(first, second) do
-    #IO.inspect(is_map(second), label: "sec is_map")
-    # case first === second do
-    #   true -> Map.put(first, "second", Map.get(second, "first")) |> Map.put("diff", false)
-    #   false -> Map.put(first, "second", Map.get(second, "first")) |> Map.put("diff", true)
-    # end
+    case first === second do
+      true -> Map.put(first, "second", Map.get(second, "first")) |> Map.put("diff", false)
+      false -> Map.put(first, "second", Map.get(second, "first")) |> Map.put("diff", true)
+    end
   end
 
   def get_row(container, order, :string, display_label, value) do
@@ -189,6 +187,11 @@ defmodule GupAdmin.Resource.Publication do
 
   def get_publication_identifier_rows(container, order, data) do
     data["publication_identifiers"]
+    |> case do
+      nil -> []
+      identifiers -> identifiers
+    end
+    |> add_missing_identifiers()
     |> Enum.reduce(container, fn identifier, acc ->
       acc ++
       [%{
@@ -205,22 +208,62 @@ defmodule GupAdmin.Resource.Publication do
     end)
   end
 
+  def add_missing_identifiers(identifiers) do
+    [
+      %{
+        "identifier_code" => "doi",
+        "identifier_value" => "missing"
+      },
+      %{
+        "identifier_code" => "scopus-id",
+        "identifier_value" => "missing"
+      },
+      %{
+        "identifier_code" => "isi-id",
+        "identifier_value" => "missing"
+      },
+      %{
+        "identifier_code" => "pubmed",
+        "identifier_value" => "missing"
+      },
+      %{
+        "identifier_code" => "libris-id",
+        "identifier_value" => "missing"
+      },
+      %{
+        "identifier_code" => "handle",
+        "identifier_value" => "missing"
+      }
+    ]
+    |> Enum.map(fn default_identifier ->
+      Enum.find(identifiers, fn i -> i["identifier_code"] == default_identifier["identifier_code"] end)
+      |> case do
+        nil -> default_identifier
+        identifier -> identifier
+      end
+
+    end)
+  end
+
   def get_identifier_name_code(code) do
     case code do
       "doi" -> "doi"
       "scopus-id" -> "scopus"
       "isi-id" -> "isiid"
       "pubmed" -> "pubmed"
+      "libris-id" -> "libris"
+      "handle" -> "handle"
       _ -> "missing"
     end
   end
 
-  def get_identifier_url(identifier) do
-    identifier["identifier_code"]
+  def get_identifier_url(%{"identifier_code" => _, "identifier_value" => "missing"}), do: "missing"
+  def get_identifier_url(%{"identifier_code" => code, "identifier_value" => value}) do
+    code
     |> case do
-      "doi" -> "https://dx.doi.org/#{identifier["identifier_value"]}"
-      "scopus-id" -> "https://www.scopus.com/record/display.uri?eid=2-s2.0-#{identifier["identifier_value"]}&origin=resultslist"
-      "isi-id" -> "https://www.webofscience.com/wos/woscc/full-record/WOS:#{["identifier_value"]}"
+      "doi" -> "https://dx.doi.org/#{value}"
+      "scopus-id" -> "https://www.scopus.com/record/display.uri?eid=2-s2.0-#{value}&origin=resultslist"
+      "isi-id" -> "https://www.webofscience.com/wos/woscc/full-record/WOS:#{value}"
       _ -> "missing"
     end
   end

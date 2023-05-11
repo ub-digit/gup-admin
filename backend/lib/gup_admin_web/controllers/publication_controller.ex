@@ -36,4 +36,9 @@ defmodule GupAdminWeb.PublicationController do
       {:error, %HTTPoison.Error{reason: reason}} -> conn |> send_resp(500, Jason.encode!(%{error: %{"message" => reason, "code" => 500}}))
     end
   end
+
+  def compare(conn, %{"imported_id" => imported_id, "gup_id" => gup_id}) do
+
+    json conn, GupAdmin.Resource.Publication.compare_posts(imported_id, gup_id)
+  end
 end

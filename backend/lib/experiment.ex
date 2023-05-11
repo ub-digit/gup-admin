@@ -34,7 +34,6 @@ defmodule Experiment do
     |> Enum.map(fn item -> remap_fields(item) end)
     |> Enum.map(fn item -> Map.put(item, "source", "gup") end)
     |> Enum.map(fn item -> Map.put(item, "id", "gup_" <> Integer.to_string(item["id"])) end)
-    |> Enum.map(fn item -> Map.put(item, "attended", "false") end)
   end
 
   def append_list(a, b) do
@@ -47,6 +46,8 @@ defmodule Experiment do
     load_gup_data(count)
     |> append_list(load_scopus_data(count))
     |> Enum.map(fn post -> Map.put(post, "deleted", false) end)
+    |> Enum.map(fn post -> Map.put(post, "attended", false) end)
+
     #|> Enum.map(fn data -> %{"title" => data["title"], "id" => data["id"], "attended" => data["attended"], "deleted" => data["deleted"], "source" => data["source"], "pubyear" => data["pubyear"]} end)
     #|> Enum.map(fn data -> %{"title" => data["title"], "id" => data["id"]} end)
     |> Enum.map(fn data ->
@@ -209,7 +210,6 @@ defmodule Experiment do
       end)
       |> Enum.map(&set_scopus_id/1)
       |> Enum.map(fn item -> Map.put(item, "source", "scopus")end)
-      |> Enum.map(fn item -> Map.put(item, "attended", "false") end)
     end
 
     def set_scopus_id(post) do
