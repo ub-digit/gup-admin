@@ -102,13 +102,40 @@ const { fetchGupPostsByTitle, fetchGupPostsById, fetchCompareGupPostWithImported
 const { gupPostsByTitle, pendingGupPostsByTitle, gupPostsById, pendingGupPostsById, gupPostById, gupCompareImportedMatrix, pendingCompareGupPostWithImported, pendingGupPostById, errorGupPostById } = storeToRefs(gupPostsStore)
 
 
+
+if (route.params.gupid === "empty") {
+    await fetchImportedPostById(route.params.id);
+    gupPostsStore.$reset();
+} else {
+    await fetchCompareGupPostWithImported(route.params.id, route.params.gupid);
+    $importedReset();
+}
+
+// because of the array structure in data make sure to pick up the properties needed 
+let item_row_title = null;
+let item_row_id = null;
+let item_row_source = null;
+let item_row_publication_id = null;
+if (route.params.gupid !== 'empty') {
+    item_row_publication_id = gupCompareImportedMatrix.value.find(item => item.display_label === 'publication_id').first.value
+    item_row_id = gupCompareImportedMatrix.value.find(item => item.display_label === 'id').first.value
+    item_row_source = gupCompareImportedMatrix.value.find(item => item.display_type === 'meta').first.value.source.value
+    item_row_title = gupCompareImportedMatrix.value.find(item => item.display_label === 'title').first.value.title
+} else {
+  item_row_publication_id = gupCompareImportedMatrix.value.find(item => item.display_label === 'publication_id').first.value
+  item_row_id = importedPostById.value.find(item => item.display_label === 'id').first.value
+  item_row_source = importedPostById.value.find(item => item.display_type === 'meta').first.value.source.value
+  item_row_title = importedPostById.value.find(item => item.display_label === 'title').first.value.title
+}
+
 const debounceFn = useDebounceFn(() => {
   if (importedPostById ) {
       fetchGupPostsByTitle({title: searchTitleStr.value});
     }
   }, 500)
+
  
-  watch(searchTitleStr, () => {debounceFn();})
+watch(searchTitleStr, () => {debounceFn();})
 
 function mergePosts() {
   alert("merge")
@@ -116,7 +143,7 @@ function mergePosts() {
 async function removePost() {
   const ok = confirm(t('messages.confirm_remove'))
   if (ok) {
-    const response = await removeImportedPost(importedPostById.value.id);
+    const response = await removeImportedPost(item_row_id);
     fetchImportedPosts();
     $toast.success(t('messages.remove_success'));
     router.push({ path: '/publications', query: { ...route.query } })
@@ -125,7 +152,13 @@ async function removePost() {
 
 
 async function handleSuccess() {
-  const response = await removeImportedPost(importedPostById.value.id);
+/*   const item_row_id = null;
+  if (route.params.gupid !== 'empty') {
+     item_row_id = gupCompareImportedMatrix.value.find(item => item.display_label === 'id')
+  } else {
+    item_row_id = importedPostById.value.find(item => item.display_label === 'id')
+  } */
+  const response = await removeImportedPost(item_row_id);
   fetchImportedPosts();
   showModal.value = false;
   $toast.success(t('messages.remove_success'));
@@ -133,52 +166,33 @@ async function handleSuccess() {
 }
 
 async function editPost() {
+/*   let item_row_id = null;
+  let item_row_source = null;
+  if (route.params.gupid !== 'empty') {
+     item_row_id = gupCompareImportedMatrix.value.find(item => item.display_label === 'id')
+     item_row_source = gupCompareImportedMatrix.value.find(item => item.display_label === 'source')
+  } else {
+    item_row_id = importedPostById.value.find(item => item.display_label === 'id')
+    item_row_source = importedPostById.value.find(item => item.display_label === 'source')
+  } */
   const ok = confirm(t('messages.confirm_create_in_gup'))
   if (ok) {
-    if (importedPostById.value.source !== "gup") {
-      const response = await createImportedPostInGup(importedPostById.value.id)
+    if (item_row_source !== "gup") {
+      const response = await createImportedPostInGup(item_row_id)
       if (response) {
-        //$toast.success(t('messages.create_in_gup_success') + `<br> GUP-ID: ${response.id}`, {duration: 0});
         const url = config.public.API_GUP_BASE_URL_EDIT + response.id;
         window.open(url, '_blank')
         showModal.value = true;
       }
-    } else if (importedPostById.value.source === "gup") {
-      window.open(`${config.public.API_GUP_BASE_URL_EDIT}${sanitizeID(importedPostById.value.id)}`, '_blank')
+    } else if (item_row_source === "gup") {
+      window.open(`${config.public.API_GUP_BASE_URL_EDIT}${item_row_publication_id}`, '_blank')
     }
   } 
 }
 
-if (route.params.gupid === "empty") {
-    await fetchImportedPostById(route.params.id);
-    gupPostsStore.$reset();
-  } else {
-    await fetchCompareGupPostWithImported(route.params.id, route.params.gupid);
-    $importedReset();
-  }
+searchTitleStr.value = item_row_title;
+await fetchGupPostsById(route.params.gupid);
 
-
-
-if (route.params.gupid !== "empty") {
-    if (gupCompareImportedMatrix.value) {
-      const item = gupCompareImportedMatrix.value.find(item => item.display_type === 'title')
-      searchTitleStr.value = item.first.value.title//importedPostById.value ? importedPostById.value.first.title : "";
-    }
-  } else {
-    console.log(importedPostById)
-    if (importedPostById.value) {
-      const item = importedPostById.value.find(item => item.display_type === 'title')
-      searchTitleStr.value = item.first.value.title;
-    }
-  }
-
-if (route.params.gupid === "empty") {
-  if (importedPostById.value) {
-    const item_row_by_id = importedPostById.value.find(item => item.display_label === 'id')
-    await fetchGupPostsById(item_row_by_id.first.value.id);
-    await fetchGupPostsByTitle(item_row_by_id.first.value.id, searchTitleStr.value);
-  }
-}
 
 
 </script>
