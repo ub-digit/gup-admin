@@ -122,7 +122,7 @@ if (route.params.gupid !== 'empty') {
     item_row_source = gupCompareImportedMatrix.value.find(item => item.display_type === 'meta').first.value.source.value
     item_row_title = gupCompareImportedMatrix.value.find(item => item.display_label === 'title').first.value.title
 } else {
-  item_row_publication_id = gupCompareImportedMatrix.value.find(item => item.display_label === 'publication_id').first.value
+  item_row_publication_id = importedPostById.value.find(item => item.display_label === 'publication_id').first.value
   item_row_id = importedPostById.value.find(item => item.display_label === 'id').first.value
   item_row_source = importedPostById.value.find(item => item.display_type === 'meta').first.value.source.value
   item_row_title = importedPostById.value.find(item => item.display_label === 'title').first.value.title
