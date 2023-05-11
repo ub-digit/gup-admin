@@ -33,6 +33,7 @@ defmodule GupAdminWeb.Router do
     get "/publications/duplicates/:id", PublicationController, :get_duplicates
     get "/index", IndexController, :index
     post "/publications/post_to_gup/:id", PublicationController, :post_to_gup
+    get "/publications/compare/imported_id/:imported_id/gup_id/:gup_id", PublicationController, :compare
 
   end
 
