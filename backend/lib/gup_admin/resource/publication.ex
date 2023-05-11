@@ -58,6 +58,7 @@ defmodule GupAdmin.Resource.Publication do
     |> get_row("first", :sourceissue_sourcepages_sourcevolume, "sourceissue_sourcepages_sourcevolume", data)
     |> get_row("first", :authors, "authors", data)
     |> get_publication_identifier_rows("first", data)
+    |> clear_irrelevant_identifiers()
   end
 
   def compare_posts(id_1, id_2) do
@@ -68,6 +69,31 @@ defmodule GupAdmin.Resource.Publication do
     |> Enum.map(fn {first, index} ->
       compare(first, Enum.at(post_2, index))
     end)
+
+  end
+
+  def clear_irrelevant_identifiers(data) do
+    data
+    |> Enum.reject(fn row ->
+      row["data_type"] == :identifier &&
+      row["diff"] == false &&
+      row["first"]["value"]["display_title"] == nil
+    end)
+    |> Enum.map(fn row -> Map.delete(row, "data_type") end)
+  end
+
+  def compare(%{"display_type" => "meta"} = first, %{"display_type" => "meta"} = second) do
+    case first === second do
+      true -> Map.put(first, "second", Map.get(second, "first"))
+      false -> Map.put(first, "second", Map.get(second, "first"))
+    end
+  end
+
+  def compare(%{"display_type" => "title"} = first, %{"display_type" => "title"} = second) do
+    case first === second do
+      true -> Map.put(first, "second", Map.get(second, "first"))
+      false -> Map.put(first, "second", Map.get(second, "first"))
+    end
   end
 
   def compare(first, second) do
@@ -76,6 +102,7 @@ defmodule GupAdmin.Resource.Publication do
       false -> Map.put(first, "second", Map.get(second, "first")) |> Map.put("diff", true)
     end
   end
+
 
   def get_row(container, order, :string, display_label, value) do
     container ++
@@ -182,7 +209,6 @@ defmodule GupAdmin.Resource.Publication do
       authors -> authors
     end
     |> Enum.map(fn author -> get_author_block(author["id"], author["name"], author["x-account"]) end)
-
   end
 
   def get_publication_identifier_rows(container, order, data) do
@@ -203,7 +229,8 @@ defmodule GupAdmin.Resource.Publication do
         },
         "display_label" => get_identifier_name_code(identifier["identifier_code"]),
         "display_type" => "url",
-        "visibility" => get_visibility("identifier")
+        "visibility" => get_visibility("identifier"),
+        "data_type" => :identifier
       }]
     end)
   end
@@ -212,27 +239,27 @@ defmodule GupAdmin.Resource.Publication do
     [
       %{
         "identifier_code" => "doi",
-        "identifier_value" => "missing"
+        "identifier_value" => nil
       },
       %{
         "identifier_code" => "scopus-id",
-        "identifier_value" => "missing"
+        "identifier_value" => nil
       },
       %{
         "identifier_code" => "isi-id",
-        "identifier_value" => "missing"
+        "identifier_value" => nil
       },
       %{
         "identifier_code" => "pubmed",
-        "identifier_value" => "missing"
+        "identifier_value" => nil
       },
       %{
         "identifier_code" => "libris-id",
-        "identifier_value" => "missing"
+        "identifier_value" => nil
       },
       %{
         "identifier_code" => "handle",
-        "identifier_value" => "missing"
+        "identifier_value" => nil
       }
     ]
     |> Enum.map(fn default_identifier ->
@@ -257,7 +284,7 @@ defmodule GupAdmin.Resource.Publication do
     end
   end
 
-  def get_identifier_url(%{"identifier_code" => _, "identifier_value" => "missing"}), do: "missing"
+  def get_identifier_url(%{"identifier_code" => _, "identifier_value" => "missing"}), do: nil
   def get_identifier_url(%{"identifier_code" => code, "identifier_value" => value}) do
     code
     |> case do
