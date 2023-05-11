@@ -27,7 +27,6 @@ defmodule GupAdmin.Resource.Publication do
   end
 
 
-
   def remap(hits) do
     hits = hits
     |> Enum.map(fn hit -> hit["_source"] end)
@@ -72,11 +71,20 @@ defmodule GupAdmin.Resource.Publication do
 
   end
 
-  def clear_irrelevant_identifiers(data) do
+  def clear_irrelevant_identifiers(%{"seccond" => _} = data) do
     data
     |> Enum.reject(fn row ->
       row["data_type"] == :identifier &&
       row["diff"] == false &&
+      row["first"]["value"]["display_title"] == nil
+    end)
+    |> Enum.map(fn row -> Map.delete(row, "data_type") end)
+  end
+
+  def clear_irrelevant_identifiers(data) do
+    data
+    |> Enum.reject(fn row ->
+      row["data_type"] == :identifier &&
       row["first"]["value"]["display_title"] == nil
     end)
     |> Enum.map(fn row -> Map.delete(row, "data_type") end)
@@ -284,14 +292,17 @@ defmodule GupAdmin.Resource.Publication do
     end
   end
 
-  def get_identifier_url(%{"identifier_code" => _, "identifier_value" => "missing"}), do: nil
+  def get_identifier_url(%{"identifier_code" => _, "identifier_value" => nil}), do: nil
   def get_identifier_url(%{"identifier_code" => code, "identifier_value" => value}) do
+
     code
+    |> IO.inspect(label: "code")
     |> case do
       "doi" -> "https://dx.doi.org/#{value}"
       "scopus-id" -> "https://www.scopus.com/record/display.uri?eid=2-s2.0-#{value}&origin=resultslist"
       "isi-id" -> "https://www.webofscience.com/wos/woscc/full-record/WOS:#{value}"
-      _ -> "missing"
+      "pubmed" -> "https://pubmed.ncbi.nlm.nih.gov/#{value}"
+      _ -> nil
     end
   end
 
