@@ -72,6 +72,8 @@ export const useLocaleStore = defineStore('locale', {
         "views.publications.post.fields.isiid": "ISI-ID",
         "views.publications.post.fields.scopus": "Scopus-ID",
         "views.publications.post.fields.pubmed": "Pubmed-ID",
+        "views.publications.post.fields.libris": "Libris-ID",
+        "views.publications.post.fields.handle": "Gupea",
         "views.publications.post.fields.scopus_missing": "Saknas",
         "views.publications.post.fields.sourceissue_sourcepages_sourcevolume": "Vol/Issue/Pages",
         "views.publications.post.fields.missing": "Saknas",
