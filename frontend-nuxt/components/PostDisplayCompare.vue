@@ -145,12 +145,12 @@
                     </template>
                     <template v-slot:content>
                         <a v-if="item.first.value.url" target="_blank" :href="item.first.value.url">{{ item.first.value.display_title }}</a>
-                        <span v-else>{{ item.first.value.display_title }}</span>
+                        <span v-else>Missing</span>
                     </template>
                     <template v-if="item.second" v-slot:content_second>
                         <div class="col">
                             <a v-if="item.second.value.url" target="_blank" :href="item.second.value.url">{{ item.second.value.display_title }}</a>
-                            <span v-else>{{ item.second.value.display_title }}</span>
+                            <span v-else>Missing</span>
                         </div>
                     </template>
                 </PostFieldString>
