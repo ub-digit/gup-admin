@@ -8,7 +8,7 @@
                     </template>
                     <template v-slot:content>
                         <ul class="list-inline">
-                            <li v-if="!item.first.value.attended.value" class="list-inline-item"><font-awesome-icon class="text-danger" icon="fa-solid fa-flag" /> {{ t(`views.publications.post.fields.${item.first.value.attended.display_label}`) }}</li><br><br>
+                            <li v-if="item.first.value.attended.value" class="list-inline-item"><font-awesome-icon class="text-danger" icon="fa-solid fa-flag" /> {{ t(`views.publications.post.fields.${item.first.value.attended.display_label}`) }}</li><br><br>
 
                             <li class="list-inline-item"><font-awesome-icon class="text-info d-none" icon="fa-solid fa-file-arrow-down" /> <strong>{{  t(`views.publications.post.fields.${item.first.value.source.display_label}`) }} </strong> {{ item.first.value.source.value }}</li>
 
