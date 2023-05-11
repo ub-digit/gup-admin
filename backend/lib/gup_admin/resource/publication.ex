@@ -17,16 +17,16 @@ defmodule GupAdmin.Resource.Publication do
 
   def show(id) do
     Search.search_one(id)
-    # |> Map.get("data")
     |> List.first()
     |> Map.get("_source")
-    # |> IO.inspect()
     |> remap("new")
     # |> case do
     #   nil -> :error
     #   res -> res
     # end
   end
+
+
 
   def remap(hits) do
     hits = hits
@@ -58,7 +58,25 @@ defmodule GupAdmin.Resource.Publication do
     |> get_row("first", :sourceissue_sourcepages_sourcevolume, "sourceissue_sourcepages_sourcevolume", data)
     |> get_row("first", :authors, "authors", data)
     |> get_publication_identifier_rows("first", data)
-    #|> Jason.encode!()
+  end
+
+  def compare_posts(id_1, id_2) do
+    post_1 = show(id_1)
+    post_2 = show(id_2)
+    IO.inspect(post_2, label: "post_2 length")
+    # post_1
+    # |> Enum.with_index()
+    # |> Enum.map(fn {first, index} ->
+    #   compare(first, Enum.at(post_2, index))
+    # end)
+  end
+
+  def compare(first, second) do
+    #IO.inspect(is_map(second), label: "sec is_map")
+    # case first === second do
+    #   true -> Map.put(first, "second", Map.get(second, "first")) |> Map.put("diff", false)
+    #   false -> Map.put(first, "second", Map.get(second, "first")) |> Map.put("diff", true)
+    # end
   end
 
   def get_row(container, order, :string, display_label, value) do
@@ -162,10 +180,11 @@ defmodule GupAdmin.Resource.Publication do
   def get_authors(data) do
     data["authors"]
     |> case  do
-        nil -> []
-        authors -> authors
+      nil -> []
+      authors -> authors
     end
     |> Enum.map(fn author -> get_author_block(author["id"], author["name"], author["x-account"]) end)
+
   end
 
   def get_publication_identifier_rows(container, order, data) do
