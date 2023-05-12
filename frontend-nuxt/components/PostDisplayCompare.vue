@@ -203,7 +203,7 @@ function getURL(code, value) {
 
 <style lang="scss" scoped>
 .bg-danger {
-    opacity: .8;
+    opacity: 1;
 }
 .text-white {
     a {
