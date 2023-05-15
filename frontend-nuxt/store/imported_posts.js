@@ -56,8 +56,6 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
     
     async function fetchImportedPostById(id) {    
     try {
-/*       errorImportedPostById.value = {code: '404', message: 'not found'};
-      return; */
       importedPostById.value = null;
       pendingImportedPostById.value = true;
       errorImportedPostById.value = null;
@@ -81,9 +79,13 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
     try {
         pendingRemoveImportedPost.value = true;
         const { data, error } = await useFetch(`/api/post_imported/${id}`, {method: 'DELETE'})
+        if (error) {
+          throw (error);
+        }
         return data;
       } catch (error) {
-        console.log("Something went wrong: removeImportedPost")
+        console.log(error.value.data.statusCode, error.value.data.statusMessage)
+        return {error: error.value.data};
       }
     finally {
       pendingRemoveImportedPost.value = false;

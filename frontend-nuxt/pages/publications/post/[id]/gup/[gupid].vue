@@ -12,7 +12,7 @@
       </modal>
 
       <div v-if="route.params.gupid !== 'empty'"> 
-        <Spinner v-if="pendingCompareGupPostWithImported" class="me-4"/>        
+        <Spinner v-if="pendingCompareGupPostWithImported" class="me-4"/>
         <PostDisplayCompare :dataMatrix="gupCompareImportedMatrix" />
       </div>
       <div class="row" v-else>
@@ -144,9 +144,14 @@ async function removePost() {
   const ok = confirm(t('messages.confirm_remove'))
   if (ok) {
     const response = await removeImportedPost(item_row_id);
-    fetchImportedPosts();
-    $toast.success(t('messages.remove_success'));
-    router.push({ path: '/publications', query: { ...route.query } })
+    console.log(response)
+    if (!response.error) {
+      fetchImportedPosts();
+      $toast.success(t('messages.remove_success'));
+      router.push({ path: '/publications', query: { ...route.query } })
+    } else {
+      $toast.error(t('messages.remove_error') + '<p>' + response.error.statusMessage);
+    }
   }
 }
 
