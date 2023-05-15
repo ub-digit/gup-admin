@@ -1,7 +1,7 @@
 <template>
     <div>
         <span v-for="(item, index) in dataMatrix" :key="index">
-            <div class="row mb-2" v-if="isVisible(item)" :class="{'bg-danger text-white' : item.diff}" >
+            <div class="row mb-2 me-1 p-2" v-if="isVisible(item)" :class="{'diff': item.diff}" >
                 <PostFieldMeta v-if="item.display_type === 'meta'">
                     <template v-if="item.second" v-slot:label>
                         <div class="col-2"></div>
@@ -202,6 +202,9 @@ function getURL(code, value) {
 </script>
 
 <style lang="scss" scoped>
+    .diff {
+        border: 1px dotted red;
+    }
 .bg-danger {
     opacity: 1;
 }
