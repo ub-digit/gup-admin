@@ -18,12 +18,23 @@ defmodule GupAdmin.Resource.Publication do
   def show(id) do
     Search.search_one(id)
     |> List.first()
+    |> case do
+      nil -> :error
+      res -> res |> Map.get("_source") |> remap("new") |> clear_irrelevant_identifiers()
+    end
+  end
+
+  def show(id, :dont_clear_irrelevant_identifiers) do
+    Search.search_one(id)
+    |> List.first()
     |> Map.get("_source")
     |> remap("new")
-    # |> case do
-    #   nil -> :error
-    #   res -> res
-    # end
+  end
+
+  def show_raw(id) do
+    Search.search_one(id)
+    |> List.first()
+    |> Map.get("_source")
   end
 
 
@@ -47,27 +58,46 @@ defmodule GupAdmin.Resource.Publication do
 
   def remap(data, "new") do
     []
-    |> get_row("first", :string, "publication_id", get_publication_id(data))
-    |> get_row("first", :string, "id", data["id"])
-    |> get_row("first", :title, "title", data["title"], get_publication_url(data))
-    |> get_row("first", :meta, data)
-    |> get_row("first", :string, "publication_type_label", data["publication_type_label"])
-    |> get_row("first", :string, "sourcetitle", data["sourcetitle"])
-    |> get_row("first", :string, "pubyear", data["pubyear"])
-    |> get_row("first", :sourceissue_sourcepages_sourcevolume, "sourceissue_sourcepages_sourcevolume", data)
-    |> get_row("first", :authors, "authors", data)
+    |> row(get_publication_id(data), [{"display_label", "publication_id"}, {"display_type", "string"}, {"visibility", get_visibility("publication_id")}])
+    |> row(data["id"], [{"display_label", "id"}, {"display_type", "string"}, {"visibility", get_visibility("id")}])
+    |> row(data["title"], [{"display_label", "title"}, {"display_type", "title"}, {"visibility", get_visibility("title")}])
+    |> row(meta_data(data), [{"display_type", "meta"}, {"visibility", get_visibility("meta")}])
+    |> row(data["publication_type_label"], [{"display_label", "publication_type_label"}, {"display_type", "string"}, {"visibility", get_visibility("publication_type_label")}])
+    |> row(data["sourcetitle"], [{"display_label", "sourcetitle"}, {"display_type", "string"}, {"visibility", get_visibility("sourcetitle")}])
+    |> row(data["pubyear"], [{"display_label", "pubyear"}, {"display_type", "string"}, {"visibility", get_visibility("pubyear")}])
+    |> row(volume_issue_pages(data), [{"display_label", "sourceissue_sourcepages_sourcevolume"}, {"display_type", "sourceissue_sourcepages_sourcevolume"}, {"visibility", get_visibility("sourceissue_sourcepages_sourcevolume")}])
+    |> row(get_authors(data), [{"display_label", "authors"}, {"display_type", "authors"}, {"visibility", get_visibility("authors")}])
     |> get_publication_identifier_rows("first", data)
-    |> clear_irrelevant_identifiers()
+  end
+
+  def meta_data(data) do
+    %{
+      "attended" => get_value_block(data["attended"], "attended"),
+      "created_at" => get_value_block(data["created_at"], "created_at"),
+      "version_created_by" => get_value_block(data["version_created_by"], "version_created_by"),
+      "updated_at" => get_value_block(data["updated_at"], "updated_at"),
+      "version_updated_by" => get_value_block(data["version_updated_by"], "version_updated_by"),
+      "source" => get_value_block(data["source"], "source")
+    }
+  end
+
+  def volume_issue_pages(data) do
+    %{
+      "sourcevolume" => data["sourcevolume"] || "missing",
+      "sourceissue" => data["sourceissue"] || "missing",
+      "sourcepages" => data["sourcepages"] || "missing"
+    }
   end
 
   def compare_posts(id_1, id_2) do
-    post_1 = show(id_1)
-    post_2 = show(id_2)
+    post_1 = show(id_1, :dont_clear_irrelevant_identifiers)
+    post_2 = show(id_2, :dont_clear_irrelevant_identifiers)
     post_1
     |> Enum.with_index()
     |> Enum.map(fn {first, index} ->
       compare(first, Enum.at(post_2, index))
     end)
+    |> clear_irrelevant_identifiers()
 
   end
 
@@ -82,6 +112,7 @@ defmodule GupAdmin.Resource.Publication do
   end
 
   def clear_irrelevant_identifiers(data) do
+    IO.inspect("CXLEARING IRRELEVANT IDENTIFIERS")
     data
     |> Enum.reject(fn row ->
       row["data_type"] == :identifier &&
@@ -111,88 +142,23 @@ defmodule GupAdmin.Resource.Publication do
     end
   end
 
-
-  def get_row(container, order, :string, display_label, value) do
+  def row(container, value, mutual) do
     container ++
-    [
-      %{
-        order => %{
-          "value" => value || "missing",
+      [
+        %{
+        "first" => %{
+          "value" => value,
         },
-        "display_label" => display_label,
-        "display_type" => "string",
-        "visibility" => get_visibility(display_label)
       }
+      |> add_mutual(mutual)
     ]
   end
 
-  def get_row(container, order, :sourceissue_sourcepages_sourcevolume, display_label, data) do
-    container ++
-    [
-      %{
-        order => %{
-          "value" => %{
-            "sourcevolume" => data["sourcevolume"] || "missing",
-            "sourceissue" => data["sourceissue"] || "missing",
-            "sourcepages" => data["sourcepages"] || "missing"
-          }
-        },
-        "display_label" => display_label,
-        "display_type" => "sourceissue_sourcepages_sourcevolume",
-        "visibility" => get_visibility(display_label)
-      }
-    ]
-  end
-
-  def get_row(container, order, :authors, display_label, data) do
-    container ++
-    [
-      %{
-        order => %{
-          "value" => get_authors(data)
-        },
-        "display_label" => display_label,
-        "display_type" => "authors",
-        "visibility" => get_visibility(display_label)
-      }
-    ]
-  end
-
-  def get_row(container, order, :title, display_label, value, url) do
-    container ++
-    [
-      %{
-        order => %{
-          "value" => %{
-            "title" => value,
-            "url" => url
-          }
-        },
-        "display_label" => display_label,
-        "display_type" => "title",
-        "visibility" => get_visibility(display_label)
-      }
-    ]
-  end
-
-  def get_row(container, order, :meta, data) do
-    container ++
-    [
-      %{
-        order => %{
-          "value" => %{
-            "attended" => get_value_block(data["attended"], "attended"),
-            "created_at" => get_value_block(data["created_at"], "created_at"),
-            "version_created_by" => get_value_block(data["version_created_by"], "version_created_by"),
-            "updated_at" => get_value_block(data["updated_at"], "updated_at"),
-            "version_updated_by" => get_value_block(data["version_updated_by"], "version_updated_by"),
-            "source" => get_value_block(data["source"], "source")
-          }
-        },
-        "display_type" => "meta",
-        "visibility" => get_visibility(:meta)
-      }
-    ]
+  def add_mutual(data, mutual) do
+    mutual
+    |> Enum.reduce(data, fn item, acc ->
+      Map.put(acc, elem(item, 0), elem(item, 1))
+    end)
   end
 
   def get_value_block(value, label) do
@@ -296,7 +262,6 @@ defmodule GupAdmin.Resource.Publication do
   def get_identifier_url(%{"identifier_code" => code, "identifier_value" => value}) do
 
     code
-    |> IO.inspect(label: "code")
     |> case do
       "doi" -> "https://dx.doi.org/#{value}"
       "scopus-id" -> "https://www.scopus.com/record/display.uri?eid=2-s2.0-#{value}&origin=resultslist"
@@ -316,13 +281,13 @@ defmodule GupAdmin.Resource.Publication do
   end
 
   def gup_base_url() do
-    System.get_env("GUP_BASE_URL", "https://gup-staging.ub.gu.se")
+    System.get_env("GUP_BASE_URL", "https://gup-staging.ub.gu.se/")
   end
 
   def get_visibility(display_label) do
     case display_label do
       "title" -> "always"
-      :meta -> "always"
+      "meta" -> "always"
       "publication_type_label" -> "always"
       "sourcetitle" -> "always"
       "pubyear" -> "always"
