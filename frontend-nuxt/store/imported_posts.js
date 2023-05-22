@@ -4,7 +4,6 @@ import { storeToRefs } from 'pinia'
 export const useImportedPostsStore = defineStore('importedPostsStore', () => {
   const filterStore = useFilterStore();
   const {filters} = storeToRefs(filterStore);
-
   const importedPosts = ref([])
   const importedPostById = ref(null);
   const errorImportedPostById = ref(null);
@@ -13,11 +12,10 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
   const pendingRemoveImportedPost = ref(null);
   const pendingCreateImportedPostInGup = ref(null);
 
-
   async function createImportedPostInGup(id) {
     try {
       pendingCreateImportedPostInGup.value = true;
-      const { data, error } = await useFetch(`/api/post_gup_create/${id}`, {
+      const { data, error } = await useFetch(`/api/post_to_gup/${id}`, {
           params: {},
         });
         return data.value;
@@ -55,12 +53,12 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
     },
     { deep: true }    
     ); 
-
-  async function fetchImportedPostById(id) {
+    
+    async function fetchImportedPostById(id) {    
     try {
-      errorImportedPostById.value = null;
       importedPostById.value = null;
       pendingImportedPostById.value = true;
+      errorImportedPostById.value = null;
       const { data, error } = await useFetch(`/api/post_imported/${id}`)
       if (error.value) {
         errorImportedPostById.value = error.value.data.data.error;
@@ -81,9 +79,13 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
     try {
         pendingRemoveImportedPost.value = true;
         const { data, error } = await useFetch(`/api/post_imported/${id}`, {method: 'DELETE'})
+        if (!data) {
+          throw (error);
+        }
         return data;
       } catch (error) {
-        console.log("Something went wrong: removeImportedPost")
+        console.log(error.value.data.statusCode, error.value.data.statusMessage)
+        return {error: error.value.data};
       }
     finally {
       pendingRemoveImportedPost.value = false;
@@ -105,8 +107,12 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
   }
 
 
-  function $reset() {
+  function $importedReset() {
     // manually reset store here
+    importedPostById.value = null,
+    errorImportedPostById.value = null;
+
+
   }
-  return {createImportedPostInGup, importedPosts,fetchImportedPosts, pendingImportedPosts, removeImportedPost, fetchImportedPostById, importedPostById, errorImportedPostById,  pendingImportedPostById, pendingRemoveImportedPost, pendingCreateImportedPostInGup}
+  return {createImportedPostInGup, importedPosts,fetchImportedPosts, pendingImportedPosts, removeImportedPost, fetchImportedPostById, importedPostById, errorImportedPostById,  pendingImportedPostById, pendingRemoveImportedPost, pendingCreateImportedPostInGup, $importedReset}
 })
