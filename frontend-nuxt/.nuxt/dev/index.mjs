@@ -501,27 +501,29 @@ const errorHandler = (async function errorhandler(error, event) {
 
 const _lazy_HlWbGA = () => Promise.resolve().then(function () { return alert$1; });
 const _lazy_ko4FUL = () => Promise.resolve().then(function () { return post_gup_compare$1; });
-const _lazy_jzR9yF = () => Promise.resolve().then(function () { return _id_$5; });
-const _lazy_cuqRRW = () => Promise.resolve().then(function () { return _id_$3; });
+const _lazy_cuqRRW = () => Promise.resolve().then(function () { return _id_$5; });
 const _lazy_1xxd7m = () => Promise.resolve().then(function () { return _id__delete$1; });
-const _lazy_TCuosi = () => Promise.resolve().then(function () { return _id_$1; });
+const _lazy_TCuosi = () => Promise.resolve().then(function () { return _id_$3; });
+const _lazy_2jhzEB = () => Promise.resolve().then(function () { return _id_$1; });
+const _lazy_aWW0CL = () => Promise.resolve().then(function () { return posts_duplicates$1; });
 const _lazy_aOKPqY = () => Promise.resolve().then(function () { return posts_gup_by_id$1; });
 const _lazy_y9LNm6 = () => Promise.resolve().then(function () { return posts_gup_by_title$1; });
 const _lazy_IPllUq = () => Promise.resolve().then(function () { return posts_imported$1; });
-const _lazy_mQMJvZ = () => Promise.resolve().then(function () { return pubtypes$1; });
+const _lazy_DMpDJj = () => Promise.resolve().then(function () { return publication_types$1; });
 const _lazy_UZ5qVd = () => Promise.resolve().then(function () { return renderer$1; });
 
 const handlers = [
   { route: '/api/alert', handler: _lazy_HlWbGA, lazy: true, middleware: false, method: undefined },
   { route: '/api/post_gup_compare', handler: _lazy_ko4FUL, lazy: true, middleware: false, method: undefined },
-  { route: '/api/post_gup_create/:id', handler: _lazy_jzR9yF, lazy: true, middleware: false, method: undefined },
   { route: '/api/post_gup/:id', handler: _lazy_cuqRRW, lazy: true, middleware: false, method: undefined },
   { route: '/api/post_imported/:id', handler: _lazy_1xxd7m, lazy: true, middleware: false, method: "delete" },
   { route: '/api/post_imported/:id', handler: _lazy_TCuosi, lazy: true, middleware: false, method: undefined },
+  { route: '/api/post_to_gup/:id', handler: _lazy_2jhzEB, lazy: true, middleware: false, method: undefined },
+  { route: '/api/posts_duplicates', handler: _lazy_aWW0CL, lazy: true, middleware: false, method: undefined },
   { route: '/api/posts_gup_by_id', handler: _lazy_aOKPqY, lazy: true, middleware: false, method: undefined },
   { route: '/api/posts_gup_by_title', handler: _lazy_y9LNm6, lazy: true, middleware: false, method: undefined },
   { route: '/api/posts_imported', handler: _lazy_IPllUq, lazy: true, middleware: false, method: undefined },
-  { route: '/api/pubtypes', handler: _lazy_mQMJvZ, lazy: true, middleware: false, method: undefined },
+  { route: '/api/publication_types', handler: _lazy_DMpDJj, lazy: true, middleware: false, method: undefined },
   { route: '/__nuxt_error', handler: _lazy_UZ5qVd, lazy: true, middleware: false, method: undefined },
   { route: '/**', handler: _lazy_UZ5qVd, lazy: true, middleware: false, method: undefined }
 ];
@@ -681,26 +683,13 @@ const _id_$4 = defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
   getQuery(event);
   const id = event.context.params.id;
-  const res = await $fetch(`${config.API_BASE_URL}/publications/post_to_gup/${id}`, { method: "POST" });
+  const res = await $fetch(`${config.API_BASE_URL}/publications/${id}`);
   return res;
 });
 
 const _id_$5 = /*#__PURE__*/Object.freeze({
       __proto__: null,
       default: _id_$4
-});
-
-const _id_$2 = defineEventHandler(async (event) => {
-  const config = useRuntimeConfig();
-  getQuery(event);
-  const id = event.context.params.id;
-  const res = await $fetch(`${config.API_BASE_URL}/publications/${id}`);
-  return res;
-});
-
-const _id_$3 = /*#__PURE__*/Object.freeze({
-      __proto__: null,
-      default: _id_$2
 });
 
 const _id__delete = defineEventHandler(async (event) => {
@@ -716,7 +705,7 @@ const _id__delete$1 = /*#__PURE__*/Object.freeze({
       default: _id__delete
 });
 
-const _id_ = defineEventHandler(async (event) => {
+const _id_$2 = defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
   getQuery(event);
   const id = event.context.params.id;
@@ -724,9 +713,36 @@ const _id_ = defineEventHandler(async (event) => {
   return res;
 });
 
+const _id_$3 = /*#__PURE__*/Object.freeze({
+      __proto__: null,
+      default: _id_$2
+});
+
+const _id_ = defineEventHandler(async (event) => {
+  const config = useRuntimeConfig();
+  getQuery(event);
+  const id = event.context.params.id;
+  const res = await $fetch(`${config.API_BASE_URL}/publications/post_to_gup/${id}`, { method: "POST" });
+  return res;
+});
+
 const _id_$1 = /*#__PURE__*/Object.freeze({
       __proto__: null,
       default: _id_
+});
+
+const posts_duplicates = defineEventHandler(async (event) => {
+  const config = useRuntimeConfig();
+  const query = getQuery(event);
+  const res = await $fetch(`${config.API_BASE_URL}/publications/duplicates/${query.id}`, {
+    params: { mode: query.mode, title: query.title }
+  });
+  return res;
+});
+
+const posts_duplicates$1 = /*#__PURE__*/Object.freeze({
+      __proto__: null,
+      default: posts_duplicates
 });
 
 const posts_gup_by_id = defineEventHandler(async (event) => {
@@ -772,7 +788,7 @@ const posts_imported$1 = /*#__PURE__*/Object.freeze({
       default: posts_imported
 });
 
-const pubtypes = defineEventHandler(async (event) => {
+const publication_types = defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
   const query = getQuery(event);
   console.log(query);
@@ -780,9 +796,9 @@ const pubtypes = defineEventHandler(async (event) => {
   return res;
 });
 
-const pubtypes$1 = /*#__PURE__*/Object.freeze({
+const publication_types$1 = /*#__PURE__*/Object.freeze({
       __proto__: null,
-      default: pubtypes
+      default: publication_types
 });
 
 const appRootId = "__nuxt";

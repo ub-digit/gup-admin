@@ -15,7 +15,7 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
   async function createImportedPostInGup(id) {
     try {
       pendingCreateImportedPostInGup.value = true;
-      const { data, error } = await useFetch(`/api/post_gup_create/${id}`, {
+      const { data, error } = await useFetch(`/api/post_to_gup/${id}`, {
           params: {},
         });
         return data.value;

@@ -8,15 +8,18 @@ declare module 'nitropack' {
     '/api/post_gup_compare': {
       'default': Awaited<ReturnType<typeof import('../../server/api/post_gup_compare').default>>
     }
-    '/api/post_gup_create/:id': {
-      'default': Awaited<ReturnType<typeof import('../../server/api/post_gup_create/[id]').default>>
-    }
     '/api/post_gup/:id': {
       'default': Awaited<ReturnType<typeof import('../../server/api/post_gup/[id]').default>>
     }
     '/api/post_imported/:id': {
       'delete': Awaited<ReturnType<typeof import('../../server/api/post_imported/[id].delete').default>>
       'default': Awaited<ReturnType<typeof import('../../server/api/post_imported/[id]').default>>
+    }
+    '/api/post_to_gup/:id': {
+      'default': Awaited<ReturnType<typeof import('../../server/api/post_to_gup/[id]').default>>
+    }
+    '/api/posts_duplicates': {
+      'default': Awaited<ReturnType<typeof import('../../server/api/posts_duplicates').default>>
     }
     '/api/posts_gup_by_id': {
       'default': Awaited<ReturnType<typeof import('../../server/api/posts_gup_by_id').default>>
@@ -27,8 +30,8 @@ declare module 'nitropack' {
     '/api/posts_imported': {
       'default': Awaited<ReturnType<typeof import('../../server/api/posts_imported').default>>
     }
-    '/api/pubtypes': {
-      'default': Awaited<ReturnType<typeof import('../../server/api/pubtypes').default>>
+    '/api/publication_types': {
+      'default': Awaited<ReturnType<typeof import('../../server/api/publication_types').default>>
     }
     '/__nuxt_error': {
       'default': Awaited<ReturnType<typeof import('../../node_modules/nuxt/dist/core/runtime/nitro/renderer').default>>

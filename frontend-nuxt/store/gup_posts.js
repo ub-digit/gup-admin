@@ -31,8 +31,8 @@ export const useGupPostsStore = defineStore('gupPostsStore', () => {
   async function fetchGupPostsById(id) {
     try {
       pendingGupPostsById.value = true;
-      const { data, error } = await useFetch("/api/posts_gup_by_id", {
-          params: {"id": id}
+      const { data, error } = await useFetch("/api/posts_duplicates", {
+          params: {"id": id, "mode": "id"}
       });
       gupPostsById.value = data.value;
     } catch (error) {
@@ -47,8 +47,8 @@ export const useGupPostsStore = defineStore('gupPostsStore', () => {
   async function fetchGupPostsByTitle(id, title) {
     try {
       pendingGupPostsByTitle.value = true;
-      const { data, error } = await useFetch("/api/posts_gup_by_title", {
-            params: {"id": id, "title": title }
+      const { data, error } = await useFetch("/api/posts_duplicates", {
+            params: {"id": id, "title": title, mode: "title" }
           });
       gupPostsByTitle.value = data.value;
     } catch (error) {
@@ -64,7 +64,7 @@ export const useGupPostsStore = defineStore('gupPostsStore', () => {
   async function fetchGupPostById(id) {
     try {
       pendingGupPostById.value = true;
-      const { data, error } = await  useFetch(`/api/post_gup/${id}`)
+      const { data, error } = await  useFetch(`/api/post_imported/${id}`)
       if (error.value) {
         errorGupPostById.value =  error.value.data.data.error;;
       } else {
