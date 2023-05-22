@@ -1,7 +1,7 @@
 {
-  "_hash": "zrxOEMpvTa",
+  "_hash": "KemJu3mpU7",
   "project": {
-    "rootDir": "/Users/johanlarsson/Dev/gup-super/frontend-nuxt"
+    "rootDir": "/home/lars/Documents/workspaces/gup-admin/frontend-nuxt"
   },
   "versions": {
     "nuxt": "3.3.1"

@@ -27,7 +27,6 @@ defmodule GupAdmin.Resource.Search do
   end
 
   def clense_filter(params) do
-    IO.inspect(params, label: "clense_filter params")
     %{
       "source" => get_source_list(params),
       # TBD: Have frontend send pubtype_id instead of pubtype_code?
@@ -40,7 +39,6 @@ defmodule GupAdmin.Resource.Search do
     |> Enum.filter(fn {_, val} -> not is_nil(val) end)
     |> Enum.filter(fn {_, val} -> validate_parameter(val) end)
     |> Enum.into(%{})
-    |> IO.inspect(label: "clense_filter")
 
   end
 
@@ -91,22 +89,40 @@ defmodule GupAdmin.Resource.Search do
     hits
   end
 
+  # def get_duplicates(%{"mode" => "id", "id" => id}) do
+  #   post = Publication.show_raw(id)
+  #   q = post["publication_identifiers"]
+  #   |> Query.find_duplicates_by_identifiers()
+  #   {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
+  #   hits
+  #   |> Publication.remap()
+  # end
+
+  # def get_duplicates(%{"mode" => "title", "id" => id, "title" => title}) do
+  #   #post = Publication.show_raw(id)
+  #   q = title
+  #   |> Query.fuzzy()
+  #   {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
+  #   hits
+  #   |> Publication.remap()
+  # end
+
   def get_duplicates(%{"mode" => "id", "id" => id}) do
-    post = Publication.show_raw(id)
-    q = post["publication_identifiers"]
-    |> Query.find_duplicates_by_identifiers()
+    q = Query.base("")
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
-    hits
-    |> Enum.map(fn i -> Map.get(i, "_source") end)
+
+    hits = hits
+    |> Enum.take(2)
+    |> Publication.remap()
   end
 
   def get_duplicates(%{"mode" => "title", "id" => id}) do
-    post = Publication.show_raw(id)
-    q = post["title"]
-    |> Query.fuzzy()
+    q = Query.base("")
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
-    hits
-    |> Enum.map(fn i -> Map.get(i, "_source") end)
+
+    hits = hits
+    |> Enum.take(2)
+    |> Publication.remap()
   end
 
   def mark_as_deleted(id) do
