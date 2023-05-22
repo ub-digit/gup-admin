@@ -79,7 +79,7 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
     try {
         pendingRemoveImportedPost.value = true;
         const { data, error } = await useFetch(`/api/post_imported/${id}`, {method: 'DELETE'})
-        if (error) {
+        if (!data) {
           throw (error);
         }
         return data;

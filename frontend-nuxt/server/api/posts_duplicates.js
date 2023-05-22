@@ -1,8 +1,15 @@
 export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig();
     const query = getQuery(event);
-    const res = await $fetch(`${config.API_BASE_URL}/publications/duplicates/${query.id}`,{
-        params: {mode: query.mode, title: query.title}
-    });
+    let res = null;
+    if (query.mode === "title") {
+        res = await $fetch(`${config.API_BASE_URL}/publications/duplicates/${query.title}`,{
+            params: {mode: query.mode}
+        });
+    } else if (query.mode === "id") {
+        res = await $fetch(`${config.API_BASE_URL}/publications/duplicates/${query.id}/`,{
+            params: {mode:'id'}
+        });
+    }
     return res;
 })

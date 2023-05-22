@@ -196,7 +196,7 @@ async function editPost() {
 }
 
 searchTitleStr.value = item_row_title;
-await fetchGupPostsById(route.params.gupid);
+await fetchGupPostsById(route.params.id);
 
 
 

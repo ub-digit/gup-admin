@@ -44,11 +44,11 @@ export const useGupPostsStore = defineStore('gupPostsStore', () => {
   }
 
 
-  async function fetchGupPostsByTitle(id, title) {
+  async function fetchGupPostsByTitle(title) {
     try {
       pendingGupPostsByTitle.value = true;
       const { data, error } = await useFetch("/api/posts_duplicates", {
-            params: {"id": id, "title": title, mode: "title" }
+            params: {"title": title, mode: "title" }
           });
       gupPostsByTitle.value = data.value;
     } catch (error) {
