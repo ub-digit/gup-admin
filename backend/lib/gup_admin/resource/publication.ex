@@ -29,12 +29,16 @@ defmodule GupAdmin.Resource.Publication do
     |> List.first()
     |> Map.get("_source")
     |> remap("new")
+    |> IO.inspect()
   end
 
   def show_raw(id) do
     Search.search_one(id)
     |> List.first()
-    |> Map.get("_source")
+    |> case do
+      nil -> :error
+      hits -> hits |> Map.get("_source")
+    end
   end
 
 
@@ -57,10 +61,10 @@ defmodule GupAdmin.Resource.Publication do
   end
 
   def remap(data, "new") do
-    []
+    d = []
     |> row(get_publication_id(data), [{"display_label", "publication_id"}, {"display_type", "string"}, {"visibility", get_visibility("publication_id")}])
     |> row(data["id"], [{"display_label", "id"}, {"display_type", "string"}, {"visibility", get_visibility("id")}])
-    |> row(data["title"], [{"display_label", "title"}, {"display_type", "title"}, {"visibility", get_visibility("title")}])
+    |> row(%{"url" => get_publication_url(data), "title" => data["title"]}, [{"display_label", "title"}, {"display_type", "title"}, {"visibility", get_visibility("title")}])
     |> row(meta_data(data), [{"display_type", "meta"}, {"visibility", get_visibility("meta")}])
     |> row(data["publication_type_label"], [{"display_label", "publication_type_label"}, {"display_type", "string"}, {"visibility", get_visibility("publication_type_label")}])
     |> row(data["sourcetitle"], [{"display_label", "sourcetitle"}, {"display_type", "string"}, {"visibility", get_visibility("sourcetitle")}])
@@ -112,7 +116,6 @@ defmodule GupAdmin.Resource.Publication do
   end
 
   def clear_irrelevant_identifiers(data) do
-    IO.inspect("CXLEARING IRRELEVANT IDENTIFIERS")
     data
     |> Enum.reject(fn row ->
       row["data_type"] == :identifier &&

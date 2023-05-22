@@ -1,25 +1,25 @@
-globalThis._importMeta_={url:import.meta.url,env:process.env};import 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/node-fetch-native/dist/polyfill.mjs';
+globalThis._importMeta_={url:import.meta.url,env:process.env};import 'file:///home/lars/Documents/workspaces/gup-admin/frontend-nuxt/node_modules/node-fetch-native/dist/polyfill.mjs';
 import { Server } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { mkdirSync } from 'node:fs';
 import { parentPort, threadId } from 'node:worker_threads';
-import { provider, isWindows } from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/std-env/dist/index.mjs';
-import { defineEventHandler, handleCacheHeaders, createEvent, eventHandler, setHeaders, sendRedirect, proxyRequest, getRequestHeader, getRequestHeaders, setResponseHeader, createApp, createRouter as createRouter$1, toNodeListener, fetchWithEvent, lazyEventHandler, getQuery, createError } from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/h3/dist/index.mjs';
-import { createRenderer } from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/vue-bundle-renderer/dist/runtime.mjs';
-import devalue from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/@nuxt/devalue/dist/devalue.mjs';
-import { renderToString } from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/vue/server-renderer/index.mjs';
-import { createFetch as createFetch$1, Headers } from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/ofetch/dist/node.mjs';
-import destr from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/destr/dist/index.mjs';
-import { createCall, createFetch } from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/unenv/runtime/fetch/index.mjs';
-import { createHooks } from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/hookable/dist/index.mjs';
-import { snakeCase } from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/scule/dist/index.mjs';
-import defu, { defuFn } from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/defu/dist/defu.mjs';
-import { hash } from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/ohash/dist/index.mjs';
-import { parseURL, withoutBase, joinURL, withQuery } from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/ufo/dist/index.mjs';
-import { createStorage, prefixStorage } from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/unstorage/dist/index.mjs';
-import unstorage_47drivers_47fs from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/unstorage/drivers/fs.mjs';
-import { toRouteMatcher, createRouter } from 'file:///Users/johanlarsson/Dev/gup-super/frontend-nuxt/node_modules/radix3/dist/index.mjs';
+import { provider, isWindows } from 'file:///home/lars/Documents/workspaces/gup-admin/frontend-nuxt/node_modules/std-env/dist/index.mjs';
+import { defineEventHandler, handleCacheHeaders, createEvent, eventHandler, setHeaders, sendRedirect, proxyRequest, getRequestHeader, getRequestHeaders, setResponseHeader, createApp, createRouter as createRouter$1, toNodeListener, fetchWithEvent, lazyEventHandler, getQuery, createError } from 'file:///home/lars/Documents/workspaces/gup-admin/frontend-nuxt/node_modules/h3/dist/index.mjs';
+import { createRenderer } from 'file:///home/lars/Documents/workspaces/gup-admin/frontend-nuxt/node_modules/vue-bundle-renderer/dist/runtime.mjs';
+import devalue from 'file:///home/lars/Documents/workspaces/gup-admin/frontend-nuxt/node_modules/@nuxt/devalue/dist/devalue.mjs';
+import { renderToString } from 'file:///home/lars/Documents/workspaces/gup-admin/frontend-nuxt/node_modules/vue/server-renderer/index.mjs';
+import { createFetch as createFetch$1, Headers } from 'file:///home/lars/Documents/workspaces/gup-admin/frontend-nuxt/node_modules/ofetch/dist/node.mjs';
+import destr from 'file:///home/lars/Documents/workspaces/gup-admin/frontend-nuxt/node_modules/destr/dist/index.mjs';
+import { createCall, createFetch } from 'file:///home/lars/Documents/workspaces/gup-admin/frontend-nuxt/node_modules/unenv/runtime/fetch/index.mjs';
+import { createHooks } from 'file:///home/lars/Documents/workspaces/gup-admin/frontend-nuxt/node_modules/hookable/dist/index.mjs';
+import { snakeCase } from 'file:///home/lars/Documents/workspaces/gup-admin/frontend-nuxt/node_modules/scule/dist/index.mjs';
+import defu, { defuFn } from 'file:///home/lars/Documents/workspaces/gup-admin/frontend-nuxt/node_modules/defu/dist/defu.mjs';
+import { hash } from 'file:///home/lars/Documents/workspaces/gup-admin/frontend-nuxt/node_modules/ohash/dist/index.mjs';
+import { parseURL, withoutBase, joinURL, withQuery } from 'file:///home/lars/Documents/workspaces/gup-admin/frontend-nuxt/node_modules/ufo/dist/index.mjs';
+import { createStorage, prefixStorage } from 'file:///home/lars/Documents/workspaces/gup-admin/frontend-nuxt/node_modules/unstorage/dist/index.mjs';
+import unstorage_47drivers_47fs from 'file:///home/lars/Documents/workspaces/gup-admin/frontend-nuxt/node_modules/unstorage/drivers/fs.mjs';
+import { toRouteMatcher, createRouter } from 'file:///home/lars/Documents/workspaces/gup-admin/frontend-nuxt/node_modules/radix3/dist/index.mjs';
 
 const inlineAppConfig = {};
 
@@ -68,7 +68,7 @@ function deepFreeze(object) {
   return Object.freeze(object);
 }
 
-const serverAssets = [{"baseName":"server","dir":"/Users/johanlarsson/Dev/gup-super/frontend-nuxt/server/assets"}];
+const serverAssets = [{"baseName":"server","dir":"/home/lars/Documents/workspaces/gup-admin/frontend-nuxt/server/assets"}];
 
 const assets = createStorage();
 
@@ -80,10 +80,10 @@ const storage = createStorage({});
 
 storage.mount('/assets', assets);
 
-storage.mount('root', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"/Users/johanlarsson/Dev/gup-super/frontend-nuxt","ignore":["**/node_modules/**","**/.git/**"]}));
-storage.mount('src', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"/Users/johanlarsson/Dev/gup-super/frontend-nuxt/server","ignore":["**/node_modules/**","**/.git/**"]}));
-storage.mount('build', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"/Users/johanlarsson/Dev/gup-super/frontend-nuxt/.nuxt","ignore":["**/node_modules/**","**/.git/**"]}));
-storage.mount('cache', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"/Users/johanlarsson/Dev/gup-super/frontend-nuxt/.nuxt/cache","ignore":["**/node_modules/**","**/.git/**"]}));
+storage.mount('root', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"/home/lars/Documents/workspaces/gup-admin/frontend-nuxt","ignore":["**/node_modules/**","**/.git/**"]}));
+storage.mount('src', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"/home/lars/Documents/workspaces/gup-admin/frontend-nuxt/server","ignore":["**/node_modules/**","**/.git/**"]}));
+storage.mount('build', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"/home/lars/Documents/workspaces/gup-admin/frontend-nuxt/.nuxt","ignore":["**/node_modules/**","**/.git/**"]}));
+storage.mount('cache', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"/home/lars/Documents/workspaces/gup-admin/frontend-nuxt/.nuxt/cache","ignore":["**/node_modules/**","**/.git/**"]}));
 
 function useStorage(base = "") {
   return base ? prefixStorage(storage, base) : storage;
@@ -500,29 +500,29 @@ const errorHandler = (async function errorhandler(error, event) {
   event.node.res.end(await res.text());
 });
 
-const _lazy_HlWbGA = () => Promise.resolve().then(function () { return alert$1; });
-const _lazy_jzR9yF = () => Promise.resolve().then(function () { return _id_$5; });
-const _lazy_cuqRRW = () => Promise.resolve().then(function () { return _id_$3; });
-const _lazy_1xxd7m = () => Promise.resolve().then(function () { return _id__delete$1; });
-const _lazy_TCuosi = () => Promise.resolve().then(function () { return _id_$1; });
-const _lazy_aOKPqY = () => Promise.resolve().then(function () { return posts_gup_by_id$1; });
-const _lazy_y9LNm6 = () => Promise.resolve().then(function () { return posts_gup_by_title$1; });
-const _lazy_IPllUq = () => Promise.resolve().then(function () { return posts_imported$1; });
-const _lazy_mQMJvZ = () => Promise.resolve().then(function () { return pubtypes$1; });
-const _lazy_UZ5qVd = () => Promise.resolve().then(function () { return renderer$1; });
+const _lazy_tqcPYS = () => Promise.resolve().then(function () { return alert$1; });
+const _lazy_o7yBLN = () => Promise.resolve().then(function () { return _id_$5; });
+const _lazy_5V7mXJ = () => Promise.resolve().then(function () { return _id_$3; });
+const _lazy_UgrNjJ = () => Promise.resolve().then(function () { return _id__delete$1; });
+const _lazy_rfnPvU = () => Promise.resolve().then(function () { return _id_$1; });
+const _lazy_gLoVgO = () => Promise.resolve().then(function () { return posts_gup_by_id$1; });
+const _lazy_IiZfD1 = () => Promise.resolve().then(function () { return posts_gup_by_title$1; });
+const _lazy_IFkdAk = () => Promise.resolve().then(function () { return posts_imported$1; });
+const _lazy_PQjPaq = () => Promise.resolve().then(function () { return pubtypes$1; });
+const _lazy_txIDTE = () => Promise.resolve().then(function () { return renderer$1; });
 
 const handlers = [
-  { route: '/api/alert', handler: _lazy_HlWbGA, lazy: true, middleware: false, method: undefined },
-  { route: '/api/post_gup_create/:id', handler: _lazy_jzR9yF, lazy: true, middleware: false, method: undefined },
-  { route: '/api/post_gup/:id', handler: _lazy_cuqRRW, lazy: true, middleware: false, method: undefined },
-  { route: '/api/post_imported/:id', handler: _lazy_1xxd7m, lazy: true, middleware: false, method: "delete" },
-  { route: '/api/post_imported/:id', handler: _lazy_TCuosi, lazy: true, middleware: false, method: undefined },
-  { route: '/api/posts_gup_by_id', handler: _lazy_aOKPqY, lazy: true, middleware: false, method: undefined },
-  { route: '/api/posts_gup_by_title', handler: _lazy_y9LNm6, lazy: true, middleware: false, method: undefined },
-  { route: '/api/posts_imported', handler: _lazy_IPllUq, lazy: true, middleware: false, method: undefined },
-  { route: '/api/pubtypes', handler: _lazy_mQMJvZ, lazy: true, middleware: false, method: undefined },
-  { route: '/__nuxt_error', handler: _lazy_UZ5qVd, lazy: true, middleware: false, method: undefined },
-  { route: '/**', handler: _lazy_UZ5qVd, lazy: true, middleware: false, method: undefined }
+  { route: '/api/alert', handler: _lazy_tqcPYS, lazy: true, middleware: false, method: undefined },
+  { route: '/api/post_gup_create/:id', handler: _lazy_o7yBLN, lazy: true, middleware: false, method: undefined },
+  { route: '/api/post_gup/:id', handler: _lazy_5V7mXJ, lazy: true, middleware: false, method: undefined },
+  { route: '/api/post_imported/:id', handler: _lazy_UgrNjJ, lazy: true, middleware: false, method: "delete" },
+  { route: '/api/post_imported/:id', handler: _lazy_rfnPvU, lazy: true, middleware: false, method: undefined },
+  { route: '/api/posts_gup_by_id', handler: _lazy_gLoVgO, lazy: true, middleware: false, method: undefined },
+  { route: '/api/posts_gup_by_title', handler: _lazy_IiZfD1, lazy: true, middleware: false, method: undefined },
+  { route: '/api/posts_imported', handler: _lazy_IFkdAk, lazy: true, middleware: false, method: undefined },
+  { route: '/api/pubtypes', handler: _lazy_PQjPaq, lazy: true, middleware: false, method: undefined },
+  { route: '/__nuxt_error', handler: _lazy_txIDTE, lazy: true, middleware: false, method: undefined },
+  { route: '/**', handler: _lazy_txIDTE, lazy: true, middleware: false, method: undefined }
 ];
 
 function createNitroApp() {
@@ -784,9 +784,9 @@ function publicAssetsURL(...path) {
 
 globalThis.__buildAssetsURL = buildAssetsURL;
 globalThis.__publicAssetsURL = publicAssetsURL;
-const getClientManifest = () => import('/Users/johanlarsson/Dev/gup-super/frontend-nuxt/.nuxt/dist/server/client.manifest.mjs').then((r) => r.default || r).then((r) => typeof r === "function" ? r() : r);
+const getClientManifest = () => import('/home/lars/Documents/workspaces/gup-admin/frontend-nuxt/.nuxt/dist/server/client.manifest.mjs').then((r) => r.default || r).then((r) => typeof r === "function" ? r() : r);
 const getStaticRenderedHead = () => Promise.resolve().then(function () { return _virtual__headStatic$1; }).then((r) => r.default || r);
-const getServerEntry = () => import('/Users/johanlarsson/Dev/gup-super/frontend-nuxt/.nuxt/dist/server/server.mjs').then((r) => r.default || r);
+const getServerEntry = () => import('/home/lars/Documents/workspaces/gup-admin/frontend-nuxt/.nuxt/dist/server/server.mjs').then((r) => r.default || r);
 const getSSRRenderer = lazyCachedFunction(async () => {
   const manifest = await getClientManifest();
   if (!manifest) {
