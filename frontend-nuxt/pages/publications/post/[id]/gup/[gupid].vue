@@ -130,7 +130,7 @@ if (route.params.gupid !== 'empty') {
 
 const debounceFn = useDebounceFn(() => {
   if (importedPostById ) {
-      fetchGupPostsByTitle({title: searchTitleStr.value});
+      fetchGupPostsByTitle(item_row_id,searchTitleStr.value);
     }
   }, 500)
 
