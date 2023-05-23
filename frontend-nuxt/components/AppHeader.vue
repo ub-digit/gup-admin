@@ -1,4 +1,4 @@
-    <template>
+<template>
     <div>
         <header>
           <div class="container-fluid">
@@ -16,6 +16,13 @@
                 </div>
               </div>
               <div class="col-auto align-self-top">
+                <select style="margin-top:10px;" class="form-select" v-model="selectedUser">
+                  <option disabled value="">Select user</option>
+                <!-- inline object literal -->
+                <option v-for="user in users" :key="user">{{ user }}</option>
+              </select>
+              </div>
+              <div class="col-auto align-self-top">
                 <LangSelect :locale="t('locale.other_locale_code')">{{t('locale.other_lang')}}</LangSelect>
               </div>
             </div>
@@ -25,15 +32,20 @@
 </template>
 
 <script setup>
-  const { t, getLocale } = useI18n()
+import { useImportedPostsStore } from '~/store/imported_posts'
+import { storeToRefs } from 'pinia'
+
+const importedPostsStore = useImportedPostsStore();
+const {users, selectedUser} = storeToRefs(importedPostsStore);
+const { t, getLocale } = useI18n()
 
 
-  const getHeaderURL = computed(() =>  {
-    return t("appheader.header_level1_link");
-  })
-  const getLogoURL = computed(() => {
-        return t("appheader.logo_link");
-  })
+const getHeaderURL = computed(() =>  {
+  return t("appheader.header_level1_link");
+})
+const getLogoURL = computed(() => {
+      return t("appheader.logo_link");
+})
 </script>
 
 

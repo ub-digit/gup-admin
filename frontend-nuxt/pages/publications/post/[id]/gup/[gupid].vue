@@ -96,7 +96,7 @@ const showModal = ref(false);
 const filterStore = useFilterStore();
 const importedPostsStore = useImportedPostsStore();
 const {fetchImportedPostById, removeImportedPost, fetchImportedPosts, createImportedPostInGup, $importedReset} = importedPostsStore;
-const {importedPostById, pendingImportedPostById, pendingCreateImportedPostInGup, errorImportedPostById} = storeToRefs(importedPostsStore) 
+const {importedPostById, pendingImportedPostById, pendingCreateImportedPostInGup, errorImportedPostById, selectedUser} = storeToRefs(importedPostsStore) 
 const gupPostsStore = useGupPostsStore()
 const { fetchGupPostsByTitle, fetchGupPostsById, fetchCompareGupPostWithImported} = gupPostsStore
 const { gupPostsByTitle, pendingGupPostsByTitle, gupPostsById, pendingGupPostsById, gupPostById, gupCompareImportedMatrix, pendingCompareGupPostWithImported, pendingGupPostById, errorGupPostById } = storeToRefs(gupPostsStore)
@@ -180,19 +180,24 @@ async function editPost() {
     item_row_id = importedPostById.value.find(item => item.display_label === 'id')
     item_row_source = importedPostById.value.find(item => item.display_label === 'source')
   } */
-  const ok = confirm(t('messages.confirm_create_in_gup'))
-  if (ok) {
-    if (item_row_source !== "gup") {
-      const response = await createImportedPostInGup(item_row_id,'xljoha')
-      if (response) {
-        const url = config.public.API_GUP_BASE_URL_EDIT + response.id;
-        window.open(url, '_blank')
-        showModal.value = true;
+  if (selectedUser.value !== '') {
+    const ok = confirm(t('messages.confirm_create_in_gup'))
+    if (ok) {
+      if (item_row_source !== "gup") {
+        const response = await createImportedPostInGup(item_row_id, selectedUser.value)
+        if (response) {
+          const url = response.link;//config.public.API_GUP_BASE_URL_EDIT + response.id;
+          window.open(url, '_blank')
+          showModal.value = true;
+        }
+      } else if (item_row_source === "gup") {
+        window.open(`${config.public.API_GUP_BASE_URL_EDIT}${item_row_publication_id}`, '_blank')
       }
-    } else if (item_row_source === "gup") {
-      window.open(`${config.public.API_GUP_BASE_URL_EDIT}${item_row_publication_id}`, '_blank')
-    }
-  } 
+    } 
+  } else {
+    alert("No user selected!")
+  }
+
 }
 
 searchTitleStr.value = item_row_title;

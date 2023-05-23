@@ -4,6 +4,8 @@ import { storeToRefs } from 'pinia'
 export const useImportedPostsStore = defineStore('importedPostsStore', () => {
   const filterStore = useFilterStore();
   const {filters} = storeToRefs(filterStore);
+  const users = ref(['xgrkri','xannje','xjopau']) 
+  const selectedUser = ref("");
   const importedPosts = ref([])
   const importedPostById = ref(null);
   const errorImportedPostById = ref(null);
@@ -114,5 +116,8 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
 
 
   }
-  return {createImportedPostInGup, importedPosts,fetchImportedPosts, pendingImportedPosts, removeImportedPost, fetchImportedPostById, importedPostById, errorImportedPostById,  pendingImportedPostById, pendingRemoveImportedPost, pendingCreateImportedPostInGup, $importedReset}
+  return {createImportedPostInGup, importedPosts,fetchImportedPosts, pendingImportedPosts, removeImportedPost, 
+        fetchImportedPostById, importedPostById, errorImportedPostById,  pendingImportedPostById, 
+        pendingRemoveImportedPost, pendingCreateImportedPostInGup, $importedReset, users, selectedUser
+    }
 })
