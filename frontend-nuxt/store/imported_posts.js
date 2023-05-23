@@ -12,11 +12,11 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
   const pendingRemoveImportedPost = ref(null);
   const pendingCreateImportedPostInGup = ref(null);
 
-  async function createImportedPostInGup(id) {
+  async function createImportedPostInGup(id, user) {
     try {
       pendingCreateImportedPostInGup.value = true;
-      const { data, error } = await useFetch(`/api/post_to_gup/${id}`, {
-          params: {},
+      const { data, error } = await useFetch(`/api/post_to_gup/${id}/`, {
+          params: {"user": user},
         });
         return data.value;
     } catch (error) {

@@ -183,7 +183,7 @@ async function editPost() {
   const ok = confirm(t('messages.confirm_create_in_gup'))
   if (ok) {
     if (item_row_source !== "gup") {
-      const response = await createImportedPostInGup(item_row_id)
+      const response = await createImportedPostInGup(item_row_id,'xljoha')
       if (response) {
         const url = config.public.API_GUP_BASE_URL_EDIT + response.id;
         window.open(url, '_blank')
