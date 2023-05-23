@@ -2,31 +2,11 @@ defmodule GupAdmin.Resource.Publication do
   alias GupAdmin.Resource.Search
   # post to external site with httpoison
   def post_publication_to_gup(id, gup_user) do
-    # user = System.get_env("GUP_USER", nil)
-    # |> case do
-    #   nil -> raise "GUP_USER not set"
-    #   user -> user
-    # end
-
     api_key = System.get_env("GUP_API_KEY", "an-api-key")
     url = "https://gup-server-lab.ub.gu.se/v1/drafts_admin?api_key=#{api_key}&username=#{gup_user}"
     pub = show_raw(id)
     body = %{"publication" => pub} |> Jason.encode!()
     HTTPoison.post(url, body, [{"Content-Type", "application/json"}])
-
-
-
-  end
-
-  def get_id(body) do
-    body
-    |> Jason.decode!()
-    |> Map.get("publication")
-    |> Map.get("id")
-  end
-
-  def get_gup_link(body) do
-    "#{System.get_env("GUP_BASE_URL", "https://gup-lab.ub.gu.se/")}publications/show/#{get_id(body)}"
   end
 
   def show(id) do
