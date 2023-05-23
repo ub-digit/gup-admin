@@ -13,7 +13,20 @@ defmodule GupAdmin.Resource.Publication do
     pub = show_raw(id)
     body = %{"publication" => pub} |> Jason.encode!()
     HTTPoison.post(url, body, [{"Content-Type", "application/json"}])
-    |> IO.inspect(label: "post_publication_to_gup")
+
+
+
+  end
+
+  def get_id(body) do
+    body
+    |> Jason.decode!()
+    |> Map.get("publication")
+    |> Map.get("id")
+  end
+
+  def get_gup_link(body) do
+    "#{System.get_env("GUP_BASE_URL", "https://gup-lab.ub.gu.se/")}publications/show/#{get_id(body)}"
   end
 
   def show(id) do
