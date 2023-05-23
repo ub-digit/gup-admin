@@ -27,8 +27,8 @@ defmodule GupAdminWeb.PublicationController do
     json conn, Search.mark_as_deleted(id)
   end
 
-  def post_to_gup(conn, %{"id" => id}) do
-    Publication.post_publication_to_gup(id)
+  def post_to_gup(conn, %{"id" => id, "gup_user" => gup_user}) do
+    Publication.post_publication_to_gup(id, gup_user)
     |> case do
       {:ok, %HTTPoison.Response{status_code: 200}} ->  conn |> send_resp(200, Jason.encode!(%{"message" => "Post successfully posted to GUP"}))
       {:ok, %HTTPoison.Response{status_code: 400}} -> conn |> send_resp(400, Jason.encode!(%{error: %{"message" => "Post already exists in GUP", "code" => 400}}))
