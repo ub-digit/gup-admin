@@ -89,41 +89,41 @@ defmodule GupAdmin.Resource.Search do
     hits
   end
 
-  # def get_duplicates(%{"mode" => "id", "id" => id}) do
-  #   post = Publication.show_raw(id)
-  #   q = post["publication_identifiers"]
-  #   |> Query.find_duplicates_by_identifiers()
-  #   {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
-  #   hits
-  #   |> Publication.remap()
-  # end
-
-  # def get_duplicates(%{"mode" => "title", "id" => id, "title" => title}) do
-  #   #post = Publication.show_raw(id)
-  #   q = title
-  #   |> Query.fuzzy()
-  #   {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
-  #   hits
-  #   |> Publication.remap()
-  # end
-
   def get_duplicates(%{"mode" => "id", "id" => id}) do
-    q = Query.base("")
+    post = Publication.show_raw(id)
+    q = post["publication_identifiers"]
+    |> Query.find_duplicates_by_identifiers()
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
-
-    hits = hits
-    |> Enum.take(2)
+    hits
     |> Publication.remap()
   end
 
-  def get_duplicates(%{"mode" => "title", "id" => id}) do
-    q = Query.base("")
+  def get_duplicates(%{"mode" => "title", "id" => id, "title" => title}) do
+    #post = Publication.show_raw(id)
+    q = title
+    |> Query.fuzzy()
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
-
-    hits = hits
-    |> Enum.take(2)
+    hits
     |> Publication.remap()
   end
+
+  # def get_duplicates(%{"mode" => "id", "id" => id}) do
+  #   q = Query.base("")
+  #   {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
+
+  #   hits = hits
+  #   |> Enum.take(2)
+  #   |> Publication.remap()
+  # end
+
+  # def get_duplicates(%{"mode" => "title", "id" => id}) do
+  #   q = Query.base("")
+  #   {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
+
+  #   hits = hits
+  #   |> Enum.take(2)
+  #   |> Publication.remap()
+  # end
 
   def mark_as_deleted(id) do
     Publication.show_raw(id)
@@ -138,7 +138,6 @@ defmodule GupAdmin.Resource.Search do
     |> Map.put("deleted", true)
     |> Map.put("needs_attention", false)
     |> Map.put("deleted_at", DateTime.utc_now())
-    |> IO.inspect(label: "post")
     Elastix.Document.index(elastic_url(), @index, "_doc", post["id"], post)
     {:ok, %{body: _}} = Elastix.Index.refresh(elastic_url(), @index)
     %{"message" => "Publication marked as deleted"}
