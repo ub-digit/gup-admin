@@ -13,6 +13,7 @@ defmodule GupAdmin.Resource.Publication do
     pub = show_raw(id)
     body = %{"publication" => pub} |> Jason.encode!()
     HTTPoison.post(url, body, [{"Content-Type", "application/json"}])
+    |> IO.inspect(label: "post_publication_to_gup")
   end
 
   def show(id) do
@@ -29,7 +30,6 @@ defmodule GupAdmin.Resource.Publication do
     |> List.first()
     |> Map.get("_source")
     |> remap("new")
-    |> IO.inspect()
   end
 
   def show_raw(id) do
@@ -61,7 +61,7 @@ defmodule GupAdmin.Resource.Publication do
   end
 
   def remap(data, "new") do
-    d = []
+    []
     |> row(get_publication_id(data), [{"display_label", "publication_id"}, {"display_type", "string"}, {"visibility", get_visibility("publication_id")}])
     |> row(data["id"], [{"display_label", "id"}, {"display_type", "string"}, {"visibility", get_visibility("id")}])
     |> row(%{"url" => get_publication_url(data), "title" => data["title"]}, [{"display_label", "title"}, {"display_type", "title"}, {"visibility", get_visibility("title")}])
