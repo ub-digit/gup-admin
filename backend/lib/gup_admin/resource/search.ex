@@ -95,6 +95,7 @@ defmodule GupAdmin.Resource.Search do
     |> Query.find_duplicates_by_identifiers()
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
     hits
+    |> Enum.filter(fn p -> p["_id"] != id end)
     |> Publication.remap()
   end
 
@@ -104,26 +105,9 @@ defmodule GupAdmin.Resource.Search do
     |> Query.fuzzy()
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
     hits
+    |> Enum.filter(fn p -> p["_id"] != id end)
     |> Publication.remap()
   end
-
-  # def get_duplicates(%{"mode" => "id", "id" => id}) do
-  #   q = Query.base("")
-  #   {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
-
-  #   hits = hits
-  #   |> Enum.take(2)
-  #   |> Publication.remap()
-  # end
-
-  # def get_duplicates(%{"mode" => "title", "id" => id}) do
-  #   q = Query.base("")
-  #   {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
-
-  #   hits = hits
-  #   |> Enum.take(2)
-  #   |> Publication.remap()
-  # end
 
   def mark_as_deleted(id) do
     Publication.show_raw(id)
