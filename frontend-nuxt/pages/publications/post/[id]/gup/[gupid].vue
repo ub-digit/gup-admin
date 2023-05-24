@@ -17,6 +17,12 @@
         </template>
         <template #body>
           <p>{{t('messages.merge_in_gup_success_body')}}</p>
+          <p>
+            <strong>Titel:</strong> {{ item_row_title }}
+          </p>
+          <p>
+            <strong>ID:</strong> {{ item_row_id }}
+            </p>
         </template>
       </modal>
 
