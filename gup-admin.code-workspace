@@ -1,6 +1,9 @@
 {
     "folders": [
     {
+    "path": "gup_index_manager"
+    },
+    {
     "path": "data"
     },
     {

@@ -281,13 +281,13 @@ defmodule GupAdmin.Resource.Publication do
     sys_id = data["id"]
     id = get_publication_id(data)
     case String.contains?(sys_id, "gup") do
-      true -> gup_base_url() <> "/publications/show#{id}"
+      true -> gup_base_url() <> "/publications/show/#{id}"
       _ -> ""
     end
   end
 
   def gup_base_url() do
-    System.get_env("GUP_BASE_URL", "https://gup-staging.ub.gu.se/")
+    System.get_env("GUP_BASE_URL", "https://gup-staging.ub.gu.se")
   end
 
   def get_visibility(display_label) do
