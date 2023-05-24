@@ -9,6 +9,16 @@ defmodule GupAdmin.Resource.Publication do
     HTTPoison.post(url, body, [{"Content-Type", "application/json"}])
   end
 
+  def merge_publications(gup_id, publication_id, gup_user) do
+    # api_key = System.get_env("GUP_API_KEY", "an-api-key")
+    # url = "https://gup-server-lab.ub.gu.se/v1/drafts_admin/#{gup_id}/merge/#{publication_id}?api_key=#{api_key}&username=#{gup_user}"
+    # pub = show_raw(publication_id)
+    # gup_id = gup_id |> String.split("_") |> List.last()
+    # body = %{"publication" => pub, "id" => gup_id} |> Jason.encode!()
+    # HTTPoison.post(url, body, [{"Content-Type", "application/json"}])
+    {:ok, %{"message" => "Publication with id #{publication_id} merged with publication with id #{gup_id}"}}
+  end
+
   def show(id) do
     Search.search_one(id)
     |> List.first()
