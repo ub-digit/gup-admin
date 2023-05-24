@@ -29,6 +29,19 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
     }
   }
 
+  async function mergePosts(gupid, id, user) {
+    try {
+      const { data, error } = await useFetch(`/api/merge_posts/`, {
+          params: {"gupid": gupid, "id": id, "user": user},
+        });
+        return data.value;
+    } catch (error) {
+        console.log(error)
+    }
+    finally {
+    }
+  }
+
   async function fetchImportedPosts() {
     try {
         pendingImportedPosts.value = true;
@@ -116,7 +129,7 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
 
 
   }
-  return {createImportedPostInGup, importedPosts,fetchImportedPosts, pendingImportedPosts, removeImportedPost, 
+  return {createImportedPostInGup, importedPosts,fetchImportedPosts, pendingImportedPosts, removeImportedPost, mergePosts,
         fetchImportedPostById, importedPostById, errorImportedPostById,  pendingImportedPostById, 
         pendingRemoveImportedPost, pendingCreateImportedPostInGup, $importedReset, users, selectedUser
     }

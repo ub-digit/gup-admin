@@ -11,6 +11,15 @@
         </template>
       </modal>
 
+      <modal :show="showModalMerge" @success="handleSuccessMerge" @close="showModalMerge = false">
+        <template #header>
+          <h4>{{t('messages.merge_in_gup_success')}}</h4>
+        </template>
+        <template #body>
+          <p>{{t('messages.merge_in_gup_success_body')}}</p>
+        </template>
+      </modal>
+
       <div v-if="route.params.gupid !== 'empty'"> 
         <Spinner v-if="pendingCompareGupPostWithImported" class="me-4"/>
         <PostDisplayCompare :dataMatrix="gupCompareImportedMatrix" />
@@ -31,7 +40,7 @@
         <div class="col-6 text-end">
           <button type="button" class="btn btn-danger me-1" @click="removePost">{{t('buttons.remove')}}</button>
           <button type="button" class="btn btn-secondary me-1" @click="editPost">{{t('buttons.edit')}}</button>
-          <button :disabled="!gupCompareImportedMatrix" type="button" class="btn btn-success" @click="mergePosts">{{t('buttons.merge')}}</button>
+          <button :disabled="!gupCompareImportedMatrix" type="button" class="btn btn-success" @click="merge">{{t('buttons.merge')}}</button>
         </div>
     </div>
   </div>
@@ -92,10 +101,12 @@ const searchTitleStr = ref(null);
 const { $toast } = useNuxtApp();
 const config = useRuntimeConfig();
 const showModal = ref(false);
+const showModalMerge = ref(false);
+
 
 const filterStore = useFilterStore();
 const importedPostsStore = useImportedPostsStore();
-const {fetchImportedPostById, removeImportedPost, fetchImportedPosts, createImportedPostInGup, $importedReset} = importedPostsStore;
+const {fetchImportedPostById, removeImportedPost, fetchImportedPosts, createImportedPostInGup, mergePosts, $importedReset} = importedPostsStore;
 const {importedPostById, pendingImportedPostById, pendingCreateImportedPostInGup, errorImportedPostById, selectedUser} = storeToRefs(importedPostsStore) 
 const gupPostsStore = useGupPostsStore()
 const { fetchGupPostsByTitle, fetchGupPostsById, fetchCompareGupPostWithImported} = gupPostsStore
@@ -137,8 +148,18 @@ const debounceFn = useDebounceFn(() => {
  
 watch(searchTitleStr, () => {debounceFn();})
 
-function mergePosts() {
-  alert("merge")
+async function merge() {
+  if (selectedUser.value !== '') {
+    const ok = confirm(t('messages.confirm_merge_in_gup'))
+    if (ok) {
+        const res = await mergePosts(route.params.gupid, route.params.id, selectedUser.value);
+        if (res) {
+          showModalMerge.value = true;
+        }
+      } 
+    } else {
+    alert("No user selected")
+  }
 }
 async function removePost() {
   const ok = confirm(t('messages.confirm_remove'))
@@ -166,6 +187,21 @@ async function handleSuccess() {
   const response = await removeImportedPost(item_row_id);
   fetchImportedPosts();
   showModal.value = false;
+  $toast.success(t('messages.remove_success'));
+  router.push({path: '/publications', query: {...route.query}})
+}
+
+
+async function handleSuccessMerge() {
+/*   const item_row_id = null;
+  if (route.params.gupid !== 'empty') {
+     item_row_id = gupCompareImportedMatrix.value.find(item => item.display_label === 'id')
+  } else {
+    item_row_id = importedPostById.value.find(item => item.display_label === 'id')
+  } */
+  const response = await removeImportedPost(item_row_id);
+  fetchImportedPosts();
+  showModalMerge.value = false;
   $toast.success(t('messages.remove_success'));
   router.push({path: '/publications', query: {...route.query}})
 }
