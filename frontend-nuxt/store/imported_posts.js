@@ -14,6 +14,20 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
   const pendingRemoveImportedPost = ref(null);
   const pendingCreateImportedPostInGup = ref(null);
 
+
+
+  if (localStorage.getItem("selectedUser")) {
+    selectedUser.value = localStorage.getItem("selectedUser");
+  }
+
+  watch(
+    selectedUser,
+    () => {
+      // save to localstorage
+      localStorage.setItem("selectedUser", selectedUser.value);
+    }
+  )
+
   async function createImportedPostInGup(id, user) {
     try {
       pendingCreateImportedPostInGup.value = true;

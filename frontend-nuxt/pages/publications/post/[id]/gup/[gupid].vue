@@ -207,15 +207,6 @@ async function handleSuccessMerge() {
 }
 
 async function editPost() {
-/*   let item_row_id = null;
-  let item_row_source = null;
-  if (route.params.gupid !== 'empty') {
-     item_row_id = gupCompareImportedMatrix.value.find(item => item.display_label === 'id')
-     item_row_source = gupCompareImportedMatrix.value.find(item => item.display_label === 'source')
-  } else {
-    item_row_id = importedPostById.value.find(item => item.display_label === 'id')
-    item_row_source = importedPostById.value.find(item => item.display_label === 'source')
-  } */
   if (selectedUser.value !== '') {
     const ok = confirm(t('messages.confirm_create_in_gup'))
     if (ok) {
