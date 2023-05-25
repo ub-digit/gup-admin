@@ -199,17 +199,11 @@ async function handleSuccess() {
 
 
 async function handleSuccessMerge() {
-/*   const item_row_id = null;
-  if (route.params.gupid !== 'empty') {
-     item_row_id = gupCompareImportedMatrix.value.find(item => item.display_label === 'id')
-  } else {
-    item_row_id = importedPostById.value.find(item => item.display_label === 'id')
-  } */
   const response = await removeImportedPost(item_row_id);
   fetchImportedPosts();
   showModalMerge.value = false;
   $toast.success(t('messages.remove_success'));
-  router.push({path: '/publications', query: {...route.query}})
+  router.push({path: `/publications/post/${route.params.gupid}/gup/empty`, query: {...route.query}})
 }
 
 async function editPost() {
