@@ -11,6 +11,15 @@ defmodule GupIndexManagerWeb.PublicationController do
     json conn, %{status: "error"}
   end
 
+  def delete(conn,  %{"id" => id, "api_key" => "megasecretimpossibletoguesskey"}) do
+    Publication.delete(id)
+    json conn, %{status: "ok"}
+  end
+
+  def delete(conn, _params) do
+    json conn, %{status: "error"}
+  end
+
   def list(conn, _params) do
     json conn, Publication.list()
   end

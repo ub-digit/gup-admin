@@ -20,7 +20,7 @@ defmodule GupIndexManagerWeb.Router do
     get "/", PageController, :home
     get "/publications", PublicationController, :list
     put "/publications", PublicationController, :create_or_update
-
+    delete "/publications/:id", PublicationController, :delete
   end
 
   # Other scopes may use custom stacks.
