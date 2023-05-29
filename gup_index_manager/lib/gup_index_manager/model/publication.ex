@@ -4,6 +4,7 @@ defmodule GupIndexManager.Model.Publication do
 
   schema "publications" do
     field :attended, :boolean, default: false
+    field :deleted, :boolean, default: false
     field :json, :string
     field :publication_id, :string
 
@@ -13,14 +14,13 @@ defmodule GupIndexManager.Model.Publication do
   @doc false
   def changeset(publication, attrs) do
     publication
-    |> cast(attrs, [:json, :publication_id, :attended])
+    |> cast(attrs, [:json, :publication_id, :attended, :deleted])
     |> validate_required([:json, :publication_id, :attended])
   end
 
   def find_by_publication_id(publication_id) do
     GupIndexManager.Model.Publication
     |> GupIndexManager.Repo.get_by(publication_id: publication_id)
-    |> IO.inspect(label: "find_by_publication_id")
     |> case do
       nil -> %GupIndexManager.Model.Publication{}
       publication -> publication

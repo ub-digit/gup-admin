@@ -39,5 +39,6 @@ defmodule GupIndexManager.Resource.Index do
     |> Jason.decode!()
     |> Map.put("attended", attrs["attended"])
     Elastix.Document.index(elastic_url(), @index, "_doc", attrs["publication_id"], json, [])
+    Elastix.Index.refresh(elastic_url(), @index)
   end
 end

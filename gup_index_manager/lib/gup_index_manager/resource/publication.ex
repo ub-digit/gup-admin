@@ -2,14 +2,17 @@ defmodule GupIndexManager.Resource.Publication do
   alias GupIndexManager.Model.Publication
   alias GupIndexManager.Resource.Index
   def create_or_update(data) do
+
     id = data |> get_id()
+    db_publication = Publication.find_by_publication_id(id)
     attrs = %{
       "json" => data |> Jason.encode!(),
-      "attended" => false, #need to check database if fot attanded flag?
+      "attended" => db_publication.attended,
+      "deleted" => db_publication.deleted,
       "publication_id" => id
     }
 
-    Publication.find_by_publication_id(id)
+    db_publication
     |> Publication.changeset(attrs)
     |> GupIndexManager.Repo.insert_or_update()
     Index.add_publication(attrs)

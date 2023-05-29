@@ -20,7 +20,7 @@ defmodule Experiment do
     api_key = System.get_env("GUP_INDEX_MANAGER_API_KEY", "megasecretimpossibletoguesskey")
     url = "http://localhost:4010/publications?api_key=#{api_key}"
 
-    load_gup_data(10)
+    load_gup_data(20)
     |> Enum.map(fn item ->
       body = %{"data" => item} |> Jason.encode!()
       HTTPoison.put(url, body, [{"Content-Type", "application/json"}])
