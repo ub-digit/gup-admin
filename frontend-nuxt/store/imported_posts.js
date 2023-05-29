@@ -51,6 +51,7 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
         return data.value;
     } catch (error) {
         console.log(error)
+        return error;
     }
     finally {
     }
