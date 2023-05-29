@@ -22,3 +22,6 @@ services:
     image: docker.ub.gu.se/gup-admin-index-manager:${GIT_REVISION}
     build:
       context: ./gup-index-manager
+      args:
+        - GIT_REPO_URL=${GIT_REPO_URL}
+        - GIT_REVISION=${GIT_REVISION}
