@@ -6,6 +6,7 @@ config :gup_index_manager, GupIndexManager.Repo,
   password: "postgres",
   hostname: "localhost",
   database: "gup_index_manager_dev",
+  port: "5443",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10

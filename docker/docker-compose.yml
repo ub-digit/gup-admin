@@ -25,6 +25,15 @@ services:
     ports:
      - "127.0.0.1:5433:5432"
     restart: always
+  db-index-manager:
+    image: postgres:12
+    environment:
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+      POSTGRES_DB: "${INDEX_MANAGER_DB_NAME}"
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+     - "127.0.0.1:5443:5432"
   elasticsearch:
     image: docker.ub.gu.se/gup-admin-elasticsearch:${GIT_REVISION}
     ports:

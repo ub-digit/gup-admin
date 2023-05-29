@@ -8,4 +8,5 @@ fi
 
 docker push docker.ub.gu.se/gup-admin-elasticsearch:${GIT_REVISION} && \
 docker push docker.ub.gu.se/gup-admin-backend:${GIT_REVISION} && \
+docker push docker.ub.gu.se/gup-admin-index-manager:${GIT_REVISION} && \
 docker push docker.ub.gu.se/gup-admin-frontend-nuxt:${GIT_REVISION}

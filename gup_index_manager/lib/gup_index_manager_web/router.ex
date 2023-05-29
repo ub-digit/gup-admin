@@ -6,7 +6,7 @@ defmodule GupIndexManagerWeb.Router do
     plug :fetch_session
     plug :fetch_live_flash
     plug :put_root_layout, {GupIndexManagerWeb.Layouts, :root}
-    plug :protect_from_forgery
+   # plug :protect_from_forgery
     plug :put_secure_browser_headers
   end
 
@@ -18,6 +18,9 @@ defmodule GupIndexManagerWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/publications", PublicationController, :list
+    put "/publications", PublicationController, :create_or_update
+
   end
 
   # Other scopes may use custom stacks.
