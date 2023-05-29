@@ -33,11 +33,13 @@ defmodule GupIndexManager.Resource.Index do
     end)
   end
 
-  def add_publication(attrs) do
+  def update_publication(attrs) do
     json = attrs
     |> Map.get("json")
     |> Jason.decode!()
     |> Map.put("attended", attrs["attended"])
+    |> Map.put("deleted", true)
+
     Elastix.Document.index(elastic_url(), @index, "_doc", attrs["publication_id"], json, [])
     Elastix.Index.refresh(elastic_url(), @index)
   end

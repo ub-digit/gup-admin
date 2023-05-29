@@ -15,12 +15,32 @@ defmodule GupIndexManager.Resource.Publication do
     db_publication
     |> Publication.changeset(attrs)
     |> GupIndexManager.Repo.insert_or_update()
-    Index.add_publication(attrs)
+    Index.update_publication(attrs)
+  end
+
+  def delete(id) do
+    db_publication = Publication.find_by_publication_id(id)
+    case db_publication.id do
+      nil -> {:error, "Publication not found"}
+      _ -> proceed_delete(db_publication)
+    end
+  end
+
+  def proceed_delete(db_publication) do
+    attrs = %{
+      "json" => db_publication.json,
+      "attended" => db_publication.attended,
+      "deleted" => true,
+      "publication_id" => db_publication.publication_id
+    }
+    db_publication
+    |> Publication.changeset(attrs)
+    |> GupIndexManager.Repo.insert_or_update()
+    Index.update_publication(attrs)
   end
 
   def list() do
-    Publication
-    |> GupIndexManager.Repo.all()
+    get_all_publications()
     |> remap()
   end
 
@@ -28,7 +48,8 @@ defmodule GupIndexManager.Resource.Publication do
     Enum.map(publications, fn publication ->
       %{
         "publication_id" => publication.publication_id,
-        "json" => String.slice(publication.json, 0, 100) <> "..."
+        "attended" => publication.attended,
+        "deleted" => publication.deleted
       }
     end)
   end
