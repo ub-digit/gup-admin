@@ -18,7 +18,6 @@ defmodule GupIndexManager.Resource.Index do
   def rebuild_index do
     create_index()
     Model.Publication |> GupIndexManager.Repo.all()
-    |> IO.inspect()
     |> remap_for_index()
     |> Enum.map(fn publication ->
       Elastix.Document.index(elastic_url(), @index, "_doc", publication["id"], publication, [])
@@ -34,11 +33,15 @@ defmodule GupIndexManager.Resource.Index do
   end
 
   def update_publication(attrs) do
+    case Elastix.Index.exists?(elastic_url(), @index) do
+      {:ok, false} -> create_index()
+      {:ok, true} -> :ok
+    end
     json = attrs
     |> Map.get("json")
     |> Jason.decode!()
     |> Map.put("attended", attrs["attended"])
-    |> Map.put("deleted", true)
+    |> Map.put("deleted", attrs["deleted"])
 
     Elastix.Document.index(elastic_url(), @index, "_doc", attrs["publication_id"], json, [])
     Elastix.Index.refresh(elastic_url(), @index)
