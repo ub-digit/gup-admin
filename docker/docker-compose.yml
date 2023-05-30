@@ -42,6 +42,7 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
      - "127.0.0.1:5443:5432"
+    restart: always
   elasticsearch:
     image: docker.ub.gu.se/gup-admin-elasticsearch:${GIT_REVISION}
     ports:
