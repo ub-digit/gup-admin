@@ -21,6 +21,7 @@
     "bootstrap": "^5.2.3",
     "lodash": "^4.17.21",
     "marked": "^4.2.12",
+    "nuxt-storage": "^1.2.2",
     "pinia": "^2.0.29",
     "sass": "^1.57.1",
     "sass-loader": "^13.2.0",

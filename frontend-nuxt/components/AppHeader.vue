@@ -17,7 +17,7 @@
               </div>
               <div class="col-auto align-self-top">
                 <select style="margin-top:10px;" class="form-select" v-model="selectedUser">
-                  <option disabled value="">Select user</option>
+                  <option disabled selected value="">Select user</option>
                 <!-- inline object literal -->
                 <option v-for="user in users" :key="user">{{ user }}</option>
               </select>

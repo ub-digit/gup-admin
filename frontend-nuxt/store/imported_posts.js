@@ -1,30 +1,34 @@
 import { defineStore } from 'pinia'
 import { useFilterStore } from '~/store/filter'
 import { storeToRefs } from 'pinia'
+import nuxtStorage from 'nuxt-storage';
 export const useImportedPostsStore = defineStore('importedPostsStore', () => {
-  const filterStore = useFilterStore();
-  const {filters} = storeToRefs(filterStore);
-  const users = ref(['xgrkri','xannje','xjopau']) 
-  const selectedUser = ref("");
-  const importedPosts = ref([])
-  const importedPostById = ref(null);
-  const errorImportedPostById = ref(null);
-  const pendingImportedPosts= ref(null);
-  const pendingImportedPostById = ref(null);
-  const pendingRemoveImportedPost = ref(null);
-  const pendingCreateImportedPostInGup = ref(null);
+const filterStore = useFilterStore();
+const {filters} = storeToRefs(filterStore);
+const users = ref(['xgrkri','xannje','xjopau']) 
+const selectedUser = ref("");
+const importedPosts = ref([])
+const importedPostById = ref(null);
+const errorImportedPostById = ref(null);
+const pendingImportedPosts= ref(null);
+const pendingImportedPostById = ref(null);
+const pendingRemoveImportedPost = ref(null);
+const pendingCreateImportedPostInGup = ref(null);
 
-
-
-  if (localStorage.getItem("selectedUser")) {
-    selectedUser.value = localStorage.getItem("selectedUser");
+  if (nuxtStorage.localStorage.getData("selectedUser")) {
+      selectedUser.value = nuxtStorage.localStorage.getData("selectedUser");
   }
+
 
   watch(
     selectedUser,
     () => {
       // save to localstorage
-      localStorage.setItem("selectedUser", selectedUser.value);
+      if (selectedUser.value !== "") {
+        nuxtStorage.localStorage.setData("selectedUser", selectedUser.value);
+      } else {
+        selectedUser.value =  nuxtStorage.localStorage.getData("selectedUser")
+      }
     }
   )
 
@@ -34,9 +38,13 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
       const { data, error } = await useFetch(`/api/post_to_gup/${id}/`, {
           params: {"user": user},
         });
+        if (error.value) {
+          throw(error)
+        }
         return data.value;
     } catch (error) {
         console.log(error)
+        return {error: error.value.data}; 
     }
     finally {
       pendingCreateImportedPostInGup.value = false;
@@ -71,7 +79,6 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
           console.log("Something went wrong: fetchImportedPosts")
         }
         finally {
-          
           pendingImportedPosts.value = false;
         }
   }
@@ -84,7 +91,7 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
     { deep: true }    
     ); 
     
-    async function fetchImportedPostById(id) {    
+  async function fetchImportedPostById(id) {    
     try {
       importedPostById.value = null;
       pendingImportedPostById.value = true;
@@ -102,25 +109,23 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
     finally {
       pendingImportedPostById.value = false;
     }
-
   }
 
   async function removeImportedPost(id) {
     try {
         pendingRemoveImportedPost.value = true;
         const { data, error } = await useFetch(`/api/post_imported/${id}`, {method: 'DELETE'})
-        if (!data) {
+        if (error.value) {
           throw (error);
         }
         return data;
       } catch (error) {
         console.log(error.value.data.statusCode, error.value.data.statusMessage)
-        return {error: error.value.data};
+        return {error: error.value};
       }
     finally {
       pendingRemoveImportedPost.value = false;
     }
-
   }
   
   function paramsSerializer(params) {
@@ -136,13 +141,10 @@ export const useImportedPostsStore = defineStore('importedPostsStore', () => {
     });
   }
 
-
   function $importedReset() {
     // manually reset store here
     importedPostById.value = null,
     errorImportedPostById.value = null;
-
-
   }
   return {createImportedPostInGup, importedPosts,fetchImportedPosts, pendingImportedPosts, removeImportedPost, mergePosts,
         fetchImportedPostById, importedPostById, errorImportedPostById,  pendingImportedPostById, 

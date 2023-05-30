@@ -8,5 +8,4 @@
     const gupPostsStore = useGupPostsStore()
     const {$reset} = gupPostsStore
     $reset();
-
-</script>   
+</script>

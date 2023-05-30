@@ -1,4 +1,8 @@
 export default defineEventHandler(async (event) => {
+/*     throw createError({
+        statusCode: 411,
+        statusMessage: 'Could not create post',
+      }) */
     const config = useRuntimeConfig();
     const query = getQuery(event);
     const id = event.context.params.id;

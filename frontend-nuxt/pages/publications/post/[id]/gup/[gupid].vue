@@ -22,7 +22,7 @@
           </p>
           <p>
             <strong>ID:</strong> {{ item_row_id }}
-            </p>
+          </p>
         </template>
       </modal>
 
@@ -161,6 +161,8 @@ async function merge() {
         const res = await mergePosts(route.params.gupid, route.params.id, selectedUser.value);
         if (res) {
           showModalMerge.value = true;
+        } else if (res.error) {
+          $toast.error(t('messages.merge_in_gup_error'));
         }
       } 
     } else {
@@ -212,10 +214,12 @@ async function editPost() {
     if (ok) {
       if (item_row_source !== "gup") {
         const response = await createImportedPostInGup(item_row_id, selectedUser.value)
-        if (response) {
+        if (!response.error) {
           const url = response.link;//config.public.API_GUP_BASE_URL_EDIT + response.id;
           window.open(url, '_blank')
           showModal.value = true;
+        } else if (response.error) {
+          $toast.error(t('messages.create_in_gup_error'));
         }
       } else if (item_row_source === "gup") {
         window.open(`${config.public.API_GUP_BASE_URL_EDIT}${item_row_publication_id}`, '_blank')
