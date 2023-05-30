@@ -483,4 +483,21 @@ defmodule Experiment do
       IO.inspect(val1 == val2, label: "#{key}")
       val1
     end
+
+    def auto_put do
+
+      data = %{
+        "id" => "gup_66666666",
+        "title" => "Back to life: Is it possible to be myself again? A qualitative study with persons initially hospitalised due to COVID-19."
+      }
+      api_key = System.get_env("GUP_INDEX_MANAGER_API_KEY", "megasecretimpossibletoguesskey")
+      url = "http://localhost:4010/publications?api_key=#{api_key}"
+      body = %{"data" => data} |> Jason.encode!()
+      HTTPoison.put(url, body, [{"Content-Type", "application/json"}])
+
+
+
+    end
+
+
   end

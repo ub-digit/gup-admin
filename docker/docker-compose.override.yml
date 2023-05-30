@@ -1,18 +1,11 @@
 version: '3.7'
 
 services:
- db:
-   ports:
-     - "127.0.0.1:5433:5432"
- elasticsearch: 
-    #image: foo:bar
+  elasticsearch: 
     ports:
       - "127.0.0.1:9200:9200"
       - "127.0.0.1:9300:9300"
- #backend:
-  
-  #    - ../backend:/release/backend/
-  #elasticsearch: 
-  #  ports:
-  #    - "127.0.0.1:9200:9200"
-  #    - "127.0.0.1:9300:9300"
+  db-index-manager:
+    # volumes:
+    #   - ../pg_data:/var/lib/postgresql/data/pgdata
+ 
