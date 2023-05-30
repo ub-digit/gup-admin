@@ -13,6 +13,14 @@ services:
 #     - "${HOST_ALERT_MESSAGE_FILE_PATH}:${ALERT_MESSAGE_FILE_PATH}"
      # Temporary fix until real index is in place
      - ../data/_source:/release/data/_source
+  index-manager:
+    image: docker.ub.gu.se/gup-admin-index-manager:${GIT_REVISION}
+    ports:
+      - "${INDEX_MANAGER_HOST_PORT}:4000"
+    environment:
+      ELASTIC_SEARCH_URL: "${ELASTIC_SEARCH_URL}"
+    restart: always
+    # volumes:
   db:
     image: postgres:12
     environment:

@@ -1,7 +1,7 @@
 FROM elixir:1.14.4
 
 ENV MIX_ENV=prod
-ENV DATABASE_URL=ecto://postgres:postgres@db/gup_index_manager_dev
+ENV DATABASE_URL=ecto://postgres:postgres@db-index-manager/gup_index_manager_dev
 ENV SECRET_KEY_BASE=verysecretkeybasetobehiddenverysecretkeybasetobehiddenverysecretkeybasetobehiddenverysecretkeybasetobehiddenverysecretkeybasetobehiddenverysecretkeybasetobehidden
 ENV TZ=Europe/Stockholm
 RUN apt-get update && \
