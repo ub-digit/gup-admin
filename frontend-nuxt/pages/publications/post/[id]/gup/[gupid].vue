@@ -158,7 +158,7 @@ async function merge() {
   if (selectedUser.value !== '') {
     const ok = confirm(t('messages.confirm_merge_in_gup'))
     if (ok) {
-        const res = await mergePosts(route.params.gupid, route.params.id, selectedUser.value);
+        const res = await mergePosts(route.params.id, route.params.gupid, selectedUser.value);
         if (res) {
           showModalMerge.value = true;
         } else if (res.error) {
