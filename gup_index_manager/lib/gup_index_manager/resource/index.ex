@@ -2,7 +2,7 @@ defmodule GupIndexManager.Resource.Index do
   alias Elastix.Index
   alias GupIndexManager.Resource.Index.Config
   alias GupIndexManager.Model
-  @index "publications_tmp"
+  @index "publications"
   def elastic_url do
     System.get_env("ELASTIC_SEARCH_URL", "http://localhost:9200")
   end
@@ -33,10 +33,7 @@ defmodule GupIndexManager.Resource.Index do
   end
 
   def update_publication(attrs) do
-    case Elastix.Index.exists?(elastic_url(), @index) do
-      {:ok, false} -> create_index()
-      {:ok, true} -> :ok
-    end
+
     json = attrs
     |> Map.get("json")
     |> Jason.decode!()

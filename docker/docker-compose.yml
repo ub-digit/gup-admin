@@ -40,6 +40,8 @@ services:
       POSTGRES_PASSWORD: "${DB_PASSWORD}"
       POSTGRES_DB: "${INDEX_MANAGER_DB_NAME}"
       PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - "${DB_INDEX_MANAGER_INIT_PATH}:/docker-entrypoint-initdb.d"
     ports:
      - "127.0.0.1:5443:5432"
     restart: always
