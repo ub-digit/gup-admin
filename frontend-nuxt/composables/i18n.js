@@ -91,6 +91,7 @@ export const useLocaleStore = defineStore('locale', {
         "messages.remove_error": "Något gick fel vid borttagande av posten!",
         "messages.confirm_remove": "Är du säker på att du vill ta bort den importerade posten?",
         "messages.confirm_create_in_gup": "Är du säker på att du vill skapa den importerade posten i GUP?",
+        "messages.confirm_open_in_gup": "Är du säker på att du vill öppna den importerade posten i GUP?",
         "messages.confirm_merge_in_gup": "Är du säker på att du vill berika posten med data?",
         "messages.create_in_gup_success": "Posten skapades i  GUP",
         "messages.create_in_gup_error": "Något gick fel! Posten skapades inte i GUP",

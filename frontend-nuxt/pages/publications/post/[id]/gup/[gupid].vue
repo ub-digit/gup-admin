@@ -210,7 +210,12 @@ async function handleSuccessMerge() {
 
 async function editPost() {
   if (selectedUser.value !== '') {
-    const ok = confirm(t('messages.confirm_create_in_gup'))
+    let ok = null;
+    if (item_row_source === "gup") {
+      ok = confirm(t('messages.confirm_open_in_gup'))
+    } else {
+      ok = confirm(t('messages.confirm_create_in_gup'))
+    }
     if (ok) {
       if (item_row_source !== "gup") {
         const response = await createImportedPostInGup(item_row_id, selectedUser.value)
