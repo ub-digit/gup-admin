@@ -54,7 +54,7 @@ const pendingCreateImportedPostInGup = ref(null);
   async function mergePosts(id, gupid, user) {
     try {
       const { data, error } = await useFetch(`/api/merge_posts/`, {
-          params: {"id": id," gupid": gupid, "user": user},
+          params: {"id": id, "gupid": gupid, "user": user},
         });
         return data.value;
     } catch (error) {
