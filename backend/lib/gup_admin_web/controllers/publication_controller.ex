@@ -51,17 +51,15 @@ defmodule GupAdminWeb.PublicationController do
     json conn, GupAdmin.Resource.Publication.compare_posts(imported_id, gup_id)
   end
 
-  def merge_publications(conn, params) do
-    IO.inspect(params, label: "params")
-    # Publication.merge_publications(gup_id, publication_id, gup_user)
-    # |> case do
-    #   {:ok, %HTTPoison.Response{status_code: 201, body: body}} ->  conn |> send_resp(200, Jason.encode!(%{"message" => "Post successfully posted to GUP", "link" => get_gup_link(body)}))
-    #   {:ok, %HTTPoison.Response{status_code: 400}} -> conn |> send_resp(400, Jason.encode!(%{error: %{"message" => "Post already exists in GUP", "code" => 400}}))
-    #   {:ok, %HTTPoison.Response{status_code: 500}} -> conn |> send_resp(500, Jason.encode!(%{error: %{"message" => "Internal server error", "code" => 500}}))
-    #   {:error, %HTTPoison.Error{reason: reason}} -> conn |> send_resp(500, Jason.encode!(%{error: %{"message" => reason, "code" => 500}}))
-    #   _ -> conn |> send_resp(200, Jason.encode!(%{message: %{"message" => "Publications merged!", "code" => "200"}}))
-    # end
+  def merge_publications(conn, %{"publication_id" => publication_id, "gup_id" => gup_id, "gup_user" => gup_user}) do
+    Publication.merge_publications(gup_id, publication_id, gup_user)
+    |> case do
+      {:ok, %HTTPoison.Response{status_code: 201, body: body}} ->  conn |> send_resp(200, Jason.encode!(%{"message" => "Post successfully posted to GUP", "link" => get_gup_link(body)}))
+      {:ok, %HTTPoison.Response{status_code: 400}} -> conn |> send_resp(400, Jason.encode!(%{error: %{"message" => "Post already exists in GUP", "code" => 400}}))
+      {:ok, %HTTPoison.Response{status_code: 500}} -> conn |> send_resp(500, Jason.encode!(%{error: %{"message" => "Internal server error", "code" => 500}}))
+      {:error, %HTTPoison.Error{reason: reason}} -> conn |> send_resp(500, Jason.encode!(%{error: %{"message" => reason, "code" => 500}}))
+      _ -> conn |> send_resp(200, Jason.encode!(%{message: %{"message" => "Publications merged!", "code" => "200"}}))
+    end
 
-    json conn, %{"message" => "Publications merged!", "code" => "200"}
   end
 end
