@@ -5,6 +5,10 @@ defmodule Experiment do
     System.get_env("ELASTIC_SEARCH_URL") || "http://localhost:9200"
   end
 
+  def index_manager_url do
+    System.get_env("INDEX_MANAGER_URL") || "http://localhost:4010"
+  end
+
 
   def create_index(name) do
     Elastix.Index.delete(elastic_url(), name)
@@ -51,7 +55,9 @@ defmodule Experiment do
     #|> Enum.map(fn data -> %{"title" => data["title"], "id" => data["id"], "attended" => data["attended"], "deleted" => data["deleted"], "source" => data["source"], "pubyear" => data["pubyear"]} end)
     #|> Enum.map(fn data -> %{"title" => data["title"], "id" => data["id"]} end)
     |> Enum.map(fn data ->
-      Elastix.Document.index(elastic_url(), "publications", "_doc", data["id"], data, [])
+      data
+      |> auto_put()
+      #Elastix.Document.index(elastic_url(), "publications", "_doc", data["id"], data, [])
     end)
 
   end
@@ -484,20 +490,10 @@ defmodule Experiment do
       val1
     end
 
-    def auto_put do
-
-      data = %{
-        "id" => "gup_66666666",
-        "title" => "Back to life: Is it possible to be myself again? A qualitative study with persons initially hospitalised due to COVID-19."
-      }
+    def auto_put(data) do
       api_key = System.get_env("GUP_INDEX_MANAGER_API_KEY", "megasecretimpossibletoguesskey")
       url = "http://localhost:4010/publications?api_key=#{api_key}"
       body = %{"data" => data} |> Jason.encode!()
       HTTPoison.put(url, body, [{"Content-Type", "application/json"}])
-
-
-
     end
-
-
   end

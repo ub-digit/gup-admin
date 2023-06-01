@@ -5,6 +5,8 @@ services:
     ports:
       - "127.0.0.1:9200:9200"
       - "127.0.0.1:9300:9300"
+    volumes:
+      - ../data/persistence/elastic/es_data:/usr/share/elasticsearch/data
   db-index-manager:
     # volumes:
     #   - ../pg_data:/var/lib/postgresql/data/pgdata
