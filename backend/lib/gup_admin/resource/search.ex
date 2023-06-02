@@ -96,6 +96,7 @@ defmodule GupAdmin.Resource.Search do
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
     hits
     |> Enum.filter(fn p -> p["_id"] != id end)
+    |> Enum.filter(fn p -> p["_source"]["source"] == "gup" end)
     |> Publication.remap()
   end
 
@@ -106,6 +107,7 @@ defmodule GupAdmin.Resource.Search do
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
     hits
     |> Enum.filter(fn p -> p["_id"] != id end)
+    |> Enum.filter(fn p -> p["_source"]["source"] == "gup" end)
     |> Publication.remap()
   end
 
@@ -117,13 +119,11 @@ defmodule GupAdmin.Resource.Search do
     end
   end
 
-  def update_index(post) do
-    post = post
-    |> Map.put("deleted", true)
-    |> Map.put("needs_attention", false)
-    |> Map.put("deleted_at", DateTime.utc_now())
-    Elastix.Document.index(elastic_url(), @index, "_doc", post["id"], post)
-    {:ok, %{body: _}} = Elastix.Index.refresh(elastic_url(), @index)
-    %{"message" => "Publication marked as deleted"}
+  def update_index(publication) do
+    base_url = System.get_env("GUP_INDEX_MANAGER_URL", "http://localhost:4010/")
+    api_key = System.get_env("GUP_INDEX_MANAGER_API_KEY", "megasecretimpossibletoguesskey")
+    url = "#{base_url}publications/#{publication["id"]}?api_key=#{api_key}"
+    HTTPoison.delete(url, [{"Content-Type", "application/json"}])
+
   end
 end
