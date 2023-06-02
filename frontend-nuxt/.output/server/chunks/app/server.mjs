@@ -1,4 +1,4 @@
-import { getCurrentInstance, toRaw, isRef, isReactive, toRef, version, inject, watchEffect, useSSRContext, defineComponent, h, Suspense, nextTick, Transition, computed, provide, reactive, ref, watch, resolveComponent, mergeProps, unref, withCtx, renderSlot, createApp, markRaw, effectScope, createTextVNode, toDisplayString, getCurrentScope, onScopeDispose, onErrorCaptured, onServerPrefetch, toRefs, shallowRef, isReadonly, defineAsyncComponent } from 'vue';
+import { getCurrentInstance, toRaw, isRef, isReactive, toRef, version, inject, unref, computed, reactive, watchEffect, useSSRContext, defineComponent, h, Suspense, nextTick, Transition, provide, ref, watch, onServerPrefetch, resolveComponent, mergeProps, withCtx, renderSlot, createApp, markRaw, effectScope, createTextVNode, toDisplayString, getCurrentScope, onScopeDispose, onErrorCaptured, toRefs, shallowRef, isReadonly, defineAsyncComponent } from 'vue';
 import { $fetch } from 'ofetch';
 import { createHooks } from 'hookable';
 import { getContext, executeAsync } from 'unctx';
@@ -8,7 +8,10 @@ import { HasElementTags, defineHeadPlugin } from '@unhead/shared';
 import { RouterView, useLink, createMemoryHistory, createRouter } from 'vue-router';
 import { createError as createError$1, sendRedirect } from 'h3';
 import { hasProtocol, parseURL, parseQuery, withTrailingSlash, withoutTrailingSlash, joinURL, isEqual } from 'ufo';
-import { ssrRenderComponent, ssrRenderSlot, ssrRenderAttrs, ssrInterpolate, ssrRenderSuspense } from 'vue/server-renderer';
+import { ssrRenderComponent, ssrRenderSlot, ssrRenderAttrs, ssrInterpolate, ssrRenderStyle, ssrRenderList, ssrRenderSuspense } from 'vue/server-renderer';
+import { hash } from 'ohash';
+import _ from 'lodash';
+import nuxtStorage from 'nuxt-storage';
 import { defu } from 'defu';
 import { u as useRuntimeConfig$1 } from '../nitro/node-server.mjs';
 import 'node-fetch-native/polyfill';
@@ -17,7 +20,6 @@ import 'node:https';
 import 'destr';
 import 'unenv/runtime/fetch/index';
 import 'scule';
-import 'ohash';
 import 'unstorage';
 import 'radix3';
 import 'node:fs';
@@ -739,6 +741,167 @@ const createError = (err) => {
   _err.__nuxt_error = true;
   return _err;
 };
+const getDefault = () => null;
+function useAsyncData(...args) {
+  var _a;
+  const autoKey = typeof args[args.length - 1] === "string" ? args.pop() : void 0;
+  if (typeof args[0] !== "string") {
+    args.unshift(autoKey);
+  }
+  let [key, handler, options = {}] = args;
+  if (typeof key !== "string") {
+    throw new TypeError("[nuxt] [asyncData] key must be a string.");
+  }
+  if (typeof handler !== "function") {
+    throw new TypeError("[nuxt] [asyncData] handler must be a function.");
+  }
+  options.server = options.server ?? true;
+  options.default = options.default ?? getDefault;
+  options.lazy = options.lazy ?? false;
+  options.immediate = options.immediate ?? true;
+  const nuxt = useNuxtApp();
+  const getCachedData = () => nuxt.isHydrating ? nuxt.payload.data[key] : nuxt.static.data[key];
+  const hasCachedData = () => getCachedData() !== void 0;
+  if (!nuxt._asyncData[key]) {
+    nuxt._asyncData[key] = {
+      data: ref(getCachedData() ?? ((_a = options.default) == null ? void 0 : _a.call(options)) ?? null),
+      pending: ref(!hasCachedData()),
+      error: ref(nuxt.payload._errors[key] ? createError(nuxt.payload._errors[key]) : null)
+    };
+  }
+  const asyncData = { ...nuxt._asyncData[key] };
+  asyncData.refresh = asyncData.execute = (opts = {}) => {
+    if (nuxt._asyncDataPromises[key]) {
+      if (opts.dedupe === false) {
+        return nuxt._asyncDataPromises[key];
+      }
+      nuxt._asyncDataPromises[key].cancelled = true;
+    }
+    if (opts._initial && hasCachedData()) {
+      return getCachedData();
+    }
+    asyncData.pending.value = true;
+    const promise = new Promise(
+      (resolve, reject) => {
+        try {
+          resolve(handler(nuxt));
+        } catch (err) {
+          reject(err);
+        }
+      }
+    ).then((_result) => {
+      if (promise.cancelled) {
+        return nuxt._asyncDataPromises[key];
+      }
+      let result = _result;
+      if (options.transform) {
+        result = options.transform(_result);
+      }
+      if (options.pick) {
+        result = pick(result, options.pick);
+      }
+      asyncData.data.value = result;
+      asyncData.error.value = null;
+    }).catch((error) => {
+      var _a2;
+      if (promise.cancelled) {
+        return nuxt._asyncDataPromises[key];
+      }
+      asyncData.error.value = error;
+      asyncData.data.value = unref(((_a2 = options.default) == null ? void 0 : _a2.call(options)) ?? null);
+    }).finally(() => {
+      if (promise.cancelled) {
+        return;
+      }
+      asyncData.pending.value = false;
+      nuxt.payload.data[key] = asyncData.data.value;
+      if (asyncData.error.value) {
+        nuxt.payload._errors[key] = createError(asyncData.error.value);
+      }
+      delete nuxt._asyncDataPromises[key];
+    });
+    nuxt._asyncDataPromises[key] = promise;
+    return nuxt._asyncDataPromises[key];
+  };
+  const initialFetch = () => asyncData.refresh({ _initial: true });
+  const fetchOnServer = options.server !== false && nuxt.payload.serverRendered;
+  if (fetchOnServer && options.immediate) {
+    const promise = initialFetch();
+    if (getCurrentInstance()) {
+      onServerPrefetch(() => promise);
+    } else {
+      nuxt.hook("app:created", () => promise);
+    }
+  }
+  const asyncDataPromise = Promise.resolve(nuxt._asyncDataPromises[key]).then(() => asyncData);
+  Object.assign(asyncDataPromise, asyncData);
+  return asyncDataPromise;
+}
+function pick(obj, keys) {
+  const newObj = {};
+  for (const key of keys) {
+    newObj[key] = obj[key];
+  }
+  return newObj;
+}
+function useFetch(request, arg1, arg2) {
+  const [opts = {}, autoKey] = typeof arg1 === "string" ? [{}, arg1] : [arg1, arg2];
+  const _key = opts.key || hash([autoKey, unref(opts.baseURL), typeof request === "string" ? request : "", unref(opts.params || opts.query)]);
+  if (!_key || typeof _key !== "string") {
+    throw new TypeError("[nuxt] [useFetch] key must be a string: " + _key);
+  }
+  if (!request) {
+    throw new Error("[nuxt] [useFetch] request is missing.");
+  }
+  const key = _key === autoKey ? "$f" + _key : _key;
+  const _request = computed(() => {
+    let r = request;
+    if (typeof r === "function") {
+      r = r();
+    }
+    return unref(r);
+  });
+  const {
+    server,
+    lazy,
+    default: defaultFn,
+    transform,
+    pick: pick2,
+    watch: watch3,
+    immediate,
+    ...fetchOptions
+  } = opts;
+  const _fetchOptions = reactive({
+    ...fetchOptions,
+    cache: typeof opts.cache === "boolean" ? void 0 : opts.cache
+  });
+  const _asyncDataOptions = {
+    server,
+    lazy,
+    default: defaultFn,
+    transform,
+    pick: pick2,
+    immediate,
+    watch: [
+      _fetchOptions,
+      _request,
+      ...watch3 || []
+    ]
+  };
+  let controller;
+  const asyncData = useAsyncData(key, () => {
+    var _a;
+    (_a = controller == null ? void 0 : controller.abort) == null ? void 0 : _a.call(controller);
+    controller = typeof AbortController !== "undefined" ? new AbortController() : {};
+    const isLocalFetch = typeof _request.value === "string" && _request.value.startsWith("/");
+    let _$fetch = opts.$fetch || globalThis.$fetch;
+    if (!opts.$fetch && isLocalFetch) {
+      _$fetch = useRequestFetch();
+    }
+    return _$fetch(_request.value, { signal: controller.signal, ..._fetchOptions });
+  }, _asyncDataOptions);
+  return asyncData;
+}
 const firstNonUndefined = (...args) => args.find((arg) => arg !== void 0);
 const DEFAULT_EXTERNAL_REL_ATTRIBUTE = "noopener noreferrer";
 function defineNuxtLink(options) {
@@ -999,7 +1162,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import('./_nuxt/index-6f3bbe2a.mjs').then((m) => m.default || m)
+    component: () => import('./_nuxt/index-993de0d1.mjs').then((m) => m.default || m)
   },
   {
     path: "/publications",
@@ -1010,7 +1173,7 @@ const _routes = [
         meta: {},
         alias: [],
         redirect: void 0,
-        component: () => import('./_nuxt/index-031f3643.mjs').then((m) => m.default || m)
+        component: () => import('./_nuxt/index-3f4d65db.mjs').then((m) => m.default || m)
       },
       {
         path: "post/:id",
@@ -1021,7 +1184,7 @@ const _routes = [
             meta: {},
             alias: [],
             redirect: void 0,
-            component: () => import('./_nuxt/_gupid_-71dea7f7.mjs').then((m) => m.default || m)
+            component: () => import('./_nuxt/_gupid_-7bbc6155.mjs').then((m) => m.default || m)
           },
           {
             name: "publications-post-id",
@@ -1029,21 +1192,21 @@ const _routes = [
             meta: {},
             alias: [],
             redirect: void 0,
-            component: () => import('./_nuxt/index-0a2517f7.mjs').then((m) => m.default || m)
+            component: () => import('./_nuxt/index-28091e2b.mjs').then((m) => m.default || m)
           }
         ],
         name: void 0,
         meta: {},
         alias: [],
         redirect: void 0,
-        component: () => import('./_nuxt/_id_-f2d203ec.mjs').then((m) => m.default || m)
+        component: () => import('./_nuxt/_id_-e19d4139.mjs').then((m) => m.default || m)
       }
     ],
     name: void 0,
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import('./_nuxt/publications-675c6ab3.mjs').then((m) => m.default || m)
+    component: () => import('./_nuxt/publications-e539179b.mjs').then((m) => m.default || m)
   }
 ];
 const routerOptions0 = {
@@ -14828,29 +14991,58 @@ const useLocaleStore = defineStore("locale", {
         "views.publications.form.scopus_title": "Scopus",
         "views.publications.form.wos_title": "WoS",
         "views.publications.form.manual_title": "Manuellt inlagda",
-        "views.publications.form.title_label": "Titel",
+        "views.publications.form.title_label": "Sök på titel eller ID",
         "views.publications.form.pub_type_select_label": "Publikationstyp",
+        "views.publications.form.year_select_label": "År",
         "views.publications.result_list.no_imported_posts_found": "Inga importerade poster hittades.",
+        "views.publications.result_list.meta.of": "av",
+        "views.publications.result_list.meta.posts": "poster",
         "views.publications.post.needs_attention": "Needs attention",
+        "views.publications.post.fields.source": "Källa",
         "views.publications.post.import_from_scopus": "Import Scopus",
         "views.publications.post.import_from_wos": "Import WoS",
-        "views.publications.post.by": "av",
+        "views.publications.post.fields.created_at": "Skapad",
+        "views.publications.post.fields.version_created_by": "av",
+        "views.publications.post.fields.updated_at": "Uppdaterad",
+        "views.publications.post.fields.version_updated_by": "av",
         "views.publications.post.result_list.header": "Möjliga dubletter",
         "views.publications.post.result_list_by_id.header": "Dubletter på id",
         "views.publications.post.result_list.no_gup_posts_by_id_found": "Inga gup-poster med dubletter på id hittades",
         "views.publications.post.result_list_by_title.header": "Dubletter på titel",
         "views.publications.post.result_list.no_gup_posts_by_title_found": "Inga gup-poster med dubletter på titel hittades",
-        "views.publications.post.fields.pubtype": "Publikationstyp",
-        "views.publications.post.fields.published_in": "Publicerad i",
+        "views.publications.post.fields.id": "ID",
+        "views.publications.post.fields.title": "Titel",
+        "views.publications.post.fields.attended": "Needs attention",
+        "views.publications.post.fields.publication_type_label": "Publikationstyp",
+        "views.publications.post.fields.sourcetitle": "Publicerad i",
         "views.publications.post.fields.pubyear": "Publikationsår",
-        "views.publications.post.fields.author": "Författare",
+        "views.publications.post.fields.authors": "Författare",
+        "views.publications.post.fields.publication_identifiers": "Identifikatorer",
         "views.publications.post.fields.doi": "DOI",
+        "views.publications.post.fields.isiid": "ISI-ID",
         "views.publications.post.fields.scopus": "Scopus-ID",
+        "views.publications.post.fields.pubmed": "Pubmed-ID",
+        "views.publications.post.fields.libris": "Libris-ID",
+        "views.publications.post.fields.handle": "Gupea",
         "views.publications.post.fields.scopus_missing": "Saknas",
+        "views.publications.post.fields.sourceissue_sourcepages_sourcevolume": "Vol/Issue/Pages",
+        "views.publications.post.fields.missing": "Saknas",
+        "views.publications.post.fields.publication_id": "Orginal ID",
+        "views.publications.post.more_authors": "ytterliggare författare",
         "appfooter.contact_link": "https://www.ub.gu.se/node/189487/",
         "appfooter.contact_link_text": "Kontakta oss om GUP-admin",
         "messages.remove_success": "Posten togs bort!",
+        "messages.remove_error": "Något gick fel vid borttagande av posten!",
         "messages.confirm_remove": "Är du säker på att du vill ta bort den importerade posten?",
+        "messages.confirm_create_in_gup": "Är du säker på att du vill skapa den importerade posten i GUP?",
+        "messages.confirm_open_in_gup": "Är du säker på att du vill öppna den importerade posten i GUP?",
+        "messages.confirm_merge_in_gup": "Är du säker på att du vill berika posten med data?",
+        "messages.create_in_gup_success": "Posten skapades i  GUP",
+        "messages.create_in_gup_error": "Något gick fel! Posten skapades inte i GUP",
+        "messages.create_in_gup_success_body": "Vill du ta bort posten från GUP-ADMIN?",
+        "messages.merge_in_gup_success": "Posten berikades i  GUP",
+        "messages.merge_in_gup_error": "Något gick fel! Posten berikades inte i GUP",
+        "messages.merge_in_gup_success_body": "Vill du ta bort posten från GUP-ADMIN?",
         "buttons.remove": "Ta bort",
         "buttons.merge": "Slå ihop",
         "buttons.edit": "Redigera",
@@ -14952,7 +15144,7 @@ const _sfc_main$4 = {
     return (_ctx, _push, _parent, _attrs) => {
       const _component_NuxtLink = __nuxt_component_0$2;
       _push(ssrRenderComponent(_component_NuxtLink, mergeProps({ to: unref(linkRoute) }, _attrs), {
-        default: withCtx((_, _push2, _parent2, _scopeId) => {
+        default: withCtx((_2, _push2, _parent2, _scopeId) => {
           if (_push2) {
             ssrRenderSlot(_ctx.$slots, "default", {}, null, _push2, _parent2, _scopeId);
           } else {
@@ -15004,10 +15196,196 @@ _sfc_main$3.setup = (props, ctx) => {
   return _sfc_setup$3 ? _sfc_setup$3(props, ctx) : void 0;
 };
 const __nuxt_component_1 = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__scopeId", "data-v-f75b964c"]]);
+const useFilterStore = defineStore("filterStore", () => {
+  const { getLocale } = useI18n();
+  const route = useRoute();
+  const router = useRouter();
+  const getBoolean = (item) => {
+    if (item === "false" || item === void 0) {
+      return void 0;
+    }
+    return true;
+  };
+  const getNeedsAttentionBoolean = (item) => {
+    if (item === "false") {
+      return void 0;
+    }
+    return true;
+  };
+  const filters = reactive({
+    needs_attention: getNeedsAttentionBoolean(route.query.needs_attention),
+    scopus: getBoolean(route.query.scopus),
+    wos: getBoolean(route.query.wos),
+    manual: getBoolean(route.query.manual),
+    pubtype: route.query.pubtype ? route.query.pubtype : "",
+    title: route.query.title ? route.query.title : void 0,
+    year: route.query.year ? route.query.year : ""
+  });
+  function $reset() {
+    filters.needs_attention = true, filters.scopus = false, filters.wos = false, filters.manual = false, filters.pubtype = "", filters.title = void 0, filters.year = "";
+  }
+  watch(
+    filters,
+    () => {
+      router.push({ query: { ...route.query, ...filters } });
+    },
+    { deep: true }
+  );
+  const filters_for_api = computed(() => {
+    const deepClone = _.cloneDeep(filters);
+    deepClone.lang = getLocale();
+    return deepClone;
+  });
+  return { filters, filters_for_api, $reset };
+});
+const useImportedPostsStore = defineStore("importedPostsStore", () => {
+  const filterStore = useFilterStore();
+  const { filters } = storeToRefs(filterStore);
+  const users = ref(["xgrkri", "xannje", "xjopau"]);
+  const selectedUser = ref("");
+  const importedPosts = ref([]);
+  const importedPostById = ref(null);
+  const errorImportedPostById = ref(null);
+  const pendingImportedPosts = ref(null);
+  const pendingImportedPostById = ref(null);
+  const pendingRemoveImportedPost = ref(null);
+  const pendingCreateImportedPostInGup = ref(null);
+  if (nuxtStorage.localStorage.getData("selectedUser")) {
+    selectedUser.value = nuxtStorage.localStorage.getData("selectedUser");
+  }
+  watch(
+    selectedUser,
+    () => {
+      if (selectedUser.value !== "") {
+        nuxtStorage.localStorage.setData("selectedUser", selectedUser.value);
+      } else {
+        selectedUser.value = nuxtStorage.localStorage.getData("selectedUser");
+      }
+    }
+  );
+  async function createImportedPostInGup(id, user) {
+    try {
+      pendingCreateImportedPostInGup.value = true;
+      const { data, error } = await useFetch(`/api/post_to_gup/${id}/`, {
+        params: { "user": user }
+      }, "$0hvUUXWFn4");
+      if (error.value) {
+        throw error;
+      }
+      return data.value;
+    } catch (error) {
+      console.log(error);
+      return { error: error.value.data };
+    } finally {
+      pendingCreateImportedPostInGup.value = false;
+    }
+  }
+  async function mergePosts(id, gupid, user) {
+    try {
+      const { data, error } = await useFetch(`/api/merge_posts/`, {
+        params: { "id": id, "gupid": gupid, "user": user }
+      }, "$ZJQCfBpBYl");
+      return data.value;
+    } catch (error) {
+      console.log(error);
+      return error;
+    } finally {
+    }
+  }
+  async function fetchImportedPosts() {
+    try {
+      pendingImportedPosts.value = true;
+      const { data, error } = await useFetch("/api/posts_imported", {
+        params: { ...filters.value },
+        onRequest({ request, options }) {
+          paramsSerializer(options.params);
+        }
+      }, "$hF1hi1sgmQ");
+      importedPosts.value = data.value;
+    } catch (error) {
+      console.log("Something went wrong: fetchImportedPosts");
+    } finally {
+      pendingImportedPosts.value = false;
+    }
+  }
+  watch(
+    filters,
+    () => {
+      fetchImportedPosts();
+    },
+    { deep: true }
+  );
+  async function fetchImportedPostById(id) {
+    try {
+      importedPostById.value = null;
+      pendingImportedPostById.value = true;
+      errorImportedPostById.value = null;
+      const { data, error } = await useFetch(`/api/post_imported/${id}`, "$TvsiMzsI4b");
+      if (error.value) {
+        errorImportedPostById.value = error.value.data.data.error;
+        console.log("from fetchImportedPostById", errorImportedPostById);
+      } else {
+        importedPostById.value = data.value;
+      }
+    } catch (error) {
+      console.log("Something went wrong: fetchImportedPostById");
+    } finally {
+      pendingImportedPostById.value = false;
+    }
+  }
+  async function removeImportedPost(id) {
+    try {
+      pendingRemoveImportedPost.value = true;
+      const { data, error } = await useFetch(`/api/post_imported/${id}`, { method: "DELETE" }, "$DzGosUaI4e");
+      if (error.value) {
+        throw error;
+      }
+      return data;
+    } catch (error) {
+      console.log(error.value.data.statusCode, error.value.data.statusMessage);
+      return { error: error.value };
+    } finally {
+      pendingRemoveImportedPost.value = false;
+    }
+  }
+  function paramsSerializer(params) {
+    if (!params) {
+      return;
+    }
+    Object.entries(params).forEach(([key, val]) => {
+      if (typeof val === "object" && Array.isArray(val) && val !== null) {
+        params[key + "[]"] = val.map((v) => JSON.stringify(v));
+        delete params[key];
+      }
+    });
+  }
+  function $importedReset() {
+    importedPostById.value = null, errorImportedPostById.value = null;
+  }
+  return {
+    createImportedPostInGup,
+    importedPosts,
+    fetchImportedPosts,
+    pendingImportedPosts,
+    removeImportedPost,
+    mergePosts,
+    fetchImportedPostById,
+    importedPostById,
+    errorImportedPostById,
+    pendingImportedPostById,
+    pendingRemoveImportedPost,
+    pendingCreateImportedPostInGup,
+    $importedReset,
+    users,
+    selectedUser
+  };
+});
 const _sfc_main$2 = {
   __name: "AppHeader",
   __ssrInlineRender: true,
   setup(__props) {
+    const importedPostsStore = useImportedPostsStore();
+    const { users, selectedUser } = storeToRefs(importedPostsStore);
     const { t, getLocale } = useI18n();
     computed(() => {
       return t("appheader.header_level1_link");
@@ -15018,9 +15396,9 @@ const _sfc_main$2 = {
     return (_ctx, _push, _parent, _attrs) => {
       const _component_LangLink = __nuxt_component_0$1;
       const _component_LangSelect = __nuxt_component_1;
-      _push(`<div${ssrRenderAttrs(_attrs)} data-v-bee224d6><header data-v-bee224d6><div class="container-fluid" data-v-bee224d6><div class="row" data-v-bee224d6><div class="col" data-v-bee224d6><div class="header" data-v-bee224d6><div class="header-level-1" data-v-bee224d6>`);
+      _push(`<div${ssrRenderAttrs(_attrs)} data-v-ee40e335><header data-v-ee40e335><div class="container-fluid" data-v-ee40e335><div class="row" data-v-ee40e335><div class="col" data-v-ee40e335><div class="header" data-v-ee40e335><div class="header-level-1" data-v-ee40e335>`);
       _push(ssrRenderComponent(_component_LangLink, { to: "/" }, {
-        default: withCtx((_, _push2, _parent2, _scopeId) => {
+        default: withCtx((_2, _push2, _parent2, _scopeId) => {
           if (_push2) {
             _push2(`${ssrInterpolate(unref(t)("appheader.header_level1"))}`);
           } else {
@@ -15031,11 +15409,15 @@ const _sfc_main$2 = {
         }),
         _: 1
       }, _parent));
-      _push(`</div><div class="header-level-2" data-v-bee224d6>${ssrInterpolate(unref(t)("appheader.header_level2"))}</div></div></div><div class="col-auto align-self-top" data-v-bee224d6>`);
+      _push(`</div><div class="header-level-2" data-v-ee40e335>${ssrInterpolate(unref(t)("appheader.header_level2"))}</div></div></div><div class="col-auto align-self-top" data-v-ee40e335><select style="${ssrRenderStyle({ "margin-top": "10px" })}" class="form-select" data-v-ee40e335><option disabled selected value="" data-v-ee40e335>Select user</option><!--[-->`);
+      ssrRenderList(unref(users), (user) => {
+        _push(`<option data-v-ee40e335>${ssrInterpolate(user)}</option>`);
+      });
+      _push(`<!--]--></select></div><div class="col-auto align-self-top" data-v-ee40e335>`);
       _push(ssrRenderComponent(_component_LangSelect, {
         locale: unref(t)("locale.other_locale_code")
       }, {
-        default: withCtx((_, _push2, _parent2, _scopeId) => {
+        default: withCtx((_2, _push2, _parent2, _scopeId) => {
           if (_push2) {
             _push2(`${ssrInterpolate(unref(t)("locale.other_lang"))}`);
           } else {
@@ -15056,7 +15438,7 @@ _sfc_main$2.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("components/AppHeader.vue");
   return _sfc_setup$2 ? _sfc_setup$2(props, ctx) : void 0;
 };
-const __nuxt_component_0 = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["__scopeId", "data-v-bee224d6"]]);
+const __nuxt_component_0 = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["__scopeId", "data-v-ee40e335"]]);
 const interpolatePath = (route, match) => {
   return match.path.replace(/(:\w+)\([^)]+\)/g, "$1").replace(/(:\w+)[?+*]/g, "$1").replace(/:\w+/g, (r) => {
     var _a;
@@ -15205,8 +15587,8 @@ const _sfc_main = {
   __name: "nuxt-root",
   __ssrInlineRender: true,
   setup(__props) {
-    const ErrorComponent = /* @__PURE__ */ defineAsyncComponent(() => import('./_nuxt/error-component-d6c3a078.mjs').then((r) => r.default || r));
-    const IslandRenderer = /* @__PURE__ */ defineAsyncComponent(() => import('./_nuxt/island-renderer-43f34c46.mjs').then((r) => r.default || r));
+    const ErrorComponent = /* @__PURE__ */ defineAsyncComponent(() => import('./_nuxt/error-component-5cf08af3.mjs').then((r) => r.default || r));
+    const IslandRenderer = /* @__PURE__ */ defineAsyncComponent(() => import('./_nuxt/island-renderer-adb804da.mjs').then((r) => r.default || r));
     const nuxtApp = useNuxtApp();
     nuxtApp.deferHydration();
     provide("_route", useRoute());
@@ -15266,5 +15648,5 @@ const plugins = normalizePlugins(_plugins);
 }
 const entry$1 = (ctx) => entry(ctx);
 
-export { __nuxt_component_0$1 as _, _export_sfc as a, useRouter as b, createError as c, useRoute as d, entry$1 as default, __nuxt_component_0$2 as e, useNuxtApp as f, __nuxt_component_4 as g, defineStore as h, useHead as i, useRequestFetch as j, storeToRefs as s, useI18n as u };
+export { __nuxt_component_0$1 as _, _export_sfc as a, __nuxt_component_0$2 as b, createError as c, useRoute as d, entry$1 as default, useRouter as e, useNuxtApp as f, useFilterStore as g, useImportedPostsStore as h, defineStore as i, useFetch as j, __nuxt_component_4 as k, useHead as l, storeToRefs as s, useI18n as u };
 //# sourceMappingURL=server.mjs.map

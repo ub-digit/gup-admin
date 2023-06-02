@@ -26,6 +26,7 @@
     "iron-webcrypto": "0.6.0",
     "lodash": "4.17.21",
     "node-fetch-native": "1.0.2",
+    "nuxt-storage": "1.2.2",
     "ofetch": "1.0.1",
     "ohash": "1.0.0",
     "pathe": "1.1.0",

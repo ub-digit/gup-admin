@@ -1,1 +1,0 @@
-import{_ as c}from"./NothingSelected.b8defed8.js";import{j as e,o as n,c as t}from"./entry.fb5008d9.js";const _={};function r(s,a){const o=c;return n(),t(o,{columnSize:"col-6"})}const i=e(_,[["render",r]]);export{i as default};
