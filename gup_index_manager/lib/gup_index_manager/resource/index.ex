@@ -6,9 +6,8 @@ defmodule GupIndexManager.Resource.Index do
   def elastic_url do
     System.get_env("ELASTIC_SEARCH_URL", "http://localhost:9200")
   end
+
   def create_index do
-    url = elastic_url()
-    |> IO.inspect(label: "elastic_url")
     Index.delete(elastic_url(), @index)
     Index.create(elastic_url(), @index, Config.config())
     |> case do
@@ -35,7 +34,10 @@ defmodule GupIndexManager.Resource.Index do
   end
 
   def update_publication(attrs) do
-
+    case Elastix.Index.exists?(elastic_url(), @index) do
+      {:ok, true} -> :ok
+      {:ok, false} -> create_index()
+    end
     json = attrs
     |> Map.get("json")
     |> Jason.decode!()

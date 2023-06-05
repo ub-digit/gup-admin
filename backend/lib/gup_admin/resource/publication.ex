@@ -9,9 +9,6 @@ defmodule GupAdmin.Resource.Publication do
   def post_publication_to_gup(id, gup_user) do
     api_key = System.get_env("GUP_API_KEY", "an-api-key")
     url = "#{gup_server_base_url()}/v1/drafts_admin?api_key=#{api_key}&username=#{gup_user}"
-    #url = "https://gup-server-lab.ub.gu.se/v1/drafts_admin?api_key=an-api-key&username=xblars"
-    #"url = "https://gup-server-lab.ub.gu.se/v1/drafts_admin?api_key=#{api_key}&username=#{gup_user}""
-
     pub = show_raw(id)
     body = %{"publication" => pub} |> Jason.encode!()
     HTTPoison.post(url, body, [{"Content-Type", "application/json"}])

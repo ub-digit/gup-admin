@@ -7,14 +7,19 @@ defmodule GupAdmin.Resource.Search do
   # get elastic url from config
   def elastic_url do
     System.get_env("ELASTIC_SEARCH_URL") || "http://localhost:9200"
-    |> IO.inspect(label: "elastic_url")
   end
 
   def search(params) do
+    case Elastix.Index.exists?(elastic_url(), @index) do
+      {:ok, false} -> %{"status" => "error", "message" => "Index does not exist"}
+      {:ok, true} -> search_index(params)
+    end
+  end
+
+  def search_index(params) do
     params = remap_params(params)
     q = Query.base(params["title"])
     |> Filter.add_filter(Filter.build_filter(params["filter"]))
-    |> IO.inspect(label: "query")
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
     hits
     |> Publication.remap()
@@ -85,7 +90,16 @@ defmodule GupAdmin.Resource.Search do
     end
   end
 
+
+
   def search_one(id) do
+    case Elastix.Index.exists?(elastic_url(), @index) do
+      {:ok, false} -> %{"status" => "error", "message" => "Index does not exist"}
+      {:ok, true} -> search_one(id, :index_exists)
+    end
+  end
+
+  def search_one(id, :index_exists) do
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], Query.show_base(id))
     hits
   end
