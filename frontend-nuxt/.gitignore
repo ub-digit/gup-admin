@@ -2,6 +2,6 @@
 .output
 .nuxt
 # Node dependencies
-node_modules
+#node_modules
 # System files
 *.log
