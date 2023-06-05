@@ -252,8 +252,13 @@ defmodule Experiment do
     def auto_put(data) do
       base_url = System.get_env("GUP_INDEX_MANAGER_URL", "http://localhost:4010/")
       api_key = System.get_env("GUP_INDEX_MANAGER_API_KEY", "megasecretimpossibletoguesskey")
-      url = "#{base_url}publications?api_key=#{api_key}"
+      url = "#{base_url}/publications?api_key=#{api_key}"
       body = %{"data" => data} |> Jason.encode!()
       HTTPoison.put(url, body, [{"Content-Type", "application/json"}])
+    end
+
+    def check_env(var_name) do
+      System.get_env(var_name)
+      |> IO.inspect(label: "#{var_name} value")
     end
   end

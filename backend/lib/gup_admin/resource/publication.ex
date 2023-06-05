@@ -5,14 +5,13 @@ defmodule GupAdmin.Resource.Publication do
     System.get_env("GUP_INDEX_MANAGER_URL") || "http://localhost:4010"
   end
 
-  def gup_base_url do
-    System.get_env("GUP_URL") || "https://gup-server-lab.ub.gu.se/"
-  end
-
   # post to external site with httpoison
   def post_publication_to_gup(id, gup_user) do
     api_key = System.get_env("GUP_API_KEY", "an-api-key")
-    url = "#{gup_base_url()}v1/drafts_admin?api_key=#{api_key}&username=#{gup_user}"
+    url = "#{gup_server_base_url()}/v1/drafts_admin?api_key=#{api_key}&username=#{gup_user}"
+    #url = "https://gup-server-lab.ub.gu.se/v1/drafts_admin?api_key=an-api-key&username=xblars"
+    #"url = "https://gup-server-lab.ub.gu.se/v1/drafts_admin?api_key=#{api_key}&username=#{gup_user}""
+
     pub = show_raw(id)
     body = %{"publication" => pub} |> Jason.encode!()
     HTTPoison.post(url, body, [{"Content-Type", "application/json"}])
@@ -21,7 +20,7 @@ defmodule GupAdmin.Resource.Publication do
   def merge_publications(gup_id, publication_id, gup_user) do
     api_key = System.get_env("GUP_API_KEY", "an-api-key")
     gup_id = gup_id |> String.split("_") |> List.last()
-    url =  "#{gup_base_url()}v1/published_publications_admin/#{gup_id}?api_key=#{api_key}&username=#{gup_user}"
+    url =  "#{gup_server_base_url()}/v1/published_publications_admin/#{gup_id}?api_key=#{api_key}&username=#{gup_user}"
     publication_identifiers = show_raw(publication_id)
     |> Map.get("publication_identifiers")
     |> IO.inspect(label: "publication_identifiers")
@@ -300,6 +299,10 @@ defmodule GupAdmin.Resource.Publication do
 
   def gup_base_url() do
     System.get_env("GUP_BASE_URL", "https://gup-staging.ub.gu.se")
+  end
+
+  def gup_server_base_url() do
+    System.get_env("GUP_SERVER_BASE_URL", "gup-server-lab.ub.gu.se")
   end
 
   def get_visibility(display_label) do
