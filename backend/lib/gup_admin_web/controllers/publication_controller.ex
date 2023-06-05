@@ -38,7 +38,7 @@ defmodule GupAdminWeb.PublicationController do
   end
 
   def get_gup_link(body) do
-    "#{System.get_env("GUP_BASE_URL", "https://gup-lab.ub.gu.se/")}publications/show/#{get_id(body)}"
+    "#{System.get_env("GUP_BASE_URL", "https://gup-lab.ub.gu.se")}/publications/show/#{get_id(body)}"
   end
   def get_id(body) do
     body

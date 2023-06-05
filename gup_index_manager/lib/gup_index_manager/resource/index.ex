@@ -7,6 +7,8 @@ defmodule GupIndexManager.Resource.Index do
     System.get_env("ELASTIC_SEARCH_URL", "http://localhost:9200")
   end
   def create_index do
+    url = elastic_url()
+    |> IO.inspect(label: "elastic_url")
     Index.delete(elastic_url(), @index)
     Index.create(elastic_url(), @index, Config.config())
     |> case do

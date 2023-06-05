@@ -7,6 +7,7 @@ defmodule GupAdmin.Resource.Search do
   # get elastic url from config
   def elastic_url do
     System.get_env("ELASTIC_SEARCH_URL") || "http://localhost:9200"
+    |> IO.inspect(label: "elastic_url")
   end
 
   def search(params) do
