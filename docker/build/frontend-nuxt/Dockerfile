@@ -12,6 +12,7 @@ RUN set -ex \
 WORKDIR /app/release/frontend-nuxt/
 
 RUN set -ex \ 
+ && rm -rf node_modules \
  && yarn install && yarn run build
 
 # production environment
