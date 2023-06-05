@@ -18,7 +18,7 @@ services:
   index-manager:
     image: docker.ub.gu.se/gup-admin-index-manager:${GIT_REVISION}
     ports:
-      - "${INDEX_MANAGER_HOST_PORT}:4010"
+      - "${INDEX_MANAGER_HOST_PORT}:4000"
     environment:
       ELASTIC_SEARCH_URL: "${ELASTIC_SEARCH_URL}"
       GUP_BASE_URL: "${GUP_BASE_URL}"
