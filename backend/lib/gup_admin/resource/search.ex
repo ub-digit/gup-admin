@@ -6,7 +6,11 @@ defmodule GupAdmin.Resource.Search do
   alias GupAdmin.Resource.Publication
   # get elastic url from config
   def elastic_url do
-    System.get_env("ELASTIC_SEARCH_URL") || "http://localhost:9200"
+    url = System.get_env("ELASTIC_SEARCH_URL") || "http://localhost:9200"
+    IO.inspect(url, label: "GETTING URL")
+    url
+
+
   end
 
   def search(params) do
@@ -17,9 +21,11 @@ defmodule GupAdmin.Resource.Search do
   end
 
   def search_index(params) do
+    IO.inspect("SEARCHING")
     params = remap_params(params)
     q = Query.base(params["title"])
     |> Filter.add_filter(Filter.build_filter(params["filter"]))
+    |> IO.inspect(label: "HITS")
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
     hits
     |> Publication.remap()
