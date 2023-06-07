@@ -21,11 +21,9 @@ defmodule GupAdmin.Resource.Search do
   end
 
   def search_index(params) do
-    IO.inspect("SEARCHING")
     params = remap_params(params)
     q = Query.base(params["title"])
     |> Filter.add_filter(Filter.build_filter(params["filter"]))
-    |> IO.inspect(label: "HITS")
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
     hits
     |> Publication.remap()

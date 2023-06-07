@@ -1,19 +1,13 @@
 defmodule Experiment do
-  require Logger
   @index "publications"
 
   def elastic_url do
-    System.get_env("ELASTIC_SEARCH_URL") || "http://localhost:9200"
+    System.get_env("ELASTIC_SEARCH_URL", "http://localhost:9200")
   end
 
   def index_manager_url do
-    System.get_env("GUP_INDEX_MANAGER_URL") || "http://localhost:4010"
+    System.get_env("GUP_INDEX_MANAGER_URL", "http://localhost:4010")
   end
-
-
-
-
-
 
   # Function that returns a list of filenames from a directory
   def get_gup_file_names() do
@@ -51,9 +45,8 @@ defmodule Experiment do
     |> Enum.map(fn data ->
       data
       |> auto_put()
-      #Elastix.Document.index(elastic_url(), "publications", "_doc", data["id"], data, [])
     end)
-
+    %{"status" => "index ok"}
   end
 
 
@@ -247,7 +240,6 @@ defmodule Experiment do
       base_url = index_manager_url()
       api_key = System.get_env("GUP_INDEX_MANAGER_API_KEY", "megasecretimpossibletoguesskey")
       url = "#{base_url}/publications?api_key=#{api_key}"
-      |> IO.inspect()
       %{"url" => url}
       body = %{"data" => data} |> Jason.encode!()
       HTTPoison.put(url, body, [{"Content-Type", "application/json"}])
