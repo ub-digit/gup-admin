@@ -11,5 +11,6 @@ services:
     environment:
       NUXT_API_BASE_URL: "http://backend:4000/"
       NUXT_API_ALERT_URL: "${ALERT_URL}"
+    restart: always
     ports:
       - ${FRONTEND_HOST_PORT}:3000

@@ -1,4 +1,5 @@
 defmodule Experiment do
+  require Logger
   @index "publications"
 
   def elastic_url do
@@ -10,14 +11,7 @@ defmodule Experiment do
   end
 
 
-  def create_index(name) do
-    Elastix.Index.delete(elastic_url(), name)
-    Elastix.Index.create(elastic_url(), name, config())
-    |> case do
-      {:ok, %{body: %{"error" => reason}}} -> {:error, reason}
-      {:ok, res} -> {:ok, res}
-    end
-  end
+
 
 
 
@@ -46,7 +40,7 @@ defmodule Experiment do
 
 
   def init(count \\ 1_000_000) do
-    create_index(@index)
+    #create_index(@index)
     load_gup_data(count)
     |> append_list(load_scopus_data(count))
     |> Enum.map(fn post -> Map.put(post, "deleted", false) end)
@@ -250,9 +244,11 @@ defmodule Experiment do
     end
 
     def auto_put(data) do
-      base_url = System.get_env("GUP_INDEX_MANAGER_URL", "http://localhost:4010/")
+      base_url = index_manager_url()
       api_key = System.get_env("GUP_INDEX_MANAGER_API_KEY", "megasecretimpossibletoguesskey")
       url = "#{base_url}/publications?api_key=#{api_key}"
+      |> IO.inspect()
+      %{"url" => url}
       body = %{"data" => data} |> Jason.encode!()
       HTTPoison.put(url, body, [{"Content-Type", "application/json"}])
     end
