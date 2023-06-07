@@ -15,7 +15,7 @@ const pendingImportedPostById = ref(null);
 const pendingRemoveImportedPost = ref(null);
 const pendingCreateImportedPostInGup = ref(null);
 
-  if (nuxtStorage.localStorage.getData("selectedUser")) {
+  if (nuxtStorage && nuxtStorage.localStorage && nuxtStorage.localStorage.getData("selectedUser")) {
       selectedUser.value = nuxtStorage.localStorage.getData("selectedUser");
   }
 
