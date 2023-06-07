@@ -10,7 +10,4 @@ services:
   db-index-manager:
     # volumes:
     #   - ../pg_data:/var/lib/postgresql/data/pgdata
-  backend:
-    volumes:
-      - ../backend:/release/backend/
- 
+  
