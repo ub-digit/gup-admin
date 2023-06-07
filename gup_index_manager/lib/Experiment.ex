@@ -18,7 +18,8 @@ defmodule Experiment do
 
 
     api_key = System.get_env("GUP_INDEX_MANAGER_API_KEY", "megasecretimpossibletoguesskey")
-    url = "http://localhost:4010/publications?api_key=#{api_key}"
+    base = System.get_env("GUP_INDEX_MANAGER_URL", "http://localhost:4010")
+    url = "#{base}/publications?api_key=#{api_key}"
 
     load_gup_data(20)
     |> Enum.map(fn item ->
