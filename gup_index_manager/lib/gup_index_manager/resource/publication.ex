@@ -3,12 +3,14 @@ defmodule GupIndexManager.Resource.Publication do
   alias GupIndexManager.Resource.Index
   def create_or_update(data) do
 
-    id = data |> get_id()
+    id =  Map.get("id")
+    attended = data |> Map.get("attended")
     db_publication = Publication.find_by_publication_id(id)
+
     attrs = %{
       "json" => data |> Jason.encode!(),
-      "attended" => db_publication.attended,
-      "deleted" => db_publication.deleted,
+      "attended" => attended || db_publication.attended || false,
+      "deleted" => db_publication.deleted || db_publication["deleted"] || false,
       "publication_id" => id
     }
 
@@ -54,9 +56,7 @@ defmodule GupIndexManager.Resource.Publication do
     end)
   end
 
-  def get_id(data) do
-    data |> Map.get("id")
-  end
+
 
   def get_all_publications() do
     Publication
