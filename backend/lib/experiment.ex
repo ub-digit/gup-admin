@@ -38,7 +38,7 @@ defmodule Experiment do
     load_gup_data(count)
     |> append_list(load_scopus_data(count))
     |> Enum.map(fn post -> Map.put(post, "deleted", false) end)
-    |> Enum.map(fn post -> Map.put(post, "attended", false) end)
+    # |> Enum.map(fn post -> Map.put(post, "attended", false) end)
 
     #|> Enum.map(fn data -> %{"title" => data["title"], "id" => data["id"], "attended" => data["attended"], "deleted" => data["deleted"], "source" => data["source"], "pubyear" => data["pubyear"]} end)
     #|> Enum.map(fn data -> %{"title" => data["title"], "id" => data["id"]} end)

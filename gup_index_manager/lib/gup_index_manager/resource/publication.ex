@@ -2,15 +2,17 @@ defmodule GupIndexManager.Resource.Publication do
   alias GupIndexManager.Model.Publication
   alias GupIndexManager.Resource.Index
   def create_or_update(data) do
-
-    id =  Map.get("id")
-    attended = data |> Map.get("attended")
+    id =  Map.get(data, "id")
+    data = data |> Map.put("origin_id", String.split(id, "_") |> List.last())
+    |> remap_authors()
+    attended = data |> Map.get("attended", false)
+    deleted = data |> Map.get("deleted", false)
     db_publication = Publication.find_by_publication_id(id)
 
     attrs = %{
       "json" => data |> Jason.encode!(),
-      "attended" => attended || db_publication.attended || false,
-      "deleted" => db_publication.deleted || db_publication["deleted"] || false,
+      "attended" => attended,
+      "deleted" => deleted,
       "publication_id" => id
     }
 
@@ -19,6 +21,25 @@ defmodule GupIndexManager.Resource.Publication do
     |> GupIndexManager.Repo.insert_or_update()
     Index.update_publication(attrs)
   end
+
+
+  def remap_authors(%{"authors" => [%{"affiliations" => _}]} = data) do
+    IO.inspect("remap_authors")
+    authors = data
+    |> Map.get("authors")
+    |> Enum.map(fn author ->
+      %{
+        "departments" => %{
+           "name" => Map.get(author, "affiliations") |> List.first() |> Map.get("department")
+        },
+        "id" => Map.get(author, "person") |> List.first() |> Map.get("id"),
+        "name" => (Map.get(author, "person") |> List.first() |> Map.get("first_name")) <> " " <> (Map.get(author, "person") |> List.first() |> Map.get("last_name"))
+      }
+    end)
+    Map.put(data, "authors", authors)
+  end
+
+  def remap_authors(data), do: data
 
   def delete(id) do
     db_publication = Publication.find_by_publication_id(id)
