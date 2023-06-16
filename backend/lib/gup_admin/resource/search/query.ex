@@ -30,7 +30,7 @@ defmodule GupAdmin.Resource.Search.Query do
       }
     }
   end
-
+  def find_duplicates_by_identifiers([]), do: nil
   def find_duplicates_by_identifiers(identifiers) do
     %{
       "query" => %{
