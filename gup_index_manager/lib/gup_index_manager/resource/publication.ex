@@ -62,7 +62,7 @@ defmodule GupIndexManager.Resource.Publication do
       last_name -> last_name
     end
     fullname = "#{first_name} #{last_name}"
-    String.lengt(fullname)
+    String.length(fullname)
     |> case do
       0 -> ""
       _ -> fullname
