@@ -33,7 +33,7 @@ defmodule GupIndexManager.Resource.Publication do
            "name" => Map.get(author, "affiliations") |> List.first() |> Map.get("department")
         },
         "id" => Map.get(author, "person") |> List.first() |> Map.get("id"),
-        "name" => (Map.get(author, "person") |> List.first() |> Map.get("first_name")) <> " " <> (Map.get(author, "person") |> List.first() |> Map.get("last_name"))
+        "name" => get_author_name(author)
       }
     end)
     Map.put(data, "authors", authors)
@@ -47,6 +47,27 @@ defmodule GupIndexManager.Resource.Publication do
       nil -> {:error, "Publication not found"}
       _ -> proceed_delete(db_publication)
     end
+  end
+
+  def get_author_name(author) do
+
+    first_name = Map.get(author, "person") |> List.first() |> Map.get("first_name")
+    |> case do
+      nil -> ""
+      first_name -> first_name
+    end
+    last_name = Map.get(author, "person") |> List.first() |> Map.get("last_name")
+    |> case do
+      nil -> ""
+      last_name -> last_name
+    end
+    fullname = "#{first_name} #{last_name}"
+    String.lengt(fullname)
+    |> case do
+      0 -> ""
+      _ -> fullname
+    end
+
   end
 
   def proceed_delete(db_publication) do
