@@ -24,7 +24,8 @@ defmodule GupAdminWeb.PublicationController do
   end
 
   def delete(conn, %{"id" => id}) do
-    json conn, Search.mark_as_deleted(id)
+    Search.mark_as_deleted(id)
+    json conn, %{"Status" => "post deleted"}
   end
 
   def post_to_gup(conn, %{"id" => id, "gup_user" => gup_user}) do
