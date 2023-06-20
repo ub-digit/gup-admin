@@ -249,4 +249,16 @@ defmodule Experiment do
       System.get_env(var_name)
       |> IO.inspect(label: "#{var_name} value")
     end
+
+    def find_libris do
+      load_gup_data()
+      |> Enum.filter(fn post ->
+        post
+        |> Map.get("publication_identifiers")
+        |> Enum.any?(fn identifier -> identifier["identifier_code"] == "libris-id" end)
+
+      end)
+      |> Enum.map(fn d -> Map.get(d, "id") end)
+      |> IO.inspect()
+    end
   end

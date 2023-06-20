@@ -17,10 +17,14 @@ defmodule GupAdmin.Resource.Publication do
   def merge_publications(gup_id, publication_id, gup_user) do
     api_key = System.get_env("GUP_API_KEY", "an-api-key")
     gup_id = gup_id |> String.split("_") |> List.last()
-    url =  "#{gup_server_base_url()}/v1/published_publications_admin/#{gup_id}?api_key=#{api_key}&username=#{gup_user}"
+    merge_with_id = String.contains?(publication_id, "gup")
+    |> case do
+      true -> "&gup_id=" <> (String.split(publication_id, "_") |> List.last())
+      _ -> ""
+    end
+    url =  "#{gup_server_base_url()}/v1/published_publications_admin/#{gup_id}?api_key=#{api_key}&username=#{gup_user}#{merge_with_id}"
     publication_identifiers = show_raw(publication_id)
     |> Map.get("publication_identifiers")
-    |> IO.inspect(label: "publication_identifiers")
     body = %{"publication" => %{"publication_identifiers" => publication_identifiers}, "id" => gup_id} |> Jason.encode!()
     HTTPoison.put(url, body, [{"Content-Type", "application/json"}])
     |> IO.inspect(label: "merge_publications")
