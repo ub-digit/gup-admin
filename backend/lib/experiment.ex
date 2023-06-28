@@ -256,9 +256,34 @@ defmodule Experiment do
         post
         |> Map.get("publication_identifiers")
         |> Enum.any?(fn identifier -> identifier["identifier_code"] == "libris-id" end)
-
       end)
       |> Enum.map(fn d -> Map.get(d, "id") end)
       |> IO.inspect()
+    end
+
+
+    def spoof_publication(id, doi) do
+      publication =  GupAdmin.Resource.Search.search_one(id)
+      |> List.first()
+      |> Map.get("_source")
+      |> doi_identifier(doi)
+
+      Elastix.Document.index(elastic_url(), @index, "_doc", publication["id"], publication, [])
+      Elastix.Index.refresh(elastic_url(), @index)
+
+
+    end
+
+    def doi_identifier(publication, doi) do
+      identifiers = Map.get(publication, "publication_identifiers")
+      identifiers = identifiers ++
+      [%{
+        "identifier_code" => "doi",
+        "identifier_label" => "DOI",
+        "identifier_value" => doi,
+        "publication_version_id" => 564162
+      }]
+
+      Map.put(publication, "publication_identifiers", identifiers)
     end
   end

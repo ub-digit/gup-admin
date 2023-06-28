@@ -39,6 +39,7 @@ defmodule GupAdmin.Resource.Search.Query do
         }
       }
     }
+    |> IO.inspect(label: "find_duplicates_by_identifiers")
 
   end
 
@@ -51,7 +52,7 @@ defmodule GupAdmin.Resource.Search.Query do
               %{
                 "query_string" => %{
                   "fields" => ["publication_identifiers.identifier_value"],
-                  "query" => String.replace(identifier["identifier_value"], "/", "\\/"),
+                  "query" => identifier["identifier_value"],
                   "analyzer" => "keyword"
                 }
               },
@@ -74,7 +75,7 @@ defmodule GupAdmin.Resource.Search.Query do
         "match" => %{
           "title" => %{
             "query" => term,
-            "fuzziness" => "AUTO"
+            "fuzziness" => "1"
           }
         }
       }
