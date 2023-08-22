@@ -4,7 +4,9 @@ services:
   admin-frontend:
     image: docker.ub.gu.se/gup-admin-admin-frontend:${GIT_REVISION}${PLATFORM}
     ports:
-      - "${ADMIN_FRONTEND_HOST_PORT}:5000"
+      - "${ADMIN_FRONTEND_HOST_PORT}:3000"
+    environment:
+      NUXT_API_BASE_URL: "http://localhost:4000/"
   admin-backend:
    image: docker.ub.gu.se/gup-admin-admin-backend:${GIT_REVISION}${PLATFORM}
    ports:
