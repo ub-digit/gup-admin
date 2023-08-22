@@ -1,27 +1,27 @@
 version: '3.7'
 services:
-  frontend-nuxt:
-    image: docker.ub.gu.se/gup-admin-frontend-nuxt:${GIT_REVISION}
+  admin-frontend:
+    image: docker.ub.gu.se/gup-admin-admin-frontend:${GIT_REVISION}${PLATFORM}
     build:
-      context: ./frontend-nuxt
+      context: ./admin-frontend
       args:
         - GIT_REPO_URL=${GIT_REPO_URL}
         - GIT_REVISION=${GIT_REVISION}
-  backend:
-    image: docker.ub.gu.se/gup-admin-backend:${GIT_REVISION}
+  admin-backend:
+    image: docker.ub.gu.se/gup-admin-admin-backend:${GIT_REVISION}${PLATFORM}
     build:
-      context: ./backend
+      context: ./admin-backend
       args:
         - GIT_REPO_URL=${GIT_REPO_URL}
         - GIT_REVISION=${GIT_REVISION}
   elasticsearch:
-    image: docker.ub.gu.se/gup-admin-elasticsearch:${GIT_REVISION}
+    image: docker.ub.gu.se/gup-admin-elasticsearch:${GIT_REVISION}${PLATFORM}
     build:
       context: ./elasticsearch
-  gup-index-manager:
-    image: docker.ub.gu.se/gup-admin-index-manager:${GIT_REVISION}
+  index-manager-backend:
+    image: docker.ub.gu.se/gup-admin-index-manager-backend:${GIT_REVISION}${PLATFORM}
     build:
-      context: ./gup-index-manager
+      context: ./index-manager-backend
       args:
         - GIT_REPO_URL=${GIT_REPO_URL}
         - GIT_REVISION=${GIT_REVISION}

@@ -8,6 +8,7 @@ import 'ofetch';
 import 'unenv/runtime/fetch/index';
 import 'hookable';
 import 'scule';
+import 'klona';
 import 'defu';
 import 'ohash';
 import 'ufo';

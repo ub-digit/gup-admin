@@ -1,13 +1,16 @@
 version: '3.7'
 
 services:
-  backend:
-   image: docker.ub.gu.se/gup-admin-backend:${GIT_REVISION}
+  admin-frontend:
+    image: docker.ub.gu.se/gup-admin-admin-frontend:${GIT_REVISION}${PLATFORM}
+    ports:
+      - "${ADMIN_FRONTEND_HOST_PORT}:5000"
+  admin-backend:
+   image: docker.ub.gu.se/gup-admin-admin-backend:${GIT_REVISION}${PLATFORM}
    ports:
-     - "${BACKEND_HOST_PORT}:4000"
+     - "${ADMIN_BACKEND_HOST_PORT}:4000"
    environment:
      ELASTIC_SEARCH_URL: "${ELASTIC_SEARCH_URL}"
-     ALERT_MESSAGE_FILE_PATH: "${ALERT_MESSAGE_FILE_PATH}"
      GUP_INDEX_MANAGER_URL: "${GUP_INDEX_MANAGER_URL}"
      GUP_INDEX_MANAGER_API_KEY: "${GUP_INDEX_MANAGER_API_KEY}"
    restart: always
@@ -17,32 +20,32 @@ services:
      - ../data/_source:/release/data/_source
      - ../data/scopus-normalised:/release/data/scopus-normalised
 
-  index-manager:
-    image: docker.ub.gu.se/gup-admin-index-manager:${GIT_REVISION}
+  index-manager-backend:
+    image: docker.ub.gu.se/gup-admin-index-manager-backend:${GIT_REVISION}${PLATFORM}
     ports:
-      - "${INDEX_MANAGER_HOST_PORT}:4000"
+      - "${BACKEND_INDEX_MANAGER_HOST_PORT}:4000"
     environment:
       ELASTIC_SEARCH_URL: "${ELASTIC_SEARCH_URL}"
       GUP_BASE_URL: "${GUP_BASE_URL}"
     restart: always
     # volumes:
-  db:
+  admin-db:
     image: postgres:12
     environment:
-      POSTGRES_USER: "${DB_USER}"
-      POSTGRES_PASSWORD: "${DB_PASSWORD}"
-      POSTGRES_DB: "${DB_NAME}"
+      POSTGRES_USER: "${ADMIN_DB_USER}"
+      POSTGRES_PASSWORD: "${ADMIN_DB_PASSWORD}"
+      POSTGRES_DB: "${ADMIN_DB_NAME}"
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - "${DB_INIT_PATH}:/docker-entrypoint-initdb.d"
     ports:
      - "127.0.0.1:5433:5432"
     restart: always
-  db-index-manager:
+  index-manager-db:
     image: postgres:12
     environment:
-      POSTGRES_USER: "${DB_USER}"
-      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+      POSTGRES_USER: "${ADMIN_DB_USER}"
+      POSTGRES_PASSWORD: "${ADMIN_DB_USER}"
       POSTGRES_DB: "${INDEX_MANAGER_DB_NAME}"
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
@@ -51,7 +54,7 @@ services:
      - "127.0.0.1:5443:5432"
     restart: always
   elasticsearch:
-    image: docker.ub.gu.se/gup-admin-elasticsearch:${GIT_REVISION}
+    image: docker.ub.gu.se/gup-admin-elasticsearch:${GIT_REVISION}${PLATFORM}
     ports:
       - "127.0.0.1:9200:9200"
       - "127.0.0.1:9300:9300"
