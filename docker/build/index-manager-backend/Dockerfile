@@ -1,7 +1,7 @@
 FROM elixir:1.14.4
 
 ENV MIX_ENV=prod
-ENV DATABASE_URL=ecto://postgres:postgres@db-index-manager/gup_index_manager_dev
+ENV DATABASE_URL=ecto://postgres:postgres@index-manager-db/gup_index_manager_dev
 ENV SECRET_KEY_BASE=verysecretkeybasetobehiddenverysecretkeybasetobehiddenverysecretkeybasetobehiddenverysecretkeybasetobehiddenverysecretkeybasetobehiddenverysecretkeybasetobehidden
 ENV TZ=Europe/Stockholm
 RUN apt-get update && \
@@ -21,4 +21,4 @@ ENV APP_HOME /release/gup_index_manager/
 WORKDIR $APP_HOME
 RUN mix deps.get && mix deps.compile && mix compile && mix phx.digest
 COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
-CMD ["/usr/local/bin/wait-for-it.sh", "db-index-manager:5432", "elasticsearch:9200", "-t", "0", "--", "mix", "phx.server"]
+CMD ["/usr/local/bin/wait-for-it.sh", "index-manager-db:5432", "elasticsearch:9200", "-t", "0", "--", "mix", "phx.server"]

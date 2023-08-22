@@ -1,7 +1,7 @@
 FROM elixir:1.13
 
 ENV MIX_ENV=prod
-ENV DATABASE_URL=ecto://postgres:postgres@db/gup_admin_dev
+ENV DATABASE_URL=ecto://postgres:postgres@admin-db/gup_admin_dev
 ENV SECRET_KEY_BASE=verysecretkeybasetobehiddenverysecretkeybasetobehiddenverysecretkeybasetobehiddenverysecretkeybasetobehiddenverysecretkeybasetobehiddenverysecretkeybasetobehidden
 ENV TZ=Europe/Stockholm
 RUN apt-get update && \
@@ -20,4 +20,4 @@ ENV APP_HOME /release/backend/
 WORKDIR $APP_HOME
 RUN mix deps.get && mix deps.compile && mix compile && mix phx.digest
 COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
-CMD ["/usr/local/bin/wait-for-it.sh", "db:5432", "elasticsearch:9200", "-t", "0", "--", "mix", "phx.server"]
+CMD ["/usr/local/bin/wait-for-it.sh", "admin-db:5432", "elasticsearch:9200", "-t", "0", "--", "mix", "phx.server"]

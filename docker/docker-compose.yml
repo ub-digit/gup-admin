@@ -6,7 +6,7 @@ services:
     ports:
       - "${ADMIN_FRONTEND_HOST_PORT}:3000"
     environment:
-      NUXT_API_BASE_URL: "http://localhost:4000/"
+      NUXT_API_BASE_URL: "http://admin-backend:4000/"
   admin-backend:
    image: docker.ub.gu.se/gup-admin-admin-backend:${GIT_REVISION}${PLATFORM}
    ports:
@@ -17,7 +17,6 @@ services:
      GUP_INDEX_MANAGER_API_KEY: "${GUP_INDEX_MANAGER_API_KEY}"
    restart: always
    volumes:
-#     - "${HOST_ALERT_MESSAGE_FILE_PATH}:${ALERT_MESSAGE_FILE_PATH}"
      # Temporary fix until real index is in place
      - ../data/_source:/release/data/_source
      - ../data/scopus-normalised:/release/data/scopus-normalised
