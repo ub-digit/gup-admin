@@ -1,5 +1,11 @@
 # gup-admin 
 
+## index GUP 
+
+docker exec -it <continername> bash
+cd /usr/src/app
+bundle exec rake gup_admin:index_all LIMIT=500 OFFSET=0
+
 ## TODO
 
 
