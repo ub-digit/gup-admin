@@ -4,7 +4,7 @@
 
 docker exec -it <continername> bash
 cd /usr/src/app
-bundle exec rake gup_admin:index_all LIMIT=1000
+bundle exec rake gup_admin:index_all LIMIT=1000 OFFSET=0
 
 ## TODO
 
