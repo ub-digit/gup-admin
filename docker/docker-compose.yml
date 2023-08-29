@@ -146,3 +146,13 @@ services:
       - ${GUP_SOLR_JOURNALS_VOLUME_SOURCE}:/opt/solr/server/solr/mycores/gup-journals/data
       - ${GUP_SOLR_PEOPLE_VOLUME_SOURCE}:/opt/solr/server/solr/mycores/gup-people/data
       - ${GUP_SOLR_PUBLICATIONS_VOLUME_SOURCE}:/opt/solr/server/solr/mycores/gup-publications/data
+  gup-imports:
+      image: docker.ub.gu.se/gup-imports:${GUP_IMPORTS_IMAGE_VERSION}
+      restart: always
+      environment:
+        - GUP_ADMIN_BASE_URL=${GUP_INDEX_MANAGER_URL}
+        - GUP_ADMIN_API_KEY=${GUP_INDEX_MANAGER_API_KEY}
+      tty: true
+      volumes:
+        - ${HOST_SCOPUS_NORMALISED_JSON_FILES_DIR}:/data/files/scopus-normalised
+        - ${HOST_SCRIPT_FILES_DIR}:/data/scripts
