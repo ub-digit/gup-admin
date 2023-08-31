@@ -33,18 +33,9 @@ docker-compose exec gup-imports bash -c 'python3 /data/scripts/put-scopus-docs.p
 
 
 ### DISKUTERA
-* Fullwidth container (som fjärrkontrollen)
-    * eventuell maxbredd?
-* Helt ignorera mobilläge?
 * 404 sidor (utseende)
 * Nivå på felhantering (vet inte exakt vad jag menar)
 * Namn på olika parametrar i filter på queryparam? 
 * Verikal skroll på filtrerade poster eller inte?
 * id: GUP-345435 istället för GUP: 32234532
     * ligger även under titel nu (ej som skiss; orsak platsbrist) 
-* "statusrad" på postvisning är oklar för mig (vad betyder "AV" i ett sammanhang där man klickat på en SCOPUS eller WoS post)
-* Hur hantera radhöjder när posterna visas sida vid sida och har olika höjd? 
-    * javascriptlösning krympa font-size till vad som får plats i en fast höjd?
-    * Samma tabell för båda och låta den växa till största värdet (jobbigt med olika NuxtPage (dvs outlets)
-    * Ignorera så länge
-
