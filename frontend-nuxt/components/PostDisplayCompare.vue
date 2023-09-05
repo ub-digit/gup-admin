@@ -29,10 +29,6 @@
               <br /><br />
 
               <li class="list-inline-item">
-                <font-awesome-icon
-                  class="text-info d-none"
-                  icon="fa-solid fa-file-arrow-down"
-                />
                 <strong
                   >{{
                     t(
@@ -47,10 +43,6 @@
                 v-if="item.first.value.created_at.value"
                 class="list-inline-item"
               >
-                <font-awesome-icon
-                  class="text-warning d-none"
-                  icon="fa-solid fa-award"
-                />
                 <strong>{{
                   t(
                     `views.publications.post.fields.${item.first.value.created_at.display_label}`
@@ -69,10 +61,6 @@
                 v-if="item.first.value.version_updated_by.value"
                 class="list-inline-item"
               >
-                <font-awesome-icon
-                  class="text-warning d-none"
-                  icon="fa-solid fa-award"
-                />
                 <strong>{{
                   t(
                     `views.publications.post.fields.${item.first.value.updated_at.display_label}`
