@@ -348,16 +348,6 @@ const isVisible = (item) => {
     return true;
   }
 };
-
-function getURL(code, value) {
-  if (code === "doi") {
-    return "https://dx.doi.org/" + value;
-  } else if (code === "scopus-id") {
-    return `https://www.scopus.com/record/display.uri?eid=2-s2.0-${value}&origin=resultslist`;
-  } else if (code === "isi-id") {
-    return "https://www.webofscience.com/wos/woscc/full-record/WOS:" + value;
-  }
-}
 </script>
 
 <style lang="scss" scoped>
