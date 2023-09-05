@@ -34,7 +34,7 @@
         <Spinner v-if="pendingCompareGupPostWithImported" class="me-4" />
         <PostDisplayCompare :dataMatrix="gupCompareImportedMatrix" />
       </div>
-      <div class="row" v-else>
+      <div v-else class="row">
         <div class="col-6">
           <Spinner v-if="pendingImportedPostById" class="me-4" />
           <ErrorLoadingPost
