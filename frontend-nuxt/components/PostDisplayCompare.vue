@@ -10,7 +10,7 @@
           <template v-if="item.second" v-slot:label>
             <div class="col-2"></div>
           </template>
-          <template v-slot:content>
+          <template v-slot:content_first>
             <ul class="list-inline">
               <li
                 v-if="!item.first.value.attended.value"
