@@ -23,6 +23,7 @@
     "marked": "^4.2.12",
     "nuxt-storage": "^1.2.2",
     "pinia": "^2.0.29",
+    "prettier": "^3.0.3",
     "sass": "^1.57.1",
     "sass-loader": "^13.2.0",
     "vue-toast-notification": "^3.0"
