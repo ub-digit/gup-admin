@@ -1,38 +1,36 @@
 <script setup>
 const props = defineProps({
-  show: Boolean
-})
+  show: Boolean,
+});
 </script>
 
 <template>
   <Transition name="modal">
     <div v-if="show" class="modal-mask modal">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
             <div class="modal-title">
-            <slot name="header">default header</slot>
+              <slot name="header">default header</slot>
             </div>
-        </div>
+          </div>
 
-
-        <div class="modal-body">
+          <div class="modal-body">
             <slot name="body">default body</slot>
-        </div>
+          </div>
 
-        <div class="modal-footer">
-          <slot name="footer">
-            <button
-              class="btn btn-secondary"
-              @click="$emit('close')"
-            >Avbryt</button>
-            <button @click="$emit('success')" class="btn btn-primary">
+          <div class="modal-footer">
+            <slot name="footer">
+              <button class="btn btn-secondary" @click="$emit('close')">
+                Avbryt
+              </button>
+              <button @click="$emit('success')" class="btn btn-primary">
                 Ok
-            </button>
-          </slot>
+              </button>
+            </slot>
+          </div>
         </div>
       </div>
-    </div>
     </div>
   </Transition>
 </template>

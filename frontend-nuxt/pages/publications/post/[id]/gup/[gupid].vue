@@ -130,7 +130,7 @@
               <div v-if="gupPostsByTitle.data && !gupPostsByTitle.data.length">
                 {{
                   t(
-                    "views.publications.post.result_list.no_gup_posts_by_title_found"
+                    "views.publications.post.result_list.no_gup_posts_by_title_found",
                   )
                 }}
               </div>
@@ -219,29 +219,29 @@ let item_row_source = null;
 let item_row_publication_id = null;
 if (route.params.gupid !== "empty") {
   item_row_publication_id = gupCompareImportedMatrix.value.find(
-    (item) => item.display_label === "publication_id"
+    (item) => item.display_label === "publication_id",
   ).first.value;
   item_row_id = gupCompareImportedMatrix.value.find(
-    (item) => item.display_label === "id"
+    (item) => item.display_label === "id",
   ).first.value;
   item_row_source = gupCompareImportedMatrix.value.find(
-    (item) => item.display_type === "meta"
+    (item) => item.display_type === "meta",
   ).first.value.source.value;
   item_row_title = gupCompareImportedMatrix.value.find(
-    (item) => item.display_label === "title"
+    (item) => item.display_label === "title",
   ).first.value.title;
 } else {
   item_row_publication_id = importedPostById.value.find(
-    (item) => item.display_label === "publication_id"
+    (item) => item.display_label === "publication_id",
   ).first.value;
   item_row_id = importedPostById.value.find(
-    (item) => item.display_label === "id"
+    (item) => item.display_label === "id",
   ).first.value;
   item_row_source = importedPostById.value.find(
-    (item) => item.display_type === "meta"
+    (item) => item.display_type === "meta",
   ).first.value.source.value;
   item_row_title = importedPostById.value.find(
-    (item) => item.display_label === "title"
+    (item) => item.display_label === "title",
   ).first.value.title;
 }
 
@@ -262,7 +262,7 @@ async function merge() {
       const res = await mergePosts(
         route.params.id,
         route.params.gupid,
-        selectedUser.value
+        selectedUser.value,
       );
       if (res) {
         showModalMerge.value = true;
@@ -285,7 +285,7 @@ async function removePost() {
       router.push({ path: "/publications", query: { ...route.query } });
     } else {
       $toast.error(
-        t("messages.remove_error") + "<p>" + response.error.statusMessage
+        t("messages.remove_error") + "<p>" + response.error.statusMessage,
       );
     }
   }
@@ -328,7 +328,7 @@ async function editPost() {
       if (item_row_source !== "gup") {
         const response = await createImportedPostInGup(
           item_row_id,
-          selectedUser.value
+          selectedUser.value,
         );
         if (!response.error) {
           const url = response.link; //config.public.API_GUP_BASE_URL_EDIT + response.id;
@@ -340,7 +340,7 @@ async function editPost() {
       } else if (item_row_source === "gup") {
         window.open(
           `${config.public.API_GUP_BASE_URL_EDIT}${item_row_publication_id}`,
-          "_blank"
+          "_blank",
         );
       }
     }
