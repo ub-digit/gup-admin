@@ -1,11 +1,10 @@
 # gup-admin
 
-![Alt text](./GUP-admin-setup4.png "a title")
+![Alt text](./GUP-admin-setup4.png "GUP-ADMIN")
 
 ## index GUP Posts
 
 docker-compose exec gup-backend bash -c 'bundle exec rake gup_admin:index_all LIMIT=1000 OFFSET=0'
-cd /usr/src/app
 
 ## index WoS Posts
 
