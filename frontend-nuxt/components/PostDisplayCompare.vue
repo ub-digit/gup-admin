@@ -22,7 +22,7 @@
                 />
                 {{
                   t(
-                    `views.publications.post.fields.${item.first.value.attended.display_label}`,
+                    `views.publications.post.fields.${item.first.value.attended.display_label}`
                   )
                 }}
               </li>
@@ -32,7 +32,7 @@
                 <strong
                   >{{
                     t(
-                      `views.publications.post.fields.${item.first.value.source.display_label}`,
+                      `views.publications.post.fields.${item.first.value.source.display_label}`
                     )
                   }}
                 </strong>
@@ -45,13 +45,13 @@
               >
                 <strong>{{
                   t(
-                    `views.publications.post.fields.${item.first.value.created_at.display_label}`,
+                    `views.publications.post.fields.${item.first.value.created_at.display_label}`
                   )
                 }}</strong>
                 {{ getDate(item.first.value.created_at.value) }}
                 {{
                   t(
-                    `views.publications.post.fields.${item.first.value.version_created_by.display_label}`,
+                    `views.publications.post.fields.${item.first.value.version_created_by.display_label}`
                   )
                 }}
                 {{ item.first.value.version_created_by.value }}
@@ -63,13 +63,13 @@
               >
                 <strong>{{
                   t(
-                    `views.publications.post.fields.${item.first.value.updated_at.display_label}`,
+                    `views.publications.post.fields.${item.first.value.updated_at.display_label}`
                   )
                 }}</strong>
                 {{ getDate(item.first.value.updated_at.value) }}
                 {{
                   t(
-                    `views.publications.post.fields.${item.first.value.version_updated_by.display_label}`,
+                    `views.publications.post.fields.${item.first.value.version_updated_by.display_label}`
                   )
                 }}
                 {{ item.first.value.version_updated_by.value }}
@@ -90,7 +90,7 @@
                   />
                   {{
                     t(
-                      `views.publications.post.fields.${item.second.value.attended.display_label}`,
+                      `views.publications.post.fields.${item.second.value.attended.display_label}`
                     )
                   }}
                 </li>
@@ -104,7 +104,7 @@
                   <strong
                     >{{
                       t(
-                        `views.publications.post.fields.${item.second.value.source.display_label}`,
+                        `views.publications.post.fields.${item.second.value.source.display_label}`
                       )
                     }}
                   </strong>
@@ -121,13 +121,13 @@
                   />
                   <strong>{{
                     t(
-                      `views.publications.post.fields.${item.second.value.created_at.display_label}`,
+                      `views.publications.post.fields.${item.second.value.created_at.display_label}`
                     )
                   }}</strong>
                   {{ getDate(item.second.value.created_at.value) }}
                   {{
                     t(
-                      `views.publications.post.fields.${item.second.value.version_created_by.display_label}`,
+                      `views.publications.post.fields.${item.second.value.version_created_by.display_label}`
                     )
                   }}
                   {{ item.second.value.version_created_by.value }}
@@ -143,13 +143,13 @@
                   />
                   <strong>{{
                     t(
-                      `views.publications.post.fields.${item.second.value.updated_at.display_label}`,
+                      `views.publications.post.fields.${item.second.value.updated_at.display_label}`
                     )
                   }}</strong>
                   {{ getDate(item.second.value.updated_at.value) }}
                   {{
                     t(
-                      `views.publications.post.fields.${item.second.value.version_updated_by.display_label}`,
+                      `views.publications.post.fields.${item.second.value.version_updated_by.display_label}`
                     )
                   }}
                   {{ item.second.value.version_updated_by.value }}
