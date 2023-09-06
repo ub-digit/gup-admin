@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 
 services:
   admin-frontend:
@@ -7,19 +7,23 @@ services:
       - "${ADMIN_FRONTEND_HOST_PORT}:3000"
     environment:
       NUXT_API_BASE_URL: "http://admin-backend:4000/"
+      NUXT_PUBLIC_API_GUP_BASE_URL_EDIT: "http://gup-frontend:3010/publications/show/"
+      NUXT_PUBLIC_API_GUP_BASE_URL_SHOW: "http://gup-frontend:3010/publications/show/"
   admin-backend:
-   image: docker.ub.gu.se/gup-admin-admin-backend:${GIT_REVISION}${PLATFORM}
-   ports:
-     - "${ADMIN_BACKEND_HOST_PORT}:4000"
-   environment:
-     ELASTIC_SEARCH_URL: "${ELASTIC_SEARCH_URL}"
-     GUP_INDEX_MANAGER_URL: "${GUP_INDEX_MANAGER_URL}"
-     GUP_INDEX_MANAGER_API_KEY: "${GUP_INDEX_MANAGER_API_KEY}"
-   restart: always
-   volumes:
-     # Temporary fix until real index is in place
-     - ../data/_source:/release/data/_source
-     - ../data/scopus-normalised:/release/data/scopus-normalised
+    image: docker.ub.gu.se/gup-admin-admin-backend:${GIT_REVISION}${PLATFORM}
+    ports:
+      - "${ADMIN_BACKEND_HOST_PORT}:4000"
+    environment:
+      ELASTIC_SEARCH_URL: "${ELASTIC_SEARCH_URL}"
+      GUP_INDEX_MANAGER_URL: "${GUP_INDEX_MANAGER_URL}"
+      GUP_INDEX_MANAGER_API_KEY: "${GUP_INDEX_MANAGER_API_KEY}"
+      GUP_SERVER_BASE_URL: "${GUP_SERVER_BASE_URL}"
+      GUP_BASE_URL: "${GUP_BASE_URL}"
+    restart: always
+    volumes:
+      # Temporary fix until real index is in place
+      - ../data/_source:/release/data/_source
+      - ../data/scopus-normalised:/release/data/scopus-normalised
   index-manager-backend:
     image: docker.ub.gu.se/gup-admin-index-manager-backend:${GIT_REVISION}${PLATFORM}
     ports:
@@ -39,7 +43,7 @@ services:
     volumes:
       - "${DB_INIT_PATH}:/docker-entrypoint-initdb.d"
     ports:
-     - "127.0.0.1:5433:5432"
+      - "127.0.0.1:5433:5432"
     restart: always
   index-manager-db:
     image: postgres:12
@@ -51,7 +55,7 @@ services:
     volumes:
       - "${DB_INDEX_MANAGER_INIT_PATH}:/docker-entrypoint-initdb.d"
     ports:
-     - "127.0.0.1:5443:5432"
+      - "127.0.0.1:5443:5432"
     restart: always
   elasticsearch:
     image: docker.ub.gu.se/gup-admin-elasticsearch:${GIT_REVISION}${PLATFORM}
@@ -64,12 +68,12 @@ services:
       - ES_JAVA_OPTS=-Xms1g -Xmx1g
     restart: always
   gup-imports:
-      image: docker.ub.gu.se/gup-imports:${GUP_IMPORTS_IMAGE_VERSION}
-      restart: always
-      environment:
-        - GUP_ADMIN_BASE_URL=${GUP_INDEX_MANAGER_URL}
-        - GUP_ADMIN_API_KEY=${GUP_INDEX_MANAGER_API_KEY}
-      tty: true
-      volumes:
-        - ${HOST_SCOPUS_NORMALISED_JSON_FILES_DIR}:/data/files/scopus-normalised
-        - ${HOST_SCRIPT_FILES_DIR}:/data/scripts
+    image: docker.ub.gu.se/gup-imports:${GUP_IMPORTS_IMAGE_VERSION}
+    restart: always
+    environment:
+      - GUP_ADMIN_BASE_URL=${GUP_INDEX_MANAGER_URL}
+      - GUP_ADMIN_API_KEY=${GUP_INDEX_MANAGER_API_KEY}
+    tty: true
+    volumes:
+      - ${HOST_SCOPUS_NORMALISED_JSON_FILES_DIR}:/data/files/scopus-normalised
+      - ${HOST_SCRIPT_FILES_DIR}:/data/scripts
