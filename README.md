@@ -42,5 +42,3 @@ docker-compose exec gup-imports bash -c 'python3 /data/scripts/put-scopus-docs.p
 - Nivå på felhantering (vet inte exakt vad jag menar)
 - Namn på olika parametrar i filter på queryparam?
 - Verikal skroll på filtrerade poster eller inte?
-- id: GUP-345435 istället för GUP: 32234532
-  - ligger även under titel nu (ej som skiss; orsak platsbrist)
