@@ -5,7 +5,14 @@ import nuxtStorage from "nuxt-storage";
 export const useImportedPostsStore = defineStore("importedPostsStore", () => {
   const filterStore = useFilterStore();
   const { filters } = storeToRefs(filterStore);
-  const users = ref(["xgrkri", "xannje", "xjopau"]);
+  const users = ref([
+    "xgrkri",
+    "xannje",
+    "xjopau",
+    "xlpero",
+    "xblars",
+    "xberns",
+  ]);
   const selectedUser = ref("");
   const importedPosts = ref([]);
   const importedPostById = ref(null);
