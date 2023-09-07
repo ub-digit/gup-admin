@@ -17,27 +17,26 @@ docker-compose exec gup-imports bash -c 'python3 /data/scripts/put-scopus-docs.p
 - USING NUXT 3
 - CD nuxt-frontend
 - yarn install
-- yarn run dev
+- yarn dev
 - yarn run build (to test build outside docker)
 
 ## BACKEND
 
-- iex -S mix phx.server
+- mix deps.get ---> install dependecies
+- iex -S mix phx.server ----> start dev server
 
 ### FRONTEND DOCKER
 
 - CD docker/build
-- ./build.sh frontend-nuxt
+- ./build.sh
 - cd ..
 - ./docker-compose-release.sh up
 
 ### DOCKER LAB
-
-- Läser in temp-filer (json) för att få data till elasticsearch under utveckling. För att få indexet uppdatterat kör skript ./index.sh efter att elasticsearch är igång
 
 ### DISKUTERA
 
 - 404 sidor (utseende)
 - Nivå på felhantering (vet inte exakt vad jag menar)
 - Namn på olika parametrar i filter på queryparam?
-- Verikal skroll på filtrerade poster eller inte?
+- Verikal skroll på filtrerade poster eller inte? höjd?
