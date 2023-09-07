@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   admin-frontend:
-    image: docker.ub.gu.se/gup-admin-admin-frontend:${GIT_REVISION}${PLATFORM}
+    image: docker.ub.gu.se/gup-admin-frontend:${GIT_REVISION}${PLATFORM}
     ports:
       - "${ADMIN_FRONTEND_HOST_PORT}:3000"
     environment:
@@ -10,7 +10,7 @@ services:
       NUXT_PUBLIC_API_GUP_BASE_URL_EDIT: "http://gup-frontend:3010/publications/show/"
       NUXT_PUBLIC_API_GUP_BASE_URL_SHOW: "http://gup-frontend:3010/publications/show/"
   admin-backend:
-    image: docker.ub.gu.se/gup-admin-admin-backend:${GIT_REVISION}${PLATFORM}
+    image: docker.ub.gu.se/gup-admin-backend:${GIT_REVISION}${PLATFORM}
     ports:
       - "${ADMIN_BACKEND_HOST_PORT}:4000"
     environment:
