@@ -1,14 +1,14 @@
-version: '3.7'
+version: "3.7"
 services:
   admin-frontend:
-    image: docker.ub.gu.se/gup-admin-admin-frontend:${GIT_REVISION}${PLATFORM}
+    image: docker.ub.gu.se/gup-admin-frontend:${GIT_REVISION}${PLATFORM}
     build:
       context: ./admin-frontend
       args:
         - GIT_REPO_URL=${GIT_REPO_URL}
         - GIT_REVISION=${GIT_REVISION}
   admin-backend:
-    image: docker.ub.gu.se/gup-admin-admin-backend:${GIT_REVISION}${PLATFORM}
+    image: docker.ub.gu.se/gup-admin-backend:${GIT_REVISION}${PLATFORM}
     build:
       context: ./admin-backend
       args:
