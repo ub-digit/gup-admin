@@ -1,12 +1,8 @@
 <template>
-    <!-- apply class col-6 to component --> 
-    <NothingSelected columnSize="col-6" />
+  <!-- apply class col-6 to component -->
+  <NothingSelected columnSize="col-6" />
 </template>
 
-<script setup>
+<script setup></script>
 
-</script>
-
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>
