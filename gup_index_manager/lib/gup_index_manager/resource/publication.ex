@@ -4,7 +4,7 @@ defmodule GupIndexManager.Resource.Publication do
   def create_or_update(data) do
     id =  Map.get(data, "id")
     data = data |> Map.put("origin_id", String.split(id, "_") |> List.last())
-    |> remap_authors(has_affiliations(data))
+    |> remap_authors()
     attended = data |> Map.get("attended", false)
     deleted = data |> Map.get("deleted", false)
     db_publication = Publication.find_by_publication_id(id)
@@ -22,24 +22,8 @@ defmodule GupIndexManager.Resource.Publication do
     Index.update_publication(attrs)
   end
 
-  def has_affiliations(data) do
-    case length(data["authors"]) do
-      0 ->
-        false
-
-      _ ->
-        Map.get(data, "authors")
-        |> List.first()
-        |> Map.get("affiliations")
-        |> case do
-          nil -> false
-          _ -> true
-        end
-    end
-  end
-
-  def remap_authors(data, true) do
-
+  def remap_authors(%{"authors" => [%{"affiliations" => _}]} = data) do
+    IO.inspect("remap_authors")
     authors = data
     |> Map.get("authors")
     |> Enum.map(fn author ->
@@ -54,7 +38,7 @@ defmodule GupIndexManager.Resource.Publication do
     Map.put(data, "authors", authors)
   end
 
-  def remap_authors(data, false), do: data
+  def remap_authors(data), do: data
 
   def delete(id) do
     db_publication = Publication.find_by_publication_id(id)

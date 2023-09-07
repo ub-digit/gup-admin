@@ -1,9 +1,9 @@
 export default defineEventHandler(async (event) => {
-    const config = useRuntimeConfig();
-    const query = getQuery(event);
-    const id = event.context.params.id;
-    console.log(query);
-     /* [
+  const config = useRuntimeConfig();
+  const query = getQuery(event);
+  const id = event.context.params.id;
+  console.log(query);
+  /* [
         { "first": { "value": "gup:319932" }, "second": { "value": "gup:319932"}, "diff": false, "display_type": "string", "visibility": "never", "display_label": "id" },
         { "first": { "value": 319932}, "second": { "value": 319932}, "diff": false, "display_type": "string", "visibility": "never", "display_label": "publication_id"  },
   
@@ -80,7 +80,9 @@ export default defineEventHandler(async (event) => {
         { "first": { "value": {"url": "http://https://www.scopus.com/record/display.uri?eid=2-s2.0-${value}&origin=resultslist", "display_title": "85128514182"}}, "second": {"value": {"url": "http://https://www.scopus.com/record/display.uri?eid=2-s2.0-${value}&origin=resultslist", "display_title": "85128514182"}}, "diff": false, "display_type": "url", "visibility": "always", "display_label": "scopus"},
         { "first": { "value": {"url": "http://https://www.scopus.com/record/display.uri?eid=2-s2.0-${value}&origin=resultslist", "display_title": "85128514182"}}, "second": {"value": {"url": "http://https://www.scopus.com/record/display.uri?eid=2-s2.0-${value}&origin=resultslist", "display_title": "85128514182"}}, "diff": false, "display_type": "url", "visibility": "always", "display_label": "isiid"},
         { "first": { "value": {"url": "http://https://www.scopus.com/record/display.uri?eid=2-s2.0-${value}&origin=resultslist", "display_title": "85128514182"}}, "second": {"value": {"url": "http://https://www.scopus.com/record/display.uri?eid=2-s2.0-${value}&origin=resultslist", "display_title": "345435"}}, "diff": true, "display_type": "url", "visibility": "always", "display_label": "doi"},
-      ] */  
-    const res = await $fetch(`${config.API_BASE_URL}publications/compare/imported_id/${query.imported_id}/gup_id/${query.gup_id}`);
-    return res;
-})
+      ] */
+  const res = await $fetch(
+    `${config.API_BASE_URL}publications/compare/imported_id/${query.imported_id}/gup_id/${query.gup_id}`,
+  );
+  return res;
+});
