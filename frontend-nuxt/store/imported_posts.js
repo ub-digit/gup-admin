@@ -9,6 +9,7 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     "xgrkri",
     "xannje",
     "xjopau",
+    "xljoha",
     "xlpero",
     "xblars",
     "xberns",
