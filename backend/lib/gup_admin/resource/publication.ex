@@ -186,12 +186,25 @@ defmodule GupAdmin.Resource.Publication do
       }
   end
 
-  def get_author_block(id, name, x_account) do
-    %{
-        "id" => id,
-        "name" => name,
-        "x-account" => x_account
+
+  def get_author_block(author) do
+    person = Map.get(author, "person")
+    case length(person) do
+      0 -> %{
+        "id" => nil,
+        "name" => "",
+        "x-account" => ""
       }
+      _ -> %{
+        "name" => get_author_name(person |> List.first())
+      }
+    end
+  end
+
+  def get_author_name(author) do
+    last_name = author["last_name"] || ""
+    first_name = author["first_name"] || ""
+    first_name <> " " <> last_name
   end
 
   def get_authors(data) do
@@ -200,7 +213,7 @@ defmodule GupAdmin.Resource.Publication do
       nil -> []
       authors -> authors
     end
-    |> Enum.map(fn author -> get_author_block(author["id"], author["name"], author["x-account"]) end)
+    |> Enum.map(fn author -> get_author_block(author) end)
   end
 
   def get_publication_identifier_rows(container, order, data) do
