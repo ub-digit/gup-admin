@@ -6,7 +6,7 @@ defmodule GupAdmin.Resource.Search.Query do
       "size" => @query_limit,
       "query" => %{
         "bool" => %{
-          "must" => get_query_type(escape_characters(term))
+        "must" => get_query_type(escape_characters(term))
         }
       }
     }

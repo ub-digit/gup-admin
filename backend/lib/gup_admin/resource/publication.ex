@@ -57,6 +57,7 @@ defmodule GupAdmin.Resource.Publication do
   end
 
 
+
   def remap({hits, total}) do
     hits = hits
     |> Enum.map(fn hit -> hit["_source"] end)
@@ -68,6 +69,11 @@ defmodule GupAdmin.Resource.Publication do
       "showing" => showing
     }
   end
+
+  def remap(hits) do
+    remap({hits, 0})
+  end
+
 
   def get_publication_id(data) do
     String.split(data["id"], "_") |> List.last()
