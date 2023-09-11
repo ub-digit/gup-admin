@@ -57,11 +57,9 @@ defmodule GupAdmin.Resource.Publication do
   end
 
 
-  def remap(hits) do
+  def remap({hits, total}) do
     hits = hits
     |> Enum.map(fn hit -> hit["_source"] end)
-
-    total = length(hits)
     data = Enum.take(hits, 50)
     showing = length(data)
     %{
