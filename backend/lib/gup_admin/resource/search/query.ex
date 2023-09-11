@@ -6,7 +6,7 @@ defmodule GupAdmin.Resource.Search.Query do
       "size" => @query_limit,
       "query" => %{
         "bool" => %{
-          "must" => get_query_type(term)
+          "must" => get_query_type(escape_characters(term))
         }
       }
     }
@@ -24,7 +24,7 @@ defmodule GupAdmin.Resource.Search.Query do
     %{
       "query_string" => %{
         "default_operator" => "AND",
-        "fields" => ["title^15", "id", "origin_id"],
+        "fields" => ["title^15", "id", "origin_id", "publication_identifiers.identifier_value"],
         "query" => term
       }
     }
@@ -39,7 +39,6 @@ defmodule GupAdmin.Resource.Search.Query do
       }
     }
     |> IO.inspect(label: "find_duplicates_by_identifiers")
-
   end
 
   def identifier_blocks(identifiers) do
@@ -94,5 +93,10 @@ defmodule GupAdmin.Resource.Search.Query do
         }
       }
     }
+  end
+
+  def escape_characters(term) do
+    term
+    |> String.replace("/", "\\/")
   end
 end
