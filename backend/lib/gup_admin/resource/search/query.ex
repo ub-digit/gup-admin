@@ -1,8 +1,8 @@
 defmodule GupAdmin.Resource.Search.Query do
   @query_limit 1000
-
   def base(term) do
     %{
+      "track_total_hits" => true,
       "size" => @query_limit,
       "query" => %{
         "bool" => %{
@@ -26,7 +26,6 @@ defmodule GupAdmin.Resource.Search.Query do
         "default_operator" => "AND",
         "fields" => ["title^15", "id", "origin_id"],
         "query" => term
-        # "analyzer" => "edge_ngram_analyzer"
       }
     }
   end

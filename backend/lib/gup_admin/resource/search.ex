@@ -9,8 +9,6 @@ defmodule GupAdmin.Resource.Search do
     url = System.get_env("ELASTIC_SEARCH_URL") || "http://localhost:9200"
     IO.inspect(url, label: "GETTING URL")
     url
-
-
   end
 
   def search(params) do
@@ -24,8 +22,10 @@ defmodule GupAdmin.Resource.Search do
     params = remap_params(params)
     q = Query.base(params["title"])
     |> Filter.add_filter(Filter.build_filter(params["filter"]))
-    {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @index, [], q)
-    hits
+    {:ok, %{body: %{"hits" => hits}}} = Elastix.Search.search(elastic_url(), @index, [], q)
+    total = Map.get(hits, "total") |> Map.get("value")
+    hits = Map.get(hits, "hits")
+    {hits, total}
     |> Publication.remap()
   end
 
