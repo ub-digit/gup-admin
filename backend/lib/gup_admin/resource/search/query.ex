@@ -38,7 +38,6 @@ defmodule GupAdmin.Resource.Search.Query do
         }
       }
     }
-    |> IO.inspect(label: "find_duplicates_by_identifiers")
   end
 
   def identifier_blocks(identifiers) do
@@ -49,9 +48,8 @@ defmodule GupAdmin.Resource.Search.Query do
             "must" => [
               %{
                 "query_string" => %{
-                  "fields" => ["publication_identifiers.identifier_value"],
-                  "query" => String.replace(identifier["identifier_value"], "/", "\\/"),
-                  "analyzer" => "keyword"
+                  "fields" => ["publication_identifiers.identifier_value.keyword"],
+                  "query" => escape_characters(identifier["identifier_value"]),
                 }
               },
               %{

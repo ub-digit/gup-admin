@@ -27,7 +27,6 @@ defmodule GupAdmin.Resource.Publication do
     |> Map.get("publication_identifiers")
     body = %{"publication" => %{"publication_identifiers" => publication_identifiers}, "id" => gup_id} |> Jason.encode!()
     HTTPoison.put(url, body, [{"Content-Type", "application/json"}])
-    |> IO.inspect(label: "merge_publications")
     {:ok, %{"message" => "Publication with id #{publication_id} merged with publication with id #{gup_id}"}}
   end
 
