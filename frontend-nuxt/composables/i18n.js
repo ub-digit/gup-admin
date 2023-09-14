@@ -83,7 +83,7 @@ export const useLocaleStore = defineStore("locale", {
           "Vol/Issue/Pages",
         "views.publications.post.fields.missing": "Saknas",
         "views.publications.post.fields.publication_id": "Orginal ID",
-        "views.publications.post.more_authors": "ytterliggare författare",
+        "views.publications.post.more_authors": "ytterligare författare",
 
         "appfooter.contact_link": "https://www.ub.gu.se/node/189487/",
         "appfooter.contact_link_text": "Kontakta oss om GUP-admin",
