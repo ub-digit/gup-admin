@@ -3,6 +3,7 @@ defmodule GupIndexManagerWeb.PublicationController do
   use GupIndexManagerWeb, :controller
   alias GupIndexManager.Resource.Publication
   def create_or_update(conn,  %{"data" => data, "api_key" => "megasecretimpossibletoguesskey"}) do
+    IO.inspect(data, label: "GupIndexManagerWeb.PublicationController.create_or_update")
     Publication.create_or_update(data)
     json conn, %{status: "ok"}
   end
@@ -12,6 +13,7 @@ defmodule GupIndexManagerWeb.PublicationController do
   end
 
   def delete(conn,  %{"id" => id, "api_key" => "megasecretimpossibletoguesskey"}) do
+    IO.inspect(id, label: "GupIndexManagerWeb.PublicationController.delete")
     Publication.delete(id)
     json conn, %{status: "ok"}
   end
