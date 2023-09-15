@@ -67,7 +67,7 @@ await fetchImportedPosts();
 
 <style lang="scss">
 .scroll {
-  max-height: 800px;
+  max-height: 100vh;
   overflow-y: scroll;
 }
 </style>
