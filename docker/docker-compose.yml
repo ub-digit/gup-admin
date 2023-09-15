@@ -7,8 +7,8 @@ services:
       - "${ADMIN_FRONTEND_HOST_PORT}:3000"
     environment:
       NUXT_API_BASE_URL: "http://admin-backend:4000/"
-      NUXT_PUBLIC_API_GUP_BASE_URL_EDIT: "http://gup-frontend:3010/publications/show/"
-      NUXT_PUBLIC_API_GUP_BASE_URL_SHOW: "http://gup-frontend:3010/publications/show/"
+      NUXT_PUBLIC_API_GUP_BASE_URL_EDIT: "http://localhost:3010/publications/show/"
+      NUXT_PUBLIC_API_GUP_BASE_URL_SHOW: "http://localhost:3010/publications/show/"
   admin-backend:
     image: docker.ub.gu.se/gup-admin-backend:${GIT_REVISION}${PLATFORM}
     ports:
