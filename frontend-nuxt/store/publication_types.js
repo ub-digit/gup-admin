@@ -23,5 +23,5 @@ export const usePublicationTypesStore = defineStore(
       // manually reset store here
     }
     return { publicationTypes, fetchPublicationTypes, pendingPublicationTypes };
-  },
+  }
 );
