@@ -22,6 +22,8 @@ defmodule GupAdmin.Resource.Publication do
       true -> "&gup_id=" <> (String.split(publication_id, "_") |> List.last())
       _ -> ""
     end
+    # set gup post in index as pending
+    HTTPoison.put("#{index_manager_base_url()}/publication/pending/#{gup_id}", %{}, [{"Content-Type", "application/json"}])
     url =  "#{gup_server_base_url()}/v1/published_publications_admin/#{gup_id}?api_key=#{api_key}&username=#{gup_user}#{merge_with_id}"
     publication_identifiers = show_raw(publication_id)
     |> Map.get("publication_identifiers")
@@ -31,12 +33,20 @@ defmodule GupAdmin.Resource.Publication do
   end
 
   def show(id) do
-    Search.search_one(id)
-    |> List.first()
+    Search.search_one(id) |> List.first()
     |> case do
       nil -> :error
-      res -> res |> Map.get("_source") |> remap("new") |> clear_irrelevant_identifiers()
+      res -> return_res(res)
     end
+  end
+
+  def return_res(res) do
+    pending = res |> Map.get("_source") |> Map.get("pending")
+    res = res |> Map.get("_source") |> remap("new") |> clear_irrelevant_identifiers()
+    %{
+      "data" => res,
+      "pending" => pending
+    }
   end
 
   def show(id, :dont_clear_irrelevant_identifiers) do

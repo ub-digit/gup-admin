@@ -25,4 +25,9 @@ defmodule GupIndexManagerWeb.PublicationController do
   def list(conn, _params) do
     json conn, Publication.list()
   end
+
+  def mark_as_pending(conn, %{"id" => id, "api_key" => "megasecretimpossibletoguesskey"}) do
+    Publication.mark_as_pending(id)
+    json conn, %{status: "ok"}
+  end
 end
