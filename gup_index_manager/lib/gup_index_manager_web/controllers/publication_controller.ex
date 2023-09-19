@@ -4,6 +4,7 @@ defmodule GupIndexManagerWeb.PublicationController do
   alias GupIndexManager.Resource.Publication
   def create_or_update(conn,  %{"data" => data, "api_key" => "megasecretimpossibletoguesskey"}) do
     IO.inspect(data, label: "GupIndexManagerWeb.PublicationController.create_or_update")
+    :timer.sleep(5000);
     Publication.create_or_update(data)
     json conn, %{status: "ok"}
   end
