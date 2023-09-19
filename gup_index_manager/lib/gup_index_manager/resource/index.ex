@@ -47,4 +47,15 @@ defmodule GupIndexManager.Resource.Index do
     Elastix.Document.index(elastic_url(), @index, "_doc", attrs["publication_id"], json, [])
     Elastix.Index.refresh(elastic_url(), @index)
   end
+
+  def mark_as_pending(id) do
+    #TODO: needs error handling
+    {:ok, %{body: body}} = Elastix.Document.get(elastic_url(), @index, "_doc", id)
+    body = body
+    |> Map.get("_source")
+    |> Map.put("pending", true)
+    res = Elastix.Document.index(elastic_url(), @index, "_doc", id, body, [])
+    Elastix.Index.refresh(elastic_url(), @index)
+    res
+  end
 end

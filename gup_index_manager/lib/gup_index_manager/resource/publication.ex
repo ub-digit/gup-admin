@@ -83,4 +83,8 @@ defmodule GupIndexManager.Resource.Publication do
     Publication
     |> GupIndexManager.Repo.all()
   end
+
+  def mark_as_pending(id) do
+    Index.mark_as_pending(id)
+  end
 end
