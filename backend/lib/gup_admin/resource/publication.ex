@@ -24,7 +24,8 @@ defmodule GupAdmin.Resource.Publication do
     end
     # set gup post in index as pending
     index_body = %{} |> Jason.encode!()
-    HTTPoison.put("#{index_manager_base_url()}/publication/pending/#{gup_id}", index_body, [{"Content-Type", "application/json"}])
+    api_key_index = System.get_env("GUP_INDEX_MANAGER_API_KEY", "megasecretimpossibletoguesskey")
+    HTTPoison.put("#{index_manager_base_url()}/publications/pending/gup_#{gup_id}?api_key=#{api_key_index}", index_body, [{"Content-Type", "application/json"}])
     url =  "#{gup_server_base_url()}/v1/published_publications_admin/#{gup_id}?api_key=#{api_key}&username=#{gup_user}#{merge_with_id}"
     publication_identifiers = show_raw(publication_id)
     |> Map.get("publication_identifiers")
@@ -330,7 +331,7 @@ defmodule GupAdmin.Resource.Publication do
   end
 
   def gup_server_base_url() do
-    System.get_env("GUP_SERVER_BASE_URL", "gup-server-lab.ub.gu.se")
+    System.get_env("GUP_SERVER_BASE_URL", "http://localhost:40191")
   end
 
   def get_visibility(display_label) do
