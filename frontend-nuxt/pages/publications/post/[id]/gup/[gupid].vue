@@ -36,12 +36,19 @@
       </div>
       <div v-else class="row">
         <div class="col-6">
-          <Spinner v-if="pendingImportedPostById" class="me-4" />
+          <span v-if="isPendingUpdate">Fetching updated post from gup..</span
+          ><Spinner
+            v-if="isPendingUpdate || pendingImportedPostById"
+            class="me-4"
+          />
           <ErrorLoadingPost
             v-if="errorImportedPostById"
             :error="errorImportedPostById"
           />
-          <PostDisplayCompare :dataMatrix="importedPostById" />
+          <PostDisplayCompare
+            v-if="!isPendingUpdate"
+            :dataMatrix="importedPostById && importedPostById.data"
+          />
         </div>
         <div class="col-6">
           <NothingSelected />
@@ -168,6 +175,7 @@ const { $toast } = useNuxtApp();
 const config = useRuntimeConfig();
 const showModal = ref(false);
 const showModalMerge = ref(false);
+const isPendingUpdate = ref(false);
 
 const filterStore = useFilterStore();
 const importedPostsStore = useImportedPostsStore();
@@ -206,10 +214,25 @@ const {
 
 if (route.params.gupid === "empty") {
   await fetchImportedPostById(route.params.id);
+  if (importedPostById.value.pending) {
+    await pollForUpdate();
+  }
   gupPostsStore.$reset();
 } else {
   await fetchCompareGupPostWithImported(route.params.id, route.params.gupid);
   $importedReset();
+}
+
+async function pollForUpdate() {
+  isPendingUpdate.value = true;
+  await fetchImportedPostById(route.params.id);
+  if (!importedPostById.value.pending) {
+    isPendingUpdate.value = false;
+    return;
+  }
+  setTimeout(() => {
+    pollForUpdate();
+  }, 500);
 }
 
 // because of the array structure in data make sure to pick up the properties needed
@@ -231,16 +254,16 @@ if (route.params.gupid !== "empty") {
     (item) => item.display_label === "title"
   ).first.value.title;
 } else {
-  item_row_publication_id = importedPostById.value.find(
+  item_row_publication_id = importedPostById.value.data.find(
     (item) => item.display_label === "publication_id"
   ).first.value;
-  item_row_id = importedPostById.value.find(
+  item_row_id = importedPostById.value.data.find(
     (item) => item.display_label === "id"
   ).first.value;
-  item_row_source = importedPostById.value.find(
+  item_row_source = importedPostById.value.data.find(
     (item) => item.display_type === "meta"
   ).first.value.source.value;
-  item_row_title = importedPostById.value.find(
+  item_row_title = importedPostById.value.data.find(
     (item) => item.display_label === "title"
   ).first.value.title;
 }
