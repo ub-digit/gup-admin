@@ -42,9 +42,14 @@ defmodule GupAdmin.Resource.Publication do
     end
   end
 
+  def return_res(%{"_source" => %{"deleted" => true}}) do
+    :error
+  end
+
   def return_res(res) do
     pending = res |> Map.get("_source") |> Map.get("pending")
     res = res |> Map.get("_source") |> remap("new") |> clear_irrelevant_identifiers()
+
     %{
       "data" => res,
       "pending" => pending
