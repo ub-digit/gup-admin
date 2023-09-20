@@ -36,19 +36,21 @@
       </div>
       <div v-else class="row">
         <div class="col-6">
-          <span v-if="isPendingUpdate">Fetching updated post from gup..</span
-          ><Spinner
-            v-if="isPendingUpdate || pendingImportedPostById"
-            class="me-4"
-          />
           <ErrorLoadingPost
             v-if="errorImportedPostById"
             :error="errorImportedPostById"
           />
-          <PostDisplayCompare
-            v-if="!isPendingUpdate"
-            :dataMatrix="importedPostById && importedPostById.data"
-          />
+          <div v-if="!errorImportedPostById">
+            <span v-if="isPendingUpdate">Fetching updated post from gup..</span
+            ><Spinner
+              v-if="isPendingUpdate || pendingImportedPostById"
+              class="me-4"
+            />
+            <PostDisplayCompare
+              v-if="!isPendingUpdate"
+              :dataMatrix="importedPostById && importedPostById.data"
+            />
+          </div>
         </div>
         <div class="col-6">
           <NothingSelected />
@@ -214,25 +216,15 @@ const {
 
 if (route.params.gupid === "empty") {
   await fetchImportedPostById(route.params.id);
-  if (importedPostById.value.pending) {
-    await pollForUpdate();
+  if (!errorImportedPostById.value) {
+    if (importedPostById.value.pending) {
+      await pollForUpdate();
+    }
+    gupPostsStore.$reset();
   }
-  gupPostsStore.$reset();
 } else {
   await fetchCompareGupPostWithImported(route.params.id, route.params.gupid);
   $importedReset();
-}
-
-async function pollForUpdate() {
-  isPendingUpdate.value = true;
-  await fetchImportedPostById(route.params.id);
-  if (!importedPostById.value.pending) {
-    isPendingUpdate.value = false;
-    return;
-  }
-  setTimeout(() => {
-    pollForUpdate();
-  }, 500);
 }
 
 // because of the array structure in data make sure to pick up the properties needed
@@ -240,7 +232,7 @@ let item_row_title = null;
 let item_row_id = null;
 let item_row_source = null;
 let item_row_publication_id = null;
-if (route.params.gupid !== "empty") {
+if (route.params.gupid !== "empty" && gupCompareImportedMatrix.value) {
   item_row_publication_id = gupCompareImportedMatrix.value.find(
     (item) => item.display_label === "publication_id"
   ).first.value;
@@ -253,7 +245,7 @@ if (route.params.gupid !== "empty") {
   item_row_title = gupCompareImportedMatrix.value.find(
     (item) => item.display_label === "title"
   ).first.value.title;
-} else {
+} else if (route.params.gupid === "empty" && importedPostById.value) {
   item_row_publication_id = importedPostById.value.data.find(
     (item) => item.display_label === "publication_id"
   ).first.value;
@@ -314,6 +306,18 @@ async function removePost() {
   }
 }
 
+async function pollForUpdate() {
+  isPendingUpdate.value = true;
+  await fetchImportedPostById(route.params.id);
+  if (!importedPostById.value.pending) {
+    isPendingUpdate.value = false;
+    return;
+  }
+  setTimeout(() => {
+    pollForUpdate();
+  }, 500);
+}
+
 async function handleSuccess() {
   const response = await removeImportedPost(item_row_id);
   fetchImportedPosts();
@@ -367,7 +371,10 @@ async function editPost() {
 }
 
 searchTitleStr.value = item_row_title;
-await fetchGupPostsById(route.params.id);
+
+if (!errorImportedPostById) {
+  await fetchGupPostsById(route.params.id);
+}
 </script>
 
 <style lang="scss" scoped>
