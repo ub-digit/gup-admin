@@ -109,13 +109,18 @@ defmodule GupAdmin.Resource.Search do
 
   def get_duplicates(%{"mode" => "id", "id" => id}) do
     post = Publication.show_raw(id)
-    post["publication_identifiers"]
-    |> Query.find_duplicates_by_identifiers()
-    |> case do
-      nil -> []
-      query -> get_duplicates(query, id, :has_identifiers)
+    case post do
+      :error -> %{"code" => "404", "statusMessage" => "Post not found"}
+      _ ->
+        post["publication_identifiers"]
+        |> Query.find_duplicates_by_identifiers()
+        |> case do
+          nil -> []
+          query -> get_duplicates(query, id, :has_identifiers)
+        end
+        |> Publication.remap()
     end
-    |> Publication.remap()
+
   end
 
   def get_duplicates(%{"mode" => "title", "id" => id, "title" => title}) do

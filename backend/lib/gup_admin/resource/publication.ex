@@ -56,11 +56,14 @@ defmodule GupAdmin.Resource.Publication do
     }
   end
 
-  def show(id, :dont_clear_irrelevant_identifiers) do
-    Search.search_one(id)
-    |> List.first()
-    |> Map.get("_source")
-    |> remap("new")
+  def show(id, :dont_clear_irrelevant_identifiers, missing_status) do
+    res = Search.search_one(id)
+    res
+    |> length()
+    |> case do
+      0 -> %{"statusMessage" => "Post not found", "statusCode" => missing_status}
+      _ -> {:ok, res |> List.first() |> Map.get("_source") |> remap("new")}
+    end
   end
 
   def show_raw(id) do
@@ -129,15 +132,19 @@ defmodule GupAdmin.Resource.Publication do
   end
 
   def compare_posts(id_1, id_2) do
-    post_1 = show(id_1, :dont_clear_irrelevant_identifiers)
-    post_2 = show(id_2, :dont_clear_irrelevant_identifiers)
-    post_1
-    |> Enum.with_index()
-    |> Enum.map(fn {first, index} ->
-      compare(first, Enum.at(post_2, index))
-    end)
-    |> clear_irrelevant_identifiers()
-
+    with {:ok, post_1} <- show(id_1, :dont_clear_irrelevant_identifiers, "404"),
+      {:ok, post_2} <- show(id_2, :dont_clear_irrelevant_identifiers, "200")
+    do
+      data = post_1
+      |> Enum.with_index()
+      |> Enum.map(fn {first, index} ->
+        compare(first, Enum.at(post_2, index))
+      end)
+      |> clear_irrelevant_identifiers()
+      {:ok, %{"data" => data}}
+    else
+      err ->  {:error, err}
+    end
   end
 
   def clear_irrelevant_identifiers(%{"seccond" => _} = data) do
