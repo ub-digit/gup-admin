@@ -25,7 +25,10 @@ defmodule GupAdminWeb.PublicationController do
 
   def delete(conn, %{"id" => id}) do
     Search.mark_as_deleted(id)
-    json conn, %{"Status" => "post deleted"}
+    |> case do
+      :error -> conn |> send_resp(404, Jason.encode!(%{error: %{"message" => "Post not found", "code" => 404}}))
+      _ -> json conn, %{"Status" => "post deleted"}
+    end
   end
 
   def post_to_gup(conn, %{"id" => id, "gup_user" => gup_user}) do
@@ -41,15 +44,25 @@ defmodule GupAdminWeb.PublicationController do
   def get_gup_link(body) do
     "#{System.get_env("GUP_BASE_URL", "https://gup-lab.ub.gu.se")}/publications/show/#{get_id(body)}"
   end
+
   def get_id(body) do
     body
     |> Jason.decode!()
     |> Map.get("publication")
     |> Map.get("id")
   end
-  def compare(conn, %{"imported_id" => imported_id, "gup_id" => gup_id}) do
 
-    json conn, GupAdmin.Resource.Publication.compare_posts(imported_id, gup_id)
+  def compare(conn, %{"imported_id" => imported_id, "gup_id" => gup_id}) do
+    GupAdmin.Resource.Publication.compare_posts(imported_id, gup_id)
+    |> case do
+      {:ok, data} -> conn |> send_resp(200, Jason.encode!(data))
+      {:error, %{"statusCode" => statusCode}} ->
+        case statusCode do
+          "404" -> conn |> send_resp(404, Jason.encode!(%{error: %{"code" => "404", "message" => "Left side post not found"}}))
+          _ -> conn |> send_resp(202, Jason.encode!(%{error: %{"code" => "200", "message" => "Right side post not found"}}))
+        end
+
+    end
   end
 
   def merge_publications(conn, %{"publication_id" => publication_id, "gup_id" => gup_id, "gup_user" => gup_user}) do
@@ -61,6 +74,5 @@ defmodule GupAdminWeb.PublicationController do
       {:error, %HTTPoison.Error{reason: reason}} -> conn |> send_resp(500, Jason.encode!(%{error: %{"message" => reason, "code" => 500}}))
       _ -> conn |> send_resp(200, Jason.encode!(%{message: %{"message" => "Publications merged!", "code" => "200"}}))
     end
-
   end
 end

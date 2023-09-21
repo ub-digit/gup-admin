@@ -25,7 +25,6 @@ defmodule GupAdminWeb.Router do
   scope "/", GupAdminWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
     get "/publication_types", PublicationTypeController, :index
     get "/publications", PublicationController, :index
     get "/publications/:id", PublicationController, :show
