@@ -278,7 +278,10 @@ if (
   item_row_title = gupCompareImportedMatrix.value.data.find(
     (item) => item.display_label === "title"
   ).first.value.title;
-} else if (route.params.gupid === "empty" && importedPostById.value) {
+} else if (
+  (route.params.gupid === "empty" || route.params.gupid === "error") &&
+  importedPostById.value
+) {
   item_row_publication_id = importedPostById.value.data.find(
     (item) => item.display_label === "publication_id"
   ).first.value;
