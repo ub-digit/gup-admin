@@ -6,6 +6,7 @@ export const useGupPostsStore = defineStore("gupPostsStore", () => {
   const gupPostById = ref({});
   const gupCompareImportedMatrix = ref({});
   const errorGupPostById = ref(null);
+  const errorGupCompareImportedMatrix = ref(null);
   const pendingCompareGupPostWithImported = ref(null);
   const pendingGupPostsByTitle = ref(null);
   const pendingGupPostsById = ref(null);
@@ -17,8 +18,19 @@ export const useGupPostsStore = defineStore("gupPostsStore", () => {
       const { data, error } = await useFetch("/api/post_gup_compare", {
         params: { imported_id: importedID, gup_id: GupID },
       });
+      if (error.value) {
+        throw error;
+      }
+      if (data.value.error) {
+        // Convert to format used in catch to be able to use same
+        var temp = ref(null);
+        temp.value = { data: { data: data.value } };
+        throw temp;
+      }
       gupCompareImportedMatrix.value = data.value;
     } catch (error) {
+      errorGupCompareImportedMatrix.value = error.value.data.data;
+      console.log(errorGupCompareImportedMatrix.value);
       console.log("Something went wrong: fetchCompareGupPostWithImported");
     } finally {
       pendingCompareGupPostWithImported.value = false;
@@ -90,6 +102,7 @@ export const useGupPostsStore = defineStore("gupPostsStore", () => {
     gupPostById.value = null;
     gupCompareImportedMatrix.value = null;
     errorGupPostById.value = null;
+    errorGupCompareImportedMatrix.value = null;
     //   pendingGupPostsByTitle.value = null;
     // pendingGupPostsById.value = null;
     pendingGupPostById.value = null;
@@ -106,6 +119,7 @@ export const useGupPostsStore = defineStore("gupPostsStore", () => {
     fetchGupPostById,
     pendingGupPostById,
     fetchCompareGupPostWithImported,
+    errorGupCompareImportedMatrix,
     gupCompareImportedMatrix,
     pendingCompareGupPostWithImported,
     $reset,

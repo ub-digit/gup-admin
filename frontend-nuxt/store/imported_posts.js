@@ -103,13 +103,12 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
       errorImportedPostById.value = null;
       const { data, error } = await useFetch(`/api/post_imported/${id}`);
       if (error.value) {
-        errorImportedPostById.value = error.value;
-        console.log("from fetchImportedPostById", errorImportedPostById);
-      } else {
-        importedPostById.value = data.value;
+        throw error;
       }
+      importedPostById.value = data.value;
     } catch (error) {
-      console.log("Something went wrong: fetchImportedPostById");
+      errorImportedPostById.value = error.value.data;
+      console.log(error.value.data);
     } finally {
       pendingImportedPostById.value = false;
     }

@@ -30,9 +30,14 @@
         </template>
       </modal>
 
-      <div v-if="route.params.gupid !== 'empty'">
+      <div
+        v-if="route.params.gupid !== 'empty' && route.params.gupid !== 'error'"
+      >
         <Spinner v-if="pendingCompareGupPostWithImported" class="me-4" />
-        <PostDisplayCompare :dataMatrix="gupCompareImportedMatrix" />
+        <PostDisplayCompare
+          v-if="gupCompareImportedMatrix"
+          :dataMatrix="gupCompareImportedMatrix.data"
+        />
       </div>
       <div v-else class="row">
         <div class="col-6">
@@ -53,7 +58,11 @@
           </div>
         </div>
         <div class="col-6">
-          <NothingSelected />
+          <ErrorLoadingPost
+            v-if="route.params.gupid === 'error'"
+            :error="{ statusMessage: 'Error loading post' }"
+          />
+          <NothingSelected v-if="route.params.gupid === 'empty'" />
         </div>
       </div>
     </div>
@@ -209,12 +218,13 @@ const {
   pendingGupPostsById,
   gupPostById,
   gupCompareImportedMatrix,
+  errorGupCompareImportedMatrix,
   pendingCompareGupPostWithImported,
   pendingGupPostById,
   errorGupPostById,
 } = storeToRefs(gupPostsStore);
 
-if (route.params.gupid === "empty") {
+if (route.params.gupid === "empty" || route.params.gupid === "error") {
   await fetchImportedPostById(route.params.id);
   if (!errorImportedPostById.value) {
     if (importedPostById.value.pending) {
@@ -224,7 +234,25 @@ if (route.params.gupid === "empty") {
   }
 } else {
   await fetchCompareGupPostWithImported(route.params.id, route.params.gupid);
-  $importedReset();
+  if (
+    errorGupCompareImportedMatrix &&
+    errorGupCompareImportedMatrix.value &&
+    errorGupCompareImportedMatrix.value.error.code
+  ) {
+    console.log(errorGupCompareImportedMatrix.value.error);
+    if (errorGupCompareImportedMatrix.value.error.code === "404") {
+      router.push({
+        path: `/publications/post/${route.params.id}/gup/empty`,
+        query: { ...route.query },
+      });
+    } else if (errorGupCompareImportedMatrix.value.error.code === "200") {
+      router.push({
+        path: `/publications/post/${route.params.id}/gup/error`,
+        query: { ...route.query },
+      });
+      gupPostsStore.$reset();
+    }
+  }
 }
 
 // because of the array structure in data make sure to pick up the properties needed
@@ -232,17 +260,22 @@ let item_row_title = null;
 let item_row_id = null;
 let item_row_source = null;
 let item_row_publication_id = null;
-if (route.params.gupid !== "empty" && gupCompareImportedMatrix.value) {
-  item_row_publication_id = gupCompareImportedMatrix.value.find(
+if (
+  route.params.gupid !== "empty" &&
+  route.params.gupid !== "error" &&
+  gupCompareImportedMatrix.value &&
+  gupCompareImportedMatrix.value.data
+) {
+  item_row_publication_id = gupCompareImportedMatrix.value.data.find(
     (item) => item.display_label === "publication_id"
   ).first.value;
-  item_row_id = gupCompareImportedMatrix.value.find(
+  item_row_id = gupCompareImportedMatrix.value.data.find(
     (item) => item.display_label === "id"
   ).first.value;
-  item_row_source = gupCompareImportedMatrix.value.find(
+  item_row_source = gupCompareImportedMatrix.value.data.find(
     (item) => item.display_type === "meta"
   ).first.value.source.value;
-  item_row_title = gupCompareImportedMatrix.value.find(
+  item_row_title = gupCompareImportedMatrix.value.data.find(
     (item) => item.display_label === "title"
   ).first.value.title;
 } else if (route.params.gupid === "empty" && importedPostById.value) {
@@ -370,7 +403,9 @@ async function editPost() {
   }
 }
 
-searchTitleStr.value = item_row_title;
+onMounted(() => {
+  searchTitleStr.value = item_row_title;
+});
 
 if (!errorImportedPostById) {
   await fetchGupPostsById(route.params.id);
