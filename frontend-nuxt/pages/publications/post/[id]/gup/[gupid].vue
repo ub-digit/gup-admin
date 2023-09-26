@@ -43,7 +43,7 @@
         <div class="col-6">
           <ErrorLoadingPost
             v-if="errorImportedPostById"
-            :error="errorImportedPostById"
+            :error="errorImportedPostById.error"
           />
           <div v-if="!errorImportedPostById">
             <span v-if="isPendingUpdate">Fetching updated post from gup..</span
@@ -60,7 +60,7 @@
         <div class="col-6">
           <ErrorLoadingPost
             v-if="route.params.gupid === 'error'"
-            :error="{ statusMessage: 'Error loading post' }"
+            :error="{ message: 'Error loading post' }"
           />
           <NothingSelected v-if="route.params.gupid === 'empty'" />
         </div>

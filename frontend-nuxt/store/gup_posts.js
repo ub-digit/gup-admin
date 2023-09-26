@@ -18,18 +18,18 @@ export const useGupPostsStore = defineStore("gupPostsStore", () => {
       const { data, error } = await useFetch("/api/post_gup_compare", {
         params: { imported_id: importedID, gup_id: GupID },
       });
-      if (error.value) {
-        throw error;
-      }
       if (data.value.error) {
+        throw data.value;
+      }
+      /*       if (data.value.error) {
         // Convert to format used in catch to be able to use same
         var temp = ref(null);
         temp.value = { data: { data: data.value } };
         throw temp;
-      }
+      } */
       gupCompareImportedMatrix.value = data.value;
     } catch (error) {
-      errorGupCompareImportedMatrix.value = error.value.data.data;
+      errorGupCompareImportedMatrix.value = error;
       console.log(errorGupCompareImportedMatrix.value);
       console.log("Something went wrong: fetchCompareGupPostWithImported");
     } finally {

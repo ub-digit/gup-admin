@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
     const res = await $fetch(`${config.API_BASE_URL}/publications/${id}`);
     return res;
   } catch (error) {
-    console.log(error);
-    return error;
+    console.log(error.data);
+    return error.data;
   }
 });
