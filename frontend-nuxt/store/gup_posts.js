@@ -21,12 +21,6 @@ export const useGupPostsStore = defineStore("gupPostsStore", () => {
       if (data.value.error) {
         throw data.value;
       }
-      /*       if (data.value.error) {
-        // Convert to format used in catch to be able to use same
-        var temp = ref(null);
-        temp.value = { data: { data: data.value } };
-        throw temp;
-      } */
       gupCompareImportedMatrix.value = data.value;
     } catch (error) {
       errorGupCompareImportedMatrix.value = error;
