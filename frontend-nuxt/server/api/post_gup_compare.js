@@ -6,10 +6,8 @@ export default defineEventHandler(async (event) => {
     const res = await $fetch(
       `${config.API_BASE_URL}publications/compare/imported_id/${query.imported_id}/gup_id/${query.gup_id}`
     );
-    console.log(res);
     return res;
   } catch (error) {
-    console.log(error.data);
     return error.data;
   }
 });
