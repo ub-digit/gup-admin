@@ -66,10 +66,20 @@
         </div>
       </div>
     </div>
-    <div v-if="!errorImportedPostById" class="action-bar">
+    <div
+      v-if="
+        !errorImportedPostById && (gupCompareImportedMatrix || importedPostById)
+      "
+      class="action-bar"
+    >
       <div class="row pb-4 mt-4">
         <div class="col-6 text-end">
-          <button type="button" class="btn btn-danger me-1" @click="removePost">
+          <button
+            :disabled="isRemoveDisabled"
+            type="button"
+            class="btn btn-danger me-1"
+            @click="removePost"
+          >
             {{ t("buttons.remove") }}
           </button>
           <button
@@ -408,6 +418,12 @@ async function editPost() {
 
 onMounted(() => {
   searchTitleStr.value = item_row_title;
+});
+
+const isRemoveDisabled = computed(() => {
+  if (item_row_source === "gup") {
+    return true;
+  }
 });
 
 if (!errorImportedPostById) {
