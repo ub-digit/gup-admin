@@ -13,6 +13,7 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     "xlpero",
     "xblars",
     "xberns",
+    "xjostw",
   ]);
   const selectedUser = ref("");
   const importedPosts = ref([]);
