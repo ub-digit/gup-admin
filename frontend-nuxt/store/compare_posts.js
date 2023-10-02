@@ -1,33 +1,30 @@
 import { defineStore } from "pinia";
 
-export const useGupPostsStore = defineStore("gupPostsStore", () => {
+export const useComparePostsStore = defineStore("comparePostsStore", () => {
   const gupPostsByTitle = ref([]);
   const gupPostsById = ref([]);
-  const gupPostById = ref({});
-  const gupCompareImportedMatrix = ref({});
-  const errorGupPostById = ref(null);
-  const errorGupCompareImportedMatrix = ref(null);
-  const pendingCompareGupPostWithImported = ref(null);
+  const postsCompareMatrix = ref({});
+  const errorPostsCompareMatrix = ref(null);
+  const pendingComparePost = ref(null);
   const pendingGupPostsByTitle = ref(null);
   const pendingGupPostsById = ref(null);
-  const pendingGupPostById = ref(null);
 
-  async function fetchCompareGupPostWithImported(importedID, GupID) {
+  async function fetchComparePostsMatrix(importedID, GupID) {
     try {
-      pendingCompareGupPostWithImported.value = true;
+      pendingComparePost.value = true;
       const { data, error } = await useFetch("/api/post_gup_compare", {
         params: { imported_id: importedID, gup_id: GupID },
       });
       if (data.value.error) {
         throw data.value;
       }
-      gupCompareImportedMatrix.value = data.value;
+      postsCompareMatrix.value = data.value;
     } catch (error) {
-      errorGupCompareImportedMatrix.value = error;
-      console.log(errorGupCompareImportedMatrix.value);
+      errorPostsCompareMatrix.value = error;
+      console.log(errorPostsCompareMatrix.value);
       console.log("Something went wrong: fetchCompareGupPostWithImported");
     } finally {
-      pendingCompareGupPostWithImported.value = false;
+      pendingComparePost.value = false;
     }
   }
 
@@ -59,7 +56,7 @@ export const useGupPostsStore = defineStore("gupPostsStore", () => {
     }
   }
 
-  async function fetchGupPostById(id) {
+  /*   async function fetchGupPostById(id) {
     try {
       pendingGupPostById.value = true;
       const { data, error } = await useFetch(`/api/post_imported/${id}`);
@@ -74,7 +71,7 @@ export const useGupPostsStore = defineStore("gupPostsStore", () => {
     } finally {
       pendingGupPostById.value = false;
     }
-  }
+  } */
 
   function paramsSerializer(params) {
     //https://github.com/unjs/ufo/issues/62
@@ -93,13 +90,10 @@ export const useGupPostsStore = defineStore("gupPostsStore", () => {
     // manually reset store here
     // gupPostsByTitle.value = []
     // gupPostsById.value = []
-    gupPostById.value = null;
-    gupCompareImportedMatrix.value = null;
-    errorGupPostById.value = null;
-    errorGupCompareImportedMatrix.value = null;
+    postsCompareMatrix.value = null;
+    errorPostsCompareMatrix.value = null;
     //   pendingGupPostsByTitle.value = null;
     // pendingGupPostsById.value = null;
-    pendingGupPostById.value = null;
   }
   return {
     gupPostsByTitle,
@@ -108,14 +102,10 @@ export const useGupPostsStore = defineStore("gupPostsStore", () => {
     gupPostsById,
     fetchGupPostsById,
     pendingGupPostsById,
-    gupPostById,
-    errorGupPostById,
-    fetchGupPostById,
-    pendingGupPostById,
-    fetchCompareGupPostWithImported,
-    errorGupCompareImportedMatrix,
-    gupCompareImportedMatrix,
-    pendingCompareGupPostWithImported,
+    fetchComparePostsMatrix,
+    errorPostsCompareMatrix,
+    postsCompareMatrix,
+    pendingComparePost,
     $reset,
   };
 });
