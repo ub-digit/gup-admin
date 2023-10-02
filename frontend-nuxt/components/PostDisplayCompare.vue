@@ -49,11 +49,13 @@
                   )
                 }}</strong>
                 {{ getDate(item.first.value.created_at.value) }}
-                {{
-                  t(
-                    `views.publications.post.fields.${item.first.value.version_created_by.display_label}`
-                  )
-                }}
+                <span v-if="item.first.value.version_created_by.value">
+                  {{
+                    t(
+                      `views.publications.post.fields.${item.first.value.version_created_by.display_label}`
+                    )
+                  }}
+                </span>
                 {{ item.first.value.version_created_by.value }}
               </li>
 
