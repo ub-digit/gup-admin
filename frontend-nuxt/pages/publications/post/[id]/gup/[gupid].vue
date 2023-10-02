@@ -30,13 +30,11 @@
         </template>
       </modal>
 
-      <div
-        v-if="route.params.gupid !== 'empty' && route.params.gupid !== 'error'"
-      >
-        <Spinner v-if="pendingCompareGupPostWithImported" class="me-4" />
+      <div v-if="showCompareView">
+        <Spinner v-if="pendingComparePost" class="me-4" />
         <PostDisplayCompare
-          v-if="gupCompareImportedMatrix"
-          :dataMatrix="gupCompareImportedMatrix.data"
+          v-if="postsCompareMatrix"
+          :dataMatrix="postsCompareMatrix.data"
         />
       </div>
       <div v-else class="row">
@@ -45,7 +43,7 @@
             v-if="errorImportedPostById"
             :error="errorImportedPostById.error"
           />
-          <div v-if="!errorImportedPostById">
+          <div v-else>
             <span v-if="isPendingUpdate">Fetching updated post from gup..</span
             ><Spinner
               v-if="isPendingUpdate || pendingImportedPostById"
@@ -67,9 +65,7 @@
       </div>
     </div>
     <div
-      v-if="
-        !errorImportedPostById && (gupCompareImportedMatrix || importedPostById)
-      "
+      v-if="!errorImportedPostById && (postsCompareMatrix || importedPostById)"
       class="action-bar"
     >
       <div class="row pb-4 mt-4">
@@ -90,7 +86,7 @@
             {{ t("buttons.edit") }}
           </button>
           <button
-            :disabled="!gupCompareImportedMatrix"
+            :disabled="!postsCompareMatrix"
             type="button"
             class="btn btn-success"
             @click="merge"
@@ -183,7 +179,7 @@
 
 <script setup>
 import { useDebounceFn } from "@vueuse/core";
-import { useGupPostsStore } from "~/store/gup_posts";
+import { useComparePostsStore } from "~/store/compare_posts";
 import { useImportedPostsStore } from "~/store/imported_posts";
 import { storeToRefs } from "pinia";
 
@@ -213,24 +209,18 @@ const {
   errorImportedPostById,
   selectedUser,
 } = storeToRefs(importedPostsStore);
-const gupPostsStore = useGupPostsStore();
-const {
-  fetchGupPostsByTitle,
-  fetchGupPostsById,
-  fetchCompareGupPostWithImported,
-} = gupPostsStore;
+const comparePostsStore = useComparePostsStore();
+const { fetchGupPostsByTitle, fetchGupPostsById, fetchComparePostsMatrix } =
+  comparePostsStore;
 const {
   gupPostsByTitle,
   pendingGupPostsByTitle,
   gupPostsById,
   pendingGupPostsById,
-  gupPostById,
-  gupCompareImportedMatrix,
-  errorGupCompareImportedMatrix,
-  pendingCompareGupPostWithImported,
-  pendingGupPostById,
-  errorGupPostById,
-} = storeToRefs(gupPostsStore);
+  postsCompareMatrix,
+  errorPostsCompareMatrix,
+  pendingComparePost,
+} = storeToRefs(comparePostsStore);
 
 if (route.params.gupid === "empty" || route.params.gupid === "error") {
   await fetchImportedPostById(route.params.id);
@@ -238,27 +228,27 @@ if (route.params.gupid === "empty" || route.params.gupid === "error") {
     if (importedPostById.value.pending) {
       await pollForUpdate();
     }
-    gupPostsStore.$reset();
+    comparePostsStore.$reset();
   }
 } else {
-  await fetchCompareGupPostWithImported(route.params.id, route.params.gupid);
+  await fetchComparePostsMatrix(route.params.id, route.params.gupid);
   if (
-    errorGupCompareImportedMatrix &&
-    errorGupCompareImportedMatrix.value &&
-    errorGupCompareImportedMatrix.value.error.code
+    errorPostsCompareMatrix &&
+    errorPostsCompareMatrix.value &&
+    errorPostsCompareMatrix.value.error.code
   ) {
-    console.log(errorGupCompareImportedMatrix.value.error);
-    if (errorGupCompareImportedMatrix.value.error.code === "404") {
+    console.log(errorPostsCompareMatrix.value.error);
+    if (errorPostsCompareMatrix.value.error.code === "404") {
       router.push({
         path: `/publications/post/${route.params.id}/gup/empty`,
         query: { ...route.query },
       });
-    } else if (errorGupCompareImportedMatrix.value.error.code === "200") {
+    } else if (errorPostsCompareMatrix.value.error.code === "200") {
       router.push({
         path: `/publications/post/${route.params.id}/gup/error`,
         query: { ...route.query },
       });
-      gupPostsStore.$reset();
+      comparePostsStore.$reset();
     }
   }
 }
@@ -271,19 +261,19 @@ let item_row_publication_id = null;
 if (
   route.params.gupid !== "empty" &&
   route.params.gupid !== "error" &&
-  gupCompareImportedMatrix.value &&
-  gupCompareImportedMatrix.value.data
+  postsCompareMatrix.value &&
+  postsCompareMatrix.value.data
 ) {
-  item_row_publication_id = gupCompareImportedMatrix.value.data.find(
+  item_row_publication_id = postsCompareMatrix.value.data.find(
     (item) => item.display_label === "publication_id"
   ).first.value;
-  item_row_id = gupCompareImportedMatrix.value.data.find(
+  item_row_id = postsCompareMatrix.value.data.find(
     (item) => item.display_label === "id"
   ).first.value;
-  item_row_source = gupCompareImportedMatrix.value.data.find(
+  item_row_source = postsCompareMatrix.value.data.find(
     (item) => item.display_type === "meta"
   ).first.value.source.value;
-  item_row_title = gupCompareImportedMatrix.value.data.find(
+  item_row_title = postsCompareMatrix.value.data.find(
     (item) => item.display_label === "title"
   ).first.value.title;
 } else if (
@@ -424,7 +414,13 @@ const isRemoveDisabled = computed(() => {
   }
 });
 
-if (!errorImportedPostById) {
+const showCompareView = computed(() => {
+  if (route.params.gupid !== "empty" && route.params.gupid !== "error") {
+    return true;
+  }
+});
+
+if (route.params.id) {
   await fetchGupPostsById(route.params.id);
 }
 </script>
