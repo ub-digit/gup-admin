@@ -185,7 +185,6 @@
 import { useDebounceFn } from "@vueuse/core";
 import { useGupPostsStore } from "~/store/gup_posts";
 import { useImportedPostsStore } from "~/store/imported_posts";
-import { useFilterStore } from "~~/store/filter";
 import { storeToRefs } from "pinia";
 
 const { t } = useI18n();
@@ -198,7 +197,6 @@ const showModal = ref(false);
 const showModalMerge = ref(false);
 const isPendingUpdate = ref(false);
 
-const filterStore = useFilterStore();
 const importedPostsStore = useImportedPostsStore();
 const {
   fetchImportedPostById,
