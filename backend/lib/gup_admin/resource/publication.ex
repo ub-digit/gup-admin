@@ -80,6 +80,7 @@ defmodule GupAdmin.Resource.Publication do
   def remap({hits, total}) do
     hits = hits
     |> Enum.map(fn hit -> hit["_source"] end)
+    |> remap_authors()
     data = Enum.take(hits, 50)
     showing = length(data)
     %{
@@ -89,8 +90,27 @@ defmodule GupAdmin.Resource.Publication do
     }
   end
 
+
   def remap(hits) do
     remap({hits, 0})
+  end
+
+  def remap_authors(data) do
+    data
+    |> Enum.map(fn publication ->
+        publication |> Map.put("authors", publication |> Map.get("authors") |> Enum.map(fn author -> author |> extract_author() end))
+    end)
+  end
+
+  def extract_author(author) do
+
+    person = author
+    |> Map.get("person")
+    |> List.first()
+    %{
+      "name" => get_author_name(person),
+      "id" => person["id"]
+    }
   end
 
 
