@@ -4,6 +4,13 @@ defmodule GupAdmin.Resource.Search.Query do
     %{
       "track_total_hits" => true,
       "size" => @query_limit,
+      "sort" => [
+        %{
+          "updated_at" => %{
+            "order" => "desc"  # "asc" for ascending order, "desc" for descending order
+          }
+        }
+      ],
       "query" => %{
         "bool" => %{
         "must" => get_query_type(escape_characters(term))

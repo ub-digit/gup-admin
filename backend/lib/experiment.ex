@@ -261,4 +261,16 @@ defmodule Experiment do
       |> IO.inspect()
     end
 
+    def sort_on_date_updated(data) do
+      data
+      |> Enum.map(fn i -> i |> Map.put("updated_at_real_date", (DateTime.from_iso8601((i |> Map.get("updated_at")) <> "Z"  ))) end)
+      |> Enum.sort_by(fn post -> post["updated_at_real_date"] end)
+      |> Enum.map(fn i -> Map.delete(i, "updated_at_real_date") end)
+      |> Enum.reverse()
+      #|> Enum,map(fn item -> Map.put(item, "updated_at_real_date", DateTime.from_iso8601(Item["updated_at"] <> "Z")) end)
+      #|> Enum.sort_by(fn post -> post["updated_at_real_date"] end)
+      #|> Enum.map(fn i -> Map.delete(i, "updated_at_real_date") end)
+      #|> Enum.reverse()
+    end
+
   end
