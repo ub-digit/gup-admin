@@ -52,6 +52,9 @@ defmodule GupIndexManager.Resource.Index.Config do
           },
           "id" => %{
             "type" => "keyword"
+          },
+          "updated_at" => %{
+            "type" => "date"
           }
         }
       }
