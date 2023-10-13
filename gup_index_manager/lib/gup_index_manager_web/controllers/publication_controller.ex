@@ -22,11 +22,11 @@ defmodule GupIndexManagerWeb.PublicationController do
     end
   end
 
-  def list(conn, %{"api_key" => api_key}) do
+  def list(conn, _params) do
     json conn, Publication.list()
   end
 
-  def mark_as_pending(conn, %{"id" => id, "api_key" => api_key) do
+  def mark_as_pending(conn, %{"id" => id, "api_key" => api_key}) do
     case api_key == get_api_key() do
       true ->
         Publication.mark_as_pending(id)
