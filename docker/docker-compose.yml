@@ -7,8 +7,8 @@ services:
       - "${ADMIN_FRONTEND_HOST_PORT}:3000"
     environment:
       NUXT_API_BASE_URL: "http://admin-backend:4000/"
-      NUXT_PUBLIC_API_GUP_BASE_URL_EDIT: "http://localhost:3010/publications/show/"
-      NUXT_PUBLIC_API_GUP_BASE_URL_SHOW: "http://localhost:3010/publications/show/"
+      NUXT_PUBLIC_API_GUP_BASE_URL_EDIT: "${NUXT_API_GUP_BASE_URL_EDIT}"
+      NUXT_PUBLIC_API_GUP_BASE_URL_SHOW: "${NUXT_API_GUP_BASE_URL_SHOW}"
   admin-backend:
     image: docker.ub.gu.se/gup-admin-backend:${GIT_REVISION}${PLATFORM}
     ports:
@@ -19,6 +19,7 @@ services:
       GUP_INDEX_MANAGER_API_KEY: "${GUP_INDEX_MANAGER_API_KEY}"
       GUP_SERVER_BASE_URL: "${GUP_SERVER_BASE_URL}"
       GUP_BASE_URL: "${GUP_BASE_URL}"
+      GUP_API_KEY: "${GUP_API_KEY}"
     restart: always
     volumes:
       # Temporary fix until real index is in place
@@ -31,6 +32,7 @@ services:
     environment:
       ELASTIC_SEARCH_URL: "${ELASTIC_SEARCH_URL}"
       GUP_BASE_URL: "${GUP_BASE_URL}"
+      GUP_INDEX_MANAGER_API_KEY: "${GUP_INDEX_MANAGER_API_KEY}"
     restart: always
     # volumes:
   admin-db:
