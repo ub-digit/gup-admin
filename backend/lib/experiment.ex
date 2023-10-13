@@ -238,7 +238,7 @@ defmodule Experiment do
 
     def auto_put(data) do
       base_url = index_manager_url()
-      api_key = System.get_env("GUP_INDEX_MANAGER_API_KEY", "megasecretimpossibletoguesskey")
+      api_key = System.get_env("GUP_INDEX_MANAGER_API_KEY")
       url = "#{base_url}/publications?api_key=#{api_key}"
       %{"url" => url}
       body = %{"data" => data} |> Jason.encode!()

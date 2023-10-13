@@ -150,8 +150,8 @@ defmodule GupAdmin.Resource.Search do
   end
 
   def update_index(publication) do
-    base_url = System.get_env("GUP_INDEX_MANAGER_URL", "http://localhost:4010")
-    api_key = System.get_env("GUP_INDEX_MANAGER_API_KEY", "megasecretimpossibletoguesskey")
+    base_url = System.get_env("GUP_INDEX_MANAGER_URL")
+    api_key = System.get_env("GUP_INDEX_MANAGER_API_KEY")
     url = "#{base_url}/publications/#{publication["id"]}?api_key=#{api_key}"
     HTTPoison.delete(url, [{"Content-Type", "application/json"}])
 
