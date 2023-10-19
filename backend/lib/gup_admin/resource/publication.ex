@@ -260,7 +260,18 @@ defmodule GupAdmin.Resource.Publication do
       nil -> []
       authors -> authors
     end
+    |> sort_authors()
     |> Enum.map(fn author -> get_author_block(author) end)
+  end
+
+  def sort_authors(authors) do
+    authors
+    |> List.first()
+    |> Map.has_key?("position")
+    |> case do
+      true -> Enum.sort_by(authors, fn author -> author["position"] |> List.first() |> Map.get("position") end)
+      _ -> authors
+    end
   end
 
   def get_publication_identifier_rows(container, order, data) do
