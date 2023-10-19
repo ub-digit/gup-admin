@@ -273,4 +273,107 @@ defmodule Experiment do
       #|> Enum.reverse()
     end
 
+
+
+    def sort_authors do
+
+          authors = [
+            %{
+              "position" => [%{"position" => 10}],
+              "affiliations" => [%{"department" => "Extern"}],
+              "person" => [
+                %{
+                  "first_name" => "K. W.",
+                  "id" => 1143111,
+                  "identifiers" => [],
+                  "last_name" => "Kim",
+                  "year_of_birth" => nil
+                }
+              ]
+            },
+            %{
+              "position" => [%{"position" => 1}],
+              "affiliations" => [%{"department" => "Extern"}],
+              "person" => [
+                %{
+                  "first_name" => "S.",
+                  "id" => 1143112,
+                  "identifiers" => [],
+                  "last_name" => "Riedel-Heller",
+                  "year_of_birth" => nil
+                }
+              ]
+            },
+            %{
+              "position" => [%{"position" => 100}],
+              "affiliations" => [%{"department" => "Extern"}],
+              "person" => [
+                %{
+                  "first_name" => "S.",
+                  "id" => 1143113,
+                  "identifiers" => [],
+                  "last_name" => "Rohr",
+                  "year_of_birth" => nil
+                }
+              ]
+            },
+            %{
+              "position" => [%{"position" => 26}],
+              "affiliations" => [%{"department" => "Extern"}],
+              "person" => [
+                %{
+                  "first_name" => "A.",
+                  "id" => 1143114,
+                  "identifiers" => [],
+                  "last_name" => "Pabst",
+                  "year_of_birth" => nil
+                }
+              ]
+            },
+            %{
+              "position" => [%{"position" => 2}],
+              "affiliations" => [%{"department" => "Extern"}],
+              "person" => [
+                %{
+                  "first_name" => "S.",
+                  "id" => 1143115,
+                  "identifiers" => [],
+                  "identifiers" => [],
+                  "last_name" => "Shahar",
+                  "year_of_birth" => nil
+                }
+              ]
+            },
+            %{
+
+              "position" => [%{"position" => 9}],
+              "affiliations" => [%{"department" => "Extern"}],
+              "person" => [
+                %{
+                  "first_name" => "K.",
+                  "id" => 1143116,
+                  "identifiers" => [],
+                  "last_name" => "Numbers",
+                  "year_of_birth" => nil
+                }
+              ]
+            }]
+
+            authors
+            |> has_position()
+            |> IO.inspect(label: "has_position")
+
+
+        end
+
+        def has_position(authors) do
+          authors
+          |> List.first()
+          |> Map.has_key?("position")
+          |> case do
+            true -> Enum.sort_by(authors, fn author -> author["position"] |> List.first() |> Map.get("position") end)
+            _ -> authors
+          end
+        end
+
   end
