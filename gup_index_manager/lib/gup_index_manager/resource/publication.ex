@@ -1,11 +1,20 @@
 defmodule GupIndexManager.Resource.Publication do
   alias GupIndexManager.Model.Publication
   alias GupIndexManager.Resource.Index
+
   def create_or_update(data) do
     id =  Map.get(data, "id")
     data = data |> Map.put("origin_id", String.split(id, "_") |> List.last())
-    attended = data |> Map.get("attended", false)
-    deleted = data |> Map.get("deleted", false)
+
+    attended_deleted =
+    Index.get_publication(id)
+    |> case do
+      {:ok, pub} -> {pub["attended"] || false, pub["deleted"] || false}
+      {:error, _} -> {false, false}
+    end
+
+    attended = attended_deleted |> elem(0)
+    deleted = attended_deleted |> elem(1)
     db_publication = Publication.find_by_publication_id(id)
 
     attrs = %{

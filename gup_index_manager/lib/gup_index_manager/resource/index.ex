@@ -45,7 +45,19 @@ defmodule GupIndexManager.Resource.Index do
     |> Map.put("deleted", attrs["deleted"])
 
     Elastix.Document.index(elastic_url(), @index, "_doc", attrs["publication_id"], json, [])
-    Elastix.Index.refresh(elastic_url(), @index)
+    |> case do
+      {:ok, %{body: %{ "error" => error}}} -> {:error, error}
+      {:ok, _} -> {:ok, "ok"}
+    end
+    |> case do
+      {:error, error} -> %{"error" => error}
+      {:ok, _} ->
+        Elastix.Index.refresh(elastic_url(), @index)
+        |> case do
+          {:ok, %{body: %{ "error" => error}}} -> {:error, error}
+          {:ok, _} -> %{"status" => "ok"}
+        end
+    end
   end
 
   def mark_as_pending(id) do
@@ -57,5 +69,13 @@ defmodule GupIndexManager.Resource.Index do
     res = Elastix.Document.index(elastic_url(), @index, "_doc", id, body, [])
     Elastix.Index.refresh(elastic_url(), @index)
     res
+  end
+
+  def get_publication(id) do
+    Elastix.Document.get(elastic_url(), @index, "_doc", id)
+    |> case do
+      {:ok, %{status_code: 404}} -> {:error, "Not found"}
+      {:ok, %{body: body}} -> {:ok, body |> Map.get("_source")}
+    end
   end
 end

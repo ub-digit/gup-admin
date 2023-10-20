@@ -5,8 +5,7 @@ defmodule GupIndexManagerWeb.PublicationController do
   def create_or_update(conn,  %{"data" => data, "api_key" => api_key}) do
     case api_key == get_api_key() do
       true ->
-        Publication.create_or_update(data)
-        json conn, %{status: "ok"}
+        json conn, Publication.create_or_update(data)
       false ->
         json conn, %{status: "error, unauthorized key"}
     end
@@ -38,5 +37,6 @@ defmodule GupIndexManagerWeb.PublicationController do
 
   def get_api_key() do
     System.get_env("GUP_INDEX_MANAGER_API_KEY")
+    "hey"
   end
 end
