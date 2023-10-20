@@ -37,6 +37,5 @@ defmodule GupIndexManagerWeb.PublicationController do
 
   def get_api_key() do
     System.get_env("GUP_INDEX_MANAGER_API_KEY")
-    "hey"
   end
 end
