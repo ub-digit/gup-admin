@@ -36,7 +36,7 @@ defmodule GupIndexManager.Resource.Publication do
     Index.get_publication(id)
     |> case do
       {:ok, pub} -> {attended, pub["deleted"] || false}
-      {:error, _} -> {false, false}
+      {:error, _} -> {attended, false}
     end
   end
 
