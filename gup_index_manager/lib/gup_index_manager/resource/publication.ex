@@ -2,19 +2,13 @@ defmodule GupIndexManager.Resource.Publication do
   alias GupIndexManager.Model.Publication
   alias GupIndexManager.Resource.Index
 
+  @spec create_or_update(map) :: {:error, any} | %{optional(<<_::40, _::_*8>>) => any}
   def create_or_update(data) do
     id =  Map.get(data, "id")
+    attended = Map.get(data, "attended", :attended_not_found)
     data = data |> Map.put("origin_id", String.split(id, "_") |> List.last())
 
-    attended_deleted =
-    Index.get_publication(id)
-    |> case do
-      {:ok, pub} -> {pub["attended"] || false, pub["deleted"] || false}
-      {:error, _} -> {false, false}
-    end
-
-    attended = attended_deleted |> elem(0)
-    deleted = attended_deleted |> elem(1)
+    {attended, deleted} = get_attended_deleted(id, attended)
     db_publication = Publication.find_by_publication_id(id)
 
     attrs = %{
@@ -30,6 +24,21 @@ defmodule GupIndexManager.Resource.Publication do
     Index.update_publication(attrs)
   end
 
+  def get_attended_deleted(id, :attended_not_found) do
+    Index.get_publication(id)
+    |> case do
+      {:ok, pub} -> {pub["attended"] || false, pub["deleted"] || false}
+      {:error, _} -> {false, false}
+    end
+  end
+
+  def get_attended_deleted(id, attended) do
+    Index.get_publication(id)
+    |> case do
+      {:ok, pub} -> {attended, pub["deleted"] || false}
+      {:error, _} -> {false, false}
+    end
+  end
 
   def delete(id) do
     db_publication = Publication.find_by_publication_id(id)
