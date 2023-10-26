@@ -98,8 +98,15 @@ defmodule GupAdmin.Resource.Publication do
   def remap_authors(data) do
     data
     |> Enum.map(fn publication ->
-        publication |> Map.put("authors", publication |> Map.get("authors") |> Enum.map(fn author -> author |> extract_author() end))
+        publication |> Map.put("authors", publication |> has_authors() |> Map.get("authors") |> Enum.map(fn author -> author |> extract_author() end))
     end)
+  end
+
+  def has_authors(publication) do
+    case publication["authors"] do
+      nil -> Map.put(publication, "authors", [])
+      _ -> publication
+    end
   end
 
   def extract_author(author) do
@@ -262,6 +269,10 @@ defmodule GupAdmin.Resource.Publication do
     end
     |> sort_authors()
     |> Enum.map(fn author -> get_author_block(author) end)
+  end
+
+  def sort_authors([]) do
+    []
   end
 
   def sort_authors(authors) do
