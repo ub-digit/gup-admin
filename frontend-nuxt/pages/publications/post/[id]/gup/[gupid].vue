@@ -96,7 +96,45 @@
         </div>
       </div>
     </div>
-    <div v-if="!errorImportedPostById" class="duplicates">
+
+    <div class="row">
+      <nav class="col-6">
+        <ul class="nav nav-tabs">
+          <li class="nav-item">
+            <NuxtLink
+              :to="{
+                name: 'publications-post-id-gup-gupid-tab',
+                query: $route.query,
+                params: {
+                  id: route.params.id,
+                  gupid: route.params.gupid,
+                },
+              }"
+              class="nav-link"
+              >Dubletter</NuxtLink
+            >
+          </li>
+          <li class="nav-item">
+            <NuxtLink
+              :to="{
+                name: 'publications-post-id-gup-gupid-tab-authors',
+                query: $route.query,
+                params: {
+                  id: route.params.id,
+                  gupid: route.params.gupid,
+                },
+              }"
+              class="nav-link"
+              >Personer</NuxtLink
+            >
+          </li>
+        </ul>
+        <!-- this is outlet for tab content -->
+        <NuxtPage />
+      </nav>
+    </div>
+
+    <!--     <div v-if="!errorImportedPostById && true === false" class="duplicates">
       <div class="row">
         <div class="col-6">
           <h3 class="mb-4">
@@ -173,7 +211,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -294,16 +332,6 @@ if (
   ).first.value.title;
 }
 
-const debounceFn = useDebounceFn(() => {
-  if (importedPostById) {
-    fetchGupPostsByTitle(item_row_id, searchTitleStr.value);
-  }
-}, 500);
-
-watch(searchTitleStr, () => {
-  debounceFn();
-});
-
 async function merge() {
   if (selectedUser.value !== "") {
     const ok = confirm(t("messages.confirm_merge_in_gup"));
@@ -404,10 +432,6 @@ async function editPost() {
   }
 }
 
-onMounted(() => {
-  searchTitleStr.value = item_row_title;
-});
-
 const isRemoveDisabled = computed(() => {
   if (item_row_source === "gup") {
     return true;
@@ -419,13 +443,19 @@ const showCompareView = computed(() => {
     return true;
   }
 });
-
-if (route.params.id) {
-  await fetchGupPostsById(route.params.id);
-}
 </script>
 
 <style lang="scss" scoped>
+.nav-item {
+  .nav-link {
+    &.router-link-active {
+      color: #495057;
+      background-color: #fff;
+      border-color: #dee2e6 #dee2e6 #fff;
+    }
+  }
+}
+
 .col {
 }
 </style>
