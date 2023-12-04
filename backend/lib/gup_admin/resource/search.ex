@@ -118,6 +118,7 @@ defmodule GupAdmin.Resource.Search do
           nil -> []
           query -> get_duplicates(query, id, :has_identifiers)
         end
+        |> Enum.filter(fn p -> p["_source"]["deleted"] == false end)
         |> Publication.remap()
     end
 
@@ -131,6 +132,7 @@ defmodule GupAdmin.Resource.Search do
     hits
     |> Enum.filter(fn p -> p["_id"] != id end)
     |> Enum.filter(fn p -> p["_source"]["source"] == "gup" end)
+    |> Enum.filter(fn p -> p["_source"]["deleted"] == false end)
     |> Publication.remap()
   end
 
