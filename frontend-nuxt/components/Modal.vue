@@ -1,13 +1,14 @@
 <script setup>
 const props = defineProps({
   show: Boolean,
+  noSuccessButton: Boolean,
 });
 </script>
 
 <template>
   <Transition name="modal">
     <div v-if="show" class="modal-mask modal">
-      <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
             <div class="modal-title">
@@ -24,7 +25,11 @@ const props = defineProps({
               <button class="btn btn-secondary" @click="$emit('close')">
                 Avbryt
               </button>
-              <button @click="$emit('success')" class="btn btn-primary">
+              <button
+                v-if="!noSuccessButton"
+                @click="$emit('success')"
+                class="btn btn-primary"
+              >
                 Ok
               </button>
             </slot>
@@ -46,6 +51,13 @@ const props = defineProps({
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   transition: opacity 0.3s ease;
+}
+
+@media (min-width: 768px) {
+  .modal-dialog {
+    width: 600px;
+    margin: 30px auto;
+  }
 }
 
 .modal-default-button {
