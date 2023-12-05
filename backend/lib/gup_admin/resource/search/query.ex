@@ -64,6 +64,11 @@ defmodule GupAdmin.Resource.Search.Query do
                   "fields" => ["publication_identifiers.identifier_code"],
                   "query" => identifier["identifier_code"]
                 }
+              },
+              %{
+                "term" => %{
+                  "deleted" => false
+                }
               }
             ]
           }
@@ -75,11 +80,22 @@ defmodule GupAdmin.Resource.Search.Query do
   def fuzzy(term) do
     %{
       "query" => %{
-        "match" => %{
-          "title" => %{
-            "query" => term,
-            "fuzziness" => "AUTO"
-          }
+        "bool" => %{
+          "must" => [
+            %{
+              "match" => %{
+                "title" => %{
+                  "fuzziness" => "AUTO",
+                  "query" => term
+                }
+              }
+            },
+            %{
+              "term" => %{
+                "deleted" => false
+              }
+            }
+          ]
         }
       }
     }
