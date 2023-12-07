@@ -7,37 +7,37 @@ export default defineEventHandler(async (event) => {
       id: 1,
       x_account: "xljoha",
       full_name: "johan larsson",
-      department: "foo bar",
+      departments: [{ id: 1, name: "bar foo" }],
     },
     {
       id: 2,
       x_account: "xavgo",
       full_name: "johan avg",
-      department: "bar foo",
+      departments: [{ id: 1, name: "bar foo" }],
     },
     {
       id: 3,
       x_account: "xlpero",
       full_name: "Pär Larsson",
-      department: "bar foo",
+      departments: [{ id: 1, name: "bar foo" }],
     },
     {
       id: 4,
       x_account: "xlpero",
       full_name: "Pär Larsson",
-      department: "bar foo",
+      departments: [{ id: 1, name: "bar foo" }],
     },
     {
       id: 5,
       x_account: "xlpero",
       full_name: "Pär Larsson",
-      department: "bar foo",
+      departments: [{ id: 1, name: "bar foo" }],
     },
     {
       id: 6,
       x_account: "xlpero",
       full_name: "Pär Larsson",
-      department: "bar foo",
+      departments: [{ id: 1, name: "bar foo" }],
     },
   ]; //await $fetch(`${config.API_BASE_URL}/publication_types`, query);
   return res;

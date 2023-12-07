@@ -1,35 +1,33 @@
 <template>
   <modal
-    :noSuccessButton="true"
+    :noSuccessButton="false"
     :show="showModalPerson"
     @success="handleSuccess"
     @close="showModalPerson = false"
   >
     <template #header>
-      <h4>Hantera person</h4>
+      <h4 class="mb-0">Hantera författare</h4>
     </template>
+
     <template #body>
       <PersonSearch
-        :person="selectedAuthor"
-        @authorSelected="handleAuthorSelected"
+        :sourceSelectedAuthor="selectedAuthor"
+        @success="handleAuthorSelected"
       />
     </template>
   </modal>
 
   <div class="authors mt-4">
     <ul class="list-group list-group-flush">
-      <li
-        class="list-group-item"
+      <AuthorRow
         v-for="(author, index) in authors"
         :key="index"
-      >
-        <div>
-          <a href="#" @click.prevent="handleClickedPerson(author, index)">
-            {{ author.full_name }}
-          </a>
-        </div>
-        <div class="small">{{ author.department }}</div>
-      </li>
+        :author="author"
+        :index="index"
+        @handleClickedPerson="handleClickedPerson(author, index)"
+        @handleMoveDown="handleMoveDown(author, index)"
+        @handleMoveUp="handleMoveUp(author, index)"
+      />
     </ul>
   </div>
 </template>
@@ -99,19 +97,38 @@ authors.value = authors.value.map((author, index) => {
     id: index,
     x_account: "xavgo_" + index,
     full_name: author.name,
-    department: "bar_foo_" + index,
+    departments: [{ id: 1, name: "bar_foo_" + index }],
   };
 });
 
 function handleAuthorSelected(author) {
-  selectedAuthor.value = author;
-  authors.value[selectedAuthorIndex.value] = author;
-  selectedAuthorIndex.value = null;
-  selectedAuthorIndex.value = null;
+  if (author) {
+    selectedAuthor.value = author;
+    authors.value[selectedAuthorIndex.value] = author;
+    selectedAuthorIndex.value = null;
+    selectedAuthorIndex.value = null;
+  }
   showModalPerson.value = false;
 }
 
+function handleMoveUp(author, index) {
+  if (index > 0) {
+    const temp = authors.value[index - 1];
+    authors.value[index - 1] = author;
+    authors.value[index] = temp;
+  }
+}
+
+function handleMoveDown(author, index) {
+  if (index < authors.value.length - 1) {
+    const temp = authors.value[index + 1];
+    authors.value[index + 1] = author;
+    authors.value[index] = temp;
+  }
+}
+
 function handleSuccess() {
+  console.log("handleSuccess");
   showModalPerson.value = false;
 }
 </script>
