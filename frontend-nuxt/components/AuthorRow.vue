@@ -1,7 +1,7 @@
 <template>
   <li class="list-group-item">
-    <div class="row">
-      <div class="col-10">
+    <div class="row align-items-center">
+      <div class="col-9">
         <div>
           <a
             href="#"
@@ -24,7 +24,15 @@
           </span>
         </div>
       </div>
-      <div class="col">
+      <div class="col-2 text-center">
+        <button
+          @click="$emit('handleRemovePerson', (author, index))"
+          class="btn btn-sm btn-danger"
+        >
+          <font-awesome-icon icon="fa-solid fa-trash" />
+        </button>
+      </div>
+      <div class="col-1">
         <div id="sort">
           <div>
             <!-- wrap in div for block display -->
@@ -50,9 +58,12 @@
 </template>
 
 <script setup>
+import fontawesome from "~/plugins/fontawesome";
+
 const props = defineProps({ author: Object, index: Number });
 const emit = defineEmits([
   "handleClickedPerson",
+  "handleRemovePerson",
   "handleMoveUp",
   "handleMoveDown",
 ]);

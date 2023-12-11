@@ -185,7 +185,14 @@ watch(searchDepartmentStr, () => {
                     <div class="ms-2 me-auto">
                       {{ author.full_name }}
                       <div class="small">{{ author.x_account }}</div>
-                      <div class="small">{{ author.department }}</div>
+                      <div class="small">{{ author?.year }}</div>
+                      <div class="small">
+                        <span
+                          v-for="department in author.departments"
+                          class="badge text-bg-dark pill me-2 opacity-50"
+                          >{{ department.id }} - {{ department.name }}
+                        </span>
+                      </div>
                     </div>
                     <button
                       class="btn btn-light"
@@ -208,7 +215,7 @@ watch(searchDepartmentStr, () => {
                 class="btn btn-primary"
                 @click="$emit('success', authorSelected)"
               >
-                emit
+                Spara
               </button>
             </slot>
           </div>

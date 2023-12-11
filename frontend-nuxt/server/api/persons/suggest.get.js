@@ -7,7 +7,10 @@ export default defineEventHandler(async (event) => {
       id: 1,
       x_account: "xljoha",
       full_name: "johan larsson",
-      departments: [{ id: 1, name: "bar foo" }],
+      departments: [
+        { id: 1, name: "bar foo" },
+        { id: 2, name: "foo bar" },
+      ],
     },
     {
       id: 2,

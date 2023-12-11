@@ -15,6 +15,7 @@
         :key="index"
         :author="author"
         :index="index"
+        @handleRemovePerson="handleRemovePerson(author, index)"
         @handleClickedPerson="handleClickedPerson(author, index)"
         @handleMoveDown="handleMoveDown(author, index)"
         @handleMoveUp="handleMoveUp(author, index)"
@@ -117,6 +118,10 @@ function handleMoveDown(author, index) {
     authors.value[index + 1] = author;
     authors.value[index] = temp;
   }
+}
+
+function handleRemovePerson(author, index) {
+  authors.value.splice(index, 1);
 }
 
 function handleSuccess() {
