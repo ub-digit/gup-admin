@@ -106,6 +106,9 @@ const authorSelected = ref(null);
 
 // Set initial value here to get the watch to trigger on first render
 onMounted(() => {
+  if (props.sourceSelectedAuthor.isMatch) {
+    authorSelected.value = props.sourceSelectedAuthor;
+  }
   searchNameStr.value = props.sourceSelectedAuthor.full_name;
 });
 

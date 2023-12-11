@@ -9,6 +9,12 @@
           >
             {{ author.full_name }}
           </a>
+          <span
+            v-if="author?.isMatch"
+            title="Matchad i GUP"
+            class="text-success ms-2"
+            ><font-awesome-icon icon="fa-solid fa-check"
+          /></span>
         </div>
         <div class="author-departments">
           <span
@@ -24,7 +30,7 @@
             <!-- wrap in div for block display -->
             <button
               @click="$emit('handleMoveUp', author, index)"
-              class="btn btn-sm"
+              class="btn btn-sm float-end"
             >
               <font-awesome-icon icon="fa-solid fa-chevron-up" />
             </button>
@@ -32,7 +38,7 @@
           <div>
             <button
               @click="$emit('handleMoveDown', author, index)"
-              class="btn btn-sm"
+              class="btn btn-sm float-end"
             >
               <font-awesome-icon icon="fa-solid fa-chevron-down" />
             </button>

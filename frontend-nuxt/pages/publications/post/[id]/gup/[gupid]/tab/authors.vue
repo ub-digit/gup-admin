@@ -1,21 +1,12 @@
 <template>
-  <modal
+  <ModalAuthor
+    v-if="showModalAuthor"
     :noSuccessButton="false"
-    :show="showModalPerson"
-    @success="handleSuccess"
-    @close="showModalPerson = false"
-  >
-    <template #header>
-      <h4 class="mb-0">Hantera författare</h4>
-    </template>
-
-    <template #body>
-      <PersonSearch
-        :sourceSelectedAuthor="selectedAuthor"
-        @success="handleAuthorSelected"
-      />
-    </template>
-  </modal>
+    :show="showModalAuthor"
+    :sourceSelectedAuthor="selectedAuthor"
+    @success="handleAuthorSelected"
+    @close="showModalAuthor = false"
+  />
 
   <div class="authors mt-4">
     <ul class="list-group list-group-flush">
@@ -37,7 +28,7 @@ import { useComparePostsStore } from "~/store/compare_posts";
 import { useImportedPostsStore } from "~/store/imported_posts";
 import { storeToRefs } from "pinia";
 
-let showModalPerson = ref(false);
+let showModalAuthor = ref(false);
 let selectedAuthor = ref(null);
 let selectedAuthorIndex = ref(null);
 
@@ -77,7 +68,7 @@ const {
 const handleClickedPerson = (author, index) => {
   selectedAuthor.value = author;
   selectedAuthorIndex.value = index;
-  showModalPerson.value = true;
+  showModalAuthor.value = true;
 };
 
 const authors = ref([]);
@@ -95,6 +86,7 @@ if (route.params.gupid !== "empty" && route.params.gupid !== "error") {
 authors.value = authors.value.map((author, index) => {
   return {
     id: index,
+    isMatch: index % 2 ? true : false,
     x_account: "xavgo_" + index,
     full_name: author.name,
     departments: [{ id: 1, name: "bar_foo_" + index }],
@@ -108,7 +100,7 @@ function handleAuthorSelected(author) {
     selectedAuthorIndex.value = null;
     selectedAuthorIndex.value = null;
   }
-  showModalPerson.value = false;
+  showModalAuthor.value = false;
 }
 
 function handleMoveUp(author, index) {
@@ -129,7 +121,7 @@ function handleMoveDown(author, index) {
 
 function handleSuccess() {
   console.log("handleSuccess");
-  showModalPerson.value = false;
+  showModalAuthor.value = false;
 }
 </script>
 
