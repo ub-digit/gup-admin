@@ -171,8 +171,10 @@ const focusInput = (val) => {
                   placeholder="Sök efter institutioner"
                   v-model="searchDepartmentStr"
                 />
-
-                <ul class="list-group list-group-flush">
+                <ul
+                  v-if="suggestedDepartments.length"
+                  class="list-group list-group-flush"
+                >
                   <li
                     class="list-group-item d-flex justify-content-between align-items-start"
                     v-for="department in suggestedDepartmentsFiltered"
@@ -188,6 +190,7 @@ const focusInput = (val) => {
                     </button>
                   </li>
                 </ul>
+                <div v-else class="text-muted">Inga institutioner hittades</div>
               </div>
 
               <div v-else id="select-author">
