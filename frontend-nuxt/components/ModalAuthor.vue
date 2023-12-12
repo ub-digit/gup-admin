@@ -1,6 +1,8 @@
 <script setup>
 import { useDebounceFn } from "@vueuse/core";
-const emit = defineEmits(["success"]);
+
+import { ref } from "vue";
+const emit = defineEmits(["success", "close"]);
 const props = defineProps({
   sourceSelectedAuthor: {
     type: Object,
@@ -13,6 +15,8 @@ const suggestedDepartments = ref([]);
 const searchNameStr = ref("");
 const suggestedAuthors = ref([]);
 const authorSelected = ref(null);
+const searchDepartmentsInput = ref(null);
+const searchAuthorsInput = ref(null);
 
 // Set initial value here to get the watch to trigger on first render
 onMounted(() => {
@@ -20,6 +24,7 @@ onMounted(() => {
     authorSelected.value = props.sourceSelectedAuthor;
   }
   searchNameStr.value = props.sourceSelectedAuthor.full_name;
+  focusInput(searchAuthorsInput);
 });
 
 const debounceDepeartmentsFn = useDebounceFn(() => {
@@ -43,6 +48,7 @@ function handleDepartmentRemove(department) {
   if (index > -1) {
     authorSelected.value.departments.splice(index, 1);
   }
+  focusInput(searchDepartmentsInput);
 }
 
 function handleAuthorSelected(author) {
@@ -52,6 +58,7 @@ function handleAuthorSelected(author) {
 
 function handleDepartmentSelected(department) {
   authorSelected.value.departments.push(department);
+  focusInput(searchDepartmentsInput);
 }
 
 function handleClearAuthorSelected() {
@@ -70,7 +77,9 @@ const suggestedDepartmentsFiltered = computed(() => {
 
 const fetchSuggestedDepartments = async (name) => {
   const response = await fetch(
-    `/api/departments/suggest?name=${encodeURIComponent(name)}`
+    `/api/departments/suggest?name=${encodeURIComponent(
+      name
+    )}&year=${encodeURIComponent(authorSelected?.value?.year)}`
   );
   const data = await response.json();
   suggestedDepartments.value = data;
@@ -84,6 +93,15 @@ const fetchSuggestedAuthors = async (name) => {
   suggestedAuthors.value = data;
 };
 
+watch(authorSelected, async () => {
+  await nextTick();
+  if (authorSelected.value) {
+    focusInput(searchDepartmentsInput);
+  } else {
+    focusInput(searchAuthorsInput);
+  }
+});
+
 watch(searchNameStr, () => {
   debounceFn();
 });
@@ -91,6 +109,12 @@ watch(searchNameStr, () => {
 watch(searchDepartmentStr, () => {
   debounceDepeartmentsFn();
 });
+
+const focusInput = (val) => {
+  if (val.value) {
+    val.value.focus();
+  }
+};
 </script>
 
 <template>
@@ -109,12 +133,13 @@ watch(searchDepartmentStr, () => {
               <div v-if="authorSelected" id="select-departments">
                 <!-- make this a component -->
                 <div class="selected-author mb-3">
-                  <div class="d-flex justify-content-between">
+                  <div
+                    class="d-flex justify-content-between align-items-center"
+                  >
                     <div class="author-info">
-                      {{ authorSelected.full_name }},
-                      <span class="small"
-                        >({{ authorSelected.x_account }})</span
-                      >
+                      {{ authorSelected.full_name }}
+                      <div class="small">{{ authorSelected.x_account }}</div>
+                      <div class="small">{{ authorSelected.year }}</div>
                     </div>
                     <button
                       class="btn btn-light btn-sm"
@@ -139,6 +164,7 @@ watch(searchDepartmentStr, () => {
                   >Sök institutioner</label
                 >
                 <input
+                  ref="searchDepartmentsInput"
                   type="search"
                   class="form-control mb-3"
                   id="departments"
@@ -169,6 +195,7 @@ watch(searchDepartmentStr, () => {
                 <div class="mb-3">
                   <label for="name" class="form-label">Sök författare</label>
                   <input
+                    ref="searchAuthorsInput"
                     type="search"
                     class="form-control"
                     id="name"

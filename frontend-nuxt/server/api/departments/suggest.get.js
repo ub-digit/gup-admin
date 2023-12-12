@@ -19,6 +19,6 @@ export default defineEventHandler(async (event) => {
       id: 4,
       name: "it-fakulteten 3",
     },
-  ]; //await $fetch(`${config.API_BASE_URL}/publication_types`, query);
+  ]; //await $fetch(`${config.API_BASE_URL}/depaertments`, query);
   return res;
 });

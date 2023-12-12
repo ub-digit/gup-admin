@@ -5,6 +5,7 @@ export default defineEventHandler(async (event) => {
   const res = [
     {
       id: 1,
+      year: 1988,
       x_account: "xljoha",
       full_name: "johan larsson",
       departments: [
@@ -14,30 +15,35 @@ export default defineEventHandler(async (event) => {
     },
     {
       id: 2,
+      year: 1988,
       x_account: "xavgo",
       full_name: "johan avg",
       departments: [{ id: 1, name: "bar foo" }],
     },
     {
       id: 3,
+      year: 1988,
       x_account: "xlpero",
       full_name: "Pär Larsson",
       departments: [{ id: 1, name: "bar foo" }],
     },
     {
       id: 4,
+      year: 1988,
       x_account: "xlpero",
       full_name: "Pär Larsson",
       departments: [{ id: 1, name: "bar foo" }],
     },
     {
       id: 5,
+      year: 1988,
       x_account: "xlpero",
       full_name: "Pär Larsson",
       departments: [{ id: 1, name: "bar foo" }],
     },
     {
       id: 6,
+      year: 1988,
       x_account: "xlpero",
       full_name: "Pär Larsson",
       departments: [{ id: 1, name: "bar foo" }],

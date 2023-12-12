@@ -88,6 +88,7 @@ authors.value = authors.value.map((author, index) => {
   return {
     id: index,
     isMatch: index % 2 ? true : false,
+    year: 1977,
     x_account: "xavgo_" + index,
     full_name: author.name,
     departments: [{ id: 1, name: "bar_foo_" + index }],
