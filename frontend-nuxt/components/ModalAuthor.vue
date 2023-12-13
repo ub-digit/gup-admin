@@ -77,7 +77,7 @@ const suggestedDepartmentsFiltered = computed(() => {
 
 const fetchSuggestedDepartments = async (name) => {
   const response = await fetch(
-    `/api/departments/suggest?name=${encodeURIComponent(
+    `/api/departments/suggest?term=${encodeURIComponent(
       name
     )}&year=${encodeURIComponent(authorSelected?.value?.year)}`
   );
@@ -155,7 +155,7 @@ const focusInput = (val) => {
                       @click="handleDepartmentRemove(department)"
                       v-for="department in authorSelected.departments"
                       class="badge btn pill text-bg-dark me-2 mb-2"
-                      >{{ department.id }} - {{ department.name }}
+                      >{{ department.name }}
                       <font-awesome-icon icon="fa-solid fa-delete-left"
                     /></span>
                   </div>
@@ -176,17 +176,17 @@ const focusInput = (val) => {
                   class="list-group list-group-flush"
                 >
                   <li
-                    class="list-group-item d-flex justify-content-between align-items-start"
+                    class="list-group-item d-flex justify-content-between align-items-center"
                     v-for="department in suggestedDepartmentsFiltered"
                   >
-                    <div class="ms-2 me-auto">
-                      {{ department.id }} - {{ department.name }}
+                    <div class="ms-2 me-4">
+                      {{ department.name }}
                     </div>
                     <button
                       class="btn btn-light"
                       @click="handleDepartmentSelected(department)"
                     >
-                      Lägg till +
+                      +
                     </button>
                   </li>
                 </ul>

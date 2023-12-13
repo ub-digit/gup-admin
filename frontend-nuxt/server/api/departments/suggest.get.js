@@ -2,7 +2,7 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
   const query = getQuery(event);
   console.log("query", query);
-  const res = [
+  /*const res = [
     {
       id: 1,
       name: "it-fakulteten",
@@ -19,6 +19,9 @@ export default defineEventHandler(async (event) => {
       id: 4,
       name: "it-fakulteten 3",
     },
-  ]; //await $fetch(`${config.API_BASE_URL}/depaertments`, query);
+  ]; */
+  const res = await $fetch(
+    `${config.API_BASE_URL}/departments/?term=${query.term}&year=${query.year}`
+  );
   return res;
 });
