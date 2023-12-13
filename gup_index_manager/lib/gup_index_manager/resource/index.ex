@@ -3,6 +3,7 @@ defmodule GupIndexManager.Resource.Index do
   alias GupIndexManager.Resource.Index.Config
   alias GupIndexManager.Model
   @index "publications"
+  @departments "departments"
   def elastic_url do
     System.get_env("ELASTIC_SEARCH_URL", "http://localhost:9200")
   end
