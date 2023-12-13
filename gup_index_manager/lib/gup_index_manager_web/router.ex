@@ -22,6 +22,8 @@ defmodule GupIndexManagerWeb.Router do
     put "/publications", PublicationController, :create_or_update
     delete "/publications/:id", PublicationController, :delete
     put "/publications/pending/:id", PublicationController, :mark_as_pending
+    put "/departments/index", DepartmentController, :index
+
   end
 
   # Other scopes may use custom stacks.

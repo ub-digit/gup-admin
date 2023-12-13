@@ -1,4 +1,8 @@
 defmodule GupIndexManager.Resource.Departments do
+  def elastic_url do
+    System.get_env("ELASTIC_SEARCH_URL", "http://localhost:9200")
+  end
+
   def initialize do
     {:ok, departments} = File.read("../data/departments/departments.json")
     data = departments
@@ -8,9 +12,9 @@ defmodule GupIndexManager.Resource.Departments do
     |> Enum.map(fn dep -> remap_for_index(dep, "departments") end)
     |> List.flatten()
 
-    Elastix.Index.delete("http://localhost:9200", "departments")
-    Elastix.Index.create("http://localhost:9200", "departments", GupIndexManager.Resource.Index.Config.departments_config())
-    Elastix.Bulk.post("http://localhost:9200", data)
+    Elastix.Index.delete(elastic_url(), "departments")
+    Elastix.Index.create(elastic_url(), "departments", GupIndexManager.Resource.Index.Config.departments_config())
+    Elastix.Bulk.post(elastic_url(), data)
   end
 
   def remap_for_index(dep, index) do
