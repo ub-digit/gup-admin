@@ -202,5 +202,6 @@ defmodule GupAdmin.Resource.Search do
 
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), "departments", [], query)
     hits
+    |> Enum.map(fn dep -> Map.get(dep, "_source") end)
   end
 end
