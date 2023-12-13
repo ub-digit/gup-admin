@@ -57,4 +57,36 @@ defmodule GupIndexManager.Resource.Index.Config do
       }
     }
   end
+
+  def departments_config do
+    %{
+      "settings" => %{
+        "analysis" => %{
+          "analyzer" => %{
+            "edge_ngram_analyzer" => %{
+              "type" => "custom",
+              "tokenizer" => "edge_ngram_tokenizer"
+            }
+          },
+          "tokenizer" => %{
+            "edge_ngram_tokenizer" => %{
+              "type" => "edge_ngram",
+              "min_gram" => 1,
+              "max_gram" => 20,
+              "token_chars" => ["letter", "digit"]
+            }
+          }
+        }
+      },
+      "mappings" => %{
+        "properties" => %{
+          "name" => %{
+            "type" => "text",
+            "analyzer" => "edge_ngram_analyzer"
+          }
+        }
+      }
+    }
+
+  end
 end
