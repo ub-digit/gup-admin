@@ -165,7 +165,6 @@ defmodule GupAdmin.Resource.Search do
               "match" => %{
                 "name" => %{
                   "query" => term,
-                  "analyzer" => "edge_ngram_analyzer"
                 }
               }
             },
