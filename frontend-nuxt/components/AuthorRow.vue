@@ -20,7 +20,7 @@
           <span
             v-for="department in author.departments"
             class="badge text-bg-dark pill me-2 opacity-50"
-            >{{ department.id }} - {{ department.name }}
+            >{{ department.name }}
           </span>
         </div>
       </div>
