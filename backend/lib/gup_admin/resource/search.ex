@@ -162,10 +162,10 @@ defmodule GupAdmin.Resource.Search do
         "bool" => %{
           "must" => [
             %{
-              "match" => %{
-                "name" => %{
-                  "query" => term,
-                }
+              "query_string" => %{
+                "default_operator" => "AND",
+                "fields" => ["name^15"],
+                "query" => term
               }
             },
             %{
@@ -187,7 +187,11 @@ defmodule GupAdmin.Resource.Search do
                   },
                   %{
                     "bool" => %{
-                      "must_not" => %{ "exists" => %{ "field" => "end_year" } }
+                      "must_not" => %{
+                        "exists" => %{
+                          "field" => "end_year"
+                        }
+                      }
                     }
                   }
                 ]
@@ -197,6 +201,7 @@ defmodule GupAdmin.Resource.Search do
         }
       }
     }
+
 
 
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), "departments", [], query)

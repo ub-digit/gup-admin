@@ -14,6 +14,7 @@ defmodule GupIndexManager.Resource.Departments do
 
     Elastix.Index.delete(elastic_url(), "departments")
     Elastix.Index.create(elastic_url(), "departments", GupIndexManager.Resource.Index.Config.departments_config())
+    # Elastix.Index.create(elastic_url(), "departments", %{})
     Elastix.Bulk.post(elastic_url(), data)
   end
 

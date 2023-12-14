@@ -1,4 +1,5 @@
 defmodule GupIndexManager.Resource.Index.Config do
+  @max_gram 20
   def config do
     %{
       "settings" => %{
@@ -62,28 +63,65 @@ defmodule GupIndexManager.Resource.Index.Config do
     %{
       "settings" => %{
         "analysis" => %{
-          "analyzer" => %{
-            "departments_edge_ngram_analyzer" => %{
-              "type" => "custom",
-              "tokenizer" => "departments_edge_ngram_tokenizer"
+          "filter" => %{
+            "autocomplete_filter" => %{
+              "type" => "edge_ngram",
+              "min_gram" => 2,
+              "max_gram" => @max_gram,
+              "token_chars" => [
+                "letter",
+                "digit",
+                "custom"
+              ],
+              "custom_token_chars" => [
+                "å",
+                "ä",
+                "ö",
+                "Å",
+                "Ä",
+                "Ö",
+                "-"
+              ]
+            },
+            "truncate_filter" => %{
+              "type" => "truncate",
+              "length" => @max_gram
             }
           },
-          "tokenizer" => %{
-            "departments_edge_ngram_tokenizer" => %{
-              "type" => "edge_ngram",
-              "min_gram" => 1,
-              "max_gram" => 20,
-              "token_chars" => ["letter", "digit"]
+          "analyzer" => %{
+            "autocomplete" => %{
+              "type" => "custom",
+              "tokenizer" => "standard",
+              "filter" => [
+                "lowercase",
+                "autocomplete_filter"
+              ]
+            },
+            "standard_truncate" => %{
+              "type" => "custom",
+              "tokenizer" => "standard",
+              "filter" => [
+                "lowercase",
+                "truncate_filter"
+              ]
             }
           }
-
         }
       },
       "mappings" => %{
         "properties" => %{
           "name" => %{
+            "fields" => %{
+              "sort" => %{
+                "type" => "icu_collation_keyword",
+                "language" => "sv",
+                "country" => "SE"
+              }
+            },
             "type" => "text",
-            "analyzer" => "department_edge_ngram_analyzer"
+            "analyzer" => "autocomplete",
+            "search_analyzer" => "standard_truncate"
+
           }
         }
       }
