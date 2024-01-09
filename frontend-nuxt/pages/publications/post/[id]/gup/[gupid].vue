@@ -368,7 +368,9 @@ async function removePost() {
   }
 }
 
+let done = false;
 async function pollForUpdate() {
+  if (done) return;
   isPendingUpdate.value = true;
   await fetchImportedPostById(route.params.id);
   if (!importedPostById.value.pending) {
@@ -394,7 +396,7 @@ async function handleSuccessMerge() {
   showModalMerge.value = false;
   $toast.success(t("messages.remove_success"));
   router.push({
-    path: `/publications/post/${route.params.gupid}/gup/empty`,
+    path: `/publications/post/${route.params.gupid}/gup/empty/tab/`,
     query: { ...route.query },
   });
 }
@@ -431,6 +433,10 @@ async function editPost() {
     alert("No user selected!");
   }
 }
+
+onUnmounted(() => {
+  done = true;
+});
 
 const isRemoveDisabled = computed(() => {
   if (item_row_source === "gup") {
