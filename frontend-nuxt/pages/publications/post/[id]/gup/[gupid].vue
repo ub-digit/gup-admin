@@ -65,7 +65,10 @@
       </div>
     </div>
     <div
-      v-if="!errorImportedPostById && (postsCompareMatrix || importedPostById)"
+      v-if="
+        (!errorImportedPostById && (postsCompareMatrix || importedPostById)) ||
+        !isPendingUpdate
+      "
       class="action-bar"
     >
       <div class="row pb-4 mt-4">
@@ -99,7 +102,7 @@
 
     <div class="row">
       <nav class="col-6">
-        <ul class="nav nav-tabs">
+        <ul v-if="!isPendingUpdate" class="nav nav-tabs">
           <li class="nav-item">
             <NuxtLink
               :to="{
