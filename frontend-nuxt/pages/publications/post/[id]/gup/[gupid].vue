@@ -66,7 +66,8 @@
     </div>
     <div
       v-if="
-        (!errorImportedPostById && (postsCompareMatrix || importedPostById)) ||
+        !errorImportedPostById &&
+        (postsCompareMatrix || importedPostById) &&
         !isPendingUpdate
       "
       class="action-bar"
