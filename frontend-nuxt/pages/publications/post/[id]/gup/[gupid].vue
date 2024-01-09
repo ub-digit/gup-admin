@@ -130,7 +130,7 @@
           </li>
         </ul>
         <!-- this is outlet for tab content -->
-        <NuxtPage />
+        <NuxtPage v-if="!isPendingUpdate" />
       </nav>
     </div>
   </div>
