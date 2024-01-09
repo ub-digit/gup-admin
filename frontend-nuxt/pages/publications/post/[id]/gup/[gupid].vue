@@ -151,6 +151,7 @@ const config = useRuntimeConfig();
 const showModal = ref(false);
 const showModalMerge = ref(false);
 const isPendingUpdate = ref(false);
+let done = false;
 
 const importedPostsStore = useImportedPostsStore();
 const {
@@ -289,7 +290,6 @@ async function removePost() {
   }
 }
 
-let done = false;
 async function pollForUpdate() {
   if (done) return;
   isPendingUpdate.value = true;
