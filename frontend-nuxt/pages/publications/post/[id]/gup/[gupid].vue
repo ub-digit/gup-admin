@@ -316,9 +316,9 @@ async function handleSuccess() {
 }
 
 async function handleSuccessMerge() {
+  showModalMerge.value = false;
   const response = await removeImportedPost(item_row_id);
   fetchImportedPosts();
-  showModalMerge.value = false;
   $toast.success(t("messages.remove_success"));
   router.push({
     path: `/publications/post/${route.params.gupid}/gup/empty/tab/`,
