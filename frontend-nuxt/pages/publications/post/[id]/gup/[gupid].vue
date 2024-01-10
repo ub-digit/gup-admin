@@ -157,6 +157,8 @@ const showModalMerge = ref(false);
 const isPendingUpdate = ref(false);
 let done = false;
 
+console.log(config);
+
 const importedPostsStore = useImportedPostsStore();
 const {
   fetchImportedPostById,
