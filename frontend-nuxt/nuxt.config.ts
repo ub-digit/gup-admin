@@ -6,7 +6,7 @@ export default defineNuxtConfig({
     public: {
       API_GUP_BASE_URL_EDIT: "http://localhost:3010/publications/show/",
       API_GUP_BASE_URL_SHOW: "http://localhost:3010/publications/show/",
-      ENV: "test",
+      ENV: "development",
     },
     /*         server: {
           host: process.env.NUXT_HOST,
