@@ -65,7 +65,11 @@
       </div>
     </div>
     <div
-      v-if="!errorImportedPostById && (postsCompareMatrix || importedPostById)"
+      v-if="
+        !errorImportedPostById &&
+        (postsCompareMatrix || importedPostById) &&
+        !isPendingUpdate
+      "
       class="action-bar"
     >
       <div class="row pb-4 mt-4">
@@ -96,83 +100,42 @@
         </div>
       </div>
     </div>
-    <div v-if="!errorImportedPostById" class="duplicates">
-      <div class="row">
-        <div class="col-6">
-          <h3 class="mb-4">
-            {{ t("views.publications.post.result_list.header") }}
-          </h3>
-        </div>
-      </div>
 
-      <div class="row pb-4">
-        <div class="col-6">
-          <h4 class="mb-1 text-muted">
-            {{ t("views.publications.post.result_list_by_id.header") }}
-          </h4>
-          <div v-if="gupPostsById.data && !gupPostsById.data.length">
-            {{
-              t("views.publications.post.result_list.no_gup_posts_by_id_found")
-            }}
-          </div>
-          <div
-            v-else
-            :class="{ 'opacity-50': pendingGupPostsById }"
-            class="list-group list-group-flush border-bottom"
-          >
-            <PostRowGup
-              v-for="post in gupPostsById.data"
-              :post="post"
-              :refresh="$route.query"
-              :key="post.id"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-6">
-          <div class="row">
-            <div class="col">
-              <h4 class="mb-1 text-muted">
-                {{ t("views.publications.post.result_list_by_title.header") }}
-              </h4>
-            </div>
-            <div class="col-auto">
-              <Spinner v-if="pendingGupPostsByTitle" class="me-4" />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <label class="d-none" for="title-search">Sök på titel</label>
-              <input
-                id="title-search"
-                class="form-control mb-3"
-                type="search"
-                v-model="searchTitleStr"
-              />
-              <div v-if="gupPostsByTitle.data && !gupPostsByTitle.data.length">
-                {{
-                  t(
-                    "views.publications.post.result_list.no_gup_posts_by_title_found"
-                  )
-                }}
-              </div>
-              <div
-                v-else
-                :class="{ 'opacity-50': pendingGupPostsByTitle }"
-                class="list-group list-group-flush border-bottom"
-              >
-                <PostRowGup
-                  v-for="post in gupPostsByTitle.data"
-                  :post="post"
-                  :key="post.id"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="row">
+      <nav class="col-6">
+        <ul v-if="!isPendingUpdate" class="nav nav-tabs">
+          <li class="nav-item">
+            <NuxtLink
+              :to="{
+                name: 'publications-post-id-gup-gupid-tab',
+                query: $route.query,
+                params: {
+                  id: route.params.id,
+                  gupid: route.params.gupid,
+                },
+              }"
+              class="nav-link"
+              >Dubletter</NuxtLink
+            >
+          </li>
+          <li class="nav-item">
+            <NuxtLink
+              :to="{
+                name: 'publications-post-id-gup-gupid-tab-authors',
+                query: $route.query,
+                params: {
+                  id: route.params.id,
+                  gupid: route.params.gupid,
+                },
+              }"
+              class="nav-link"
+              >Personer</NuxtLink
+            >
+          </li>
+        </ul>
+        <!-- this is outlet for tab content -->
+        <NuxtPage v-if="!isPendingUpdate" />
+      </nav>
     </div>
   </div>
 </template>
@@ -192,6 +155,7 @@ const config = useRuntimeConfig();
 const showModal = ref(false);
 const showModalMerge = ref(false);
 const isPendingUpdate = ref(false);
+let done = false;
 
 const importedPostsStore = useImportedPostsStore();
 const {
@@ -294,16 +258,6 @@ if (
   ).first.value.title;
 }
 
-const debounceFn = useDebounceFn(() => {
-  if (importedPostById) {
-    fetchGupPostsByTitle(item_row_id, searchTitleStr.value);
-  }
-}, 500);
-
-watch(searchTitleStr, () => {
-  debounceFn();
-});
-
 async function merge() {
   if (selectedUser.value !== "") {
     const ok = confirm(t("messages.confirm_merge_in_gup"));
@@ -341,6 +295,7 @@ async function removePost() {
 }
 
 async function pollForUpdate() {
+  if (done) return;
   isPendingUpdate.value = true;
   await fetchImportedPostById(route.params.id);
   if (!importedPostById.value.pending) {
@@ -361,12 +316,12 @@ async function handleSuccess() {
 }
 
 async function handleSuccessMerge() {
+  showModalMerge.value = false;
   const response = await removeImportedPost(item_row_id);
   fetchImportedPosts();
-  showModalMerge.value = false;
   $toast.success(t("messages.remove_success"));
   router.push({
-    path: `/publications/post/${route.params.gupid}/gup/empty`,
+    path: `/publications/post/${route.params.gupid}/gup/empty/tab/`,
     query: { ...route.query },
   });
 }
@@ -404,8 +359,8 @@ async function editPost() {
   }
 }
 
-onMounted(() => {
-  searchTitleStr.value = item_row_title;
+onUnmounted(() => {
+  done = true;
 });
 
 const isRemoveDisabled = computed(() => {
@@ -419,13 +374,19 @@ const showCompareView = computed(() => {
     return true;
   }
 });
-
-if (route.params.id) {
-  await fetchGupPostsById(route.params.id);
-}
 </script>
 
 <style lang="scss" scoped>
+.nav-item {
+  .nav-link {
+    &.router-link-active {
+      color: #495057;
+      background-color: #fff;
+      border-color: #dee2e6 #dee2e6 #fff;
+    }
+  }
+}
+
 .col {
 }
 </style>

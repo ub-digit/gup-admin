@@ -2,7 +2,7 @@
   <div>
     <NuxtLink
       :to="{
-        name: 'publications-post-id-gup-gupid',
+        name: 'publications-post-id-gup-gupid-tab',
         query: $route.query,
         params: { id: post.id, gupid: 'empty' },
       }"

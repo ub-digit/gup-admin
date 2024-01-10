@@ -154,6 +154,58 @@ defmodule GupAdmin.Resource.Search do
     api_key = System.get_env("GUP_INDEX_MANAGER_API_KEY")
     url = "#{base_url}/publications/#{publication["id"]}?api_key=#{api_key}"
     HTTPoison.delete(url, [{"Content-Type", "application/json"}])
+  end
 
+  def search_departments(%{"term" => term, "year" => year}) do
+    query = %{
+      "query" => %{
+        "bool" => %{
+          "must" => [
+            %{
+              "query_string" => %{
+                "default_operator" => "AND",
+                "fields" => ["name^15"],
+                "query" => term
+              }
+            },
+            %{
+              "range" => %{
+                "start_year" => %{
+                  "lte" => year
+                }
+              }
+            },
+            %{
+              "bool" => %{
+                "should" => [
+                  %{
+                    "range" => %{
+                      "end_year" => %{
+                        "gte" => year
+                      }
+                    }
+                  },
+                  %{
+                    "bool" => %{
+                      "must_not" => %{
+                        "exists" => %{
+                          "field" => "end_year"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+
+
+
+    {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), "departments", [], query)
+    hits
+    |> Enum.map(fn dep -> Map.get(dep, "_source") end)
   end
 end
