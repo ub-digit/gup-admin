@@ -68,7 +68,7 @@ const {
 let config = useRuntimeConfig();
 
 const handleClickedPerson = (author, index) => {
-  if (config.public.ENV === "production") return;
+  if (!config.public.ALLOW_AUTHOR_EDIT) return;
   selectedAuthor.value = author;
   selectedAuthorIndex.value = index;
   showModalAuthor.value = true;
@@ -124,7 +124,7 @@ function handleMoveDown(author, index) {
 }
 
 function handleRemovePerson(author, index) {
-  if (config.public.ENV === "production") return;
+  if (!config.public.ALLOW_AUTHOR_EDIT) return;
   authors.value.splice(index, 1);
 }
 
