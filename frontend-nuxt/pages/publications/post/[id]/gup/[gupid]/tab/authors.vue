@@ -65,8 +65,10 @@ const {
   errorPostsCompareMatrix,
   pendingComparePost,
 } = storeToRefs(comparePostsStore);
+let config = useRuntimeConfig();
 
 const handleClickedPerson = (author, index) => {
+  if (config.public.ENV === "production") return;
   selectedAuthor.value = author;
   selectedAuthorIndex.value = index;
   showModalAuthor.value = true;
@@ -122,6 +124,7 @@ function handleMoveDown(author, index) {
 }
 
 function handleRemovePerson(author, index) {
+  if (config.public.ENV === "production") return;
   authors.value.splice(index, 1);
 }
 
