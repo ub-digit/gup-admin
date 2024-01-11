@@ -119,5 +119,7 @@ defmodule GupAdmin.Resource.Search.Query do
   def escape_characters(term) do
     term
     |> String.replace("/", "\\/")
+    |> String.replace("(", "\\(")
+    |> String.replace(")", "\\)")
   end
 end
