@@ -19,6 +19,16 @@ $link-shade-percentage: 20% !default;
 $link-hover-decoration: underline;
 $utilities-border-colors: blue;
 
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 7px;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
 @import "~/node_modules/bootstrap/scss/variables";
 @import "~/node_modules/bootstrap/scss/variables-dark.scss";
 @import "~/node_modules/bootstrap/scss/maps";
