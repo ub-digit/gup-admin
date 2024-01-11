@@ -1,7 +1,8 @@
 <template>
   <div v-if="title_second" class="col-2"></div>
+  <!-- extra div for spacing -->
   <div class="col">
-    <div class="post-title" :class="{ 'do-not-truncate': isExpanded_first }">
+    <div class="post-title">
       <a
         v-if="props.url_first"
         :href="props.url_first"
@@ -9,32 +10,18 @@
         class="no-color"
       >
         <h2 class="mb-0">
-          <span v-if="!isExpanded_first">{{
-            title_truncated(props.title_first)
-          }}</span
-          ><span v-else>{{ props.title_first }}</span>
+          <span v-html="props.title_first"></span>
         </h2>
       </a>
       <span v-else>
         <h2 class="mb-0">
-          <span v-if="!isExpanded_first">{{
-            title_truncated(props.title_first)
-          }}</span
-          ><span v-else>{{ props.title_first }}</span>
+          <span v-html="props.title_first"></span>
         </h2>
       </span>
-
-      <a
-        href="javascript:void(0)"
-        v-if="showToggle(props.title_first)"
-        @click.prevent="isExpanded_first = !isExpanded_first"
-        ><span v-if="isExpanded_first">- Visa mindre</span
-        ><span v-else>+ Visa mer</span></a
-      >
     </div>
   </div>
   <div v-if="title_second" class="col">
-    <div class="post-title" :class="{ 'do-not-truncate': isExpanded_second }">
+    <div class="post-title">
       <a
         v-if="props.url_second"
         :href="props.url_second"
@@ -42,28 +29,14 @@
         class="no-color"
       >
         <h2 class="mb-0">
-          <span v-if="!isExpanded_second">{{
-            title_truncated(props.title_second)
-          }}</span
-          ><span v-else>{{ props.title_second }}</span>
+          <span v-html="props.title_second"></span>
         </h2>
       </a>
       <span v-else>
         <h2 class="mb-0">
-          <span v-if="!isExpanded_second">{{
-            title_truncated(props.title_second)
-          }}</span
-          ><span v-else>{{ props.title_second }}</span>
+          <span v-html="props.title_second"></span>
         </h2>
       </span>
-
-      <a
-        href="javascript:void(0)"
-        v-if="showToggle(props.title_second)"
-        @click.prevent="isExpanded_second = !isExpanded_second"
-        ><span v-if="isExpanded_second">- Visa mindre</span
-        ><span v-else>+ Visa mer</span></a
-      >
     </div>
   </div>
 </template>
@@ -95,6 +68,9 @@ const title_truncated = (title) => {
 
 <style lang="scss" scoped>
 .post-title {
+  overflow-y: scroll;
+  resize: vertical;
+  height: 112px;
   .no-color {
     color: rgb(51, 51, 51);
   }
