@@ -56,7 +56,7 @@ defmodule GupAdmin.Resource.Search.Query do
               %{
                 "query_string" => %{
                   "fields" => ["publication_identifiers.identifier_value.keyword"],
-                  "query" => escape_characters(identifier["identifier_value"]),
+                  "query" => "\"" <> identifier["identifier_value"] <> "\"" #escape_characters(identifier["identifier_value"]),
                 }
               },
               %{

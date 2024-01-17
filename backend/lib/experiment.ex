@@ -376,4 +376,216 @@ defmodule Experiment do
           end
         end
 
+
+        def get_compare_data() do
+           data = [
+            %{
+              "display_label" => "publication_id",
+              "display_type" => "string",
+              "first" => %{"value" => "85168001924"},
+              "visibility" => "never"
+            },
+            %{
+              "display_label" => "id",
+              "display_type" => "string",
+              "first" => %{"value" => "scopus_85168001924"},
+              "visibility" => "never"
+            },
+            %{
+              "display_label" => "title",
+              "display_type" => "title",
+              "first" => %{
+                "value" => %{
+                  "title" => "Restoring areas after a radioactive fallout: A multidisciplinary study on decontamination",
+                  "url" => ""
+                }
+              },
+              "visibility" => "always"
+            },
+            %{
+              "display_type" => "meta",
+              "first" => %{
+                "value" => %{
+                  "attended" => %{"display_label" => "attended", "value" => false},
+                  "created_at" => %{
+                    "display_label" => "created_at",
+                    "value" => "2023-08-23T07:09:56"
+                  },
+                  "source" => %{"display_label" => "source", "value" => "scopus"},
+                  "updated_at" => %{
+                    "display_label" => "updated_at",
+                    "value" => "2023-08-23T07:09:56"
+                  },
+                  "version_created_by" => %{
+                    "display_label" => "version_created_by",
+                    "value" => nil
+                  },
+                  "version_updated_by" => %{
+                    "display_label" => "version_updated_by",
+                    "value" => nil
+                  }
+                }
+              },
+              "visibility" => "always"
+            },
+            %{
+              "display_label" => "publication_type_label",
+              "display_type" => "string",
+              "first" => %{"value" => "Artikel i vetenskaplig tidskrift"},
+              "visibility" => "always"
+            },
+            %{
+              "display_label" => "sourcetitle",
+              "display_type" => "string",
+              "first" => %{"value" => "Journal of Environmental Radioactivity"},
+              "visibility" => "always"
+            },
+            %{
+              "display_label" => "pubyear",
+              "display_type" => "string",
+              "first" => %{"value" => "2023"},
+              "visibility" => "always"
+            },
+            %{
+              "display_label" => "sourceissue_sourcepages_sourcevolume",
+              "display_type" => "sourceissue_sourcepages_sourcevolume",
+              "first" => %{
+                "value" => %{
+                  "sourceissue" => "missing",
+                  "sourcepages" => "missing",
+                  "sourcevolume" => "270"
+                }
+              },
+              "visibility" => "always"
+            },
+            %{
+              "display_label" => "authors",
+              "display_type" => "authors",
+              "first" => %{
+                "value" => [
+                  %{"name" => "Rääf Christopher"},
+                  %{"name" => "Martinsson Johan"},
+                  %{"name" => "Eriksson Mats"},
+                  %{"name" => "Ewald Jens"},
+                  %{"name" => "Javid Reza G."},
+                  %{"name" => "Hjellström Martin"},
+                  %{"name" => "Isaksson Mats"},
+                  %{"name" => "Rasmussen Joel"},
+                  %{"name" => "Sterner Thomas"},
+                  %{"name" => "Finck Robert"}
+                ]
+              },
+              "visibility" => "always"
+            },
+            %{
+              "data_type" => :identifier,
+              "display_label" => "doi",
+              "display_type" => "url",
+              "first" => %{
+                "value" => %{
+                  "display_title" => "10.1016/j.jenvrad.2023.107268",
+                  "url" => "https://dx.doi.org/10.1016/j.jenvrad.2023.107268"
+                }
+              },
+              "visibility" => "always"
+            },
+            %{
+              "data_type" => :identifier,
+              "display_label" => "scopus",
+              "display_type" => "url",
+              "first" => %{
+                "value" => %{
+                  "display_title" => "85168001924",
+                  "url" => "https://www.scopus.com/record/display.uri?eid=2-s2.0-85168001924&origin=resultslist"
+                }
+              },
+              "visibility" => "always"
+            },
+            %{
+              "data_type" => :identifier,
+              "display_label" => "isiid",
+              "display_type" => "url",
+              "first" => %{"value" => %{"display_title" => nil, "url" => nil}},
+              "visibility" => "always"
+            },
+            %{
+              "data_type" => :identifier,
+              "display_label" => "pubmed",
+              "display_type" => "url",
+              "first" => %{"value" => %{"display_title" => nil, "url" => nil}},
+              "visibility" => "always"
+            },
+            %{
+              "data_type" => :identifier,
+              "display_label" => "libris",
+              "display_type" => "url",
+              "first" => %{"value" => %{"display_title" => nil, "url" => nil}},
+              "visibility" => "always"
+            },
+            %{
+              "data_type" => :identifier,
+              "display_label" => "handle",
+              "display_type" => "url",
+              "first" => %{"value" => %{"display_title" => nil, "url" => nil}},
+              "visibility" => "always"
+            }
+          ]
+
+
+          %{
+            "display_type" => "meta",
+            "first" => %{
+              "value" => %{
+                "attended" => %{"display_label" => "attended", "value" => false},
+                "created_at" => %{
+                  "display_label" => "created_at",
+                  "value" => "2023-08-23T07:09:56"
+                },
+                "source" => %{"display_label" => "source", "value" => "SCOPUS"},
+                "updated_at" => %{
+                  "display_label" => "updated_at",
+                  "value" => "2023-08-23T07:09:56"
+                },
+                "version_created_by" => %{
+                  "display_label" => "version_created_by",
+                  "value" => nil
+                },
+                "version_updated_by" => %{
+                  "display_label" => "version_updated_by",
+                  "value" => nil
+                }
+              }
+            },
+            "visibility" => "always"
+          }
+          data
+        end
+
+        def transform_compare_data(data) when is_bitstring(data) do
+          data |> String.downcase()
+        end
+
+        def transform_compare_data(data) when is_map(data) do
+          data
+          |> Enum.map(fn {k, v} -> {k, transform_compare_data(v)} end)
+          |> Map.new()
+        end
+
+        def transform_compare_data(data) when is_list(data) do
+          data
+          |> Enum.map(fn item -> transform_compare_data(item) end)
+        end
+
+        def transform_compare_data(data) do
+          data
+        end
+
+
+        def equal?(first, second) do
+          first === second
+        end
+
+
+
+
   end
