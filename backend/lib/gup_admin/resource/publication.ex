@@ -165,7 +165,11 @@ defmodule GupAdmin.Resource.Publication do
       data = post_1
       |> Enum.with_index()
       |> Enum.map(fn {first, index} ->
-        compare(first, Enum.at(post_2, index))
+        second = Enum.at(post_2, index)
+        {compare_data_1, compare_data_2} = {transform_compare_data(first), transform_compare_data(second)}
+        first
+        |> Map.put("second", second["first"])
+        |> Map.put("diff", compare(compare_data_1, compare_data_2))
       end)
       |> clear_irrelevant_identifiers()
       {:ok, %{"data" => data}}
@@ -193,25 +197,27 @@ defmodule GupAdmin.Resource.Publication do
     |> Enum.map(fn row -> Map.delete(row, "data_type") end)
   end
 
-  def compare(%{"display_type" => "meta"} = first, %{"display_type" => "meta"} = second) do
-    case first === second do
-      true -> Map.put(first, "second", Map.get(second, "first"))
-      false -> Map.put(first, "second", Map.get(second, "first"))
-    end
+  def compare(%{"display_type" => "meta"} = _first, %{"display_type" => "meta"} = _second), do: false
+  def compare(%{"display_type" => "title"} = _first, %{"display_type" => "title"} = _second), do: false
+  def compare(first, second), do: !(first === second)
+
+  def transform_compare_data(data) when is_bitstring(data) do
+    data |> String.downcase()
   end
 
-  def compare(%{"display_type" => "title"} = first, %{"display_type" => "title"} = second) do
-    case first === second do
-      true -> Map.put(first, "second", Map.get(second, "first"))
-      false -> Map.put(first, "second", Map.get(second, "first"))
-    end
+  def transform_compare_data(data) when is_map(data) do
+    data
+    |> Enum.map(fn {k, v} -> {k, transform_compare_data(v)} end)
+    |> Map.new()
   end
 
-  def compare(first, second) do
-    case first === second do
-      true -> Map.put(first, "second", Map.get(second, "first")) |> Map.put("diff", false)
-      false -> Map.put(first, "second", Map.get(second, "first")) |> Map.put("diff", true)
-    end
+  def transform_compare_data(data) when is_list(data) do
+    data
+    |> Enum.map(fn item -> transform_compare_data(item) end)
+  end
+
+  def transform_compare_data(data) do
+    data
   end
 
   def row(container, value, mutual) do
@@ -239,7 +245,6 @@ defmodule GupAdmin.Resource.Publication do
         "display_label" => label
       }
   end
-
 
   def get_author_block(author) do
     person = Map.get(author, "person")
