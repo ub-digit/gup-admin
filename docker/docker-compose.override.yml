@@ -5,7 +5,7 @@ services:
     image: docker.ub.gu.se/gup-frontend:${GIT_REVISION_GUP}
     restart: always
     ports:
-      - "3010:8080"
+      - ${GUP_FRONTEND_PORT}:8080
     environment:
       - EMBER_ENVIRONMENT=development
       - GUP_SERVICE_PORT=${GUP_BACKEND_PORT}
@@ -31,17 +31,13 @@ services:
       - GUP_DB_PASSWORD=${GUP_DB_PASSWORD}
       - GUP_SOLR_HOST=solr
       - GUP_SOLR_PORT=8983
-      - GUP_TEST_USER_API_KEY=${GUP_TEST_USER_API_KEY}
+      - GUP_TEST_USER_API_KEY=${GUP_API_KEY}
       - GUP_SCOPUS_API_KEY=${GUP_SCOPUS_API_KEY}
       - GUP_GUPEA_OAI_BASE_URL=${GUP_GUPEA_OAI_BASE_URL}
       - GUP_GUPEA_OAI_METADATA_PREFIX=${GUP_GUPEA_OAI_METADATA_PREFIX}
       - GUP_GUPEA_OAI_IDENTIFIER_PREFIX=${GUP_GUPEA_OAI_IDENTIFIER_PREFIX}
       - GUP_SMTP_SERVER=${GUP_SMTP_SERVER}
       - GUP_SMTP_PORT=${GUP_SMTP_PORT}
-      - GUP_SMTP_AUTH=${GUP_SMTP_AUTH}
-      - GUP_SMTP_USERNAME=${GUP_SMTP_USERNAME}
-      - GUP_SMTP_PASSWORD=${GUP_SMTP_PASSWORD}
-      - GUP_SMTP_ENABLE_STARTTLS_AUTO=${GUP_SMTP_ENABLE_STARTTLS_AUTO}
       - GUP_MAIL_FROM=${GUP_MAIL_FROM}
       - GUP_MAIL_TO=${GUP_MAIL_TO}
       - GUP_REPOSITORY_NAME=${GUP_REPOSITORY_NAME}
@@ -50,18 +46,17 @@ services:
       - GUP_MQ_BASE_URL=${GUP_MQ_BASE_URL}
       - GUP_MQ_API_KEY=${GUP_MQ_API_KEY}
       - GUP_PUBLIC_BASE_URL=${GUP_PUBLIC_BASE_URL}
-      - GUP_HOSTNAME=${BACKEND_OAI_HOSTNAME}
-      - LOG_FILE_PATH=${LOG_FILE_PATH}
+      - GUP_HOSTNAME=${GUP_HOSTNAME}
       - GUP_MAX_NUMBER_OF_POSTS_RIS=${GUP_MAX_NUMBER_OF_POSTS_RIS}
-      - GUP_ADMIN_BASE_URL=${GUP_ADMIN_BASE_URL}
+      - GUP_ADMIN_BASE_URL=${GUP_INDEX_MANAGER_URL}
       - GUP_ADMIN_API_KEY=${GUP_ADMIN_API_KEY}
       - GUP_ADMIN_PUBLICATION_ENABLE=${GUP_ADMIN_PUBLICATION_ENABLE}
       - GUP_ADMIN_PERSON_ENABLE=${GUP_ADMIN_PERSON_ENABLE}
+      - GUP_ADMIN_ENABLE=${GUP_ADMIN_ENABLE}
     ports:
       - ${GUP_BACKEND_PORT}:${GUP_RAILS_PORT}
     volumes:
       - ${GUP_BACKEND_UPLOADS_VOLUME_SOURCE}:/opt/gup-uploads
-      - ${GUP_BACKEND_SITEMAPS_DIR}:/apps/gup/sitemaps
   gup-db:
     image: postgres:9.4
     environment:
@@ -69,7 +64,7 @@ services:
       - POSTGRES_USER=${GUP_DB_USER}
       - POSTGRES_PASSWORD=${GUP_DB_PASSWORD}
     volumes:
-      - ./db-data-gup-seed:/docker-entrypoint-initdb.d
+      - ./gup-db-initdb.d:/docker-entrypoint-initdb.d
       - ${GUP_DB_VOLUME_SOURCE}:/var/lib/postgresql/data
   solr:
     image: docker.ub.gu.se/gup-solr:${GIT_REVISION_GUP}

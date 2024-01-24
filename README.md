@@ -15,7 +15,7 @@ docker-compose exec gup-backend bash -c 'bundle exec rake gup_admin:index_all_pu
 
 ## index WoS Posts
 
-docker-compose exec gup-imports bash -c 'python3 /data/scripts/put-scopus-docs.py -d /data/files/scopus-normalised/testdata -u $GUP_ADMIN_BASE_URL -a $GUP_ADMIN_API_KEY'
+docker-compose exec gup-imports bash -c 'python3 /data/scripts/put-scopus-docs.py -d /data/files/scopus-normalised/testdata -u http://index-manager-backend:4000 -a $GUP_INDEX_MANAGER_API_KEY'
 
 ##
 

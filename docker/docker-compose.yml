@@ -1,5 +1,5 @@
 version: "3.7"
-
+name: 'gup-admin'
 services:
   admin-frontend:
     image: docker.ub.gu.se/gup-admin-frontend:${GIT_REVISION}${PLATFORM}
@@ -44,7 +44,7 @@ services:
       POSTGRES_DB: "${ADMIN_DB_NAME}"
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - "${DB_INIT_PATH}:/docker-entrypoint-initdb.d"
+      - "./admin-db-initdb.d:/docker-entrypoint-initdb.d"
     ports:
       - "127.0.0.1:5433:5432"
     restart: always
@@ -56,22 +56,21 @@ services:
       POSTGRES_DB: "${INDEX_MANAGER_DB_NAME}"
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - "${DB_INDEX_MANAGER_INIT_PATH}:/docker-entrypoint-initdb.d"
+      - "./index-manager-db-initdb.d:/docker-entrypoint-initdb.d"
     ports:
       - "127.0.0.1:5443:5432"
     restart: always
   elasticsearch:
     image: docker.ub.gu.se/gup-admin-elasticsearch:${GIT_REVISION}${PLATFORM}
     ports:
-      - "127.0.0.1:9200:9200"
-      - "127.0.0.1:9300:9300"
+      - ${ELASTICSEARCH_PORT}:9200
     environment:
       - xpack.security.enabled=false
       - "discovery.type=single-node"
       - ES_JAVA_OPTS=-Xms1g -Xmx1g
     restart: always
   gup-imports:
-    image: docker.ub.gu.se/gup-imports:${GUP_IMPORTS_IMAGE_VERSION}
+    image: docker.ub.gu.se/gup-imports:${GIT_REVISION_GUP_IMPORTS}
     restart: always
     environment:
       - GUP_ADMIN_BASE_URL=${GUP_INDEX_MANAGER_URL}
