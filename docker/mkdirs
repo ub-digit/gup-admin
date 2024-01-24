@@ -1,0 +1,18 @@
+#!/bin/bash
+
+mkdir scopus-files
+mkdir scopus-files/testdata
+mkdir data/gup-admin
+mkdir data/gup-admin/database
+mkdir data/gup-admin/elastic
+mkdir data/gup-afmin/gup-index-manager-database
+mkdir admin-db-initdb.d
+mkdir index-manager-db-initdb.d
+mkdir gup-db-initdb.d
+mkdir gup-uploads
+mkdir gup-postgres-data
+mkdir gup-solr-data
+mkdir gup-solr-data/guresearch
+mkdir gup-solr-data/journals
+mkdir gup-solr-data/people
+mkdir gup-solr-data/publications
