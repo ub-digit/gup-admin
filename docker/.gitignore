@@ -1,2 +1,3 @@
 /pgdata/
 /scopus-files/*
+*-initdb.d
