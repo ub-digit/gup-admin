@@ -28,7 +28,6 @@
           </li>
           <li v-if="post.authors.length > 3">
             + {{ post.authors.length - 3 }}
-            {{ t("views.publications.post.more_authors") }}
           </li>
         </ul>
       </small>
