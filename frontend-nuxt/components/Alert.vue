@@ -11,19 +11,24 @@
   </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { onUnmounted } from "vue";
 const { t, getLocale } = useI18n();
-const props = defineProps(["url", "interval"]);
+
+interface Props {
+  url: string;
+  interval: number;
+}
+const props = defineProps<Props>();
+
 const pollInterval = props.interval ? props.interval * 1000 : 60000;
-let pollingID = null;
 const { data, pending, error, refresh } = await useFetch(props.url);
 
 const message = computed(() => {
   return data.value[getLocale()];
 });
 
-pollingID = setInterval(() => {
+let pollingID: ReturnType<typeof setInterval> = setInterval(() => {
   refresh();
 }, pollInterval);
 
