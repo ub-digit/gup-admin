@@ -73,7 +73,7 @@
   </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { useDebounceFn } from "@vueuse/core";
 import { useComparePostsStore } from "~/store/compare_posts";
 import { useImportedPostsStore } from "~/store/imported_posts";
@@ -82,7 +82,7 @@ import { storeToRefs } from "pinia";
 const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
-const searchTitleStr = ref(null);
+const searchTitleStr: Ref<string> = ref("");
 
 const comparePostsStore = useComparePostsStore();
 const importedPostsStore = useImportedPostsStore();
@@ -114,8 +114,8 @@ watch(searchTitleStr, () => {
   debounceFn();
 });
 
-let item_row_title = null;
-let item_row_id = null;
+let item_row_title: string = "";
+let item_row_id: string = "";
 if (
   route.params.gupid !== "empty" &&
   route.params.gupid !== "error" &&
@@ -145,7 +145,7 @@ onMounted(() => {
 });
 
 if (route.params.id) {
-  await fetchGupPostsById(route.params.id);
+  await fetchGupPostsById(route.params.id as string);
 }
 </script>
 
