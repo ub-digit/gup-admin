@@ -37,7 +37,7 @@
   </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { useImportedPostsStore } from "~/store/imported_posts";
 import { storeToRefs } from "pinia";
 
