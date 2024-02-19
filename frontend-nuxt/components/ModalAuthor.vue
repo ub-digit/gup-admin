@@ -1,4 +1,4 @@
-<script setup>
+<script lang="ts" setup>
 import { useDebounceFn } from "@vueuse/core";
 
 import { ref } from "vue";
@@ -14,9 +14,9 @@ const searchDepartmentStr = ref("");
 const suggestedDepartments = ref([]);
 const searchNameStr = ref("");
 const suggestedAuthors = ref([]);
-const authorSelected = ref(null);
-const searchDepartmentsInput = ref(null);
-const searchAuthorsInput = ref(null);
+const authorSelected: Ref<object | null> = ref(null);
+const searchDepartmentsInput = ref("");
+const searchAuthorsInput = ref("");
 
 // Set initial value here to get the watch to trigger on first render
 onMounted(() => {
@@ -44,9 +44,11 @@ const debounceFn = useDebounceFn(() => {
 }, 500);
 
 function handleDepartmentRemove(department) {
-  const index = authorSelected.value.departments.indexOf(department);
-  if (index > -1) {
-    authorSelected.value.departments.splice(index, 1);
+  if (authorSelected.value) {
+    const index = authorSelected.value.departments.indexOf(department);
+    if (index > -1) {
+      authorSelected.value.departments.splice(index, 1);
+    }
   }
   focusInput(searchDepartmentsInput);
 }
@@ -57,18 +59,21 @@ function handleAuthorSelected(author) {
 }
 
 function handleDepartmentSelected(department) {
-  authorSelected.value.departments.push(department);
+  if (authorSelected.value) {
+    authorSelected.value.departments.push(department);
+  }
   focusInput(searchDepartmentsInput);
 }
 
 function handleClearAuthorSelected() {
-  authorSelected.value = null;
+  authorSelected.value = {};
   searchDepartmentStr.value = "";
 }
 
 // remove already selected departments from suggestions
 const suggestedDepartmentsFiltered = computed(() => {
   return suggestedDepartments.value.filter((department) => {
+    if (!authorSelected.value) return true;
     return !authorSelected.value.departments.some(
       (selectedDepartment) => selectedDepartment.id === department.id
     );
@@ -85,7 +90,7 @@ const fetchSuggestedDepartments = async (name) => {
   suggestedDepartments.value = data;
 };
 
-const fetchSuggestedAuthors = async (name) => {
+const fetchSuggestedAuthors = async (name: string) => {
   const response = await fetch(
     `/api/persons/suggest?name=${encodeURIComponent(name)}`
   );
@@ -144,7 +149,7 @@ const focusInput = (val) => {
                     <button
                       class="btn btn-light btn-sm"
                       v-if="authorSelected"
-                      @click="handleClearAuthorSelected(null)"
+                      @click="handleClearAuthorSelected()"
                     >
                       Rensa
                     </button>
