@@ -140,7 +140,7 @@
   </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { useDebounceFn } from "@vueuse/core";
 import { useComparePostsStore } from "~/store/compare_posts";
 import { useImportedPostsStore } from "~/store/imported_posts";
@@ -197,7 +197,10 @@ if (route.params.gupid === "empty" || route.params.gupid === "error") {
     comparePostsStore.$reset();
   }
 } else {
-  await fetchComparePostsMatrix(route.params.id, route.params.gupid);
+  await fetchComparePostsMatrix(
+    route.params.id as string,
+    route.params.gupid as string
+  );
   if (
     errorPostsCompareMatrix &&
     errorPostsCompareMatrix.value &&
@@ -221,10 +224,10 @@ if (route.params.gupid === "empty" || route.params.gupid === "error") {
 }
 
 // because of the array structure in data make sure to pick up the properties needed
-let item_row_title = null;
-let item_row_id = null;
-let item_row_source = null;
-let item_row_publication_id = null;
+let item_row_title: string | null = null;
+let item_row_id: string | null = null;
+let item_row_source: string | null = null;
+let item_row_publication_id: string | null = null;
 if (
   route.params.gupid !== "empty" &&
   route.params.gupid !== "error" &&
