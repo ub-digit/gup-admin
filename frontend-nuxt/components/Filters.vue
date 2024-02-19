@@ -110,7 +110,7 @@
   </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { useFilterStore } from "~/store/filter";
 import { onMounted, onUnmounted } from "vue";
 import { usePublicationTypesStore } from "~/store/publication_types";
@@ -122,7 +122,7 @@ const { t, getLocale } = useI18n();
 const publicationTypesStore = usePublicationTypesStore();
 const { fetchPublicationTypes } = publicationTypesStore;
 const { publicationTypes, pendingPublicationTypes } = storeToRefs(
-  publicationTypesStore,
+  publicationTypesStore
 );
 await fetchPublicationTypes({ lang: getLocale() });
 
