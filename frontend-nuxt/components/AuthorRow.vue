@@ -37,7 +37,7 @@
           <div>
             <!-- wrap in div for block display -->
             <button
-              @click="$emit('handleMoveUp', author, index)"
+              @click="$emit('handleMoveUp', (author, index))"
               class="btn btn-sm float-end"
             >
               <font-awesome-icon icon="fa-solid fa-chevron-up" />
@@ -45,7 +45,7 @@
           </div>
           <div>
             <button
-              @click="$emit('handleMoveDown', author, index)"
+              @click="$emit('handleMoveDown', (author, index))"
               class="btn btn-sm float-end"
             >
               <font-awesome-icon icon="fa-solid fa-chevron-down" />
@@ -57,16 +57,20 @@
   </li>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import fontawesome from "~/plugins/fontawesome";
+interface Props {
+  author: Object;
+  index: Number;
+}
+const props = defineProps<Props>();
 
-const props = defineProps({ author: Object, index: Number });
-const emit = defineEmits([
-  "handleClickedPerson",
-  "handleRemovePerson",
-  "handleMoveUp",
-  "handleMoveDown",
-]);
+const emit = defineEmits<{
+  (e: "handleClickedPerson", author: Object, index: number): void;
+  (e: "handleRemovePerson", author: Object, index: number): void;
+  (e: "handleMoveUp", author: Object, index: number): void;
+  (e: "handleMoveDown", author: Object, index: number): void;
+}>();
 </script>
 
 <style lang="scss" scoped></style>
