@@ -12,8 +12,15 @@
   </div>
 </template>
 
-<script setup>
-const props = defineProps(["error"]);
+<script lang="ts" setup>
+interface Props {
+  error: {
+    code: number;
+    message: string;
+  };
+}
+
+const props = defineProps<Props>();
 </script>
 
 <style lang="scss" scoped></style>
