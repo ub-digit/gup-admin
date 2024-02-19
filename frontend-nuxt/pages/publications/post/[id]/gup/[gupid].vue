@@ -201,6 +201,7 @@ if (route.params.gupid === "empty" || route.params.gupid === "error") {
   if (
     errorPostsCompareMatrix &&
     errorPostsCompareMatrix.value &&
+    errorPostsCompareMatrix.value.error &&
     errorPostsCompareMatrix.value.error.code
   ) {
     console.log(errorPostsCompareMatrix.value.error);
