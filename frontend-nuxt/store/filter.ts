@@ -59,6 +59,7 @@ export const useFilterStore = defineStore("filterStore", () => {
   watch(
     filters,
     () => {
+      // maybe solvable with some kind of type-conversion
       router.push({ query: { ...route.query, ...filters } });
     },
     { deep: true }
