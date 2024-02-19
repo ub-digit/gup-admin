@@ -4,12 +4,12 @@ export const useComparePostsStore = defineStore("comparePostsStore", () => {
   const gupPostsByTitle = ref([]);
   const gupPostsById = ref([]);
   const postsCompareMatrix = ref({});
-  const errorPostsCompareMatrix = ref(null);
-  const pendingComparePost = ref(null);
-  const pendingGupPostsByTitle = ref(null);
-  const pendingGupPostsById = ref(null);
+  const errorPostsCompareMatrix = ref({});
+  const pendingComparePost = ref(false);
+  const pendingGupPostsByTitle = ref(false);
+  const pendingGupPostsById = ref(false);
 
-  async function fetchComparePostsMatrix(importedID, GupID) {
+  async function fetchComparePostsMatrix(importedID: string, GupID: string) {
     try {
       pendingComparePost.value = true;
       const { data, error } = await useFetch("/api/post_gup_compare", {
@@ -28,7 +28,7 @@ export const useComparePostsStore = defineStore("comparePostsStore", () => {
     }
   }
 
-  async function fetchGupPostsById(id) {
+  async function fetchGupPostsById(id: string) {
     try {
       pendingGupPostsById.value = true;
       const { data, error } = await useFetch("/api/posts_duplicates", {
@@ -42,7 +42,7 @@ export const useComparePostsStore = defineStore("comparePostsStore", () => {
     }
   }
 
-  async function fetchGupPostsByTitle(id, title) {
+  async function fetchGupPostsByTitle(id: string, title: string) {
     try {
       pendingGupPostsByTitle.value = true;
       const { data, error } = await useFetch("/api/posts_duplicates", {
@@ -73,7 +73,7 @@ export const useComparePostsStore = defineStore("comparePostsStore", () => {
     }
   } */
 
-  function paramsSerializer(params) {
+  function paramsSerializer(params: any) {
     //https://github.com/unjs/ufo/issues/62
     if (!params) {
       return;
@@ -90,8 +90,8 @@ export const useComparePostsStore = defineStore("comparePostsStore", () => {
     // manually reset store here
     // gupPostsByTitle.value = []
     // gupPostsById.value = []
-    postsCompareMatrix.value = null;
-    errorPostsCompareMatrix.value = null;
+    postsCompareMatrix.value = {};
+    errorPostsCompareMatrix.value = {};
     //   pendingGupPostsByTitle.value = null;
     // pendingGupPostsById.value = null;
   }
