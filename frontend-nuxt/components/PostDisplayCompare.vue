@@ -303,14 +303,10 @@
   </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import Spinner from "./Spinner.vue";
 
 const config = useRuntimeConfig();
-
-const gupURL = (id) => {
-  return `${config.public.API_GUP_BASE_URL_SHOW}${id}`;
-};
 
 const { t } = useI18n();
 const props = defineProps(["dataMatrix"]);
