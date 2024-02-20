@@ -85,12 +85,6 @@
             id="year"
             :placeholder="t('views.publications.form.year_select_label')"
           />
-          <!--                   <select class="form-select mb-3" v-model="filters.year" :aria-label="t('views.publications.form.year_select_label')">
-                    <option value="" selected>{{ t('views.publications.form.year_select_label') }}</option>
-                    <option v-for="year in yearsArray" :value="year" :key="year">
-                      {{ year }}
-                    </option>
-                  </select> -->
         </div>
       </div>
 
