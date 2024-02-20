@@ -312,7 +312,7 @@ const { t } = useI18n();
 const props = defineProps(["dataMatrix"]);
 const numberOfAuthorsToList = 3;
 
-const getDate = (date) => {
+const getDate = (date: string) => {
   let temp_date = new Date(date);
   return (
     temp_date.getFullYear() +
