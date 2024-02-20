@@ -41,7 +41,7 @@
   </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 const props = defineProps([
   "title_first",
   "title_second",
@@ -51,13 +51,13 @@ const props = defineProps([
 const maxLength = 130;
 let isExpanded_first = ref(false);
 let isExpanded_second = ref(false);
-const showToggle = (title) => {
+const showToggle = (title: string) => {
   if (title && title.length > maxLength) {
     return true;
   }
   return false;
 };
-const title_truncated = (title) => {
+const title_truncated = (title: string) => {
   let resStr = title.substring(0, maxLength);
   if (title > resStr) {
     resStr = resStr + "...";
