@@ -4,7 +4,7 @@ export const usePublicationTypesStore = defineStore(
   "publicationTypesStore",
   () => {
     const publicationTypes = ref([]);
-    const pendingPublicationTypes = ref(null);
+    const pendingPublicationTypes = ref(false);
 
     async function fetchPublicationTypes(params) {
       try {
