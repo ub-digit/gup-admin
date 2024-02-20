@@ -2,6 +2,8 @@ import { defineStore } from "pinia";
 import { useFilterStore } from "~/store/filter";
 import { storeToRefs } from "pinia";
 import nuxtStorage from "nuxt-storage";
+import type { Publication, Author, Identifier } from "~/types/Publication";
+
 export const useImportedPostsStore = defineStore("importedPostsStore", () => {
   const filterStore = useFilterStore();
   const { filters } = storeToRefs(filterStore);
@@ -16,13 +18,15 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     "xjostw",
   ]);
   const selectedUser = ref("");
-  const importedPosts = ref([]);
+  const importedPosts: Ref<Publication[]> = ref([]);
+  const numberOfImportedPostsTotal = ref(0);
+  const numberOfImportedPostsShowing = ref(0);
   const importedPostById = ref(null);
   const errorImportedPostById = ref(null);
-  const pendingImportedPosts = ref(null);
-  const pendingImportedPostById = ref(null);
-  const pendingRemoveImportedPost = ref(null);
-  const pendingCreateImportedPostInGup = ref(null);
+  const pendingImportedPosts = ref(false);
+  const pendingImportedPostById = ref(false);
+  const pendingRemoveImportedPost = ref(false);
+  const pendingCreateImportedPostInGup = ref(false);
 
   if (
     nuxtStorage &&
@@ -81,7 +85,10 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
           paramsSerializer(options.params);
         },
       });
-      importedPosts.value = data.value;
+      // maybe move to meta-object in response from backend
+      numberOfImportedPostsTotal.value = data.value.total;
+      numberOfImportedPostsShowing.value = data.value.showing;
+      importedPosts.value = data.value.data;
     } catch (error) {
       console.log("Something went wrong: fetchImportedPosts");
     } finally {
@@ -155,6 +162,8 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     createImportedPostInGup,
     importedPosts,
     fetchImportedPosts,
+    numberOfImportedPostsTotal,
+    numberOfImportedPostsShowing,
     pendingImportedPosts,
     removeImportedPost,
     mergePosts,
