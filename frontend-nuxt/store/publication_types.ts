@@ -10,11 +10,14 @@ export const usePublicationTypesStore = defineStore(
     async function fetchPublicationTypes(params: { lang: string }) {
       try {
         pendingPublicationTypes.value = true;
-        const { data, error } = await useFetch("/api/publication_types", {
-          params,
-        });
+        const { data: publication_types, error } = await useFetch(
+          "/api/publication_types",
+          {
+            params,
+          }
+        );
         pendingPublicationTypes.value = false;
-        publicationTypes.value = data.value.publication_types;
+        publicationTypes.value = publication_types.value;
       } catch (error) {
         console.log("Something went wrong: fetchPublicationTypes");
       }
