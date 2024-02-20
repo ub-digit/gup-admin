@@ -75,7 +75,7 @@
           </select>
         </div>
         <div class="col-4">
-          <label for="title" class="form-label visually-hidden">{{
+          <label for="year" class="form-label visually-hidden">{{
             t("views.publications.form.year_select_label")
           }}</label>
           <input
