@@ -35,7 +35,7 @@
   </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 const props = defineProps(["post", "refresh"]);
 const { t } = useI18n();
 
