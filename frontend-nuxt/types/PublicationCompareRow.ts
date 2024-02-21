@@ -3,7 +3,7 @@ interface PublicationCompareRow {
   display_label: string;
   display_type: string;
   first: any;
-  second: any;
+  second?: any;
   visibility: string;
 }
 
