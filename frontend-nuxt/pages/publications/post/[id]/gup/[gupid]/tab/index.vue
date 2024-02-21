@@ -119,15 +119,14 @@ let item_row_id: string = "";
 if (
   route.params.gupid !== "empty" &&
   route.params.gupid !== "error" &&
-  postsCompareMatrix.value &&
-  postsCompareMatrix.value.data
+  postsCompareMatrix.value
 ) {
-  item_row_title = postsCompareMatrix?.value?.data?.find(
+  item_row_title = postsCompareMatrix?.value?.find(
     (item) => item.display_label === "title"
-  ).first.value.title;
-  item_row_id = postsCompareMatrix.value.data.find(
+  )?.first.value.title;
+  item_row_id = postsCompareMatrix.value.find(
     (item) => item.display_label === "id"
-  ).first.value;
+  )?.first.value;
 } else if (
   (route.params.gupid === "empty" || route.params.gupid === "error") &&
   importedPostById.value
