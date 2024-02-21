@@ -34,7 +34,7 @@
         <Spinner v-if="pendingComparePost" class="me-4" />
         <PostDisplayCompare
           v-if="postsCompareMatrix"
-          :dataMatrix="postsCompareMatrix.data"
+          :dataMatrix="postsCompareMatrix"
         />
       </div>
       <div v-else class="row">
@@ -149,15 +149,13 @@ import { storeToRefs } from "pinia";
 const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
-const searchTitleStr = ref(null);
+//const searchTitleStr = ref("");
 const { $toast } = useNuxtApp();
 const config = useRuntimeConfig();
 const showModal = ref(false);
 const showModalMerge = ref(false);
 const isPendingUpdate = ref(false);
 let done = false;
-
-console.log(config);
 
 const importedPostsStore = useImportedPostsStore();
 const {
@@ -231,21 +229,20 @@ let item_row_publication_id: string | null = null;
 if (
   route.params.gupid !== "empty" &&
   route.params.gupid !== "error" &&
-  postsCompareMatrix.value &&
-  postsCompareMatrix.value.data
+  postsCompareMatrix.value
 ) {
-  item_row_publication_id = postsCompareMatrix.value.data.find(
+  item_row_publication_id = postsCompareMatrix.value.find(
     (item) => item.display_label === "publication_id"
-  ).first.value;
-  item_row_id = postsCompareMatrix.value.data.find(
+  )?.first.value;
+  item_row_id = postsCompareMatrix.value.find(
     (item) => item.display_label === "id"
-  ).first.value;
-  item_row_source = postsCompareMatrix.value.data.find(
+  )?.first.value;
+  item_row_source = postsCompareMatrix.value.find(
     (item) => item.display_type === "meta"
-  ).first.value.source.value;
-  item_row_title = postsCompareMatrix.value.data.find(
+  )?.first.value.source.value;
+  item_row_title = postsCompareMatrix.value.find(
     (item) => item.display_label === "title"
-  ).first.value.title;
+  )?.first.value.title;
 } else if (
   (route.params.gupid === "empty" || route.params.gupid === "error") &&
   importedPostById.value
@@ -269,8 +266,8 @@ async function merge() {
     const ok = confirm(t("messages.confirm_merge_in_gup"));
     if (ok) {
       const res = await mergePosts(
-        route.params.id,
-        route.params.gupid,
+        route.params.id as string,
+        route.params.gupid as string,
         selectedUser.value
       );
       if (res) {
