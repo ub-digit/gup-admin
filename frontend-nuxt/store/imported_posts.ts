@@ -3,6 +3,11 @@ import { useFilterStore } from "~/store/filter";
 import { storeToRefs } from "pinia";
 import nuxtStorage from "nuxt-storage";
 import type { Publication, Author, Identifier } from "~/types/Publication";
+import type { PublicationCompareRow } from "~/types/PublicationCompareRow";
+interface ImportedPostType {
+  data: PublicationCompareRow[];
+  pending: string | null;
+}
 
 export const useImportedPostsStore = defineStore("importedPostsStore", () => {
   const filterStore = useFilterStore();
@@ -21,7 +26,7 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
   const importedPosts: Ref<Publication[]> = ref([]);
   const numberOfImportedPostsTotal = ref(0);
   const numberOfImportedPostsShowing = ref(0);
-  const importedPostById: Ref<Publication | null> = ref(null);
+  const importedPostById: Ref<ImportedPostType | null> = ref(null);
   const errorImportedPostById = ref(null);
   const pendingImportedPosts = ref(false);
   const pendingImportedPostById = ref(false);
@@ -45,7 +50,7 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     }
   });
 
-  async function createImportedPostInGup(id: number, user: string) {
+  async function createImportedPostInGup(id: string, user: string) {
     try {
       pendingCreateImportedPostInGup.value = true;
       const { data, error } = await useFetch(`/api/post_to_gup/${id}/`, {
@@ -104,7 +109,7 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     { deep: true }
   );
 
-  async function fetchImportedPostById(id: number) {
+  async function fetchImportedPostById(id: string) {
     try {
       importedPostById.value = null;
       pendingImportedPostById.value = true;
@@ -123,7 +128,7 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     }
   }
 
-  async function removeImportedPost(id) {
+  async function removeImportedPost(id: string) {
     try {
       pendingRemoveImportedPost.value = true;
       const { data, error } = await useFetch(`/api/post_imported/${id}`, {
