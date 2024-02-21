@@ -187,9 +187,9 @@ const {
 } = storeToRefs(comparePostsStore);
 
 if (route.params.gupid === "empty" || route.params.gupid === "error") {
-  await fetchImportedPostById(route.params.id);
+  await fetchImportedPostById(route.params.id as string);
   if (!errorImportedPostById.value) {
-    if (importedPostById.value.pending) {
+    if (importedPostById?.value?.pending) {
       await pollForUpdate();
     }
     comparePostsStore.$reset();
@@ -223,7 +223,7 @@ if (route.params.gupid === "empty" || route.params.gupid === "error") {
 
 // because of the array structure in data make sure to pick up the properties needed
 let item_row_title: string | null = null;
-let item_row_id: string | null = null;
+let item_row_id: string = "";
 let item_row_source: string | null = null;
 let item_row_publication_id: string | null = null;
 if (
@@ -245,20 +245,21 @@ if (
   )?.first.value.title;
 } else if (
   (route.params.gupid === "empty" || route.params.gupid === "error") &&
-  importedPostById.value
+  importedPostById.value &&
+  importedPostById.value.data
 ) {
   item_row_publication_id = importedPostById.value.data.find(
     (item) => item.display_label === "publication_id"
-  ).first.value;
+  )?.first.value;
   item_row_id = importedPostById.value.data.find(
     (item) => item.display_label === "id"
-  ).first.value;
+  )?.first.value;
   item_row_source = importedPostById.value.data.find(
     (item) => item.display_type === "meta"
-  ).first.value.source.value;
+  )?.first.value.source.value;
   item_row_title = importedPostById.value.data.find(
     (item) => item.display_label === "title"
-  ).first.value.title;
+  )?.first.value.title;
 }
 
 async function merge() {
@@ -300,7 +301,7 @@ async function removePost() {
 async function pollForUpdate() {
   if (done) return;
   isPendingUpdate.value = true;
-  await fetchImportedPostById(route.params.id);
+  await fetchImportedPostById(route.params.id as string);
   if (!importedPostById.value.pending) {
     isPendingUpdate.value = false;
     return;
