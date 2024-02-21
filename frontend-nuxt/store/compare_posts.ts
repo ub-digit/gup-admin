@@ -1,9 +1,11 @@
 import { defineStore } from "pinia";
+import type { Publication, Author, Identifier } from "~/types/Publication";
+import type { PublicationCompareRow } from "~/types/PublicationCompareRow";
 
 export const useComparePostsStore = defineStore("comparePostsStore", () => {
-  const gupPostsByTitle = ref([]);
-  const gupPostsById = ref([]);
-  const postsCompareMatrix = ref({});
+  const gupPostsByTitle: Ref<Publication[]> = ref([]);
+  const gupPostsById: Ref<Publication[]> = ref([]);
+  const postsCompareMatrix: Ref<PublicationCompareRow[]> = ref([]);
   const errorPostsCompareMatrix = ref({});
   const pendingComparePost = ref(false);
   const pendingGupPostsByTitle = ref(false);
@@ -18,7 +20,7 @@ export const useComparePostsStore = defineStore("comparePostsStore", () => {
       if (data.value.error) {
         throw data.value;
       }
-      postsCompareMatrix.value = data.value;
+      postsCompareMatrix.value = data.value.data as PublicationCompareRow[];
     } catch (error) {
       errorPostsCompareMatrix.value = error;
       console.log(errorPostsCompareMatrix.value);
@@ -34,7 +36,7 @@ export const useComparePostsStore = defineStore("comparePostsStore", () => {
       const { data, error } = await useFetch("/api/posts_duplicates", {
         params: { id: id, mode: "id" },
       });
-      gupPostsById.value = data.value;
+      gupPostsById.value = data.value as Publication[];
     } catch (error) {
       console.log("Something went wrong: fetchGupPostsById");
     } finally {
@@ -48,7 +50,7 @@ export const useComparePostsStore = defineStore("comparePostsStore", () => {
       const { data, error } = await useFetch("/api/posts_duplicates", {
         params: { id: id, title: title, mode: "title" },
       });
-      gupPostsByTitle.value = data.value;
+      gupPostsByTitle.value = data.value as Publication[];
     } catch (error) {
       console.log("Something went wrong: fetchGupPostsByTitle");
     } finally {
@@ -90,7 +92,7 @@ export const useComparePostsStore = defineStore("comparePostsStore", () => {
     // manually reset store here
     // gupPostsByTitle.value = []
     // gupPostsById.value = []
-    postsCompareMatrix.value = {};
+    postsCompareMatrix.value = [];
     errorPostsCompareMatrix.value = {};
     //   pendingGupPostsByTitle.value = null;
     // pendingGupPostsById.value = null;

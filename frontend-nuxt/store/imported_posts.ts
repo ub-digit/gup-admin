@@ -21,7 +21,7 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
   const importedPosts: Ref<Publication[]> = ref([]);
   const numberOfImportedPostsTotal = ref(0);
   const numberOfImportedPostsShowing = ref(0);
-  const importedPostById = ref(null);
+  const importedPostById: Ref<Publication | null> = ref(null);
   const errorImportedPostById = ref(null);
   const pendingImportedPosts = ref(false);
   const pendingImportedPostById = ref(false);
@@ -45,7 +45,7 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     }
   });
 
-  async function createImportedPostInGup(id, user) {
+  async function createImportedPostInGup(id: number, user: string) {
     try {
       pendingCreateImportedPostInGup.value = true;
       const { data, error } = await useFetch(`/api/post_to_gup/${id}/`, {
@@ -63,7 +63,7 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     }
   }
 
-  async function mergePosts(id, gupid, user) {
+  async function mergePosts(id: string, gupid: string, user: string) {
     try {
       const { data, error } = await useFetch(`/api/merge_posts/`, {
         params: { id: id, gupid: gupid, user: user },
@@ -104,7 +104,7 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     { deep: true }
   );
 
-  async function fetchImportedPostById(id) {
+  async function fetchImportedPostById(id: number) {
     try {
       importedPostById.value = null;
       pendingImportedPostById.value = true;
