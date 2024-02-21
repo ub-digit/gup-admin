@@ -33,12 +33,31 @@ defmodule GupIndexManager.Resource.Index.Config do
                 "lowercase",
                 "autocomplete_filter"
               ]
+            },
+            "custom_lowercase_analyzer" => %{
+              "tokenizer" => "keyword",
+              "filter" => ["lowercase"]
             }
           }
         }
       },
       "mappings" => %{
         "properties" => %{
+            "publication_identifiers" => %{
+              "properties" => %{
+                "identifier_value" => %{
+                  "type" => "text",
+                  "analyzer" => "custom_lowercase_analyzer",
+                  "fields" => %{
+                    "keyword" => %{
+                      "type" => "keyword",
+                      "ignore_above" => 256
+                    }
+                  }
+                }
+              }
+            },
+
           "title" => %{
             "fields" => %{
               "sort" => %{
