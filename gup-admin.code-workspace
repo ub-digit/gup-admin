@@ -17,7 +17,8 @@
     },
     {
     "path": "db"
-    }
+    },
+{"path": "scripts"}
     ],
     "settings": {}
     }

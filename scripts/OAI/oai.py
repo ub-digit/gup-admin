@@ -33,7 +33,7 @@ class OAIProvider:
         
         self.get_header(header, pub_id)
         metadata = ET.SubElement(record, "metadata")
-        self.get_metadata(metadata)
+        return ET.tostring(self.get_metadata(metadata))
         
         print(ET.tostring(root))
         return root
@@ -59,6 +59,7 @@ class OAIProvider:
         self.get_language(mods)
         self.get_authors(mods)
         self.get_notes(mods)
+        return mods
         
         
     def get_identifiers(self, mods):
@@ -85,12 +86,10 @@ class OAIProvider:
         name = ET.SubElement(mods, "name")
         name.set("type", "personal")
         if authority:
-            print(authority)
             name.set("authority", "gu")
         fname = ET.SubElement(name, "namePart")
         fname.set("type", "given")
         fname.text = person["first_name"]
-        
         lname = ET.SubElement(name, "namePart")
         lname.set("type", "family")
         lname.text = person["last_name"]
@@ -119,7 +118,6 @@ class OAIProvider:
         affiliation.text = affiliation_source["department"]
         
     def get_identifier_by_name(self, identifiers, type):
-        print(identifiers)
         for identifier in identifiers:
             if "type" in identifier and identifier["type"] == type:
                 return identifier["value"]
@@ -159,16 +157,16 @@ class OAIProvider:
     
     def set_mods(self, metadata):
         mods = ET.SubElement(metadata, "mods")
-        mods.set("version", "3.7")
-        mods.set("xsi:schemaLocation", "http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd")
+        # mods.set("version", "3.7")
+        # mods.set("xsi:schemaLocation", "http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd")
         return mods
-    
-if len(sys.argv) < 2:
-    print("Please provide a publication id")
-    sys.exit()
-else:
-    a = OAIProvider()
-    pub_id = sys.argv[1]
-    a.get_oai_data(pub_id)
+if __name__ == "__main__":   
+    if len(sys.argv) < 2:
+        print("Please provide a publication id")
+        sys.exit()
+    else:
+        a = OAIProvider()
+        pub_id = sys.argv[1]
+        print(a.get_oai_data(pub_id))
 
 
