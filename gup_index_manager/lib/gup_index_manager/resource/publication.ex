@@ -2,7 +2,6 @@ defmodule GupIndexManager.Resource.Publication do
   alias GupIndexManager.Model.Publication
   alias GupIndexManager.Resource.Index
 
-  @spec create_or_update(map) :: {:error, any} | %{optional(<<_::40, _::_*8>>) => any}
   def create_or_update(data) do
     id =  Map.get(data, "id")
     attended = Map.get(data, "attended", :attended_not_found)

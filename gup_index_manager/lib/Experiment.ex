@@ -66,4 +66,15 @@ defmodule Experiment do
     IO.inspect("NO AFFILIATIONS")
 
   end
+
+  @hello "Hello"
+
+  def testar(@hello) do
+    IO.inspect("Yes it works")
+  end
+
+  def testar(_) do
+    IO.inspect("All others")
+  end
+
 end
