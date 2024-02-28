@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import type { Publication, Author, Identifier } from "~/types/Publication";
 import type { PublicationCompareRow } from "~/types/PublicationCompareRow";
+import { zPublicationCompareRowArray } from "~/types/PublicationCompareRow";
 
 export const useComparePostsStore = defineStore("comparePostsStore", () => {
   const gupPostsByTitle: Ref<Publication[]> = ref([]);
@@ -20,7 +21,9 @@ export const useComparePostsStore = defineStore("comparePostsStore", () => {
       if (data.value.error) {
         throw data.value;
       }
-      postsCompareMatrix.value = data.value.data as PublicationCompareRow[];
+      postsCompareMatrix.value = zPublicationCompareRowArray.parse(
+        data.value.data
+      );
     } catch (error) {
       errorPostsCompareMatrix.value = error;
       console.log(errorPostsCompareMatrix.value);
