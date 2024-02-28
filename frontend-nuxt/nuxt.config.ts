@@ -16,6 +16,7 @@ export default defineNuxtConfig({
 
   typescript: {
     shim: false,
+    strict: true,
   },
   modules: ["@pinia/nuxt", "@vueuse/nuxt"],
   build: {
