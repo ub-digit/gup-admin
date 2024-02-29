@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const zString = z.object({ value: z.string() });
+const zString = z.object({ value: z.string().nullable() });
 const zAuthor = z.object({
   value: z.array(z.object({ name: z.string() })),
 });
