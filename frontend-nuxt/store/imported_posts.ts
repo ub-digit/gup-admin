@@ -3,6 +3,7 @@ import { useFilterStore } from "~/store/filter";
 import { storeToRefs } from "pinia";
 import nuxtStorage from "nuxt-storage";
 import type { Publication } from "~/types/Publication";
+import { zPublicationArray } from "~/types/Publication";
 import type { ImportedPostType } from "~/types/PublicationCompareRow";
 import { zImportedPostType } from "~/types/PublicationCompareRow";
 
@@ -88,9 +89,13 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
         },
       });
       // maybe move to meta-object in response from backend
-      numberOfImportedPostsTotal.value = data.value.total;
-      numberOfImportedPostsShowing.value = data.value.showing;
-      importedPosts.value = data.value.data;
+      importedPosts.value = zPublicationArray.parse(data.value).data;
+      numberOfImportedPostsTotal.value = zPublicationArray.parse(
+        data.value
+      ).total;
+      numberOfImportedPostsShowing.value = zPublicationArray.parse(
+        data.value
+      ).showing;
     } catch (error) {
       console.log("Something went wrong: fetchImportedPosts");
     } finally {

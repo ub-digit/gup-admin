@@ -225,10 +225,10 @@ if (route.params.gupid === "empty" || route.params.gupid === "error") {
 }
 
 // because of the array structure in data make sure to pick up the properties needed
-let item_row_title: string | null = null;
+let item_row_title: string | null | undefined = null;
 let item_row_id: string = "";
 let item_row_source: string | null = null;
-let item_row_publication_id: string | null = null;
+let item_row_publication_id: string | null | undefined = null;
 if (
   route.params.gupid !== "empty" &&
   route.params.gupid !== "error" &&
