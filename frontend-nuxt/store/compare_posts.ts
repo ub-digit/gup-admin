@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ZodError } from "zod";
-import type { Publication, Author, Identifier } from "~/types/Publication";
+import { zPublicationArray, type Publication } from "~/types/Publication";
 import type { PublicationCompareRow } from "~/types/PublicationCompareRow";
 import { zPublicationCompareRowArray } from "~/types/PublicationCompareRow";
 
@@ -51,7 +51,7 @@ export const useComparePostsStore = defineStore("comparePostsStore", () => {
       const { data, error } = await useFetch("/api/posts_duplicates", {
         params: { id: id, mode: "id" },
       });
-      gupPostsById.value = data.value as Publication[];
+      gupPostsById.value = zPublicationArray.parse(data.value).data;
     } catch (error) {
       console.log("Something went wrong: fetchGupPostsById");
     } finally {
