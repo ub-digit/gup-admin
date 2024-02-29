@@ -53,7 +53,11 @@ export const useComparePostsStore = defineStore("comparePostsStore", () => {
       });
       gupPostsById.value = zPublicationArray.parse(data.value).data;
     } catch (error) {
-      console.log("Something went wrong: fetchGupPostsById");
+      if (error instanceof ZodError) {
+        console.log("Something went wrong: fetchGupPostsById fron zod");
+      } else {
+        console.log("Something went wrong: fetchGupPostsById");
+      }
     } finally {
       pendingGupPostsById.value = false;
     }
@@ -65,9 +69,13 @@ export const useComparePostsStore = defineStore("comparePostsStore", () => {
       const { data, error } = await useFetch("/api/posts_duplicates", {
         params: { id: id, title: title, mode: "title" },
       });
-      gupPostsByTitle.value = data.value as Publication[];
+      gupPostsByTitle.value = zPublicationArray.parse(data.value).data;
     } catch (error) {
-      console.log("Something went wrong: fetchGupPostsByTitle");
+      if (error instanceof ZodError) {
+        console.log("Something went wrong: fetchGupPostsByTitle from Zod");
+      } else {
+        console.log("Something went wrong: fetchGupPostsByTitle");
+      }
     } finally {
       pendingGupPostsByTitle.value = false;
     }
