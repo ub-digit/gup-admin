@@ -202,18 +202,21 @@ if (route.params.gupid === "empty" || route.params.gupid === "error") {
   if (
     errorPostsCompareMatrix &&
     errorPostsCompareMatrix.value &&
-    errorPostsCompareMatrix.value.error &&
-    errorPostsCompareMatrix.value.error.code
+    errorPostsCompareMatrix.value.code
   ) {
-    console.log(errorPostsCompareMatrix.value.error);
-    if (errorPostsCompareMatrix.value.error.code === "404") {
+    if (errorPostsCompareMatrix.value.code === "666") {
       router.push({
-        path: `/publications/post/${route.params.id}/gup/empty`,
+        path: `/publications/post/${route.params.id}/gup/error/tab`,
         query: { ...route.query },
       });
-    } else if (errorPostsCompareMatrix.value.error.code === "200") {
+    } else if (errorPostsCompareMatrix.value.code === "404") {
       router.push({
-        path: `/publications/post/${route.params.id}/gup/error`,
+        path: `/publications/post/${route.params.id}/gup/empty/tab`,
+        query: { ...route.query },
+      });
+    } else if (errorPostsCompareMatrix.value.code === "200") {
+      router.push({
+        path: `/publications/post/${route.params.id}/gup/error/tab`,
         query: { ...route.query },
       });
       comparePostsStore.$reset();
