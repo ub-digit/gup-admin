@@ -47,7 +47,7 @@
                 type="search"
                 v-model="searchTitleStr"
               />
-              <div v-if="gupPostsByTitle.data && !gupPostsByTitle.data.length">
+              <div v-if="gupPostsByTitle && !gupPostsByTitle.length">
                 {{
                   t(
                     "views.publications.post.result_list.no_gup_posts_by_title_found"
@@ -60,7 +60,7 @@
                 class="list-group list-group-flush border-bottom"
               >
                 <PostRowGup
-                  v-for="post in gupPostsByTitle.data"
+                  v-for="post in gupPostsByTitle"
                   :post="post"
                   :key="post.id"
                 />

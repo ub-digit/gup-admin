@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const zAuthor = z.object({ id: z.number().nullable(), name: z.string() });
 
-const zPublication = z.object({
+export const zPublication = z.object({
   title: z.string(),
   id: z.string(),
   source: z.string().nullable(),
