@@ -28,6 +28,7 @@ export const useComparePostsStore = defineStore("comparePostsStore", () => {
     } catch (error) {
       // specific error handling for zoderror
       if (error instanceof ZodError) {
+        // construct new error Lars format
         const new_error = { code: "666", message: "ZodError", data: error };
         errorPostsCompareMatrix.value = new_error;
         console.log(errorPostsCompareMatrix.value);
