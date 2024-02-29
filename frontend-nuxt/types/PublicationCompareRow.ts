@@ -44,13 +44,19 @@ const zSource = z.object({
   }),
 });
 const zPublicationCompareRow = z.object({
-  diff: z.boolean(),
+  diff: z.boolean().optional(),
   display_label: z.string().optional(),
   display_type: z.string(),
   first: z.union([zString, zAuthor, zUrl, zTitle, zMeta, zSource]),
-  second: z.union([zString, zAuthor, zUrl, zTitle, zMeta, zSource]).optional(),
+  second: z.optional(z.union([zString, zAuthor, zUrl, zTitle, zMeta, zSource])),
   visibility: z.string(),
 });
 
+export const zImportedPostType = z.object({
+  data: z.array(zPublicationCompareRow),
+  pending: z.string().nullable(),
+});
+
 export const zPublicationCompareRowArray = z.array(zPublicationCompareRow);
+export type ImportedPostType = z.infer<typeof zImportedPostType>;
 export type PublicationCompareRow = z.infer<typeof zPublicationCompareRow>;
