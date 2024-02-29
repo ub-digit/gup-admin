@@ -1,3 +1,4 @@
+import { ZodError } from "zod";
 import { defineStore } from "pinia";
 import { useFilterStore } from "~/store/filter";
 import { storeToRefs } from "pinia";
@@ -97,7 +98,11 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
         data.value
       ).showing;
     } catch (error) {
-      console.log("Something went wrong: fetchImportedPosts");
+      if (error instanceof ZodError) {
+        console.log("Something went wrong: fetchImportedPosts from Zod");
+      } else {
+        console.log("Something went wrong: fetchImportedPosts");
+      }
     } finally {
       pendingImportedPosts.value = false;
     }
@@ -148,7 +153,7 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     }
   }
 
-  function paramsSerializer(params) {
+  function paramsSerializer(params: any) {
     //https://github.com/unjs/ufo/issues/62
     if (!params) {
       return;
