@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { ZodError } from "zod";
 import type { Publication, Author, Identifier } from "~/types/Publication";
 import type { PublicationCompareRow } from "~/types/PublicationCompareRow";
 import { zPublicationCompareRowArray } from "~/types/PublicationCompareRow";
@@ -25,9 +26,19 @@ export const useComparePostsStore = defineStore("comparePostsStore", () => {
         data.value.data
       );
     } catch (error) {
-      errorPostsCompareMatrix.value = error;
-      console.log(errorPostsCompareMatrix.value);
-      console.log("Something went wrong: fetchCompareGupPostWithImported");
+      // specific error handling for zoderror
+      if (error instanceof ZodError) {
+        const new_error = { code: "666", message: "ZodError", data: error };
+        errorPostsCompareMatrix.value = new_error;
+        console.log(errorPostsCompareMatrix.value);
+        console.log(
+          "Something went wrong: fetchCompareGupPostWithImported from Zod"
+        );
+      } else {
+        errorPostsCompareMatrix.value = error.error;
+        console.log(errorPostsCompareMatrix.value);
+        console.log("Something went wrong: fetchCompareGupPostWithImported");
+      }
     } finally {
       pendingComparePost.value = false;
     }
