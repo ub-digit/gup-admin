@@ -12,4 +12,8 @@ defmodule GupIndexManagerWeb.PersonController do
     end
   end
 
+  def index(conn, _params) do
+    json conn, Persons.get_all()
+  end
+
 end

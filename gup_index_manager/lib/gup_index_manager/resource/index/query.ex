@@ -34,4 +34,12 @@ defmodule GupIndexManager.Resource.Index.Query do
       ]
     end)
   end
+
+  def get_all_persons do
+    %{
+      "query" => %{
+        "match_all" => %{}
+      }
+    }
+  end
 end

@@ -26,7 +26,7 @@ defmodule GupIndexManager.Resource.Persons do
   def set_meta(db_data, data) do
     data
     |> Map.put("id", Map.get(db_data, :id))
-    |> Map.put("created_at", Map.get(db_data, :created_at))
+    |> Map.put("created_at", Map.get(db_data, :inserted_at))
     |> Map.put("updated_at", Map.get(db_data, :updated_at))
   end
 
@@ -34,30 +34,25 @@ defmodule GupIndexManager.Resource.Persons do
     existing_data
     |> List.first()
     |> Map.get("_source")
-    |> merge_names(new_data)
-    |> merge_departments(new_data)
-    |> merge_identifiers(new_data)
+    |> merge_lists(new_data, "names")
+    |> merge_lists(new_data, "departments")
+    |> merge_lists(new_data, "identifiers")
     |> create_or_update_person()
     %{"message" => "Person updated"}
   end
 
   def update_index(%{"id" => id} = data) do
+    IO.inspect(data, label: "data")
     data = Map.put(data, "id", id)
     Index.update_record(data, id, Index.get_persons_index())
   end
 
-  def merge_names(existing_data, new_data) do
-    names = Enum.uniq(existing_data["names"] ++ new_data["names"])
-    Map.put(existing_data, "names", names)
+  def merge_lists(existing_data, new_data, list_name) do
+    res = Enum.uniq(Map.get(existing_data, list_name, []) ++ Map.get(new_data, list_name, []))
+    Map.put(existing_data, list_name, res)
   end
 
-  def merge_departments(existing_data, new_data) do
-    departments = Enum.uniq(existing_data["departments"] ++ new_data["departments"])
-    Map.put(existing_data, "departments", departments)
-  end
-
-  def merge_identifiers(existing_data, new_data) do
-    identifiers = Enum.uniq(existing_data["identifiers"] ++ new_data["identifiers"])
-    Map.put(existing_data, "identifiers", identifiers)
+  def get_all do
+    Search.get_all_persons()
   end
 end
