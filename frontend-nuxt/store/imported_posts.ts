@@ -2,12 +2,9 @@ import { defineStore } from "pinia";
 import { useFilterStore } from "~/store/filter";
 import { storeToRefs } from "pinia";
 import nuxtStorage from "nuxt-storage";
-import type { Publication, Author, Identifier } from "~/types/Publication";
-import type { PublicationCompareRow } from "~/types/PublicationCompareRow";
-interface ImportedPostType {
-  data: PublicationCompareRow[];
-  pending: string | null;
-}
+import type { Publication } from "~/types/Publication";
+import type { ImportedPostType } from "~/types/PublicationCompareRow";
+import { zImportedPostType } from "~/types/PublicationCompareRow";
 
 export const useImportedPostsStore = defineStore("importedPostsStore", () => {
   const filterStore = useFilterStore();
@@ -118,7 +115,7 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
       if (data.value.error) {
         throw data.value;
       }
-      importedPostById.value = data.value;
+      importedPostById.value = zImportedPostType.parse(data.value);
     } catch (error) {
       console.log(error);
       errorImportedPostById.value = error;
