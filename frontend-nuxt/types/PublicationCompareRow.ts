@@ -53,6 +53,4 @@ const zPublicationCompareRow = z.object({
 });
 
 export const zPublicationCompareRowArray = z.array(zPublicationCompareRow);
-type PublicationCompareRow = z.infer<typeof zPublicationCompareRow>;
-
-export type { PublicationCompareRow };
+export type PublicationCompareRow = z.infer<typeof zPublicationCompareRow>;
