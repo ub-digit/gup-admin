@@ -1,5 +1,11 @@
-export interface PublicationType {
-  publication_type_code: string;
-  publication_type_id: number;
-  publication_type_label: string;
-}
+import { z } from "zod";
+
+export const zPublicationType = z.object({
+  publication_type_code: z.string(),
+  publication_type_id: z.number(),
+  publication_type_label: z.string(),
+});
+
+export const zPublicationCompareArray = z.array(zPublicationType);
+
+export type PublicationType = z.infer<typeof zPublicationType>;
