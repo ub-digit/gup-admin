@@ -225,27 +225,27 @@ if (route.params.gupid === "empty" || route.params.gupid === "error") {
 }
 
 // because of the array structure in data make sure to pick up the properties needed
-let item_row_title: string | null | undefined = null;
+let item_row_title: string | null = null;
 let item_row_id: string = "";
+let item_row_publication_id: string | null = null;
 let item_row_source: string | null = null;
-let item_row_publication_id: string | null | undefined = null;
 if (
   route.params.gupid !== "empty" &&
   route.params.gupid !== "error" &&
   postsCompareMatrix.value
 ) {
-  item_row_publication_id = postsCompareMatrix.value.find(
+  item_row_publication_id = postsCompareMatrix?.value?.find(
     (item) => item.display_label === "publication_id"
-  )?.first.value;
-  item_row_id = postsCompareMatrix.value.find(
+  )?.first?.value as string;
+  item_row_id = postsCompareMatrix?.value?.find(
     (item) => item.display_label === "id"
-  )?.first.value;
-  item_row_source = postsCompareMatrix.value.find(
+  )?.first?.value as string;
+  item_row_source = postsCompareMatrix?.value.find(
     (item) => item.display_type === "meta"
-  )?.first.value.source.value;
-  item_row_title = postsCompareMatrix.value.find(
+  )?.first?.value?.source?.value;
+  item_row_title = postsCompareMatrix?.value?.find(
     (item) => item.display_label === "title"
-  )?.first.value.title;
+  )?.first?.value?.title;
 } else if (
   (route.params.gupid === "empty" || route.params.gupid === "error") &&
   importedPostById.value &&
@@ -253,16 +253,16 @@ if (
 ) {
   item_row_publication_id = importedPostById.value.data.find(
     (item) => item.display_label === "publication_id"
-  )?.first.value;
+  )?.first.value as string;
   item_row_id = importedPostById.value.data.find(
     (item) => item.display_label === "id"
-  )?.first.value;
-  item_row_source = importedPostById.value.data.find(
+  )?.first.value as string;
+  item_row_source = importedPostById?.value?.data?.find(
     (item) => item.display_type === "meta"
-  )?.first.value.source.value;
-  item_row_title = importedPostById.value.data.find(
+  )?.first?.value?.source.value as string;
+  item_row_title = importedPostById?.value?.data?.find(
     (item) => item.display_label === "title"
-  )?.first.value.title;
+  )?.first?.value?.title as string;
 }
 
 async function merge() {
@@ -392,8 +392,5 @@ const showCompareView = computed(() => {
       border-color: #dee2e6 #dee2e6 #fff;
     }
   }
-}
-
-.col {
 }
 </style>
