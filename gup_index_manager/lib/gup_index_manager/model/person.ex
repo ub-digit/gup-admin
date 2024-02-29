@@ -14,14 +14,12 @@ defmodule GupIndexManager.Model.Person do
     |> cast(attrs, [:json])
     |> validate_required([:json])
   end
-
+  def find_by_id(id) when is_nil(id), do: %GupIndexManager.Model.Person{}
   def find_by_id(id) do
-    GupIndexManager.Model.Person
-    |> GupIndexManager.Repo.get_by(:id, id)
+    GupIndexManager.Repo.get(GupIndexManager.Model.Person, id)
     |> case do
       nil -> %GupIndexManager.Model.Person{}
       person -> person
-
     end
   end
 end
