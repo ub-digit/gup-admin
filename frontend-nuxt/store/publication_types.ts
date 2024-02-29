@@ -1,5 +1,9 @@
 import { defineStore } from "pinia";
-import type { PublicationType } from "~/types/PublicationType";
+import { ZodError } from "zod";
+import {
+  zPublicationCompareArray,
+  type PublicationType,
+} from "~/types/PublicationType";
 
 export const usePublicationTypesStore = defineStore(
   "publicationTypesStore",
@@ -16,10 +20,17 @@ export const usePublicationTypesStore = defineStore(
             params,
           }
         );
-        pendingPublicationTypes.value = false;
-        publicationTypes.value = publication_types.value;
+        publicationTypes.value = zPublicationCompareArray.parse(
+          publication_types.value
+        );
       } catch (error) {
-        console.log("Something went wrong: fetchPublicationTypes");
+        if (error instanceof ZodError) {
+          console.log("Something went wrong: fetchPublicationTypes from Zod");
+        } else {
+          console.log("Something went wrong: fetchPublicationTypes");
+        }
+      } finally {
+        pendingPublicationTypes.value = false;
       }
     }
 
