@@ -45,13 +45,7 @@ const {
   $importedReset,
 } = importedPostsStore;
 
-const {
-  importedPostById,
-  pendingImportedPostById,
-  pendingCreateImportedPostInGup,
-  errorImportedPostById,
-  selectedUser,
-} = storeToRefs(importedPostsStore);
+const { importedPostById } = storeToRefs(importedPostsStore);
 
 const comparePostsStore = useComparePostsStore();
 const { fetchGupPostsByTitle, fetchGupPostsById, fetchComparePostsMatrix } =
@@ -77,7 +71,7 @@ const handleClickedPerson = (author, index) => {
 const authors = ref([]);
 
 if (route.params.gupid !== "empty" && route.params.gupid !== "error") {
-  authors.value = postsCompareMatrix?.value?.data?.find(
+  authors.value = postsCompareMatrix?.value?.find(
     (item) => item.display_type === "authors"
   ).first.value;
 } else {
