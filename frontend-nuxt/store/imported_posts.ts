@@ -32,20 +32,16 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
   const pendingRemoveImportedPost = ref(false);
   const pendingCreateImportedPostInGup = ref(false);
 
-  if (
-    nuxtStorage &&
-    nuxtStorage.localStorage &&
-    nuxtStorage.localStorage.getData("selectedUser")
-  ) {
+  if (nuxtStorage?.localStorage?.getData("selectedUser")) {
     selectedUser.value = nuxtStorage.localStorage.getData("selectedUser");
   }
 
   watch(selectedUser, () => {
     // save to localstorage
     if (selectedUser.value !== "") {
-      nuxtStorage.localStorage.setData("selectedUser", selectedUser.value);
+      nuxtStorage?.localStorage?.setData("selectedUser", selectedUser.value);
     } else {
-      selectedUser.value = nuxtStorage.localStorage.getData("selectedUser");
+      selectedUser.value = nuxtStorage?.localStorage?.getData("selectedUser");
     }
   });
 
