@@ -1,7 +1,7 @@
 <template>
   <div>
     <Head>
-      <title>{{ t("seo.application_title") }}</title>
+      <title>{{ t("seo.application_title") }} - publikationer</title>
       <Meta name="description" :content="t('seo.application_title')" />
     </Head>
     <div class="container-fluid">
