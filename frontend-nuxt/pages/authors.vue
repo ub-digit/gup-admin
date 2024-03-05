@@ -8,7 +8,7 @@
       <div class="row">
         <div class="col-4 me-2">
           <div class="row">
-            <form class="col mb-3" id="filters">
+            <form class="col mb-3" @submit.prevent="void 0" id="filters">
               <label for="search_name" class="form-label visually-hidden"
                 >Sök författare</label
               >
@@ -17,7 +17,7 @@
                 name="search_name"
                 id="search_name"
                 type="search"
-                v-model="filters.name"
+                v-model="filters.query"
                 class="form-control"
                 aria-placeholder="Sök författare"
                 placeholder="Sök författare"
@@ -28,9 +28,9 @@
           <div class="row">
             <div class="col opacity-50 text-center mb-4">
               <strong>
-                55555
+                {{ authorsMeta.showing }}
                 {{ t("views.publications.result_list.meta.of") }}
-                99999
+                {{ authorsMeta.total }}
                 {{ t("views.publications.result_list.meta.posts") }}</strong
               >
             </div>
@@ -68,7 +68,8 @@ const { t, getLocale } = useI18n();
 const storeAuthor = useAuthorsStore();
 const { fetchAuthors } = storeAuthor;
 fetchAuthors();
-const { authors, pendingAuthors, filters } = storeToRefs(storeAuthor);
+const { authors, authorsMeta, pendingAuthors, filters } =
+  storeToRefs(storeAuthor);
 
 watchEffect(() => {
   if (input_search_name.value) {
