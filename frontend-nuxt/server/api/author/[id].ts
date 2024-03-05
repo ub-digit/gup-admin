@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
     params: query,
   }); */
 
-  const res = {
+  const res: Author = {
     id: 2,
     year_of_birth: 1985,
     identifiers: [

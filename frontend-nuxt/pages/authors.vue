@@ -62,7 +62,7 @@
 
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
-import { useAuthorsStore } from "~/store/authors";
+import { useAuthorsStore } from "../store/authors";
 const input_search_name = ref<HTMLInputElement | null>(null);
 const { t, getLocale } = useI18n();
 const storeAuthor = useAuthorsStore();

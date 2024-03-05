@@ -16,7 +16,7 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
     name: "",
   });
 
-  async function getAuthorById(id: number) {
+  async function getAuthorById(id: string) {
     try {
       const { data, error } = await useFetch(`/api/author/${id}`);
       if (data?.value?.error) {
