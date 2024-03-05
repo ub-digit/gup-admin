@@ -35,9 +35,16 @@ export const zAuthor = z.object({
 export const zAuthorArray = z.array(zAuthor);
 export const zIdentifierArray = z.array(zIdentifier);
 
+export const zAuthorResultList = z.object({
+  showing: z.number(),
+  total: z.number(),
+  data: zAuthorArray,
+});
+
 export type Author = z.infer<typeof zAuthor>;
 export type Identifier = z.infer<typeof zIdentifier>;
 export type AuthorArray = z.infer<typeof zAuthorArray>;
 export type IdentifierArray = z.infer<typeof zIdentifierArray>;
 export type Department = z.infer<typeof zDepartment>;
 export type Nameform = z.infer<typeof zNameform>;
+export type AuthorResultList = z.infer<typeof zAuthorResultList>;
