@@ -6,17 +6,18 @@
       >
       + {{ current_author?.names.length - 1 }} ytterligare namnform(er)
     </div>
-    <div>{{ current_author.year_of_birth }}</div>
     <div>
       <strong> {{ authorCurrentDepartment?.name }}</strong> +
       {{ current_author.departments.length - 1 }} yttterligare
     </div>
+    <div>{{ current_author.year_of_birth }}</div>
     <br />
     <br />
     <div>
       <ul class="list-unstyled">
         <li v-for="identifier in current_author.identifiers">
-          {{ identifier.code }}: {{ identifier.value }}
+          {{ t(`views.authors.identifier_type.${identifier.code}`) }}:
+          {{ identifier.value }}
         </li>
       </ul>
     </div>
@@ -29,6 +30,7 @@ import type { Nameform, Department, Author } from "../../types/Author";
 import { useAuthorsStore } from "../../store/authors";
 import { useRoute, useRouter } from "vue-router";
 import { computed } from "vue";
+const { t, getLocale } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const storeAuthor = useAuthorsStore();

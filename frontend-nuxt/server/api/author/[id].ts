@@ -13,11 +13,11 @@ export default defineEventHandler(async (event) => {
     year_of_birth: 1985,
     identifiers: [
       {
-        code: "X-ACCOUNT",
+        code: "X_ACCOUNT",
         value: "xlpero",
       },
       {
-        code: "SCOPUS-AUTHOR-ID",
+        code: "SCOPUS_AUTHOR_ID",
         value: "X12345678",
       },
       {
@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
         value: "X12345678",
       },
       {
-        code: "WOS-RESEARCHER-ID",
+        code: "WOS_RESEARCHER_ID",
         value: "000000012156142X",
       },
       {
@@ -33,7 +33,7 @@ export default defineEventHandler(async (event) => {
         value: "X12345678",
       },
       {
-        code: "POP-ID",
+        code: "POP_ID",
         value: "X1234567S",
       },
     ],
