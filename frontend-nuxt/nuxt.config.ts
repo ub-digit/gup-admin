@@ -6,6 +6,8 @@ export default defineNuxtConfig({
     public: {
       API_GUP_BASE_URL_EDIT: "http://localhost:3010/publications/show/",
       API_GUP_BASE_URL_SHOW: "http://localhost:3010/publications/show/",
+      API_GUP_BASE_URL_EDIT_AUTHOR:
+        "https://gup-staging.ub.gu.se/admin/people/person/edit/",
       ALLOW_AUTHOR_EDIT: true,
     },
     /*         server: {
