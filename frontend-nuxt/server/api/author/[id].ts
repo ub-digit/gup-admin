@@ -66,7 +66,7 @@ export default defineEventHandler(async (event) => {
     ],
     departments: [
       {
-        id: 1,
+        id: "1",
         name: "Department of Computer Science",
         type: "type",
         start_date: "2021-01-01",
@@ -74,7 +74,7 @@ export default defineEventHandler(async (event) => {
         current: false,
       },
       {
-        id: 2,
+        id: "2",
         name: "Department of Physics",
         type: "type",
         start_date: "2021-01-01",

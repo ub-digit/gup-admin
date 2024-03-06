@@ -1,80 +1,96 @@
 <template>
-  <div v-if="author">
-    <div class="row">
-      <h1>{{ authorPrimary?.first_name }} {{ authorPrimary?.last_name }}</h1>
-    </div>
+  <div class="row" v-if="author">
+    <div class="col-6">
+      <div class="row">
+        <h1>{{ authorPrimary?.first_name }} {{ authorPrimary?.last_name }}</h1>
+      </div>
 
-    <div id="nameForms" class="row">
-      <strong>Namnform(er)</strong>
+      <div id="nameForms" class="row">
+        <strong>Namnform(er)</strong>
 
-      <ul class="list-unstyled">
-        <li
-          class="float-start"
-          v-for="(author, index) in author.names"
-          :key="author.gup_person_id"
-        >
-          <a
-            :href="`${config.public.API_GUP_BASE_URL_EDIT_AUTHOR}${author.gup_person_id}`"
-            >{{ author.first_name }} {{ author.last_name }}</a
-          ><span v-if="author.primary" class="ms-1">*</span>
-          <span v-if="index < author.names.length - 1" class="me-1 ms-1"
-            >|</span
+        <ul class="list-unstyled">
+          <li
+            class="float-start"
+            v-for="(item, index) in author.names"
+            :key="item.gup_person_id"
           >
-        </li>
-      </ul>
-    </div>
+            <a
+              :href="`${config.public.API_GUP_BASE_URL_EDIT_AUTHOR}${item.gup_person_id}`"
+              >{{ item.first_name }} {{ item.last_name }}</a
+            ><span v-if="item.primary" class="ms-1">*</span>
+            <span v-if="index < author.names.length - 1" class="me-1 ms-1"
+              >|</span
+            >
+          </li>
+        </ul>
+      </div>
 
-    <div id="departments" class="row mb-3">
-      <div class="col">
-        <div class="row mb-3">
-          <div class="col">
-            <strong>Primär tillhörighet</strong>
-            {{ authorCurrentDepartment?.name }}
+      <div id="departments" class="row mb-3">
+        <div class="col">
+          <div class="row mb-3">
+            <div class="col">
+              <strong>Primär tillhörighet</strong>
+              {{ authorCurrentDepartment?.name }}
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <strong>Alla affilieringar</strong>
-            <ul class="list-unstyled">
-              <li
-                class="float-start"
-                v-for="(department, index) in author.departments"
-                x
-                :key="department.id"
-              >
-                {{ department.name }}
-                <span
-                  v-if="index < author.departments.length - 1"
-                  class="me-1 ms-1"
-                  >|</span
+          <div class="row">
+            <div class="col">
+              <strong>Alla tillhörigheter</strong>
+              <ul class="list-unstyled">
+                <li
+                  class="float-start"
+                  v-for="(department, index) in author.departments"
+                  x
+                  :key="department.id"
                 >
-              </li>
-            </ul>
+                  {{ department.name }}
+                  <span v-if="department.current" class="ms-1">*</span>
+                  <span
+                    v-if="index < author.departments.length - 1"
+                    class="me-1 ms-1"
+                    >|</span
+                  >
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div id="yearOfBirth" class="row mb-3">
-      <div class="col">
-        <strong>Födelseår</strong> {{ author.year_of_birth }}
+      <div id="yearOfBirth" class="row mb-3">
+        <div class="col">
+          <strong>Födelseår</strong> {{ author.year_of_birth }}
+        </div>
       </div>
-    </div>
 
-    <div id="identifiers" class="row">
-      <div class="col">
-        <strong>Identifikatorer</strong>
+      <div id="identifiers" class="row">
+        <div class="col">
+          <div class="row">
+            <div class="col">
+              <strong>Identifikatorer</strong>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <table class="table">
+                <tbody>
+                  <tr v-for="identifier in author.identifiers">
+                    <th scope="row">
+                      {{
+                        t(`views.authors.identifier_type.${identifier.code}`)
+                      }}:
+                    </th>
+                    <td>{{ identifier.value }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
-      <ul class="list-unstyled">
-        <li v-for="identifier in author.identifiers">
-          {{ t(`views.authors.identifier_type.${identifier.code}`) }}:
-          {{ identifier.value }}
-        </li>
-      </ul>
     </div>
   </div>
-
-  <div></div>
 </template>
 
 <script setup lang="ts">
