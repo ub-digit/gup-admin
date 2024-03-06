@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
     total: 4,
     data: [
       {
-        id: 2,
+        id: "2",
         year_of_birth: 1985,
         identifiers: [],
         email: "",

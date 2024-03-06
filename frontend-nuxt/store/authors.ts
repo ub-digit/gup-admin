@@ -8,7 +8,6 @@ import { useDebounceFn } from "@vueuse/core";
 export const useAuthorsStore = defineStore("authorsStore", () => {
   const { getLocale } = useI18n();
   const route = useRoute();
-  console.log(route.query);
   const router = useRouter();
 
   const authors: Ref<Author[]> = ref([]);
@@ -17,7 +16,7 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
     showing: number;
   }
   const authorsMeta: Ref<Meta> = ref({ total: 0, showing: 0 });
-  const current_author: Ref<Author | null> = ref(null);
+  const author: Ref<Author | null> = ref(null);
   const errorAuthors = ref({});
   const errorAuthor = ref({});
   const pendingAuthors = ref(false);
@@ -59,7 +58,7 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
       if (data?.value?.error) {
         throw data.value;
       }
-      current_author.value = zAuthor.parse(data.value as Author);
+      author.value = zAuthor.parse(data.value as Author);
     } catch (error) {
       if (error instanceof ZodError) {
         const new_error = { code: "666", message: "ZodError", data: error };
@@ -118,7 +117,7 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
   return {
     authors,
     authorsMeta,
-    current_author,
+    author,
     filters,
     errorAuthors,
     pendingAuthors,

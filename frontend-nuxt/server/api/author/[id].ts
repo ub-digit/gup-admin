@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
   }); */
 
   const res: Author = {
-    id: 2,
+    id: "2",
     year_of_birth: 1985,
     identifiers: [
       {
@@ -42,7 +42,7 @@ export default defineEventHandler(async (event) => {
       {
         first_name: "Jane",
         last_name: "Doe",
-        gup_person_id: "123",
+        gup_person_id: "16",
         start_date: "2021-01-01",
         end_date: "2021-01-01",
         primary: true,
@@ -50,7 +50,7 @@ export default defineEventHandler(async (event) => {
       {
         first_name: "John",
         last_name: "Doe",
-        gup_person_id: "123",
+        gup_person_id: "17",
         start_date: "2021-01-01",
         end_date: "2021-01-01",
         primary: false,
@@ -58,7 +58,7 @@ export default defineEventHandler(async (event) => {
       {
         first_name: "Jill",
         last_name: "Doe",
-        gup_person_id: "123",
+        gup_person_id: "17",
         start_date: "2021-01-01",
         end_date: "2021-01-01",
         primary: false,

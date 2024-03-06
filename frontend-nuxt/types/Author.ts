@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const zDepartment = z.object({
-  id: z.number(),
+  id: z.string(),
   name: z.string(),
   type: z.string(),
   start_date: z.string(),
@@ -24,7 +24,7 @@ export const zIdentifier = z.object({
 });
 
 export const zAuthor = z.object({
-  id: z.number(),
+  id: z.string(),
   year_of_birth: z.number(),
   email: z.string().nullable(),
   identifiers: z.array(zIdentifier),
