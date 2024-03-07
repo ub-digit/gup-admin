@@ -34,8 +34,9 @@ CREATE TABLE public.publications (
 );
 
 
-ALTER TABLE public.publications OWNER TO postgres;
 
+
+ALTER TABLE public.publications OWNER TO postgres;
 --
 -- Name: publications_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
@@ -57,6 +58,37 @@ ALTER TABLE public.publications_id_seq OWNER TO postgres;
 ALTER SEQUENCE public.publications_id_seq OWNED BY public.publications.id;
 
 
+
+-- Name: persons; Type: TABLE; Schema: public; Owner: postgres
+CREATE TABLE public.persons (
+    id bigint NOT NULL,
+    json text,
+    inserted_at timestamp(0) without time zone NOT NULL,
+    updated_at timestamp(0) without time zone NOT NULL
+);
+
+ALTER TABLE public.persons OWNER TO postgres;
+
+CREATE SEQUENCE public.persons_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.persons_id_seq OWNER TO postgres;
+
+
+
+--
+-- Name: publications_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.persons_id_seq OWNED BY public.persons.id;
+
+
+
 --
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: postgres
 --
@@ -74,6 +106,8 @@ ALTER TABLE public.schema_migrations OWNER TO postgres;
 --
 
 ALTER TABLE ONLY public.publications ALTER COLUMN id SET DEFAULT nextval('public.publications_id_seq'::regclass);
+ALTER TABLE ONLY public.persons ALTER COLUMN id SET DEFAULT nextval('public.persons_id_seq'::regclass);
+
 
 
 --
@@ -83,6 +117,9 @@ ALTER TABLE ONLY public.publications ALTER COLUMN id SET DEFAULT nextval('public
 ALTER TABLE ONLY public.publications
     ADD CONSTRAINT publications_pkey PRIMARY KEY (id);
 
+
+ALTER TABLE ONLY public.persons
+    ADD CONSTRAINT persons_pkey PRIMARY KEY (id);
 
 --
 -- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres

@@ -23,6 +23,9 @@ defmodule GupIndexManagerWeb.Router do
     delete "/publications/:id", PublicationController, :delete
     put "/publications/pending/:id", PublicationController, :mark_as_pending
     put "/departments/index", DepartmentController, :index
+    put "/persons", PersonController, :create_or_update
+    get "/persons", PersonController, :index
+
 
   end
 
