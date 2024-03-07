@@ -208,4 +208,33 @@ defmodule GupAdmin.Resource.Search do
     hits
     |> Enum.map(fn dep -> Map.get(dep, "_source") end)
   end
+
+
+  def get_all_persons() do
+    query = %{
+      "track_total_hits" => true,
+      "query" => %{
+        "bool" => %{
+          "must" => %{
+            "match_all" => %{}
+          }
+        }
+      }
+    }
+    {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), "persons", [], query)
+    data = hits
+    |> Enum.map(fn dep -> Map.get(dep, "_source") end)
+    data = Enum.take(data, 50)
+    IO.inspect(length(data), label: "length of data")
+    %{
+      "total" => get_person_count(),
+      "data" => data,
+      "showing" => length(data)
+    }
+  end
+
+  def get_person_count do
+   {:ok, %{body: body}} = Elastix.Search.count(elastic_url(), "persons", [], %{})
+   body |> Map.get("count")
+  end
 end

@@ -42,7 +42,6 @@ defmodule GupIndexManager.Resource.Persons do
   end
 
   def update_index(%{"id" => id} = data) do
-    IO.inspect(data, label: "data")
     data = Map.put(data, "id", id)
     Index.update_record(data, id, Index.get_persons_index())
   end

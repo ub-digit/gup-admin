@@ -35,6 +35,7 @@ defmodule GupAdminWeb.Router do
     get "/publications/compare/imported_id/:imported_id/gup_id/:gup_id", PublicationController, :compare
     post "/publications/merge/:publication_id/:gup_id/:gup_user", PublicationController, :merge_publications
     get "/departments", DepartmentController, :get_departments
+    get "/persons", PersonController, :index
 
 
   end

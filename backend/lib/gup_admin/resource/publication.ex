@@ -114,9 +114,11 @@ defmodule GupAdmin.Resource.Publication do
     person = author
     |> Map.get("person")
     |> List.first()
+
+    id = Map.get(person, "id")
     %{
       "name" => get_author_name(person),
-      "id" => person["id"]
+      "id" => id
     }
   end
 
@@ -282,6 +284,7 @@ defmodule GupAdmin.Resource.Publication do
 
   def sort_authors(authors) do
     authors
+    |> IO.inspect()
     |> List.first()
     |> Map.has_key?("position")
     |> case do
