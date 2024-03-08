@@ -17,7 +17,7 @@ defmodule GupIndexManager.Resource.Index do
   def get_departments_index, do: @departments_index
 
   def create_index(index), do: create_index(index, Elastix.Index.exists?(elastic_url(), index))
-  def create_index(_index, {:ok, true}), do: {:ok, "Index already exists"}
+  def create_index(index, {:ok, true}), do: {:ok, "Index: #{index} already exists"}
   def create_index(_index, {:error, error}), do: {:error, error}
   def create_index(index, {:ok, false}) do
     Index.create(elastic_url(), index, get_config(index))
