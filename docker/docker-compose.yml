@@ -11,6 +11,7 @@ services:
       NUXT_PUBLIC_API_GUP_BASE_URL_SHOW: "${NUXT_API_GUP_BASE_URL_SHOW}"
       NUXT_PUBLIC_ALLOW_AUTHOR_EDIT: "${NUXT_ALLOW_AUTHOR_EDIT}"
       NUXT_PUBLIC_API_GUP_BASE_URL_EDIT_AUTHOR: "${NUXT_API_GUP_BASE_URL_EDIT_AUTHOR}"
+    restart: always
   admin-backend:
     image: docker.ub.gu.se/gup-admin-backend:${GIT_REVISION}${PLATFORM}
     ports:
