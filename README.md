@@ -5,6 +5,7 @@
 ## index all stuff
 
 cd docker
+./setup_index.sh
 ./index.sh
 
 ## index GUP Posts
