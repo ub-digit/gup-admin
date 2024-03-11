@@ -6,7 +6,7 @@ export const zDepartment = z.object({
   type: z.string(),
   start_date: z.string(),
   end_date: z.string().nullable(),
-  current: z.boolean(),
+  current: z.boolean().optional(),
 });
 
 export const zNameform = z.object({
@@ -15,7 +15,7 @@ export const zNameform = z.object({
   gup_person_id: z.number(),
   start_date: z.string(),
   end_date: z.string().nullable(),
-  primary: z.boolean(),
+  primary: z.boolean().optional(),
 });
 
 export const zIdentifier = z.object({
