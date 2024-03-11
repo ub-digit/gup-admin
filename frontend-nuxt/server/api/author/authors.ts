@@ -4,11 +4,11 @@ export default defineEventHandler(async (event) => {
   const query = getQuery(event);
   console.log(query);
   console.log(config.API_BASE_URL);
-  /*   const res = await $fetch(`${config.API_BASE_URL}/publications`, {
+  const res: AuthorResultList = await $fetch(`${config.API_BASE_URL}/persons`, {
     params: query,
-  }); */
+  });
 
-  const res: AuthorResultList = {
+  /*const res: AuthorResultList = {
     showing: 1,
     total: 4,
     data: [
@@ -63,6 +63,6 @@ export default defineEventHandler(async (event) => {
         ],
       },
     ],
-  };
+  };*/
   return res;
 });

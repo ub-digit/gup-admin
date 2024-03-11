@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const zDepartment = z.object({
-  id: z.string(),
+  id: z.number(),
   name: z.string(),
   type: z.string(),
   start_date: z.string(),
@@ -12,7 +12,7 @@ export const zDepartment = z.object({
 export const zNameform = z.object({
   first_name: z.string(),
   last_name: z.string(),
-  gup_person_id: z.string(),
+  gup_person_id: z.number(),
   start_date: z.string(),
   end_date: z.string().nullable(),
   primary: z.boolean(),
@@ -24,7 +24,7 @@ export const zIdentifier = z.object({
 });
 
 export const zAuthor = z.object({
-  id: z.string(),
+  id: z.number(),
   year_of_birth: z.number(),
   email: z.string().nullable(),
   identifiers: z.array(zIdentifier),
