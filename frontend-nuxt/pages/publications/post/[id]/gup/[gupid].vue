@@ -348,7 +348,7 @@ async function editPost() {
           selectedUser.value
         );
         if (!response.error) {
-          const url = response.link; //config.public.API_GUP_BASE_URL_EDIT + response.id;
+          const url = response.link;
           window.open(url, "_blank");
           showModal.value = true;
         } else if (response.error) {
@@ -356,7 +356,7 @@ async function editPost() {
         }
       } else if (item_row_source === "gup") {
         window.open(
-          `${config.public.API_GUP_BASE_URL_EDIT}${item_row_publication_id}`,
+          `${config.public.API_GUP_BASE_URL}/publications/show/${item_row_publication_id}`,
           "_blank"
         );
       }
