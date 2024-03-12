@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
   const id = event.context.params.id;
   const res = await $fetch(
     `${config.API_BASE_URL}/publications/post_to_gup/${id}/${query.user}`,
-    { method: "POST" },
+    { method: "POST" }
   );
   return res;
 });

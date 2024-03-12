@@ -305,7 +305,7 @@ async function pollForUpdate() {
   if (done) return;
   isPendingUpdate.value = true;
   await fetchImportedPostById(route.params.id as string);
-  if (!importedPostById.value.pending) {
+  if (!importedPostById?.value?.pending) {
     isPendingUpdate.value = false;
     return;
   }
