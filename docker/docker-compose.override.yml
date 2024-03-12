@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 
 services:
   gup-frontend:
@@ -34,7 +34,7 @@ services:
       - GUP_TEST_USER_API_KEY=${GUP_TEST_USER_API_KEY}
       - GUP_SCOPUS_API_KEY=${GUP_SCOPUS_API_KEY}
       - GUP_GUPEA_OAI_BASE_URL=${GUP_GUPEA_OAI_BASE_URL}
-      - GUP_GUPEA_OAI_METADATA_PREFIX=${GUP_GUPEA_OAI_METADATA_PREFIX}    
+      - GUP_GUPEA_OAI_METADATA_PREFIX=${GUP_GUPEA_OAI_METADATA_PREFIX}
       - GUP_GUPEA_OAI_IDENTIFIER_PREFIX=${GUP_GUPEA_OAI_IDENTIFIER_PREFIX}
       - GUP_SMTP_SERVER=${GUP_SMTP_SERVER}
       - GUP_SMTP_PORT=${GUP_SMTP_PORT}
@@ -55,6 +55,7 @@ services:
       - GUP_MAX_NUMBER_OF_POSTS_RIS=${GUP_MAX_NUMBER_OF_POSTS_RIS}
       - GUP_ADMIN_BASE_URL=${GUP_INDEX_MANAGER_URL}
       - GUP_ADMIN_API_KEY=${GUP_ADMIN_API_KEY}
+      - GUP_ADMIN_ENABLE=true
     ports:
       - ${GUP_BACKEND_PORT}:${GUP_RAILS_PORT}
     volumes:
@@ -84,4 +85,3 @@ services:
       - ${GUP_SOLR_JOURNALS_VOLUME_SOURCE}:/opt/solr/server/solr/mycores/gup-journals/data
       - ${GUP_SOLR_PEOPLE_VOLUME_SOURCE}:/opt/solr/server/solr/mycores/gup-people/data
       - ${GUP_SOLR_PUBLICATIONS_VOLUME_SOURCE}:/opt/solr/server/solr/mycores/gup-publications/data
-  
