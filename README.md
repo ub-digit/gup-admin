@@ -5,6 +5,7 @@
 ## index all stuff
 
 cd docker
+docker-compose exec gup-backend bash -c 'bundle exec rake gup_migrations:add_data_for_author_import && rake db:migrate'
 ./setup_index.sh
 ./index.sh
 
