@@ -54,7 +54,7 @@ const zPublicationCompareRow = z.object({
 
 export const zImportedPostType = z.object({
   data: z.array(zPublicationCompareRow),
-  pending: z.string().nullable(),
+  pending: z.boolean().nullable(),
 });
 
 export const zPublicationCompareRowArray = z.array(zPublicationCompareRow);
