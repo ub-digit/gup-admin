@@ -33,7 +33,7 @@
       <div v-if="showCompareView">
         <Spinner v-if="pendingComparePost" class="me-4" />
         <PostDisplayCompare
-          v-if="postsCompareMatrix"
+          v-if="postsCompareMatrix.length"
           :dataMatrix="postsCompareMatrix"
         />
       </div>
@@ -67,7 +67,7 @@
     <div
       v-if="
         !errorImportedPostById &&
-        (postsCompareMatrix || importedPostById) &&
+        (postsCompareMatrix.length || importedPostById) &&
         !isPendingUpdate
       "
       class="action-bar"
@@ -90,7 +90,7 @@
             {{ t("buttons.edit") }}
           </button>
           <button
-            :disabled="!postsCompareMatrix"
+            :disabled="!postsCompareMatrix.length"
             type="button"
             class="btn btn-success"
             @click="merge"
