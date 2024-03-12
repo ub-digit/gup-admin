@@ -7,10 +7,7 @@ services:
       - "${ADMIN_FRONTEND_HOST_PORT}:3000"
     environment:
       NUXT_API_BASE_URL: "http://admin-backend:4000/"
-      NUXT_PUBLIC_API_GUP_BASE_URL_EDIT: "${NUXT_API_GUP_BASE_URL_EDIT}"
-      NUXT_PUBLIC_API_GUP_BASE_URL_SHOW: "${NUXT_API_GUP_BASE_URL_SHOW}"
-      NUXT_PUBLIC_ALLOW_AUTHOR_EDIT: "${NUXT_ALLOW_AUTHOR_EDIT}"
-      NUXT_PUBLIC_API_GUP_BASE_URL_EDIT_AUTHOR: "${NUXT_API_GUP_BASE_URL_EDIT_AUTHOR}"
+      NUXT_PUBLIC_API_GUP_BASE_URL: "${NUXT_API_GUP_BASE_URL}"
     restart: always
   admin-backend:
     image: docker.ub.gu.se/gup-admin-backend:${GIT_REVISION}${PLATFORM}
