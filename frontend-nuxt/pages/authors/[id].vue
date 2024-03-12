@@ -15,7 +15,7 @@
             :key="item.gup_person_id"
           >
             <a
-              :href="`${config.public.API_GUP_BASE_URL_EDIT_AUTHOR}${item.gup_person_id}`"
+              :href="`${config.public.API_GUP_BASE_URL}/admin/people/person/edit/${item.gup_person_id}`"
               >{{ item.first_name }} {{ item.last_name }}</a
             ><span v-if="item.primary" class="ms-1">*</span>
             <span v-if="index < author.names.length - 1" class="me-1 ms-1"
