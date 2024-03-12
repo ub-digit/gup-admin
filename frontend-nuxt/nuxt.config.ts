@@ -4,12 +4,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     API_BASE_URL: "http://localhost:40411/",
     public: {
-      API_GUP_BASE_URL: "http://localhost:3010/",
+      API_GUP_BASE_URL: "http://localhost:3010",
       ALLOW_AUTHOR_EDIT: true,
-/*      API_GUP_BASE_URL_EDIT: "http://localhost:3010/publications/show/",
-      API_GUP_BASE_URL_SHOW: "http://localhost:3010/publications/show/",
-      API_GUP_BASE_URL_EDIT_AUTHOR:
-        "https://gup-staging.ub.gu.se/admin/people/person/edit/",/*
     },
     /*         server: {
           host: process.env.NUXT_HOST,
