@@ -36,6 +36,7 @@ defmodule GupAdminWeb.Router do
     post "/publications/merge/:publication_id/:gup_id/:gup_user", PublicationController, :merge_publications
     get "/departments", DepartmentController, :get_departments
     get "/persons", PersonController, :index
+    get "/persons/:id", PersonController, :get_one
 
 
   end

@@ -155,7 +155,7 @@ defmodule GupAdmin.Resource.Search do
     url = "#{base_url}/publications/#{publication["id"]}?api_key=#{api_key}"
     HTTPoison.delete(url, [{"Content-Type", "application/json"}])
   end
-
+  # TODO: Move to query module
   def search_departments(%{"term" => term, "year" => year}) do
     query = %{
       "query" => %{
@@ -207,6 +207,27 @@ defmodule GupAdmin.Resource.Search do
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), "departments", [], query)
     hits
     |> Enum.map(fn dep -> Map.get(dep, "_source") end)
+  end
+
+  def get_person(id) do
+    query = %{
+      "query" => %{
+        "bool" => %{
+          "must" => %{
+            "term" => %{
+              "id" => id
+            }
+          }
+        }
+      }
+    }
+    {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), "persons", [], query)
+    data = hits
+    |> Enum.map(fn dep -> Map.get(dep, "_source") end)
+    data = Enum.take(data, 1) |> List.first()
+    %{
+      "data" => data
+    }
   end
 
 
