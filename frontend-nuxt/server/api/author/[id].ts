@@ -3,11 +3,19 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
   const query = getQuery(event);
 
-  console.log(config.API_BASE_URL);
-  /*   const res = await $fetch(`${config.API_BASE_URL}/publications`, {
-    params: query,
-  }); */
+  interface AuthorObject {
+    data: Author[];
+  }
 
+  console.log(config.API_BASE_URL);
+  const id = event?.context?.params?.id;
+  const res: AuthorObject = await $fetch(
+    `${config.API_BASE_URL}persons/${id}`,
+    {
+      params: query,
+    }
+  );
+  /* 
   const res: Author = {
     id: 2,
     year_of_birth: 1985,
@@ -82,6 +90,6 @@ export default defineEventHandler(async (event) => {
         current: true,
       },
     ],
-  };
+  }; */
   return res;
 });
