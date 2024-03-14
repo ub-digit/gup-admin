@@ -4,8 +4,8 @@ export const zDepartment = z.object({
   id: z.number(),
   name: z.string(),
   type: z.string(),
-  start_date: z.string(),
-  end_date: z.string().nullable(),
+  start_date: z.string().optional(),
+  end_date: z.string().optional(),
   current: z.boolean().optional(),
 });
 
@@ -13,8 +13,8 @@ export const zNameform = z.object({
   first_name: z.string(),
   last_name: z.string(),
   gup_person_id: z.number(),
-  start_date: z.string(),
-  end_date: z.string().nullable(),
+  start_date: z.string().optional(),
+  end_date: z.string().optional(),
   primary: z.boolean().optional(),
 });
 
@@ -26,7 +26,7 @@ export const zIdentifier = z.object({
 export const zAuthor = z.object({
   id: z.number(),
   year_of_birth: z.number(),
-  email: z.string().nullable(),
+  email: z.string().optional(),
   identifiers: z.array(zIdentifier),
   names: z.array(zNameform),
   departments: z.array(zDepartment),
