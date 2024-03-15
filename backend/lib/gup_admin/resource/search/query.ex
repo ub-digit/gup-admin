@@ -7,13 +7,14 @@ defmodule GupAdmin.Resource.Search.Query do
       "sort" => [
         %{
           "updated_at" => %{
-            "order" => "desc"  # "asc" for ascending order, "desc" for descending order
+            # "asc" for ascending order, "desc" for descending order
+            "order" => "desc"
           }
         }
       ],
       "query" => %{
         "bool" => %{
-        "must" => get_query_type(escape_characters(term))
+          "must" => get_query_type(escape_characters(term))
         }
       }
     }
@@ -36,44 +37,48 @@ defmodule GupAdmin.Resource.Search.Query do
       }
     }
   end
+
   def find_duplicates_by_identifiers([]), do: nil
+
   def find_duplicates_by_identifiers(identifiers) do
     %{
       "query" => %{
         "bool" => %{
-          "should" => identifier_blocks(identifiers)
+          "should" => publication_identifier_blocks(identifiers)
         }
       }
     }
   end
 
-  def identifier_blocks(identifiers) do
+  def publication_identifier_blocks(identifiers) do
     Enum.reduce(identifiers, [], fn identifier, acc ->
-      acc ++ [
-        %{
-          "bool" => %{
-            "must" => [
-              %{
-                "query_string" => %{
-                  "fields" => ["publication_identifiers.identifier_value.keyword"],
-                  "query" => "\"" <> identifier["identifier_value"] <> "\"" #escape_characters(identifier["identifier_value"]),
+      acc ++
+        [
+          %{
+            "bool" => %{
+              "must" => [
+                %{
+                  "query_string" => %{
+                    "fields" => ["publication_identifiers.identifier_value.keyword"],
+                    # escape_characters(identifier["identifier_value"]),
+                    "query" => "\"" <> identifier["identifier_value"] <> "\""
+                  }
+                },
+                %{
+                  "query_string" => %{
+                    "fields" => ["publication_identifiers.identifier_code"],
+                    "query" => identifier["identifier_code"]
+                  }
+                },
+                %{
+                  "term" => %{
+                    "deleted" => false
+                  }
                 }
-              },
-              %{
-                "query_string" => %{
-                  "fields" => ["publication_identifiers.identifier_code"],
-                  "query" => identifier["identifier_code"]
-                }
-              },
-              %{
-                "term" => %{
-                  "deleted" => false
-                }
-              }
-            ]
+              ]
+            }
           }
-        }
-      ]
+        ]
     end)
   end
 
@@ -121,5 +126,48 @@ defmodule GupAdmin.Resource.Search.Query do
     |> String.replace("/", "\\/")
     |> String.replace("(", "\\(")
     |> String.replace(")", "\\)")
+  end
+
+  def search_persons(q) do
+    # %{
+    #   "query" => %{
+    #     "query_string" => %{
+    #       "default_operator" => "AND",
+    #       "fields" => ["name^15"],
+    #       "query" => q
+    #     }
+    #   }
+    # }
+
+    # %{
+    #   "query" => %{
+    #     "bool" => %{
+    #       "should" => [
+    #         %{
+    #           "multi_match" => %{
+    #             "query" => q,
+    #             "fields" => ["names.first_name", "names.last_name", "identifiers.value"],
+    #             "type" => "cross_fields"
+    #           }
+    #         }
+    #       ]
+    #     }
+    #   }
+    # }
+    %{
+      size: 100, #@query_limit,
+      query: %{
+        bool: %{
+          must: %{
+            query_string: %{
+              default_operator: "AND",
+              fields: ["names.first_name", "names.last_name", "name.full_name", "identifiers.value"],
+              query: q
+            }
+          }
+        }
+      }
+    }
+    |> IO.inspect(label: "search_persons")
   end
 end
