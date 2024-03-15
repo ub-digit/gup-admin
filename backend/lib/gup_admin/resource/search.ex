@@ -224,7 +224,10 @@ defmodule GupAdmin.Resource.Search do
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), "persons", [], query)
     data = hits
     |> Enum.map(fn dep -> Map.get(dep, "_source") end)
-    data = Enum.take(data, 1) |> List.first()
+    data = Enum.take(data, 1)
+    |> sort_names_on_primary()
+    |> sort_person_departments_on_current()
+    |> List.first()
     %{
       "data" => data
     }
@@ -244,9 +247,10 @@ defmodule GupAdmin.Resource.Search do
     }
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), "persons", [], query)
     data = hits
+    |> Enum.take(50)
     |> Enum.map(fn dep -> Map.get(dep, "_source") end)
-    data = Enum.take(data, 50)
-    IO.inspect(length(data), label: "length of data")
+    |> sort_names_on_primary()
+    |> sort_person_departments_on_current()
     %{
       "total" => get_person_count(),
       "data" => data,
@@ -254,13 +258,18 @@ defmodule GupAdmin.Resource.Search do
     }
   end
 
+  def search_persons("") do
+    get_all_persons()
+  end
 
   def search_persons(q) do
     query = Query.search_persons(q)
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), "persons", [], query)
     data = hits
+    |> Enum.take(50)
     |> Enum.map(fn dep -> Map.get(dep, "_source") end)
-    data = Enum.take(data, 50)
+    |> sort_names_on_primary()
+    |> sort_person_departments_on_current()
     %{
       "total" => get_person_count(),
       "data" => data,
@@ -271,5 +280,22 @@ defmodule GupAdmin.Resource.Search do
   def get_person_count do
    {:ok, %{body: body}} = Elastix.Search.count(elastic_url(), "persons", [], %{})
    body |> Map.get("count")
+  end
+
+  def sort_names_on_primary(data) do
+    Enum.map(data, fn person ->
+      names = Map.get(person, "names", [])
+      |> Enum.sort_by(&(&1["primary"]))
+      Map.put(person, "names", names |> Enum.reverse())
+    end)
+  end
+
+  def sort_person_departments_on_current(data) do
+    IO.inspect("sorting departments")
+    Enum.map(data, fn person ->
+      departments = Map.get(person, "departments", [])
+      |> Enum.sort_by(&(&1["current"]))
+      Map.put(person, "departments", departments |> Enum.reverse())
+    end)
   end
 end
