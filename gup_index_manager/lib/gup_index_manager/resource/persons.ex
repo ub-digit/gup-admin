@@ -36,6 +36,7 @@ defmodule GupIndexManager.Resource.Persons do
     existing_data
     |> List.first()
     |> Map.get("_source")
+    |> clear_primary_name()
     |> merge_lists(new_data, "names")
     |> merge_lists(new_data, "departments")
     |> merge_lists(new_data, "identifiers")
@@ -62,7 +63,9 @@ defmodule GupIndexManager.Resource.Persons do
       "id" => Map.get(data, "id", nil),
       "names" => sanitize_names(Map.get(data, "names", [])),
       "departments" => Map.get(data, "departments", []),
-      "identifiers" => Map.get(data, "identifiers", [])
+      "identifiers" => Map.get(data, "identifiers", []),
+      "year_of_birth" => Map.get(data, "year_of_birth", nil),
+      "email" => Map.get(data, "email", nil),
     }
   end
 
@@ -75,10 +78,17 @@ defmodule GupIndexManager.Resource.Persons do
         "full_name" => "#{Map.get(name, "first_name", "")} #{Map.get(name, "last_name", "")}",
         "start_date" => Map.get(name, "start_date", nil),
         "end_date" => Map.get(name, "end_date", nil),
-        "gup_person_id" => Map.get(name, "gup_person_id", nil)
-        # TODO: Primary?
+        "gup_person_id" => Map.get(name, "gup_person_id", nil),
+        "primary" => true
 
       }
     end)
+  end
+
+  def clear_primary_name(data) do
+    data
+    |> Map.put("names", Enum.map(Map.get(data, "names", []), fn name ->
+      Map.put(name, "primary", false)
+    end))
   end
 end
