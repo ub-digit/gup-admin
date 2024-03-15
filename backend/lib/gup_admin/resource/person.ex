@@ -7,4 +7,8 @@ defmodule GupAdmin.Resource.Person do
   def get_person(id) do
     Search.get_person(id)
   end
+
+  def search_persons(q) do
+    Search.search_persons(q)
+  end
 end

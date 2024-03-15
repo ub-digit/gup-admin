@@ -1,7 +1,12 @@
 defmodule GupAdminWeb.PersonController do
   use GupAdminWeb, :controller
   alias GupAdmin.Resource.Person
-  def index(conn, _params) do
+
+  def search(conn, %{"query" => q}) do
+    json conn, Person.search_persons(q)
+  end
+
+  def search(conn, _params) do
     json conn, Person.get_all_persons()
   end
 
