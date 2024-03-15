@@ -254,6 +254,20 @@ defmodule GupAdmin.Resource.Search do
     }
   end
 
+
+  def search_persons(q) do
+    query = Query.search_persons(q)
+    {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), "persons", [], query)
+    data = hits
+    |> Enum.map(fn dep -> Map.get(dep, "_source") end)
+    data = Enum.take(data, 50)
+    %{
+      "total" => get_person_count(),
+      "data" => data,
+      "showing" => length(data)
+    }
+  end
+
   def get_person_count do
    {:ok, %{body: body}} = Elastix.Search.count(elastic_url(), "persons", [], %{})
    body |> Map.get("count")

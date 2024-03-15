@@ -12,6 +12,20 @@ defmodule GupIndexManager.Resource.Index do
     [@persons_index, @publications_index, @departments_index]
   end
 
+  def reset_index(index) do
+    Enum.member?(get_indexes(), index)
+    |> case do
+      true ->
+        delete_index(index)
+        create_index(index)
+      false -> {:error, "Index \"#{index}\" is not a valid index"}
+    end
+  end
+
+  def delete_index(index) do
+    Index.delete(elastic_url(), index)
+  end
+
   def get_persons_index, do: @persons_index
   def get_publications_index, do: @publications_index
   def get_departments_index, do: @departments_index
