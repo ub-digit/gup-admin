@@ -41,9 +41,14 @@ const authorCurrentDepartment = computed(() => {
   );
 });
 const authorPrimaryName = computed(() => {
-  return props.author.names.find(
+  const primaryAuthor = props.author.names.find(
     (nameForm: Nameform) => nameForm.primary === true
   );
+  if (primaryAuthor) {
+    return primaryAuthor;
+  } else {
+    return props.author.names[0];
+  }
 });
 </script>
 
