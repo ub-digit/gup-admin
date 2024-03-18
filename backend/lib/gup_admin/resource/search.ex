@@ -245,14 +245,14 @@ defmodule GupAdmin.Resource.Search do
         }
       }
     }
-    {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), "persons", [], query)
+    {:ok, %{body: %{"hits" => hits}}} = Elastix.Search.search(elastic_url(), "persons", [], query)
     data = hits
     |> Enum.take(50)
     |> Enum.map(fn dep -> Map.get(dep, "_source") end)
     |> sort_names_on_primary()
     |> sort_person_departments_on_current()
     %{
-      "total" => get_person_count(),
+      "total" => Map.get(hits, "total") |> Map.get("value"),
       "data" => data,
       "showing" => length(data)
     }
@@ -264,14 +264,16 @@ defmodule GupAdmin.Resource.Search do
 
   def search_persons(q) do
     query = Query.search_persons(q)
-    {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), "persons", [], query)
+    Elastix.Search.search(elastic_url(), "persons", [], query)
+    {:ok, %{body: %{"hits" => hits}}} = Elastix.Search.search(elastic_url(), "persons", [], query)
     data = hits
+    |> Map.get("hits")
     |> Enum.take(50)
     |> Enum.map(fn dep -> Map.get(dep, "_source") end)
     |> sort_names_on_primary()
     |> sort_person_departments_on_current()
     %{
-      "total" => get_person_count(),
+      "total" => Map.get(hits, "total") |> Map.get("value"),
       "data" => data,
       "showing" => length(data)
     }
@@ -291,7 +293,6 @@ defmodule GupAdmin.Resource.Search do
   end
 
   def sort_person_departments_on_current(data) do
-    IO.inspect("sorting departments")
     Enum.map(data, fn person ->
       departments = Map.get(person, "departments", [])
       |> Enum.sort_by(&(&1["current"]))
