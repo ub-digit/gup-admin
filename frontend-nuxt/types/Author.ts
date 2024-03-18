@@ -25,7 +25,7 @@ export const zIdentifier = z.object({
 
 export const zAuthor = z.object({
   id: z.number(),
-  year_of_birth: z.number(),
+  year_of_birth: z.number().nullish(),
   email: z.string().nullish(),
   identifiers: z.array(zIdentifier),
   names: z.array(zNameform),

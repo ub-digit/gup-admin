@@ -112,9 +112,14 @@ const config = useRuntimeConfig();
 console.log(config);
 
 const authorPrimary = computed(() => {
-  return author?.value?.names.find(
+  const primaryAuthor = author?.value?.names.find(
     (nameForm: Nameform) => nameForm.primary === true
   );
+  if (primaryAuthor) {
+    return primaryAuthor;
+  } else {
+    return author?.value?.names[0];
+  }
 });
 
 const authorSecondary = computed(() => {
