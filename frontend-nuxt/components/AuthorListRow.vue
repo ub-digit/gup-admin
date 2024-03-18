@@ -18,9 +18,17 @@
       </div>
       <p v-if="author.id" class="text-muted mb-2 small">ID: {{ author.id }}</p>
       <div class="d-flex w-100 justify-content-between">
-        {{ authorCurrentDepartment.name }}
+        <span v-if="authorCurrentDepartment">{{
+          authorCurrentDepartment.name
+        }}</span>
+        <span v-else> Saknar primär avdelning </span>
         <small class="text-muted"
-          >+ {{ author.departments.length - 1 }} ytterligare avdelningar</small
+          >+
+          <span v-if="authorCurrentDepartment">{{
+            author.departments.length - 1
+          }}</span>
+          <span v-else>{{ author.departments.length }}</span>
+          ytterligare avdelningar</small
         >
       </div>
       <small> {{ author.year_of_birth }}</small>
@@ -36,7 +44,7 @@ const props = defineProps(["author"]);
 const { t } = useI18n();
 
 const authorCurrentDepartment = computed(() => {
-  return props.author.departments.find(
+  return props.author?.departments?.find(
     (department: Department) => department.current === true
   );
 });

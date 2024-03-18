@@ -30,7 +30,10 @@
           <div class="row mb-3">
             <div class="col">
               <strong>Primär tillhörighet</strong>
-              {{ authorCurrentDepartment?.name }}
+              <span v-if="authorCurrentDepartment">
+                {{ authorCurrentDepartment?.name }}
+              </span>
+              <span v-else> Saknar primär avdelning </span>
             </div>
           </div>
           <div class="row">
