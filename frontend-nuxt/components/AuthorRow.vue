@@ -13,12 +13,6 @@
           <span class="small" v-if="author.names.length > 1">
             + {{ author.names.length - 1 }} fler namnformer</span
           >
-          <!-- <span
-            v-if="author?.isMatch"
-            title="Matchad i GUP"
-            class="text-success ms-2"
-            ><font-awesome-icon icon="fa-solid fa-check"
-          /></span> -->
         </div>
       </div>
       <div class="col-2 text-center">
@@ -70,10 +64,10 @@ const authorPrimary = computed(() => {
 });
 
 const emit = defineEmits<{
-  (e: "handleClickedPerson", author: Object, index: number): void;
-  (e: "handleRemovePerson", author: Object, index: number): void;
-  (e: "handleMoveUp", author: Object, index: number): void;
-  (e: "handleMoveDown", author: Object, index: number): void;
+  (e: "handleClickedPerson", author: Author, index: number): void;
+  (e: "handleRemovePerson", author: Author, index: number): void;
+  (e: "handleMoveUp", author: Author, index: number): void;
+  (e: "handleMoveDown", author: Author, index: number): void;
 }>();
 </script>
 
