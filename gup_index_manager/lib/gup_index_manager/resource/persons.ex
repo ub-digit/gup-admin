@@ -40,8 +40,14 @@ defmodule GupIndexManager.Resource.Persons do
     |> merge_lists(new_data, "names")
     |> merge_lists(new_data, "departments")
     |> merge_lists(new_data, "identifiers")
+    |> set_merge_count()
     |> create_or_update_person()
     %{"message" => "Person updated"}
+  end
+
+  def set_merge_count(data) do
+    merge_count = Map.get(data, "merge_count", 0) + 1
+    Map.put(data, "merge_count", merge_count)
   end
 
   def update_index(%{"id" => id} = data) do

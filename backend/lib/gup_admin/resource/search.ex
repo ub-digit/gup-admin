@@ -265,6 +265,7 @@ defmodule GupAdmin.Resource.Search do
 
   def search_persons(q) do
     query = Query.search_persons(q)
+    IO.inspect(query, label: "search_persons query")
     Elastix.Search.search(elastic_url(), "persons", [], query)
     {:ok, %{body: %{"hits" => hits}}} = Elastix.Search.search(elastic_url(), "persons", [], query)
     data = hits

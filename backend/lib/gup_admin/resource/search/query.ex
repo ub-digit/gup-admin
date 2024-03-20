@@ -129,31 +129,6 @@ defmodule GupAdmin.Resource.Search.Query do
   end
 
   def search_persons(q) do
-    # %{
-    #   "query" => %{
-    #     "query_string" => %{
-    #       "default_operator" => "AND",
-    #       "fields" => ["name^15"],
-    #       "query" => q
-    #     }
-    #   }
-    # }
-
-    # %{
-    #   "query" => %{
-    #     "bool" => %{
-    #       "should" => [
-    #         %{
-    #           "multi_match" => %{
-    #             "query" => q,
-    #             "fields" => ["names.first_name", "names.last_name", "identifiers.value"],
-    #             "type" => "cross_fields"
-    #           }
-    #         }
-    #       ]
-    #     }
-    #   }
-    # }
     %{
       size: 100, #@query_limit,
       query: %{
@@ -161,13 +136,12 @@ defmodule GupAdmin.Resource.Search.Query do
           must: %{
             query_string: %{
               default_operator: "AND",
-              fields: ["names.first_name", "names.last_name", "name.full_name", "identifiers.value"],
+              fields: ["names.first_name", "names.last_name", "names.full_name", "identifiers.value"],
               query: q
             }
           }
         }
       }
     }
-    |> IO.inspect(label: "search_persons")
   end
 end
