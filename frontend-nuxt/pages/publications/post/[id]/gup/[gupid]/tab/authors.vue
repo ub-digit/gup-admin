@@ -11,7 +11,7 @@
   <div class="authors mt-4">
     <ul class="list-group list-group-flush">
       <AuthorRow
-        v-for="(author, index) in authors"
+        v-for="(author, index) in authorsByPublication"
         :key="index"
         :author="author"
         :index="index"
@@ -24,14 +24,18 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useComparePostsStore } from "~/store/compare_posts";
 import { useImportedPostsStore } from "~/store/imported_posts";
+import { useAuthorsStore } from "~/store/authors";
 import { storeToRefs } from "pinia";
+import type { Author } from "~/types/Author";
+import { ref } from "vue";
+import type { Ref } from "vue";
 
 let showModalAuthor = ref(false);
-let selectedAuthor = ref(null);
-let selectedAuthorIndex = ref(null);
+let selectedAuthor: Ref<Author | null> = ref(null);
+let selectedAuthorIndex: Ref<number | null> = ref(null);
 
 const route = useRoute();
 
@@ -47,6 +51,14 @@ const {
 
 const { importedPostById } = storeToRefs(importedPostsStore);
 
+const authorsStore = useAuthorsStore();
+const { fetchAuthorsByPublication } = authorsStore;
+const { authorsByPublication } = storeToRefs(authorsStore);
+
+fetchAuthorsByPublication(route.params.id as string);
+
+console.log(authorsByPublication);
+
 const comparePostsStore = useComparePostsStore();
 const { fetchGupPostsByTitle, fetchGupPostsById, fetchComparePostsMatrix } =
   comparePostsStore;
@@ -59,9 +71,10 @@ const {
   errorPostsCompareMatrix,
   pendingComparePost,
 } = storeToRefs(comparePostsStore);
+
 let config = useRuntimeConfig();
 
-const handleClickedPerson = (author, index) => {
+const handleClickedPerson = (author: Author, index: number) => {
   if (!config.public.ALLOW_AUTHOR_EDIT) return;
   selectedAuthor.value = author;
   selectedAuthorIndex.value = index;
@@ -80,7 +93,7 @@ if (route.params.gupid !== "empty" && route.params.gupid !== "error") {
   ).first.value;
 }
 
-authors.value = authors.value.map((author, index) => {
+/* authors.value = authors.value.map((author, index) => {
   return {
     id: index,
     isMatch: index % 2 ? true : false,
@@ -89,7 +102,7 @@ authors.value = authors.value.map((author, index) => {
     full_name: author.name,
     departments: [{ id: 1, name: "bar_foo_" + index }],
   };
-});
+}); */
 
 function handleAuthorSelected(author) {
   if (author) {

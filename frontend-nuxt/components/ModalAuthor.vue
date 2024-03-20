@@ -1,11 +1,13 @@
 <script lang="ts" setup>
 import { useDebounceFn } from "@vueuse/core";
-
+import type { Ref } from "vue";
 import { ref } from "vue";
+import type { Author } from "~/types/Author";
+import { zAuthorResultList } from "~/types/Author";
 const emit = defineEmits(["success", "close"]);
 const props = defineProps({
   sourceSelectedAuthor: {
-    type: Object,
+    type: Object as () => Author | null,
     required: true,
   },
 });
@@ -13,20 +15,26 @@ const props = defineProps({
 const searchDepartmentStr = ref("");
 const suggestedDepartments = ref([]);
 const searchNameStr = ref("");
-const suggestedAuthors = ref([]);
-const authorSelected: Ref<object | null> = ref(null);
+const suggestedAuthors: Ref<Author[]> = ref([]);
+const authorSelected: Ref<Author | null> = ref(null);
 const searchDepartmentsInput = ref("");
 const searchAuthorsInput = ref("");
 
 // Set initial value here to get the watch to trigger on first render
 onMounted(() => {
-  if (props.sourceSelectedAuthor.isMatch) {
+  if (props?.sourceSelectedAuthor?.isMatch) {
     authorSelected.value = props.sourceSelectedAuthor;
   }
-  searchNameStr.value = props.sourceSelectedAuthor.full_name;
+  searchNameStr.value =
+    primaryAuthorName?.value?.first_name +
+    " " +
+    primaryAuthorName?.value?.last_name;
   focusInput(searchAuthorsInput);
 });
 
+const primaryAuthorName = computed(() => {
+  return props.sourceSelectedAuthor?.names.find((name) => name.primary);
+});
 const debounceDepeartmentsFn = useDebounceFn(() => {
   if (searchDepartmentStr.value.length > 2) {
     fetchSuggestedDepartments(searchDepartmentStr.value);
@@ -53,7 +61,7 @@ function handleDepartmentRemove(department) {
   focusInput(searchDepartmentsInput);
 }
 
-function handleAuthorSelected(author) {
+function handleAuthorSelected(author: Author) {
   //emit("authorSelected", author);
   authorSelected.value = author;
 }
@@ -66,9 +74,13 @@ function handleDepartmentSelected(department) {
 }
 
 function handleClearAuthorSelected() {
-  authorSelected.value = {};
+  authorSelected.value = null;
   searchDepartmentStr.value = "";
 }
+
+const getPrimaryName = (author: Author) => {
+  return author.names.find((name) => name.primary === true);
+};
 
 // remove already selected departments from suggestions
 const suggestedDepartmentsFiltered = computed(() => {
@@ -91,11 +103,11 @@ const fetchSuggestedDepartments = async (name) => {
 };
 
 const fetchSuggestedAuthors = async (name: string) => {
-  const response = await fetch(
-    `/api/persons/suggest?name=${encodeURIComponent(name)}`
-  );
-  const data = await response.json();
-  suggestedAuthors.value = data;
+  const { data, error } = await useFetch("/api/author/suggest", {
+    params: { query: name },
+  });
+  //const response = await fetch(`/api/author/suggest?query=${name}`);
+  suggestedAuthors.value = zAuthorResultList.parse(data.value).data;
 };
 
 watch(authorSelected, async () => {
@@ -217,16 +229,16 @@ const focusInput = (val) => {
                     class="list-group-item d-flex justify-content-between align-items-start"
                     v-for="author in suggestedAuthors"
                   >
-                    <div class="ms-2 me-auto">
-                      {{ author.full_name }}
-                      <div class="small">{{ author.x_account }}</div>
-                      <div class="small">{{ author?.year }}</div>
-                      <div class="small">
-                        <span
-                          v-for="department in author.departments"
-                          class="badge text-bg-dark pill me-2 opacity-50"
-                          >{{ department.id }} - {{ department.name }}
-                        </span>
+                    <div>
+                      <div class="ms-2 me-auto">
+                        {{ getPrimaryName(author)?.full_name }} *
+                      </div>
+                      <div class="ms-2 me-auto">
+                        {{ author?.email }}
+                      </div>
+
+                      <div class="ms-2 me-auto">
+                        {{ author?.year_of_birth }}
                       </div>
                     </div>
                     <button

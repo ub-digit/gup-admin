@@ -10,6 +10,7 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
   const route = useRoute();
   const router = useRouter();
 
+  const authorsByPublication: Ref<Author[]> = ref([]);
   const authors: Ref<Author[]> = ref([]);
   interface Meta {
     total: number;
@@ -73,6 +74,25 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
     }
   }
 
+  async function fetchAuthorsByPublication(id: string) {
+    try {
+      const { data, error } = await useFetch(`/api/author/publication/${id}`);
+      if (data?.value?.error) {
+        throw data.value;
+      }
+      authorsByPublication.value = zAuthorResultList.parse(data.value).data;
+    } catch (error) {
+      if (error instanceof ZodError) {
+        console.log(error);
+        const new_error = { code: "666", message: "ZodError", data: error };
+
+        console.log("Something went wrong: fetchAuthorsByPublication from Zod");
+      } else {
+        console.log("Something went wrong: fetchAuthorsByPublication");
+      }
+    }
+  }
+
   async function fetchAuthors() {
     try {
       pendingAuthors.value = true;
@@ -116,6 +136,7 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
 
   return {
     authors,
+    authorsByPublication,
     authorsMeta,
     author,
     filters,
@@ -123,5 +144,6 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
     pendingAuthors,
     getAuthorById,
     fetchAuthors,
+    fetchAuthorsByPublication,
   };
 });

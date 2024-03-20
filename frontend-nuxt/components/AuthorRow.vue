@@ -7,21 +7,18 @@
             href="#"
             @click.prevent="$emit('handleClickedPerson', (author, index))"
           >
-            {{ author.full_name }}
+            {{ authorPrimary?.first_name }} {{ authorPrimary?.last_name
+            }}<span v-if="authorPrimary?.primary">*</span>
           </a>
-          <span
+          <span class="small" v-if="author.names.length > 1">
+            + {{ author.names.length - 1 }} fler namnformer</span
+          >
+          <!-- <span
             v-if="author?.isMatch"
             title="Matchad i GUP"
             class="text-success ms-2"
             ><font-awesome-icon icon="fa-solid fa-check"
-          /></span>
-        </div>
-        <div class="author-departments">
-          <span
-            v-for="department in author.departments"
-            class="badge text-bg-dark pill me-2 opacity-50"
-            >{{ department.name }}
-          </span>
+          /></span> -->
         </div>
       </div>
       <div class="col-2 text-center">
@@ -59,11 +56,18 @@
 
 <script lang="ts" setup>
 import fontawesome from "~/plugins/fontawesome";
+import type { Author, Nameform } from "~/types/Author";
 interface Props {
-  author: Object;
+  author: Author;
   index: Number;
 }
 const props = defineProps<Props>();
+
+const authorPrimary = computed(() => {
+  return props.author.names.find((nameform: Nameform) => {
+    return nameform.primary;
+  });
+});
 
 const emit = defineEmits<{
   (e: "handleClickedPerson", author: Object, index: number): void;
