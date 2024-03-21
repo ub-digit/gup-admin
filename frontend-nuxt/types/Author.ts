@@ -35,6 +35,7 @@ export const zAuthor = z.object({
 
 export const zAuthorArray = z.array(zAuthor);
 export const zIdentifierArray = z.array(zIdentifier);
+export const zDepartmentArray = z.array(zDepartment);
 
 export const zAuthorResultList = z.object({
   showing: z.number(),
