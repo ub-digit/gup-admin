@@ -4,6 +4,7 @@
     :noSuccessButton="false"
     :show="showModalAuthor"
     :sourceSelectedAuthor="selectedAuthor"
+    :publicationYear="publicationYear"
     @success="handleAuthorSelected"
     @close="showModalAuthor = false"
   />
@@ -37,19 +38,11 @@ import type { Ref } from "vue";
 let showModalAuthor = ref(false);
 let selectedAuthor: Ref<Author | null> = ref(null);
 let selectedAuthorIndex: Ref<number | null> = ref(null);
+let publicationYear: Ref<string | null> = ref(null);
 
 const route = useRoute();
 
 const importedPostsStore = useImportedPostsStore();
-const {
-  fetchImportedPostById,
-  removeImportedPost,
-  fetchImportedPosts,
-  createImportedPostInGup,
-  mergePosts,
-  $importedReset,
-} = importedPostsStore;
-
 const { importedPostById } = storeToRefs(importedPostsStore);
 
 const authorsStore = useAuthorsStore();
@@ -59,17 +52,7 @@ const { authorsByPublication } = storeToRefs(authorsStore);
 fetchAuthorsByPublication(route.params.id as string);
 
 const comparePostsStore = useComparePostsStore();
-const { fetchGupPostsByTitle, fetchGupPostsById, fetchComparePostsMatrix } =
-  comparePostsStore;
-const {
-  gupPostsByTitle,
-  pendingGupPostsByTitle,
-  gupPostsById,
-  pendingGupPostsById,
-  postsCompareMatrix,
-  errorPostsCompareMatrix,
-  pendingComparePost,
-} = storeToRefs(comparePostsStore);
+const { postsCompareMatrix } = storeToRefs(comparePostsStore);
 
 let config = useRuntimeConfig();
 
@@ -83,13 +66,13 @@ const handleClickedPerson = (author: Author, index: number) => {
 const authors = ref([]);
 
 if (route.params.gupid !== "empty" && route.params.gupid !== "error") {
-  authors.value = postsCompareMatrix?.value?.find(
-    (item) => item.display_type === "authors"
-  ).first.value;
+  publicationYear.value = postsCompareMatrix?.value?.find(
+    (item) => item?.display_label === "pubyear"
+  ).first.value as string;
 } else {
-  authors.value = importedPostById?.value?.data?.find(
-    (item) => item.display_type === "authors"
-  ).first.value;
+  publicationYear.value = importedPostById?.value?.data?.find(
+    (item) => item?.display_label === "pubyear"
+  ).first.value as string;
 }
 
 function addAuthor() {
@@ -99,7 +82,11 @@ function addAuthor() {
 
 function handleAuthorSelected(author: Author) {
   if (author) {
-    authorsByPublication.value.splice(selectedAuthorIndex.value, 1, author);
+    authorsByPublication.value.splice(
+      selectedAuthorIndex?.value as number,
+      1,
+      author
+    );
     selectedAuthorIndex.value = null;
   }
   showModalAuthor.value = false;

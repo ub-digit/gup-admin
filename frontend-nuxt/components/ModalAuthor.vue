@@ -2,18 +2,22 @@
 import { useDebounceFn } from "@vueuse/core";
 import type { Ref } from "vue";
 import { ref } from "vue";
-import type { Author } from "~/types/Author";
-import { zAuthorResultList } from "~/types/Author";
+import type { Author, Department } from "~/types/Author";
+import { zAuthorResultList, zDepartmentArray } from "~/types/Author";
 const emit = defineEmits(["success", "close"]);
 const props = defineProps({
   sourceSelectedAuthor: {
     type: Object as () => Author | null,
     required: true,
   },
+  publicationYear: {
+    type: String as () => string | null,
+    required: true,
+  },
 });
 
 const searchDepartmentStr = ref("");
-const suggestedDepartments = ref([]);
+const suggestedDepartments: Ref<Department[]> = ref([]);
 const searchNameStr = ref("");
 const suggestedAuthors: Ref<Author[]> = ref([]);
 const authorSelected: Ref<Author | null> = ref(null);
@@ -40,9 +44,19 @@ const primaryAuthorName = computed(() => {
     return props.sourceSelectedAuthor?.names[0];
   }
 });
-const debounceDepeartmentsFn = useDebounceFn(() => {
+
+const primaryAuthorNameSelected = computed(() => {
+  const temp = authorSelected?.value?.names.find((name) => name.primary);
+  if (temp) {
+    return temp;
+  } else {
+    return authorSelected?.value?.names[0];
+  }
+});
+
+const debounceDepartmentsFn = useDebounceFn(() => {
   if (searchDepartmentStr.value.length > 2) {
-    fetchSuggestedDepartments(searchDepartmentStr.value);
+    fetchSuggestedDepartments(searchDepartmentStr.value, props.publicationYear);
   } else {
     suggestedDepartments.value = [];
   }
@@ -56,7 +70,7 @@ const debounceFn = useDebounceFn(() => {
   }
 }, 500);
 
-function handleDepartmentRemove(department) {
+function handleDepartmentRemove(department: Department) {
   if (authorSelected.value) {
     const index = authorSelected.value.departments.indexOf(department);
     if (index > -1) {
@@ -71,7 +85,7 @@ function handleAuthorSelected(author: Author) {
   authorSelected.value = author;
 }
 
-function handleDepartmentSelected(department) {
+function handleDepartmentSelected(department: Department) {
   if (authorSelected.value) {
     authorSelected.value.departments.push(department);
   }
@@ -97,14 +111,16 @@ const suggestedDepartmentsFiltered = computed(() => {
   });
 });
 
-const fetchSuggestedDepartments = async (name) => {
-  const response = await fetch(
-    `/api/departments/suggest?term=${encodeURIComponent(
-      name
-    )}&year=${encodeURIComponent(authorSelected?.value?.year)}`
-  );
-  const data = await response.json();
-  suggestedDepartments.value = data;
+const fetchSuggestedDepartments = async (
+  name: string,
+  year?: number | null
+) => {
+  const { data, error } = await useFetch("/api/departments/suggest", {
+    params: { name: name, year: year },
+  });
+
+  suggestedDepartments.value = zDepartmentArray.parse(data.value);
+  console.log(suggestedDepartments.value);
 };
 
 const fetchSuggestedAuthors = async (name: string) => {
@@ -129,7 +145,7 @@ watch(searchNameStr, () => {
 });
 
 watch(searchDepartmentStr, () => {
-  debounceDepeartmentsFn();
+  debounceDepartmentsFn();
 });
 
 const focusInput = (val) => {
@@ -159,9 +175,29 @@ const focusInput = (val) => {
                     class="d-flex justify-content-between align-items-center"
                   >
                     <div class="author-info">
-                      {{ authorSelected.full_name }}
-                      <div class="small">{{ authorSelected.x_account }}</div>
-                      <div class="small">{{ authorSelected.year }}</div>
+                      {{ primaryAuthorNameSelected?.full_name }}
+                      <div class="small">
+                        {{ authorSelected.year_of_birth }}
+                      </div>
+                      <div class="small">
+                        <ul class="list-inline">
+                          <li
+                            class="list-inline-item small text-muted"
+                            v-for="(
+                              identifier, index
+                            ) in authorSelected?.identifiers"
+                          >
+                            {{ identifier.value }}
+                            <span
+                              v-if="
+                                index < authorSelected.identifiers.length - 1
+                              "
+                            >
+                              |
+                            </span>
+                          </li>
+                        </ul>
+                      </div>
                     </div>
                     <button
                       class="btn btn-light btn-sm"
