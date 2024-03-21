@@ -58,9 +58,14 @@ interface Props {
 const props = defineProps<Props>();
 
 const authorPrimary = computed(() => {
-  return props.author.names.find((nameform: Nameform) => {
+  const temp = props.author.names.find((nameform: Nameform) => {
     return nameform.primary;
   });
+  if (temp) {
+    return temp;
+  } else {
+    return props.author.names[0];
+  }
 });
 
 const emit = defineEmits<{

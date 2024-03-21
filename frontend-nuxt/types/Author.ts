@@ -13,7 +13,7 @@ export const zNameform = z.object({
   first_name: z.string(),
   last_name: z.string(),
   full_name: z.string().nullish(),
-  gup_person_id: z.number(),
+  gup_person_id: z.number().nullish(),
   start_date: z.string().nullish(),
   end_date: z.string().nullish(),
   primary: z.boolean().optional(),
@@ -25,7 +25,7 @@ export const zIdentifier = z.object({
 });
 
 export const zAuthor = z.object({
-  id: z.number(),
+  id: z.number().nullable(),
   year_of_birth: z.number().nullish(),
   email: z.string().nullish(),
   identifiers: z.array(zIdentifier),

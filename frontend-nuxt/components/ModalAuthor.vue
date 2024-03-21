@@ -33,7 +33,12 @@ onMounted(() => {
 });
 
 const primaryAuthorName = computed(() => {
-  return props.sourceSelectedAuthor?.names.find((name) => name.primary);
+  const temp = props.sourceSelectedAuthor?.names.find((name) => name.primary);
+  if (temp) {
+    return temp;
+  } else {
+    return props.sourceSelectedAuthor?.names[0];
+  }
 });
 const debounceDepeartmentsFn = useDebounceFn(() => {
   if (searchDepartmentStr.value.length > 2) {
