@@ -33,13 +33,13 @@
               <span v-if="authorCurrentDepartment">
                 {{ authorCurrentDepartment?.name }}
               </span>
-              <span v-else> Saknar primär avdelning </span>
+              <span v-else> Saknas </span>
             </div>
           </div>
           <div class="row">
             <div class="col">
               <strong>Alla tillhörigheter</strong>
-              <ul class="list-unstyled">
+              <ul v-if="author?.departments?.length" class="list-unstyled">
                 <li
                   class="float-start"
                   v-for="(department, index) in author.departments"
@@ -55,6 +55,7 @@
                   >
                 </li>
               </ul>
+              <span v-else> Saknas </span>
             </div>
           </div>
         </div>
@@ -62,7 +63,9 @@
 
       <div id="yearOfBirth" class="row mb-3">
         <div class="col">
-          <strong>Födelseår</strong> {{ author.year_of_birth }}
+          <strong>Födelseår</strong>
+          <span v-if="author?.year_of_birth">{{ author.year_of_birth }}</span>
+          <span> Saknas </span>
         </div>
       </div>
 
@@ -76,7 +79,7 @@
 
           <div class="row">
             <div class="col">
-              <table class="table">
+              <table v-if="author?.identifiers?.length" class="table">
                 <tbody>
                   <tr v-for="identifier in author.identifiers">
                     <th scope="row">
@@ -88,6 +91,7 @@
                   </tr>
                 </tbody>
               </table>
+              <span v-else>Saknas</span>
             </div>
           </div>
         </div>
