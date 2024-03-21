@@ -65,7 +65,7 @@
         <div class="col">
           <strong>Födelseår</strong>
           <span v-if="author?.year_of_birth">{{ author.year_of_birth }}</span>
-          <span> Saknas </span>
+          <span v-else> Saknas </span>
         </div>
       </div>
 
