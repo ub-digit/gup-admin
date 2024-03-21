@@ -5,16 +5,10 @@ const zAuthor = z.object({
   value: z.array(z.object({ name: z.string() })),
 });
 const zUrl = z.object({
-  value: z.union([
-    z.object({
-      url: z.null(),
-      display_title: z.null(),
-    }),
-    z.object({
-      url: z.string(),
-      display_title: z.string(),
-    }),
-  ]),
+  value: z.object({
+    url: z.string().nullable(),
+    display_title: z.string().nullable(),
+  }),
 });
 
 const zTitle = z.object({
