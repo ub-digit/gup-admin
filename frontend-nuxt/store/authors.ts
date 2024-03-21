@@ -121,6 +121,26 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
     }
   }
 
+  function addEmptyAuthorToPublication() {
+    authorsByPublication.value.push({
+      id: null,
+      year_of_birth: null,
+      email: null,
+      identifiers: [],
+      names: [
+        {
+          first_name: "Ny",
+          last_name: "Författare",
+          full_name: "Ny Författare",
+          gup_person_id: null,
+          start_date: "",
+          end_date: "",
+          primary: false,
+        },
+      ],
+      departments: [],
+    });
+  }
   function paramsSerializer(params: any) {
     //https://github.com/unjs/ufo/issues/62
     if (!params) {
@@ -142,6 +162,7 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
     filters,
     errorAuthors,
     pendingAuthors,
+    addEmptyAuthorToPublication,
     getAuthorById,
     fetchAuthors,
     fetchAuthorsByPublication,

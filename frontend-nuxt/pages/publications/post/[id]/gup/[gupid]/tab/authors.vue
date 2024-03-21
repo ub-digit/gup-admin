@@ -22,6 +22,7 @@
       />
     </ul>
   </div>
+  <button class="btn btn-primary" @click="addAuthor()">Lägg till rad +</button>
 </template>
 
 <script setup lang="ts">
@@ -52,12 +53,10 @@ const {
 const { importedPostById } = storeToRefs(importedPostsStore);
 
 const authorsStore = useAuthorsStore();
-const { fetchAuthorsByPublication } = authorsStore;
+const { fetchAuthorsByPublication, addEmptyAuthorToPublication } = authorsStore;
 const { authorsByPublication } = storeToRefs(authorsStore);
 
 fetchAuthorsByPublication(route.params.id as string);
-
-console.log(authorsByPublication);
 
 const comparePostsStore = useComparePostsStore();
 const { fetchGupPostsByTitle, fetchGupPostsById, fetchComparePostsMatrix } =
@@ -93,46 +92,38 @@ if (route.params.gupid !== "empty" && route.params.gupid !== "error") {
   ).first.value;
 }
 
-/* authors.value = authors.value.map((author, index) => {
-  return {
-    id: index,
-    isMatch: index % 2 ? true : false,
-    year: 1977,
-    x_account: "xavgo_" + index,
-    full_name: author.name,
-    departments: [{ id: 1, name: "bar_foo_" + index }],
-  };
-}); */
+function addAuthor() {
+  if (!config.public.ALLOW_AUTHOR_EDIT) return;
+  addEmptyAuthorToPublication();
+}
 
-function handleAuthorSelected(author) {
+function handleAuthorSelected(author: Author) {
   if (author) {
-    selectedAuthor.value = author;
-    authors.value[selectedAuthorIndex.value] = author;
-    selectedAuthorIndex.value = null;
+    authorsByPublication.value.splice(selectedAuthorIndex.value, 1, author);
     selectedAuthorIndex.value = null;
   }
   showModalAuthor.value = false;
 }
 
-function handleMoveUp(author, index) {
+function handleMoveUp(author: Author, index: number) {
   if (index > 0) {
-    const temp = authors.value[index - 1];
-    authors.value[index - 1] = author;
-    authors.value[index] = temp;
+    const temp = authorsByPublication.value[index - 1];
+    authorsByPublication.value[index - 1] = author;
+    authorsByPublication.value[index] = temp;
   }
 }
 
-function handleMoveDown(author, index) {
-  if (index < authors.value.length - 1) {
-    const temp = authors.value[index + 1];
-    authors.value[index + 1] = author;
-    authors.value[index] = temp;
+function handleMoveDown(author: Author, index: number) {
+  if (index < authorsByPublication.value.length - 1) {
+    const temp = authorsByPublication.value[index + 1];
+    authorsByPublication.value[index + 1] = author;
+    authorsByPublication.value[index] = temp;
   }
 }
 
-function handleRemovePerson(author, index) {
+function handleRemovePerson(author: Author, index: number) {
   if (!config.public.ALLOW_AUTHOR_EDIT) return;
-  authors.value.splice(index, 1);
+  authorsByPublication.value.splice(index, 1);
 }
 
 function handleSuccess() {
