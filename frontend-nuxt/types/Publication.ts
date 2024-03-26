@@ -3,13 +3,13 @@ import { z } from "zod";
 const zAuthor = z.object({ id: z.number().nullable(), name: z.string() });
 
 export const zPublication = z.object({
-  title: z.string().nullable(),
+  title: z.string(),
   id: z.string(),
-  source: z.string().nullable(),
-  publication_type_label: z.string().nullable(),
-  publication_type_id: z.number().nullable(),
-  pubyear: z.string().nullable(),
-  authors: z.array(zAuthor).nullable(),
+  source: z.string(),
+  publication_type_label: z.string(),
+  publication_type_id: z.number(),
+  pubyear: z.string(),
+  authors: z.array(zAuthor),
 });
 
 export const zPublicationArray = z.object({
