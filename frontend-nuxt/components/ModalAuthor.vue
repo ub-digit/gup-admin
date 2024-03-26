@@ -113,7 +113,7 @@ const suggestedDepartmentsFiltered = computed(() => {
 
 const fetchSuggestedDepartments = async (
   name: string,
-  year?: number | null
+  year?: string | null
 ) => {
   const { data, error } = await useFetch("/api/departments/suggest", {
     params: { name: name, year: year },
