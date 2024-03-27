@@ -15,13 +15,33 @@
               </div>
             </div>
           </div>
+          <div class="col-auto align-self-top text-success">
+            <div v-if="selectedUserOverride.length === 6">
+              <font-awesome-icon icon="fa-check" style="margin-top: 18px" />
+            </div>
+          </div>
+          <div class="col-auto align-self-top">
+            <input
+              class="form-control"
+              style="margin-top: 10px"
+              type="search"
+              name="selectedUserOverride"
+              id="selectedUserOverride"
+              placeholder="Ange användare"
+              v-model="selectedUserOverride"
+            />
+          </div>
+
+          <div class="col-auto align-self-top">
+            <div style="margin-top: 15px">eller</div>
+          </div>
           <div class="col-auto align-self-top">
             <select
               style="margin-top: 10px"
               class="form-select"
               v-model="selectedUser"
             >
-              <option disabled selected value="">Select user</option>
+              <option disabled selected value="">Välj användare</option>
               <!-- inline object literal -->
               <option v-for="user in users" :key="user">{{ user }}</option>
             </select>
@@ -42,7 +62,8 @@ import { useImportedPostsStore } from "~/store/imported_posts";
 import { storeToRefs } from "pinia";
 
 const importedPostsStore = useImportedPostsStore();
-const { users, selectedUser } = storeToRefs(importedPostsStore);
+const { users, selectedUser, selectedUserOverride } =
+  storeToRefs(importedPostsStore);
 const { t, getLocale } = useI18n();
 
 const getHeaderURL = computed(() => {
