@@ -8,14 +8,18 @@ defmodule GupIndexManager.Resource.Persons do
     |> sanitize_data()
     |> has_x_account()
     |> get_existing_person_data()
-    |> get_existing_person_data_by_identifiers()
+    # |> get_existing_person_data_by_identifiers()
     |> merge_data()
     # |> remove_old_record_from_index()
-    # |> create_or_update_person()
-    %{}
+    |> create_or_update_person()
+    |> case do
+      {:error, message} -> %{"message" => message}
+      _ -> %{"message" => "Person created or updated"}
+
+    end
   end
 
-  def get_existing_person_data({false, input_data}) do
+  def get_existing_person_data({_existing_xaccount = false, input_data}) do
   # No x account in incoming data, check if gup_person_id exists in index
   # If gup_person_id exists in index, return {data, existing_data} else return "data"
     IO.inspect("NO X ACCOUNT IN DATA or NOT Found by xaccount, trying to find by gup_person_id")
@@ -28,7 +32,7 @@ defmodule GupIndexManager.Resource.Persons do
     input_data
   end
 
-  def get_existing_person_data({true, input_data, x_account}) do
+  def get_existing_person_data({_existing_xaccount = true, input_data, x_account}) do
   # X account exists in incoming data
   # Check if x account exists in index
   # If x account exists in index, merge
@@ -42,7 +46,7 @@ defmodule GupIndexManager.Resource.Persons do
   end
 
   def get_existing_person_data_by_identifiers({existing_data, data}) do
-    IO.inspect("Existing data already found, returning data asdasdasd")
+    IO.inspect("Existing data already found, returning data")
     {existing_data, data}
   end
 
@@ -61,7 +65,6 @@ defmodule GupIndexManager.Resource.Persons do
   #   Index.delete_record(data, Index.get_persons_index())
   # end
 
-
   def get_gup_person_id(data) do
     Map.get(data, "names", nil)
     |> List.first()
@@ -77,6 +80,7 @@ defmodule GupIndexManager.Resource.Persons do
     end
   end
 
+  def create_or_update_person({:error, _message} = error), do: error
   def create_or_update_person(data) do
     id = Map.get(data, "id", nil)
     attrs = %{
@@ -106,9 +110,8 @@ defmodule GupIndexManager.Resource.Persons do
     |> merge_lists(new_data, "identifiers")
     |> merge_lists(new_data, "departments")
     |> set_merge_count()
-    # |> create_or_update_person()
-    %{"message" => "Person updated"}
   end
+
   def merge_data(data) do
     IO.inspect("NO EXISTING DATA, RETURNING NEW DATA")
     data
@@ -142,6 +145,8 @@ defmodule GupIndexManager.Resource.Persons do
     List.insert_at(existing_names, 0, new_name)
   end
 
+  def set_merge_count({:error, _error} = error), do: error
+
   def set_merge_count(data) do
     merge_count = Map.get(data, "merge_count", 0) + 1
     Map.put(data, "merge_count", merge_count)
@@ -151,6 +156,8 @@ defmodule GupIndexManager.Resource.Persons do
     data = Map.put(data, "id", id)
     Index.update_record(data, id, Index.get_persons_index())
   end
+
+  def merge_lists({:error, _error} = error, _, _list), do: error
 
   def merge_lists(existing_data, new_data, list_name) do
     IO.inspect("MERGING LISTS")
@@ -163,6 +170,7 @@ defmodule GupIndexManager.Resource.Persons do
     end
   end
 
+
   def merge_lists(existing_data_list, new_data_list) do
     Enum.uniq(existing_data_list ++ new_data_list)
   end
@@ -174,7 +182,7 @@ defmodule GupIndexManager.Resource.Persons do
     end)
     |> Enum.member?(true)
     |> case  do
-      true -> {:error, "Cannot merge lists, conflicting data"}
+      true -> {:error, "Cannot merge persons, conflicting data found in lists"}
       false -> {:ok, "Lists are mergeable"}
     end
   end
