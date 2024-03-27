@@ -43,5 +43,34 @@ defmodule GupIndexManager.Resource.Index.Query do
     }
   end
 
+  def find_person_by_x_account(x_account) do
+    %{
+      "query" => %{
+        "bool" => %{
+          "must" => [
+            %{
+              "term" => %{"identifiers.code.keyword" => "X_ACCOUNT"}
+            },
+            %{
+              "term" => %{"identifiers.value.keyword" => x_account}
+            }
+          ]
+        }
+      }
+    }
+  end
 
+  def find_person_by_gup_person_id(gup_person_id) do
+    %{
+      "query" => %{
+        "bool" => %{
+          "must" => [
+            %{
+              "term" => %{"names.gup_person_id" => gup_person_id}
+            }
+          ]
+        }
+      }
+    }
+  end
 end

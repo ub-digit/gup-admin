@@ -64,7 +64,7 @@ defmodule Experiment do
 
   def tt(d) do
     IO.inspect("NO AFFILIATIONS")
-
+    d
   end
 
   @hello "Hello"
@@ -75,6 +75,12 @@ defmodule Experiment do
 
   def testar(_) do
     IO.inspect("All others")
+  end
+
+
+  def has_any() do
+    [%{"id" => 1, "name" => "Anna"}, %{"id" => 2, "name" => "Bertil"}]
+    |> Enum.any?(fn x -> x["id"] == 1 end)
   end
 
 end
