@@ -173,7 +173,7 @@ const {
   pendingImportedPostById,
   pendingCreateImportedPostInGup,
   errorImportedPostById,
-  selectedUser,
+  selectedUserComputed,
 } = storeToRefs(importedPostsStore);
 const comparePostsStore = useComparePostsStore();
 const { fetchGupPostsByTitle, fetchGupPostsById, fetchComparePostsMatrix } =
@@ -261,13 +261,13 @@ if (
 }
 
 async function merge() {
-  if (selectedUser.value !== "") {
+  if (selectedUserComputed.value !== "") {
     const ok = confirm(t("messages.confirm_merge_in_gup"));
     if (ok) {
       const res = await mergePosts(
-        route.params.id,
-        route.params.gupid,
-        selectedUser.value
+        route.params.id as string,
+        route.params.gupid as string,
+        selectedUserComputed.value
       );
       if (res) {
         showModalMerge.value = true;
@@ -329,7 +329,7 @@ async function handleSuccessMerge() {
 }
 
 async function editPost() {
-  if (selectedUser.value !== "") {
+  if (selectedUserComputed.value !== "") {
     let ok = null;
     if (item_row_source === "gup") {
       ok = confirm(t("messages.confirm_open_in_gup"));
@@ -340,7 +340,7 @@ async function editPost() {
       if (item_row_source !== "gup") {
         const response = await createImportedPostInGup(
           item_row_id,
-          selectedUser.value
+          selectedUserComputed.value
         );
         if (!response.error) {
           const url = response.link; //config.public.API_GUP_BASE_URL_EDIT + response.id;

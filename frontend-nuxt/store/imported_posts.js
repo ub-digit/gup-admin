@@ -16,8 +16,12 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     "xjostw",
   ]);
   const selectedUser = ref("");
+  const selectedUserOverride = ref("");
   const importedPosts = ref([]);
+  const numberOfImportedPostsTotal = ref(0);
+  const numberOfImportedPostsShowing = ref(0);
   const importedPostById = ref(null);
+
   const errorImportedPostById = ref(null);
   const pendingImportedPosts = ref(null);
   const pendingImportedPostById = ref(null);
@@ -32,16 +36,38 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     selectedUser.value = nuxtStorage.localStorage.getData("selectedUser");
   }
 
+  if (nuxtStorage?.localStorage?.getData("selectedUserOverride")) {
+    selectedUserOverride.value = nuxtStorage.localStorage.getData(
+      "selectedUserOverride"
+    );
+  }
+
   watch(selectedUser, () => {
     // save to localstorage
+    nuxtStorage?.localStorage?.setData("selectedUser", selectedUser.value);
     if (selectedUser.value !== "") {
-      nuxtStorage.localStorage.setData("selectedUser", selectedUser.value);
-    } else {
-      selectedUser.value = nuxtStorage.localStorage.getData("selectedUser");
+      selectedUserOverride.value = "";
     }
   });
 
-  async function createImportedPostInGup(id, user) {
+  watch(selectedUserOverride, () => {
+    // save to localstorage
+    nuxtStorage?.localStorage?.setData(
+      "selectedUserOverride",
+      selectedUserOverride.value
+    );
+    if (selectedUserOverride.value?.length === 6) {
+      selectedUser.value = "";
+    }
+  });
+
+  const selectedUserComputed = computed(() => {
+    if (selectedUser.value) {
+      return selectedUser.value;
+    }
+    return selectedUserOverride.value;
+  });
+  async function createImportedPostInGup(id: string, user: string) {
     try {
       pendingCreateImportedPostInGup.value = true;
       const { data, error } = await useFetch(`/api/post_to_gup/${id}/`, {
@@ -167,5 +193,7 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     $importedReset,
     users,
     selectedUser,
+    selectedUserOverride,
+    selectedUserComputed,
   };
 });
