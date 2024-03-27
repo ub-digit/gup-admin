@@ -21,7 +21,8 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     "xberns",
     "xjostw",
   ]);
-  const selectedUser = ref("");
+  const selectedUser: Ref<string | null> = ref("");
+  const selectedUserOverride: Ref<string> = ref("");
   const importedPosts: Ref<Publication[]> = ref([]);
   const numberOfImportedPostsTotal = ref(0);
   const numberOfImportedPostsShowing = ref(0);
@@ -36,15 +37,37 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     selectedUser.value = nuxtStorage.localStorage.getData("selectedUser");
   }
 
+  if (nuxtStorage?.localStorage?.getData("selectedUserOverride")) {
+    selectedUserOverride.value = nuxtStorage.localStorage.getData(
+      "selectedUserOverride"
+    );
+  }
+
   watch(selectedUser, () => {
     // save to localstorage
+    nuxtStorage?.localStorage?.setData("selectedUser", selectedUser.value);
     if (selectedUser.value !== "") {
-      nuxtStorage?.localStorage?.setData("selectedUser", selectedUser.value);
-    } else {
-      selectedUser.value = nuxtStorage?.localStorage?.getData("selectedUser");
+      selectedUserOverride.value = "";
     }
   });
 
+  watch(selectedUserOverride, () => {
+    // save to localstorage
+    nuxtStorage?.localStorage?.setData(
+      "selectedUserOverride",
+      selectedUserOverride.value
+    );
+    if (selectedUserOverride.value?.length === 6) {
+      selectedUser.value = "";
+    }
+  });
+
+  const selectedUserComputed = computed(() => {
+    if (selectedUser.value) {
+      return selectedUser.value;
+    }
+    return selectedUserOverride.value;
+  });
   async function createImportedPostInGup(id: string, user: string) {
     try {
       pendingCreateImportedPostInGup.value = true;
@@ -184,5 +207,7 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     $importedReset,
     users,
     selectedUser,
+    selectedUserOverride,
+    selectedUserComputed,
   };
 });
