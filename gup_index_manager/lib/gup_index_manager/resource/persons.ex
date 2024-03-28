@@ -10,8 +10,8 @@ defmodule GupIndexManager.Resource.Persons do
     |> get_existing_person_data()
     # |> get_existing_person_data_by_identifiers()
     |> merge_data()
-    # |> remove_old_record_from_index()
     |> create_or_update_person()
+    |> remove_old_record_from_index(input_data)
     |> case do
       {:error, message} -> %{"message" => message}
       _ -> %{"message" => "Person created or updated"}
@@ -22,7 +22,7 @@ defmodule GupIndexManager.Resource.Persons do
   def get_existing_person_data({_existing_xaccount = false, input_data}) do
   # No x account in incoming data, check if gup_person_id exists in index
   # If gup_person_id exists in index, return {data, existing_data} else return "data"
-    IO.inspect("NO X ACCOUNT IN DATA or NOT Found by xaccount, trying to find by gup_person_id")
+  # IO.inspect("NO X ACCOUNT IN DATA or NOT Found by xaccount, trying to find by gup_person_id")
     gup_person_id = get_gup_person_id(input_data)
     Search.find_person_by_gup_person_id(gup_person_id)
     |> case do
@@ -37,21 +37,37 @@ defmodule GupIndexManager.Resource.Persons do
   # Check if x account exists in index
   # If x account exists in index, merge
   # Also check for gup_person_id in index and merge and delete old record
-    IO.inspect("X ACCOUNT EXISTS IN DATA")
-    Search.find_person_by_x_account(x_account)
+  # IO.inspect("X ACCOUNT EXISTS IN DATA")
+    possible_x_account = Search.find_person_by_x_account(x_account)
+    possible_x_account_id = possible_x_account
     |> case do
-      {true, existing_data} -> {existing_data, input_data}
-      {false, nil} -> get_existing_person_data({false, input_data})
+      {true, existing_data} -> existing_data["id"]
+      {false, nil} -> nil
+    end
+    gup_person_id = get_gup_person_id(input_data)
+    possible_gup_person = Search.find_person_by_gup_person_id(gup_person_id)
+    possible_gup_person_id = possible_gup_person
+    |> case do
+      {true, existing_data} -> existing_data["id"]
+      {false, nil} -> nil
+    end
+
+    case {possible_x_account, possible_x_account_id, possible_gup_person_id} do
+      {{true, existing_data}, _existing_id, nil} -> {existing_data, input_data, :no_gup_person_deletion}
+      {{true, existing_data}, existing_id, gup_person_id} when existing_id != gup_person_id -> {existing_data, input_data, gup_person_id}
+      {{true, existing_data}, _existing_id, _gup_person_id} -> {existing_data, input_data, :no_gup_person_deletion}
+      _ -> possible_gup_person |> then(fn {existing_data, input_data} -> {existing_data, input_data, :no_gup_person_deletion} end)
+
     end
   end
 
   def get_existing_person_data_by_identifiers({existing_data, data}) do
-    IO.inspect("Existing data already found, returning data")
+  # IO.inspect("Existing data already found, returning data")
     {existing_data, data}
   end
 
   def get_existing_person_data_by_identifiers(data) do
-    IO.inspect("No existing data, trying by identifiers")
+   # IO.inspect("No existing data, trying by identifiers")
     identifiers = Map.get(data, "identifiers", [])
     Search.find_person_by_identifiers(identifiers)
     |> case do
@@ -60,10 +76,17 @@ defmodule GupIndexManager.Resource.Persons do
     end
   end
 
-  # def remove_old_record_from_index(data), do: data
-  # def remove_old_record_from_index({data, _d}) do
-  #   Index.delete_record(data, Index.get_persons_index())
-  # end
+
+  def remove_old_record_from_index({{:error, _msg}, _} = error), do: error
+  def remove_old_record_from_index({existing_data, :no_gup_person_deletion}, _input_data), do: existing_data
+  def remove_old_record_from_index({existing_data, gup_admin_id}, _input_data) when not is_atom(gup_admin_id) do
+    Index.delete_record(gup_admin_id, Index.get_persons_index())
+    # Delete record from database
+    GupIndexManager.Model.Person.find_by_id(gup_admin_id)
+    |> GupIndexManager.Repo.delete()
+    existing_data
+  end
+
 
   def get_gup_person_id(data) do
     Map.get(data, "names", nil)
@@ -80,8 +103,8 @@ defmodule GupIndexManager.Resource.Persons do
     end
   end
 
-  def create_or_update_person({:error, _message} = error), do: error
-  def create_or_update_person(data) do
+  def create_or_update_person({{:error, _message}, _state} = error), do: error
+  def create_or_update_person({data, deletion_state}) do
     id = Map.get(data, "id", nil)
     attrs = %{
       "json" => data |> Jason.encode!()
@@ -92,6 +115,7 @@ defmodule GupIndexManager.Resource.Persons do
     |> elem(1)
     |> set_meta(data)
     |> update_index()
+    |> then(fn data -> {data, deletion_state} end)
   end
 
   def set_meta(db_data, data) do
@@ -102,35 +126,35 @@ defmodule GupIndexManager.Resource.Persons do
   end
 
 
-  def merge_data({existing_data, new_data}) do
-    IO.inspect("MERGING DATA")
+  def merge_data({existing_data, new_data, deletion_state}) do
+    #IO.inspect("MERGING DATA")
     existing_data
     |> clear_primary_name()
     |> merge_names(new_data)
     |> merge_lists(new_data, "identifiers")
     |> merge_lists(new_data, "departments")
     |> set_merge_count()
+    |> then(fn data -> {data, deletion_state} end)
   end
 
   def merge_data(data) do
-    IO.inspect("NO EXISTING DATA, RETURNING NEW DATA")
+    #IO.inspect("NO EXISTING DATA, RETURNING NEW DATA")
     data
   end
 
   def merge_names(existing_data, data) do
-    IO.inspect("MERGING NAMES")
+    #IO.inspect("MERGING NAMES")
     # Check for the gup_person_id in the new data
     existing_names = Map.get(existing_data, "names", [])
     new_name = Map.get(data, "names", []) |> List.first()
 
-    # Check if the new names gup_person_id already exists in the existing names
+    # Check if the new names gup_person_id already exists in the existing namesid
     names = existing_names
     |> Enum.any?(fn n -> Map.get(n, "gup_person_id") == Map.get(new_name, "gup_person_id") end)
     |> case do
       true -> update_name(existing_names, new_name)
       false -> add_name(existing_names, new_name)
     end
-
     Map.put(existing_data, "names", names)
   end
 
@@ -161,12 +185,11 @@ defmodule GupIndexManager.Resource.Persons do
 
   def merge_lists(existing_data, new_data, list_name) do
     IO.inspect("MERGING LISTS")
-    existing_data_list = Map.get(existing_data, list_name, [])
-    new_data_list = Map.get(new_data, list_name, [])
-    lists_are_mergeable(existing_data_list, new_data_list)
+
+    lists_are_mergeable(existing_data, new_data, list_name)
     |> case do
       {:error, message} -> {:error, message}
-      {:ok, _message} -> Map.put(existing_data, list_name, merge_lists(existing_data_list, new_data_list))
+      {:ok, existing_data_list, new_data_list} -> Map.put(existing_data, list_name, merge_lists(existing_data_list, new_data_list))
     end
   end
 
@@ -175,18 +198,37 @@ defmodule GupIndexManager.Resource.Persons do
     Enum.uniq(existing_data_list ++ new_data_list)
   end
 
-  def lists_are_mergeable(existing_data_list, new_data_list) do
+  def lists_are_mergeable(existing_data, new_data, list_name) do
+    existing_data_list = Map.get(existing_data, list_name, [])
+    new_data_list = Map.get(new_data, list_name, [])
     Enum.map(existing_data_list, fn existing_item ->
       Enum.any?(new_data_list, fn new_item ->  new_item["code"] == existing_item["code"] && new_item["value"] != existing_item["value"] end)
       # TODO: Log conflicting data?
+
     end)
     |> Enum.member?(true)
     |> case  do
-      true -> {:error, "Cannot merge persons, conflicting data found in lists"}
-      false -> {:ok, "Lists are mergeable"}
+      true -> log_conflicting_data(existing_data, new_data)
+      false -> {:ok, existing_data_list, new_data_list}
     end
   end
 
+  def log_conflicting_data(existing_data, new_data) do
+    # append the conflicting data to the file
+    # return an error
+
+    {:ok, file} = File.open "merge_conflicts.log", [:append]
+
+    msg = "--------------------------------- Merge Conflict start -------------------------------------------\n"
+    |> Kernel.<>(("Existing data: \n"))
+    |> Kernel.<>(Jason.encode!(existing_data, pretty: true))
+    |> Kernel.<>(("\nNew data: \n"))
+    |> Kernel.<>(Jason.encode!(new_data, pretty: true))
+    |> Kernel.<>(("\n--------------------------------- Merge Conflict end ---------------------------------------------\n\n"))
+
+    IO.write(file, msg)
+    {:error, "Cannot merge persons, conflicting data found in lists"}
+  end
 
   def get_all do
     Search.get_all_persons()

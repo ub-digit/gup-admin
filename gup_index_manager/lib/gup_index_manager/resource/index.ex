@@ -123,4 +123,8 @@ defmodule GupIndexManager.Resource.Index do
         end
     end
   end
+
+  def delete_record(gup_admin_id, index_name) do
+    Elastix.Document.delete(elastic_url(), index_name, "_doc", gup_admin_id)
+  end
  end
