@@ -26,10 +26,9 @@ defmodule GupIndexManager.Resource.Persons do
     gup_person_id = get_gup_person_id(input_data)
     Search.find_person_by_gup_person_id(gup_person_id)
     |> case do
-      {true, existing_data} -> {existing_data, input_data}
-      {false, nil} -> input_data
+      {true, existing_data} -> {existing_data, input_data, :no_gup_person_deletion}
+      {false, nil} -> {nil, input_data, :no_gup_person_deletion}
     end
-    input_data
   end
 
   def get_existing_person_data({_existing_xaccount = true, input_data, x_account}) do
@@ -56,7 +55,11 @@ defmodule GupIndexManager.Resource.Persons do
       {{true, existing_data}, _existing_id, nil} -> {existing_data, input_data, :no_gup_person_deletion}
       {{true, existing_data}, existing_id, gup_person_id} when existing_id != gup_person_id -> {existing_data, input_data, gup_person_id}
       {{true, existing_data}, _existing_id, _gup_person_id} -> {existing_data, input_data, :no_gup_person_deletion}
-      _ -> possible_gup_person |> then(fn {existing_data, input_data} -> {existing_data, input_data, :no_gup_person_deletion} end)
+      _ -> possible_gup_person
+      |> case do
+        {true, existing_data} -> {existing_data, input_data, :no_gup_person_deletion}
+        {false, nil} -> {nil, input_data, :no_gup_person_deletion}
+      end
 
     end
   end
@@ -126,7 +129,7 @@ defmodule GupIndexManager.Resource.Persons do
   end
 
 
-  def merge_data({existing_data, new_data, deletion_state}) do
+  def merge_data({existing_data, new_data, deletion_state}) when is_map(existing_data) do
     #IO.inspect("MERGING DATA")
     existing_data
     |> clear_primary_name()
@@ -137,9 +140,9 @@ defmodule GupIndexManager.Resource.Persons do
     |> then(fn data -> {data, deletion_state} end)
   end
 
-  def merge_data(data) do
+  def merge_data({nil, data, deletion_state}) do
     #IO.inspect("NO EXISTING DATA, RETURNING NEW DATA")
-    data
+    {data, deletion_state}
   end
 
   def merge_names(existing_data, data) do
