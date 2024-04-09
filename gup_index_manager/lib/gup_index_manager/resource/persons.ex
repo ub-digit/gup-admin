@@ -219,8 +219,9 @@ defmodule GupIndexManager.Resource.Persons do
   def log_conflicting_data(existing_data, new_data) do
     # append the conflicting data to the file
     # return an error
-
-    {:ok, file} = File.open "merge_conflicts.log", [:append]
+    merg_conflict_log_path = get_conflict_log_path()
+    File.mkdir_p!(Path.dirname(merg_conflict_log_path))
+    {:ok, file} = File.open merg_conflict_log_path, [:append]
 
     msg = "--------------------------------- Merge Conflict start -------------------------------------------\n"
     |> Kernel.<>(("Existing data: \n"))
@@ -230,11 +231,16 @@ defmodule GupIndexManager.Resource.Persons do
     |> Kernel.<>(("\n--------------------------------- Merge Conflict end ---------------------------------------------\n\n"))
 
     IO.write(file, msg)
+    File.close(file)
     {:error, "Cannot merge persons, conflicting data found in lists"}
   end
 
   def get_all do
     Search.get_all_persons()
+  end
+
+  def get_conflict_log_path do
+    System.get_env("MERGE_CONFLICT_LOG_PATH", "merge_conflicts.log")
   end
 
   def sanitize_data(input_data) do
