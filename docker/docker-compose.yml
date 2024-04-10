@@ -33,9 +33,11 @@ services:
       ELASTIC_SEARCH_URL: "${ELASTIC_SEARCH_URL}"
       GUP_BASE_URL: "${GUP_BASE_URL}"
       GUP_INDEX_MANAGER_API_KEY: "${GUP_INDEX_MANAGER_API_KEY}"
+      INDEX_MANAGER_MERGE_PERSON_CONFLICTS_LOG_PATH: "${INDEX_MANAGER_MERGE_PERSON_CONFLICTS_LOG_PATH}"
     restart: always
     volumes:
       - "./department-files:/release/data/departments"
+      - "./MERGE_LOGS:/PERSON_MERGE_CONFLICT_LOGS/"
   admin-db:
     image: postgres:12
     environment:

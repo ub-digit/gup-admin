@@ -240,7 +240,7 @@ defmodule GupIndexManager.Resource.Persons do
   end
 
   def get_conflict_log_path do
-    System.get_env("MERGE_CONFLICTS_LOG_PATH", "merge_conflicts.log")
+    System.get_env("INDEX_MANAGER_MERGE_PERSON_CONFLICTS_LOG_PATH", "merge_conflicts.log")
   end
 
   def sanitize_data(input_data) do
