@@ -37,7 +37,7 @@ services:
     restart: always
     volumes:
       - "./department-files:/release/data/departments"
-      - "./MERGE_LOGS:/PERSON_MERGE_CONFLICT_LOGS/"
+      - "../MERGE_LOGS:/release/PERSON_MERGE_CONFLICT_LOGS"
   admin-db:
     image: postgres:12
     environment:
