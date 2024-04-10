@@ -219,7 +219,7 @@ defmodule GupIndexManager.Resource.Persons do
   def log_conflicting_data(existing_data, new_data) do
     # append the conflicting data to the file
     # return an error
-    merg_conflict_log_path = get_conflict_log_path()
+    merg_conflict_log_path = get_conflict_log_path() |> IO.inspect(label: "Conflict log path")
     File.mkdir_p!(Path.dirname(merg_conflict_log_path))
     {:ok, file} = File.open merg_conflict_log_path, [:append]
 
@@ -240,7 +240,7 @@ defmodule GupIndexManager.Resource.Persons do
   end
 
   def get_conflict_log_path do
-    System.get_env("MERGE_CONFLICT_LOG_PATH", "merge_conflicts.log")
+    System.get_env("MERGE_CONFLICTS_LOG_PATH", "merge_conflicts.log")
   end
 
   def sanitize_data(input_data) do
