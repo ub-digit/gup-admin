@@ -1,6 +1,7 @@
 # this module will query elasticsearch for posts with filter on origin
 defmodule GupAdmin.Resource.Search do
   @index "publications"
+  @query_limit 1000
   alias GupAdmin.Resource.Search.Query
   alias GupAdmin.Resource.Search.Filter
   alias GupAdmin.Resource.Publication
@@ -236,6 +237,7 @@ defmodule GupAdmin.Resource.Search do
 
   def get_all_persons() do
     query = %{
+      "size" => @query_limit,
       "track_total_hits" => true,
       "query" => %{
         "bool" => %{
