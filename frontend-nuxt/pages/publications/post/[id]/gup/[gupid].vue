@@ -33,8 +33,8 @@
       <div v-if="showCompareView">
         <Spinner v-if="pendingComparePost" class="me-4" />
         <PostDisplayCompare
-          v-if="postsCompareMatrix"
-          :dataMatrix="postsCompareMatrix.data"
+          v-if="postsCompareMatrix.length"
+          :dataMatrix="postsCompareMatrix"
         />
       </div>
       <div v-else class="row">
@@ -67,7 +67,7 @@
     <div
       v-if="
         !errorImportedPostById &&
-        (postsCompareMatrix || importedPostById) &&
+        (postsCompareMatrix.length || importedPostById) &&
         !isPendingUpdate
       "
       class="action-bar"
@@ -90,7 +90,7 @@
             {{ t("buttons.edit") }}
           </button>
           <button
-            :disabled="!postsCompareMatrix"
+            :disabled="!postsCompareMatrix.length"
             type="button"
             class="btn btn-success"
             @click="merge"
@@ -140,7 +140,7 @@
   </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { useDebounceFn } from "@vueuse/core";
 import { useComparePostsStore } from "~/store/compare_posts";
 import { useImportedPostsStore } from "~/store/imported_posts";
@@ -149,15 +149,13 @@ import { storeToRefs } from "pinia";
 const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
-const searchTitleStr = ref(null);
+//const searchTitleStr = ref("");
 const { $toast } = useNuxtApp();
 const config = useRuntimeConfig();
 const showModal = ref(false);
 const showModalMerge = ref(false);
 const isPendingUpdate = ref(false);
 let done = false;
-
-console.log(config);
 
 const importedPostsStore = useImportedPostsStore();
 const {
@@ -173,7 +171,7 @@ const {
   pendingImportedPostById,
   pendingCreateImportedPostInGup,
   errorImportedPostById,
-  selectedUser,
+  selectedUserComputed,
 } = storeToRefs(importedPostsStore);
 const comparePostsStore = useComparePostsStore();
 const { fetchGupPostsByTitle, fetchGupPostsById, fetchComparePostsMatrix } =
@@ -189,29 +187,36 @@ const {
 } = storeToRefs(comparePostsStore);
 
 if (route.params.gupid === "empty" || route.params.gupid === "error") {
-  await fetchImportedPostById(route.params.id);
+  await fetchImportedPostById(route.params.id as string);
   if (!errorImportedPostById.value) {
-    if (importedPostById.value.pending) {
+    if (importedPostById?.value?.pending) {
       await pollForUpdate();
     }
     comparePostsStore.$reset();
   }
 } else {
-  await fetchComparePostsMatrix(route.params.id, route.params.gupid);
+  await fetchComparePostsMatrix(
+    route.params.id as string,
+    route.params.gupid as string
+  );
   if (
     errorPostsCompareMatrix &&
     errorPostsCompareMatrix.value &&
-    errorPostsCompareMatrix.value.error.code
+    errorPostsCompareMatrix.value.code
   ) {
-    console.log(errorPostsCompareMatrix.value.error);
-    if (errorPostsCompareMatrix.value.error.code === "404") {
+    if (errorPostsCompareMatrix.value.code === "666") {
       router.push({
-        path: `/publications/post/${route.params.id}/gup/empty`,
+        path: `/publications/post/${route.params.id}/gup/error/tab`,
         query: { ...route.query },
       });
-    } else if (errorPostsCompareMatrix.value.error.code === "200") {
+    } else if (errorPostsCompareMatrix.value.code === "404") {
       router.push({
-        path: `/publications/post/${route.params.id}/gup/error`,
+        path: `/publications/post/${route.params.id}/gup/empty/tab`,
+        query: { ...route.query },
+      });
+    } else if (errorPostsCompareMatrix.value.code === "200") {
+      router.push({
+        path: `/publications/post/${route.params.id}/gup/error/tab`,
         query: { ...route.query },
       });
       comparePostsStore.$reset();
@@ -220,54 +225,54 @@ if (route.params.gupid === "empty" || route.params.gupid === "error") {
 }
 
 // because of the array structure in data make sure to pick up the properties needed
-let item_row_title = null;
-let item_row_id = null;
-let item_row_source = null;
-let item_row_publication_id = null;
+let item_row_title: string | null = null;
+let item_row_id: string = "";
+let item_row_publication_id: string | null = null;
+let item_row_source: string | null = null;
 if (
   route.params.gupid !== "empty" &&
   route.params.gupid !== "error" &&
-  postsCompareMatrix.value &&
-  postsCompareMatrix.value.data
+  postsCompareMatrix.value
 ) {
-  item_row_publication_id = postsCompareMatrix.value.data.find(
+  item_row_publication_id = postsCompareMatrix?.value?.find(
     (item) => item.display_label === "publication_id"
-  ).first.value;
-  item_row_id = postsCompareMatrix.value.data.find(
+  )?.first?.value as string;
+  item_row_id = postsCompareMatrix?.value?.find(
     (item) => item.display_label === "id"
-  ).first.value;
-  item_row_source = postsCompareMatrix.value.data.find(
+  )?.first?.value as string;
+  item_row_source = postsCompareMatrix?.value.find(
     (item) => item.display_type === "meta"
-  ).first.value.source.value;
-  item_row_title = postsCompareMatrix.value.data.find(
+  )?.first?.value?.source?.value;
+  item_row_title = postsCompareMatrix?.value?.find(
     (item) => item.display_label === "title"
-  ).first.value.title;
+  )?.first?.value?.title;
 } else if (
   (route.params.gupid === "empty" || route.params.gupid === "error") &&
-  importedPostById.value
+  importedPostById.value &&
+  importedPostById.value.data
 ) {
   item_row_publication_id = importedPostById.value.data.find(
     (item) => item.display_label === "publication_id"
-  ).first.value;
+  )?.first.value as string;
   item_row_id = importedPostById.value.data.find(
     (item) => item.display_label === "id"
-  ).first.value;
-  item_row_source = importedPostById.value.data.find(
+  )?.first.value as string;
+  item_row_source = importedPostById?.value?.data?.find(
     (item) => item.display_type === "meta"
-  ).first.value.source.value;
-  item_row_title = importedPostById.value.data.find(
+  )?.first?.value?.source.value as string;
+  item_row_title = importedPostById?.value?.data?.find(
     (item) => item.display_label === "title"
-  ).first.value.title;
+  )?.first?.value?.title as string;
 }
 
 async function merge() {
-  if (selectedUser.value !== "") {
+  if (selectedUserComputed.value !== "") {
     const ok = confirm(t("messages.confirm_merge_in_gup"));
     if (ok) {
       const res = await mergePosts(
-        route.params.id,
-        route.params.gupid,
-        selectedUser.value
+        route.params.id as string,
+        route.params.gupid as string,
+        selectedUserComputed.value
       );
       if (res) {
         showModalMerge.value = true;
@@ -299,8 +304,8 @@ async function removePost() {
 async function pollForUpdate() {
   if (done) return;
   isPendingUpdate.value = true;
-  await fetchImportedPostById(route.params.id);
-  if (!importedPostById.value.pending) {
+  await fetchImportedPostById(route.params.id as string);
+  if (!importedPostById?.value?.pending) {
     isPendingUpdate.value = false;
     return;
   }
@@ -329,7 +334,7 @@ async function handleSuccessMerge() {
 }
 
 async function editPost() {
-  if (selectedUser.value !== "") {
+  if (selectedUserComputed.value !== "") {
     let ok = null;
     if (item_row_source === "gup") {
       ok = confirm(t("messages.confirm_open_in_gup"));
@@ -340,10 +345,10 @@ async function editPost() {
       if (item_row_source !== "gup") {
         const response = await createImportedPostInGup(
           item_row_id,
-          selectedUser.value
+          selectedUserComputed.value
         );
         if (!response.error) {
-          const url = response.link; //config.public.API_GUP_BASE_URL_EDIT + response.id;
+          const url = response.link;
           window.open(url, "_blank");
           showModal.value = true;
         } else if (response.error) {
@@ -351,7 +356,7 @@ async function editPost() {
         }
       } else if (item_row_source === "gup") {
         window.open(
-          `${config.public.API_GUP_BASE_URL_EDIT}${item_row_publication_id}`,
+          `${config.public.API_GUP_BASE_URL}/publications/show/${item_row_publication_id}`,
           "_blank"
         );
       }
@@ -387,8 +392,5 @@ const showCompareView = computed(() => {
       border-color: #dee2e6 #dee2e6 #fff;
     }
   }
-}
-
-.col {
 }
 </style>

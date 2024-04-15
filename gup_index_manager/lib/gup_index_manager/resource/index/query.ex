@@ -42,4 +42,6 @@ defmodule GupIndexManager.Resource.Index.Query do
       }
     }
   end
+
+
 end

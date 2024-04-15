@@ -303,20 +303,16 @@
   </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import Spinner from "./Spinner.vue";
 
 const config = useRuntimeConfig();
-
-const gupURL = (id) => {
-  return `${config.public.API_GUP_BASE_URL_SHOW}${id}`;
-};
 
 const { t } = useI18n();
 const props = defineProps(["dataMatrix"]);
 const numberOfAuthorsToList = 3;
 
-const getDate = (date) => {
+const getDate = (date: string) => {
   let temp_date = new Date(date);
   return (
     temp_date.getFullYear() +

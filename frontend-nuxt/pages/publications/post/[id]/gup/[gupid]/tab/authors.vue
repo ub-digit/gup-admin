@@ -4,6 +4,7 @@
     :noSuccessButton="false"
     :show="showModalAuthor"
     :sourceSelectedAuthor="selectedAuthor"
+    :publicationYear="publicationYear"
     @success="handleAuthorSelected"
     @close="showModalAuthor = false"
   />
@@ -11,7 +12,7 @@
   <div class="authors mt-4">
     <ul class="list-group list-group-flush">
       <AuthorRow
-        v-for="(author, index) in authors"
+        v-for="(author, index) in authorsByPublication"
         :key="index"
         :author="author"
         :index="index"
@@ -22,52 +23,40 @@
       />
     </ul>
   </div>
+  <button class="btn btn-primary" @click="addAuthor()">Lägg till rad +</button>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useComparePostsStore } from "~/store/compare_posts";
 import { useImportedPostsStore } from "~/store/imported_posts";
+import { useAuthorsStore } from "~/store/authors";
 import { storeToRefs } from "pinia";
+import type { Author } from "~/types/Author";
+import { ref } from "vue";
+import type { Ref } from "vue";
 
 let showModalAuthor = ref(false);
-let selectedAuthor = ref(null);
-let selectedAuthorIndex = ref(null);
+let selectedAuthor: Ref<Author | null> = ref(null);
+let selectedAuthorIndex: Ref<number | null> = ref(null);
+let publicationYear: Ref<string | null> = ref(null);
 
 const route = useRoute();
 
 const importedPostsStore = useImportedPostsStore();
-const {
-  fetchImportedPostById,
-  removeImportedPost,
-  fetchImportedPosts,
-  createImportedPostInGup,
-  mergePosts,
-  $importedReset,
-} = importedPostsStore;
+const { importedPostById } = storeToRefs(importedPostsStore);
 
-const {
-  importedPostById,
-  pendingImportedPostById,
-  pendingCreateImportedPostInGup,
-  errorImportedPostById,
-  selectedUser,
-} = storeToRefs(importedPostsStore);
+const authorsStore = useAuthorsStore();
+const { fetchAuthorsByPublication, addEmptyAuthorToPublication } = authorsStore;
+const { authorsByPublication } = storeToRefs(authorsStore);
+
+fetchAuthorsByPublication(route.params.id as string);
 
 const comparePostsStore = useComparePostsStore();
-const { fetchGupPostsByTitle, fetchGupPostsById, fetchComparePostsMatrix } =
-  comparePostsStore;
-const {
-  gupPostsByTitle,
-  pendingGupPostsByTitle,
-  gupPostsById,
-  pendingGupPostsById,
-  postsCompareMatrix,
-  errorPostsCompareMatrix,
-  pendingComparePost,
-} = storeToRefs(comparePostsStore);
+const { postsCompareMatrix } = storeToRefs(comparePostsStore);
+
 let config = useRuntimeConfig();
 
-const handleClickedPerson = (author, index) => {
+const handleClickedPerson = (author: Author, index: number) => {
   if (!config.public.ALLOW_AUTHOR_EDIT) return;
   selectedAuthor.value = author;
   selectedAuthorIndex.value = index;
@@ -77,55 +66,51 @@ const handleClickedPerson = (author, index) => {
 const authors = ref([]);
 
 if (route.params.gupid !== "empty" && route.params.gupid !== "error") {
-  authors.value = postsCompareMatrix?.value?.data?.find(
-    (item) => item.display_type === "authors"
-  ).first.value;
+  publicationYear.value = postsCompareMatrix?.value?.find(
+    (item) => item?.display_label === "pubyear"
+  ).first.value as string;
 } else {
-  authors.value = importedPostById?.value?.data?.find(
-    (item) => item.display_type === "authors"
-  ).first.value;
+  publicationYear.value = importedPostById?.value?.data?.find(
+    (item) => item?.display_label === "pubyear"
+  ).first.value as string;
 }
 
-authors.value = authors.value.map((author, index) => {
-  return {
-    id: index,
-    isMatch: index % 2 ? true : false,
-    year: 1977,
-    x_account: "xavgo_" + index,
-    full_name: author.name,
-    departments: [{ id: 1, name: "bar_foo_" + index }],
-  };
-});
+function addAuthor() {
+  if (!config.public.ALLOW_AUTHOR_EDIT) return;
+  addEmptyAuthorToPublication();
+}
 
-function handleAuthorSelected(author) {
+function handleAuthorSelected(author: Author) {
   if (author) {
-    selectedAuthor.value = author;
-    authors.value[selectedAuthorIndex.value] = author;
-    selectedAuthorIndex.value = null;
+    authorsByPublication.value.splice(
+      selectedAuthorIndex?.value as number,
+      1,
+      author
+    );
     selectedAuthorIndex.value = null;
   }
   showModalAuthor.value = false;
 }
 
-function handleMoveUp(author, index) {
+function handleMoveUp(author: Author, index: number) {
   if (index > 0) {
-    const temp = authors.value[index - 1];
-    authors.value[index - 1] = author;
-    authors.value[index] = temp;
+    const temp = authorsByPublication.value[index - 1];
+    authorsByPublication.value[index - 1] = author;
+    authorsByPublication.value[index] = temp;
   }
 }
 
-function handleMoveDown(author, index) {
-  if (index < authors.value.length - 1) {
-    const temp = authors.value[index + 1];
-    authors.value[index + 1] = author;
-    authors.value[index] = temp;
+function handleMoveDown(author: Author, index: number) {
+  if (index < authorsByPublication.value.length - 1) {
+    const temp = authorsByPublication.value[index + 1];
+    authorsByPublication.value[index + 1] = author;
+    authorsByPublication.value[index] = temp;
   }
 }
 
-function handleRemovePerson(author, index) {
+function handleRemovePerson(author: Author, index: number) {
   if (!config.public.ALLOW_AUTHOR_EDIT) return;
-  authors.value.splice(index, 1);
+  authorsByPublication.value.splice(index, 1);
 }
 
 function handleSuccess() {

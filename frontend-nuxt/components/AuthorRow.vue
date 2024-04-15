@@ -7,21 +7,12 @@
             href="#"
             @click.prevent="$emit('handleClickedPerson', (author, index))"
           >
-            {{ author.full_name }}
+            {{ authorPrimary?.first_name }} {{ authorPrimary?.last_name
+            }}<span v-if="authorPrimary?.primary">*</span>
           </a>
-          <span
-            v-if="author?.isMatch"
-            title="Matchad i GUP"
-            class="text-success ms-2"
-            ><font-awesome-icon icon="fa-solid fa-check"
-          /></span>
-        </div>
-        <div class="author-departments">
-          <span
-            v-for="department in author.departments"
-            class="badge text-bg-dark pill me-2 opacity-50"
-            >{{ department.name }}
-          </span>
+          <span class="small" v-if="author.names.length > 1">
+            + {{ author.names.length - 1 }} fler namnformer</span
+          >
         </div>
       </div>
       <div class="col-2 text-center">
@@ -37,7 +28,7 @@
           <div>
             <!-- wrap in div for block display -->
             <button
-              @click="$emit('handleMoveUp', author, index)"
+              @click="$emit('handleMoveUp', (author, index))"
               class="btn btn-sm float-end"
             >
               <font-awesome-icon icon="fa-solid fa-chevron-up" />
@@ -45,7 +36,7 @@
           </div>
           <div>
             <button
-              @click="$emit('handleMoveDown', author, index)"
+              @click="$emit('handleMoveDown', (author, index))"
               class="btn btn-sm float-end"
             >
               <font-awesome-icon icon="fa-solid fa-chevron-down" />
@@ -57,16 +48,32 @@
   </li>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import fontawesome from "~/plugins/fontawesome";
+import type { Author, Nameform } from "~/types/Author";
+interface Props {
+  author: Author;
+  index: Number;
+}
+const props = defineProps<Props>();
 
-const props = defineProps({ author: Object, index: Number });
-const emit = defineEmits([
-  "handleClickedPerson",
-  "handleRemovePerson",
-  "handleMoveUp",
-  "handleMoveDown",
-]);
+const authorPrimary = computed(() => {
+  const temp = props.author.names.find((nameform: Nameform) => {
+    return nameform.primary;
+  });
+  if (temp) {
+    return temp;
+  } else {
+    return props.author.names[0];
+  }
+});
+
+const emit = defineEmits<{
+  (e: "handleClickedPerson", author: Author, index: number): void;
+  (e: "handleRemovePerson", author: Author, index: number): void;
+  (e: "handleMoveUp", author: Author, index: number): void;
+  (e: "handleMoveDown", author: Author, index: number): void;
+}>();
 </script>
 
 <style lang="scss" scoped></style>

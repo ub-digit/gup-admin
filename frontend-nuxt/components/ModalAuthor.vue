@@ -1,35 +1,62 @@
-<script setup>
+<script lang="ts" setup>
 import { useDebounceFn } from "@vueuse/core";
-
+import type { Ref } from "vue";
 import { ref } from "vue";
+import type { Author, Department } from "~/types/Author";
+import { zAuthorResultList, zDepartmentArray } from "~/types/Author";
 const emit = defineEmits(["success", "close"]);
 const props = defineProps({
   sourceSelectedAuthor: {
-    type: Object,
+    type: Object as () => Author | null,
+    required: true,
+  },
+  publicationYear: {
+    type: String as () => string | null,
     required: true,
   },
 });
 
 const searchDepartmentStr = ref("");
-const suggestedDepartments = ref([]);
+const suggestedDepartments: Ref<Department[]> = ref([]);
 const searchNameStr = ref("");
-const suggestedAuthors = ref([]);
-const authorSelected = ref(null);
-const searchDepartmentsInput = ref(null);
-const searchAuthorsInput = ref(null);
+const suggestedAuthors: Ref<Author[]> = ref([]);
+const authorSelected: Ref<Author | null> = ref(null);
+const searchDepartmentsInput = ref("");
+const searchAuthorsInput = ref("");
 
 // Set initial value here to get the watch to trigger on first render
 onMounted(() => {
-  if (props.sourceSelectedAuthor.isMatch) {
+  if (props?.sourceSelectedAuthor?.isMatch) {
     authorSelected.value = props.sourceSelectedAuthor;
   }
-  searchNameStr.value = props.sourceSelectedAuthor.full_name;
+  searchNameStr.value =
+    primaryAuthorName?.value?.first_name +
+    " " +
+    primaryAuthorName?.value?.last_name;
   focusInput(searchAuthorsInput);
 });
 
-const debounceDepeartmentsFn = useDebounceFn(() => {
+const primaryAuthorName = computed(() => {
+  const temp = props.sourceSelectedAuthor?.names.find((name) => name.primary);
+  if (temp) {
+    return temp;
+  } else {
+    return props.sourceSelectedAuthor?.names[0];
+  }
+});
+
+const primaryAuthorNameSelected = computed(() => {
+  const temp = authorSelected?.value?.names.find((name) => name.primary);
+  if (temp) {
+    return temp;
+  } else {
+    return authorSelected?.value?.names[0];
+  }
+});
+
+const debounceDepartmentsFn = useDebounceFn(() => {
   if (searchDepartmentStr.value.length > 2) {
-    fetchSuggestedDepartments(searchDepartmentStr.value);
+    fetchSuggestedDepartments(searchDepartmentStr.value, props.publicationYear);
   } else {
     suggestedDepartments.value = [];
   }
@@ -43,21 +70,25 @@ const debounceFn = useDebounceFn(() => {
   }
 }, 500);
 
-function handleDepartmentRemove(department) {
-  const index = authorSelected.value.departments.indexOf(department);
-  if (index > -1) {
-    authorSelected.value.departments.splice(index, 1);
+function handleDepartmentRemove(department: Department) {
+  if (authorSelected.value) {
+    const index = authorSelected.value.departments.indexOf(department);
+    if (index > -1) {
+      authorSelected.value.departments.splice(index, 1);
+    }
   }
   focusInput(searchDepartmentsInput);
 }
 
-function handleAuthorSelected(author) {
+function handleAuthorSelected(author: Author) {
   //emit("authorSelected", author);
   authorSelected.value = author;
 }
 
-function handleDepartmentSelected(department) {
-  authorSelected.value.departments.push(department);
+function handleDepartmentSelected(department: Department) {
+  if (authorSelected.value) {
+    authorSelected.value.departments.push(department);
+  }
   focusInput(searchDepartmentsInput);
 }
 
@@ -66,31 +97,38 @@ function handleClearAuthorSelected() {
   searchDepartmentStr.value = "";
 }
 
+const getPrimaryName = (author: Author) => {
+  return author.names.find((name) => name.primary === true);
+};
+
 // remove already selected departments from suggestions
 const suggestedDepartmentsFiltered = computed(() => {
   return suggestedDepartments.value.filter((department) => {
+    if (!authorSelected.value) return true;
     return !authorSelected.value.departments.some(
       (selectedDepartment) => selectedDepartment.id === department.id
     );
   });
 });
 
-const fetchSuggestedDepartments = async (name) => {
-  const response = await fetch(
-    `/api/departments/suggest?term=${encodeURIComponent(
-      name
-    )}&year=${encodeURIComponent(authorSelected?.value?.year)}`
-  );
-  const data = await response.json();
-  suggestedDepartments.value = data;
+const fetchSuggestedDepartments = async (
+  name: string,
+  year?: string | null
+) => {
+  const { data, error } = await useFetch("/api/departments/suggest", {
+    params: { name: name, year: year },
+  });
+
+  suggestedDepartments.value = zDepartmentArray.parse(data.value);
+  console.log(suggestedDepartments.value);
 };
 
-const fetchSuggestedAuthors = async (name) => {
-  const response = await fetch(
-    `/api/persons/suggest?name=${encodeURIComponent(name)}`
-  );
-  const data = await response.json();
-  suggestedAuthors.value = data;
+const fetchSuggestedAuthors = async (name: string) => {
+  const { data, error } = await useFetch("/api/author/suggest", {
+    params: { query: name },
+  });
+  //const response = await fetch(`/api/author/suggest?query=${name}`);
+  suggestedAuthors.value = zAuthorResultList.parse(data.value).data;
 };
 
 watch(authorSelected, async () => {
@@ -107,7 +145,7 @@ watch(searchNameStr, () => {
 });
 
 watch(searchDepartmentStr, () => {
-  debounceDepeartmentsFn();
+  debounceDepartmentsFn();
 });
 
 const focusInput = (val) => {
@@ -137,14 +175,34 @@ const focusInput = (val) => {
                     class="d-flex justify-content-between align-items-center"
                   >
                     <div class="author-info">
-                      {{ authorSelected.full_name }}
-                      <div class="small">{{ authorSelected.x_account }}</div>
-                      <div class="small">{{ authorSelected.year }}</div>
+                      {{ primaryAuthorNameSelected?.full_name }}
+                      <div class="small">
+                        {{ authorSelected.year_of_birth }}
+                      </div>
+                      <div class="small">
+                        <ul class="list-inline">
+                          <li
+                            class="list-inline-item small text-muted"
+                            v-for="(
+                              identifier, index
+                            ) in authorSelected?.identifiers"
+                          >
+                            {{ identifier.value }}
+                            <span
+                              v-if="
+                                index < authorSelected.identifiers.length - 1
+                              "
+                            >
+                              |
+                            </span>
+                          </li>
+                        </ul>
+                      </div>
                     </div>
                     <button
                       class="btn btn-light btn-sm"
                       v-if="authorSelected"
-                      @click="handleClearAuthorSelected(null)"
+                      @click="handleClearAuthorSelected()"
                     >
                       Rensa
                     </button>
@@ -212,16 +270,16 @@ const focusInput = (val) => {
                     class="list-group-item d-flex justify-content-between align-items-start"
                     v-for="author in suggestedAuthors"
                   >
-                    <div class="ms-2 me-auto">
-                      {{ author.full_name }}
-                      <div class="small">{{ author.x_account }}</div>
-                      <div class="small">{{ author?.year }}</div>
-                      <div class="small">
-                        <span
-                          v-for="department in author.departments"
-                          class="badge text-bg-dark pill me-2 opacity-50"
-                          >{{ department.id }} - {{ department.name }}
-                        </span>
+                    <div>
+                      <div class="ms-2 me-auto">
+                        {{ getPrimaryName(author)?.full_name }} *
+                      </div>
+                      <div class="ms-2 me-auto">
+                        {{ author?.email }}
+                      </div>
+
+                      <div class="ms-2 me-auto">
+                        {{ author?.year_of_birth }}
                       </div>
                     </div>
                     <button

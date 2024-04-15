@@ -6,7 +6,7 @@
           <h4 class="mb-1 text-muted">
             {{ t("views.publications.post.result_list_by_id.header") }}
           </h4>
-          <div v-if="gupPostsById.data && !gupPostsById.data.length">
+          <div v-if="gupPostsById && !gupPostsById.length">
             {{
               t("views.publications.post.result_list.no_gup_posts_by_id_found")
             }}
@@ -17,7 +17,7 @@
             class="list-group list-group-flush border-bottom"
           >
             <PostRowGup
-              v-for="post in gupPostsById.data"
+              v-for="post in gupPostsById"
               :post="post"
               :refresh="$route.query"
               :key="post.id"
@@ -47,7 +47,7 @@
                 type="search"
                 v-model="searchTitleStr"
               />
-              <div v-if="gupPostsByTitle.data && !gupPostsByTitle.data.length">
+              <div v-if="gupPostsByTitle && !gupPostsByTitle.length">
                 {{
                   t(
                     "views.publications.post.result_list.no_gup_posts_by_title_found"
@@ -60,7 +60,7 @@
                 class="list-group list-group-flush border-bottom"
               >
                 <PostRowGup
-                  v-for="post in gupPostsByTitle.data"
+                  v-for="post in gupPostsByTitle"
                   :post="post"
                   :key="post.id"
                 />
@@ -73,7 +73,7 @@
   </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { useDebounceFn } from "@vueuse/core";
 import { useComparePostsStore } from "~/store/compare_posts";
 import { useImportedPostsStore } from "~/store/imported_posts";
@@ -82,7 +82,7 @@ import { storeToRefs } from "pinia";
 const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
-const searchTitleStr = ref(null);
+const searchTitleStr: Ref<string> = ref("");
 
 const comparePostsStore = useComparePostsStore();
 const importedPostsStore = useImportedPostsStore();
@@ -114,20 +114,19 @@ watch(searchTitleStr, () => {
   debounceFn();
 });
 
-let item_row_title = null;
-let item_row_id = null;
+let item_row_title: string = "";
+let item_row_id: string = "";
 if (
   route.params.gupid !== "empty" &&
   route.params.gupid !== "error" &&
-  postsCompareMatrix.value &&
-  postsCompareMatrix.value.data
+  postsCompareMatrix.value
 ) {
-  item_row_title = postsCompareMatrix?.value?.data?.find(
+  item_row_title = postsCompareMatrix?.value?.find(
     (item) => item.display_label === "title"
-  ).first.value.title;
-  item_row_id = postsCompareMatrix.value.data.find(
+  )?.first.value.title;
+  item_row_id = postsCompareMatrix.value.find(
     (item) => item.display_label === "id"
-  ).first.value;
+  )?.first.value;
 } else if (
   (route.params.gupid === "empty" || route.params.gupid === "error") &&
   importedPostById.value
@@ -145,7 +144,7 @@ onMounted(() => {
 });
 
 if (route.params.id) {
-  await fetchGupPostsById(route.params.id);
+  await fetchGupPostsById(route.params.id as string);
 }
 </script>
 

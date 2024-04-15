@@ -1,7 +1,7 @@
 <template>
   <div>
     <Head>
-      <title>{{ t("seo.application_title") }}</title>
+      <title>{{ t("seo.application_title") }} - publikationer</title>
       <Meta name="description" :content="t('seo.application_title')" />
     </Head>
     <div class="container-fluid">
@@ -13,9 +13,9 @@
           <div class="row">
             <div class="col opacity-50 text-center mb-4">
               <strong>
-                {{ importedPosts.showing }}
+                {{ numberOfImportedPostsShowing }}
                 {{ t("views.publications.result_list.meta.of") }}
-                {{ importedPosts.total }}
+                {{ numberOfImportedPostsTotal }}
                 {{ t("views.publications.result_list.meta.posts") }}</strong
               >
             </div>
@@ -25,14 +25,14 @@
               class="col scroll"
               :class="{ 'opacity-50': pendingImportedPosts }"
             >
-              <div v-if="importedPosts.data && !importedPosts.data.length">
+              <div v-if="importedPosts && !importedPosts.length">
                 {{
                   t("views.publications.result_list.no_imported_posts_found")
                 }}
               </div>
               <div v-else class="list-group list-group-flush border-bottom">
                 <PostRow
-                  v-for="post in importedPosts.data"
+                  v-for="post in importedPosts"
                   :post="post"
                   :key="post.id"
                 />
@@ -50,7 +50,7 @@
   </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { useImportedPostsStore } from "~/store/imported_posts";
 import { storeToRefs } from "pinia";
 import _ from "lodash";
@@ -61,7 +61,12 @@ const router = useRouter();
 
 const importedPostsStore = useImportedPostsStore();
 const { fetchImportedPosts } = importedPostsStore;
-const { importedPosts, pendingImportedPosts } = storeToRefs(importedPostsStore);
+const {
+  importedPosts,
+  pendingImportedPosts,
+  numberOfImportedPostsTotal,
+  numberOfImportedPostsShowing,
+} = storeToRefs(importedPostsStore);
 await fetchImportedPosts();
 </script>
 

@@ -5,11 +5,13 @@
 ## index all stuff
 
 cd docker
+docker-compose exec gup-backend bash -c 'bundle exec rake gup_migrations:add_data_for_author_import && rake db:migrate'
+./setup_index.sh
 ./index.sh
 
 ## index GUP Posts
 
-docker-compose exec gup-backend bash -c 'bundle exec rake gup_admin:index_all LIMIT=1000 OFFSET=0'
+docker-compose exec gup-backend bash -c 'bundle exec rake gup_admin:index_all_publications LIMIT=1000 OFFSET=0'
 
 ## index WoS Posts
 

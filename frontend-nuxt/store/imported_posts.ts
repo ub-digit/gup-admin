@@ -1,7 +1,13 @@
+import { ZodError } from "zod";
 import { defineStore } from "pinia";
 import { useFilterStore } from "~/store/filter";
 import { storeToRefs } from "pinia";
 import nuxtStorage from "nuxt-storage";
+import type { Publication } from "~/types/Publication";
+import { zPublicationArray } from "~/types/Publication";
+import type { ImportedPostType } from "~/types/PublicationCompareRow";
+import { zImportedPostType } from "~/types/PublicationCompareRow";
+
 export const useImportedPostsStore = defineStore("importedPostsStore", () => {
   const filterStore = useFilterStore();
   const { filters } = storeToRefs(filterStore);
@@ -15,33 +21,54 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     "xberns",
     "xjostw",
   ]);
-  const selectedUser = ref("");
-  const importedPosts = ref([]);
-  const importedPostById = ref(null);
+  const selectedUser: Ref<string | null> = ref("");
+  const selectedUserOverride: Ref<string> = ref("");
+  const importedPosts: Ref<Publication[]> = ref([]);
+  const numberOfImportedPostsTotal = ref(0);
+  const numberOfImportedPostsShowing = ref(0);
+  const importedPostById: Ref<ImportedPostType | null> = ref(null);
   const errorImportedPostById = ref(null);
-  const pendingImportedPosts = ref(null);
-  const pendingImportedPostById = ref(null);
-  const pendingRemoveImportedPost = ref(null);
-  const pendingCreateImportedPostInGup = ref(null);
+  const pendingImportedPosts = ref(false);
+  const pendingImportedPostById = ref(false);
+  const pendingRemoveImportedPost = ref(false);
+  const pendingCreateImportedPostInGup = ref(false);
 
-  if (
-    nuxtStorage &&
-    nuxtStorage.localStorage &&
-    nuxtStorage.localStorage.getData("selectedUser")
-  ) {
+  if (nuxtStorage?.localStorage?.getData("selectedUser")) {
     selectedUser.value = nuxtStorage.localStorage.getData("selectedUser");
+  }
+
+  if (nuxtStorage?.localStorage?.getData("selectedUserOverride")) {
+    selectedUserOverride.value = nuxtStorage.localStorage.getData(
+      "selectedUserOverride"
+    );
   }
 
   watch(selectedUser, () => {
     // save to localstorage
+    nuxtStorage?.localStorage?.setData("selectedUser", selectedUser.value);
     if (selectedUser.value !== "") {
-      nuxtStorage.localStorage.setData("selectedUser", selectedUser.value);
-    } else {
-      selectedUser.value = nuxtStorage.localStorage.getData("selectedUser");
+      selectedUserOverride.value = "";
     }
   });
 
-  async function createImportedPostInGup(id, user) {
+  watch(selectedUserOverride, () => {
+    // save to localstorage
+    nuxtStorage?.localStorage?.setData(
+      "selectedUserOverride",
+      selectedUserOverride.value
+    );
+    if (selectedUserOverride.value?.length === 6) {
+      selectedUser.value = "";
+    }
+  });
+
+  const selectedUserComputed = computed(() => {
+    if (selectedUser.value) {
+      return selectedUser.value;
+    }
+    return selectedUserOverride.value;
+  });
+  async function createImportedPostInGup(id: string, user: string) {
     try {
       pendingCreateImportedPostInGup.value = true;
       const { data, error } = await useFetch(`/api/post_to_gup/${id}/`, {
@@ -59,7 +86,7 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     }
   }
 
-  async function mergePosts(id, gupid, user) {
+  async function mergePosts(id: string, gupid: string, user: string) {
     try {
       const { data, error } = await useFetch(`/api/merge_posts/`, {
         params: { id: id, gupid: gupid, user: user },
@@ -81,9 +108,20 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
           paramsSerializer(options.params);
         },
       });
-      importedPosts.value = data.value;
+      // maybe move to meta-object in response from backend
+      importedPosts.value = zPublicationArray.parse(data.value).data;
+      numberOfImportedPostsTotal.value = zPublicationArray.parse(
+        data.value
+      ).total;
+      numberOfImportedPostsShowing.value = zPublicationArray.parse(
+        data.value
+      ).showing;
     } catch (error) {
-      console.log("Something went wrong: fetchImportedPosts");
+      if (error instanceof ZodError) {
+        console.log("Something went wrong: fetchImportedPosts from Zod");
+      } else {
+        console.log("Something went wrong: fetchImportedPosts");
+      }
     } finally {
       pendingImportedPosts.value = false;
     }
@@ -97,7 +135,7 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     { deep: true }
   );
 
-  async function fetchImportedPostById(id) {
+  async function fetchImportedPostById(id: string) {
     try {
       importedPostById.value = null;
       pendingImportedPostById.value = true;
@@ -106,7 +144,7 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
       if (data.value.error) {
         throw data.value;
       }
-      importedPostById.value = data.value;
+      importedPostById.value = zImportedPostType.parse(data.value);
     } catch (error) {
       console.log(error);
       errorImportedPostById.value = error;
@@ -116,7 +154,7 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     }
   }
 
-  async function removeImportedPost(id) {
+  async function removeImportedPost(id: string) {
     try {
       pendingRemoveImportedPost.value = true;
       const { data, error } = await useFetch(`/api/post_imported/${id}`, {
@@ -134,7 +172,7 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     }
   }
 
-  function paramsSerializer(params) {
+  function paramsSerializer(params: any) {
     //https://github.com/unjs/ufo/issues/62
     if (!params) {
       return;
@@ -155,6 +193,8 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     createImportedPostInGup,
     importedPosts,
     fetchImportedPosts,
+    numberOfImportedPostsTotal,
+    numberOfImportedPostsShowing,
     pendingImportedPosts,
     removeImportedPost,
     mergePosts,
@@ -167,5 +207,7 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     $importedReset,
     users,
     selectedUser,
+    selectedUserOverride,
+    selectedUserComputed,
   };
 });

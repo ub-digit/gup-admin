@@ -23,7 +23,7 @@
               {{ t("views.index.card.people.header") }}
             </h2>
             <p class="card-text">{{ t("views.index.card.people.body") }}</p>
-            <LangLink to="/publications" class="btn btn-primary">{{
+            <LangLink to="/authors" class="btn btn-primary">{{
               t("views.index.card.people.link_text")
             }}</LangLink>
           </div>
@@ -46,7 +46,7 @@
   </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 const { t } = useI18n();
 </script>
 

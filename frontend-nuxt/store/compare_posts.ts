@@ -1,15 +1,19 @@
 import { defineStore } from "pinia";
+import { ZodError } from "zod";
+import { zPublicationArray, type Publication } from "~/types/Publication";
+import type { PublicationCompareRow } from "~/types/PublicationCompareRow";
+import { zPublicationCompareRowArray } from "~/types/PublicationCompareRow";
 
 export const useComparePostsStore = defineStore("comparePostsStore", () => {
-  const gupPostsByTitle = ref([]);
-  const gupPostsById = ref([]);
-  const postsCompareMatrix = ref({});
-  const errorPostsCompareMatrix = ref(null);
-  const pendingComparePost = ref(null);
-  const pendingGupPostsByTitle = ref(null);
-  const pendingGupPostsById = ref(null);
+  const gupPostsByTitle: Ref<Publication[]> = ref([]);
+  const gupPostsById: Ref<Publication[]> = ref([]);
+  const postsCompareMatrix: Ref<PublicationCompareRow[]> = ref([]);
+  const errorPostsCompareMatrix = ref({});
+  const pendingComparePost = ref(false);
+  const pendingGupPostsByTitle = ref(false);
+  const pendingGupPostsById = ref(false);
 
-  async function fetchComparePostsMatrix(importedID, GupID) {
+  async function fetchComparePostsMatrix(importedID: string, GupID: string) {
     try {
       pendingComparePost.value = true;
       const { data, error } = await useFetch("/api/post_gup_compare", {
@@ -18,39 +22,60 @@ export const useComparePostsStore = defineStore("comparePostsStore", () => {
       if (data.value.error) {
         throw data.value;
       }
-      postsCompareMatrix.value = data.value;
+      postsCompareMatrix.value = zPublicationCompareRowArray.parse(
+        data.value.data
+      );
     } catch (error) {
-      errorPostsCompareMatrix.value = error;
-      console.log(errorPostsCompareMatrix.value);
-      console.log("Something went wrong: fetchCompareGupPostWithImported");
+      // specific error handling for zoderror
+      if (error instanceof ZodError) {
+        // construct new error Lars format
+        const new_error = { code: "666", message: "ZodError", data: error };
+        errorPostsCompareMatrix.value = new_error;
+        console.log(errorPostsCompareMatrix.value);
+        console.log(
+          "Something went wrong: fetchCompareGupPostWithImported from Zod"
+        );
+      } else {
+        errorPostsCompareMatrix.value = error.error;
+        console.log(errorPostsCompareMatrix.value);
+        console.log("Something went wrong: fetchCompareGupPostWithImported");
+      }
     } finally {
       pendingComparePost.value = false;
     }
   }
 
-  async function fetchGupPostsById(id) {
+  async function fetchGupPostsById(id: string) {
     try {
       pendingGupPostsById.value = true;
       const { data, error } = await useFetch("/api/posts_duplicates", {
         params: { id: id, mode: "id" },
       });
-      gupPostsById.value = data.value;
+      gupPostsById.value = zPublicationArray.parse(data.value).data;
     } catch (error) {
-      console.log("Something went wrong: fetchGupPostsById");
+      if (error instanceof ZodError) {
+        console.log("Something went wrong: fetchGupPostsById fron zod");
+      } else {
+        console.log("Something went wrong: fetchGupPostsById");
+      }
     } finally {
       pendingGupPostsById.value = false;
     }
   }
 
-  async function fetchGupPostsByTitle(id, title) {
+  async function fetchGupPostsByTitle(id: string, title: string) {
     try {
       pendingGupPostsByTitle.value = true;
       const { data, error } = await useFetch("/api/posts_duplicates", {
         params: { id: id, title: title, mode: "title" },
       });
-      gupPostsByTitle.value = data.value;
+      gupPostsByTitle.value = zPublicationArray.parse(data.value).data;
     } catch (error) {
-      console.log("Something went wrong: fetchGupPostsByTitle");
+      if (error instanceof ZodError) {
+        console.log("Something went wrong: fetchGupPostsByTitle from Zod");
+      } else {
+        console.log("Something went wrong: fetchGupPostsByTitle");
+      }
     } finally {
       pendingGupPostsByTitle.value = false;
     }
@@ -73,7 +98,7 @@ export const useComparePostsStore = defineStore("comparePostsStore", () => {
     }
   } */
 
-  function paramsSerializer(params) {
+  function paramsSerializer(params: any) {
     //https://github.com/unjs/ufo/issues/62
     if (!params) {
       return;
@@ -90,8 +115,8 @@ export const useComparePostsStore = defineStore("comparePostsStore", () => {
     // manually reset store here
     // gupPostsByTitle.value = []
     // gupPostsById.value = []
-    postsCompareMatrix.value = null;
-    errorPostsCompareMatrix.value = null;
+    postsCompareMatrix.value = [];
+    errorPostsCompareMatrix.value = {};
     //   pendingGupPostsByTitle.value = null;
     // pendingGupPostsById.value = null;
   }
