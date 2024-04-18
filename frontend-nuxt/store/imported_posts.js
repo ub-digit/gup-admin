@@ -67,7 +67,7 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     }
     return selectedUserOverride.value;
   });
-  async function createImportedPostInGup(id: string, user: string) {
+  async function createImportedPostInGup(id, user) {
     try {
       pendingCreateImportedPostInGup.value = true;
       const { data, error } = await useFetch(`/api/post_to_gup/${id}/`, {
