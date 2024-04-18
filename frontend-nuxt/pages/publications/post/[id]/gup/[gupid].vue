@@ -265,8 +265,8 @@ async function merge() {
     const ok = confirm(t("messages.confirm_merge_in_gup"));
     if (ok) {
       const res = await mergePosts(
-        route.params.id as string,
-        route.params.gupid as string,
+        route.params.id,
+        route.params.gupid,
         selectedUserComputed.value
       );
       if (res) {
