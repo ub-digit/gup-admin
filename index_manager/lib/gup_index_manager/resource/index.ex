@@ -6,7 +6,7 @@ defmodule GupIndexManager.Resource.Index do
   @persons_index "persons"
   @departments_index "departments"
 
-  def elastic_url, do: System.get_env("ELASTIC_SEARCH_URL", "http://localhost:9200")
+  def elastic_url, do: System.get_env("ELASTICSEARCH_URL", "http://localhost:9200")
 
   def get_indexes do
     [@persons_index, @publications_index, @departments_index]

@@ -1,6 +1,6 @@
 defmodule GupIndexManager.Resource.Departments do
   def elastic_url do
-    System.get_env("ELASTIC_SEARCH_URL", "http://localhost:9200")
+    System.get_env("ELASTICSEARCH_URL", "http://localhost:9200")
   end
 
   def initialize do
