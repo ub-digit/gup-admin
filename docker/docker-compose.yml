@@ -1,4 +1,4 @@
-version: "3.7"
+version: '3.7'
 name: 'gup-admin'
 services:
   admin-frontend:
@@ -45,8 +45,6 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - "./admin-db-initdb.d:/docker-entrypoint-initdb.d"
-    ports:
-      - "127.0.0.1:5433:5432"
     restart: always
   index-manager-db:
     image: postgres:12
@@ -57,8 +55,6 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - "./index-manager-db-initdb.d:/docker-entrypoint-initdb.d"
-    ports:
-      - "127.0.0.1:5443:5432"
     restart: always
   elasticsearch:
     image: docker.ub.gu.se/gup-admin-elasticsearch:${GIT_REVISION}${PLATFORM}

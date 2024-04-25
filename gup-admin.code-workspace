@@ -1,7 +1,7 @@
 {
     "folders": [
     {
-    "path": "gup_index_manager"
+    "path": "index_manager"
     },
     {
     "path": "data"
@@ -10,7 +10,7 @@
     "path": "backend"
     },
     {
-      "path": "frontend-nuxt"
+      "path": "frontend"
     },
     {
     "path": "docker"

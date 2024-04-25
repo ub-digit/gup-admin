@@ -1,6 +1,21 @@
-version: "3.7"
-
+version: '3.7'
 services:
+  admin-frontend:
+    command: ["bash", "-c", "yarn install && yarn dev"]
+    volumes:
+      - ${GUP_ADMIN_REPO}/frontend:/app
+  admin-backend:
+    environment:
+      - MIX_ENV=dev
+    volumes:
+      - ${GUP_ADMIN_REPO}/backend:/app
+    command: ["sh", "-c", "mix deps.get && mix deps.compile && mix phx.digest && /usr/local/bin/wait-for-it.sh admin-db:5432 elasticsearch:9200 -t 0 -- mix phx.server"]
+  index-manager-backend:
+    environment:
+      - MIX_ENV=dev
+    command: ["sh", "-c", "mix deps.get && mix deps.compile && mix phx.digest && /usr/local/bin/wait-for-it.sh index-manager-db:5432 elasticsearch:9200 -t 0 -- mix phx.server"]
+    volumes:
+      - ${GUP_ADMIN_REPO}/index_manager:/app
   gup-frontend:
     image: docker.ub.gu.se/gup-frontend:${GIT_REVISION_GUP}
     restart: always
