@@ -1,3 +1,14 @@
+FROM alpine:latest AS release
+RUN apk add --no-cache git
+
+ARG GIT_REVISION
+ARG GIT_REPO_URL
+
+WORKDIR /root
+
+RUN set -ex \
+  && git clone $GIT_REPO_URL release -b $GIT_REVISION --depth 1
+
 FROM elixir:1.13
 
 ENV MIX_ENV=prod
@@ -7,17 +18,14 @@ ENV TZ=Europe/Stockholm
 RUN apt-get update && \
     apt-get install -y postgresql-client && \
     apt-get install -y inotify-tools && \
-    mix local.hex --force && \
-    mix archive.install hex phx_new 1.5.10 --force && \
+    apt-get clean && rm -f /var/lib/apt/lists/*_*
+
+RUN mix local.hex --force && \
     mix local.rebar --force
 
-ARG GIT_REVISION
-ARG GIT_REPO_URL
+WORKDIR /app
+COPY --from=release /root/release/backend ./
 
-RUN set -ex \
-  && git clone $GIT_REPO_URL release -b $GIT_REVISION --depth 1
-ENV APP_HOME /release/backend/
-WORKDIR $APP_HOME
 RUN mix deps.get && mix deps.compile && mix compile && mix phx.digest
 COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
 CMD ["/usr/local/bin/wait-for-it.sh", "admin-db:5432", "elasticsearch:9200", "-t", "0", "--", "mix", "phx.server"]

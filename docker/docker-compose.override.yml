@@ -1,6 +1,15 @@
-version: "3.7"
-
+version: '3.7'
 services:
+  admin-frontend:
+    command: ["bash", "-c", "yarn install && yarn dev"]
+    volumes:
+      - ${GUP_ADMIN_REPO}/frontend:/app
+  admin-backend:
+    volumes:
+      - ${GUP_ADMIN_REPO}/backend:/app
+  index-manager-backend:
+    volumes:
+      - ${GUP_ADMIN_REPO}/index_manager:/app
   gup-frontend:
     image: docker.ub.gu.se/gup-frontend:${GIT_REVISION_GUP}
     restart: always
