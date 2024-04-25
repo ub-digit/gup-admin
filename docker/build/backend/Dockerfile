@@ -13,7 +13,6 @@ FROM elixir:1.13
 
 ENV MIX_ENV=prod
 ENV DATABASE_URL=ecto://postgres:postgres@admin-db/gup_admin_dev
-ENV SECRET_KEY_BASE=verysecretkeybasetobehiddenverysecretkeybasetobehiddenverysecretkeybasetobehiddenverysecretkeybasetobehiddenverysecretkeybasetobehiddenverysecretkeybasetobehidden
 ENV TZ=Europe/Stockholm
 RUN apt-get update && \
     apt-get install -y postgresql-client && \

@@ -84,7 +84,6 @@ defmodule GupIndexManagerWeb do
       # HTML escaping functionality
       import Phoenix.HTML
       # Core UI components and translation
-      import GupIndexManagerWeb.CoreComponents
       import GupIndexManagerWeb.Gettext
 
       # Shortcut for generating JS commands
