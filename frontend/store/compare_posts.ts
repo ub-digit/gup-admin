@@ -7,9 +7,11 @@ import { zPublicationCompareRowArray } from "~/types/PublicationCompareRow";
 export const useComparePostsStore = defineStore("comparePostsStore", () => {
   const gupPostsByTitle: Ref<Publication[]> = ref([]);
   const gupPostsById: Ref<Publication[]> = ref([]);
+  const gupPostsByAuthors: Ref<Publication[]> = ref([]);
   const postsCompareMatrix: Ref<PublicationCompareRow[]> = ref([]);
   const errorPostsCompareMatrix = ref({});
   const pendingComparePost = ref(false);
+  const pendingGupPostsByAuthors = ref(false);
   const pendingGupPostsByTitle = ref(false);
   const pendingGupPostsById = ref(false);
 
@@ -45,6 +47,23 @@ export const useComparePostsStore = defineStore("comparePostsStore", () => {
     }
   }
 
+  async function fetchGupPostsByAuthors() {
+    try {
+      pendingGupPostsByAuthors.value = true;
+      const { data, error } = await useFetch("/api/gup_posts_by_authors", {
+        params: { gup_ids: "1,2,4" },
+      });
+      gupPostsByAuthors.value = zPublicationArray.parse(data.value).data;
+    } catch (error) {
+      if (error instanceof ZodError) {
+        console.log("Something went wrong: fetchGupPostsByAuthors from Zod");
+      } else {
+        console.log("Something went wrong: fetchGupPostsByAuthors");
+      }
+    } finally {
+      pendingGupPostsByAuthors.value = false;
+    }
+  }
   async function fetchGupPostsById(id: string) {
     try {
       pendingGupPostsById.value = true;
@@ -121,6 +140,9 @@ export const useComparePostsStore = defineStore("comparePostsStore", () => {
     // pendingGupPostsById.value = null;
   }
   return {
+    fetchGupPostsByAuthors,
+    pendingGupPostsByAuthors,
+    gupPostsByAuthors,
     gupPostsByTitle,
     fetchGupPostsByTitle,
     pendingGupPostsByTitle,
