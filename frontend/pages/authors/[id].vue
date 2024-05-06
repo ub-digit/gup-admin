@@ -97,26 +97,81 @@
         </div>
       </div>
     </div>
+    <div class="col-6">
+      <h2>Publikationer</h2>
+      <div id="search-form" class="mb-2">
+        <label class="form-label" for="author-search"
+          >Sök efter publikationer i GUP</label
+        >
+        <input
+          id="author-search"
+          class="form-control"
+          type="search"
+          v-model="searchTerm"
+          placeholder="Sök efter publikationer i GUP"
+        />
+      </div>
+      <Spinner v-if="pendingGupPostsByAuthors" />
+      <div
+        :class="{ 'opacity-50': pendingGupPostsByAuthors }"
+        class="list-group list-group-flush border-bottom"
+      >
+        <PostRowGup
+          v-for="post in gupPostsByAuthors"
+          :post="post"
+          :refresh="$route.query"
+          :key="post.id"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useDebounceFn } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import type { Nameform, Department, Author } from "../../types/Author";
 import { useAuthorsStore } from "../../store/authors";
+import { useComparePostsStore } from "~/store/compare_posts";
 import { useRoute, useRouter } from "vue-router";
 import { computed } from "vue";
 const { t, getLocale } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const storeAuthor = useAuthorsStore();
+const storeComparePosts = useComparePostsStore();
+const { fetchGupPostsByAuthors } = storeComparePosts;
+//fetchGupPostsByAuthors();
+const { gupPostsByAuthors, pendingGupPostsByAuthors } =
+  storeToRefs(storeComparePosts);
 const { getAuthorById } = storeAuthor;
 getAuthorById(route.params.id as string);
 const { author, authors } = storeToRefs(storeAuthor);
 console.log(author);
 
 const config = useRuntimeConfig();
-console.log(config);
+
+const authorGupID = computed(() => {
+  let gup_person_ids: (number | undefined | null)[] | undefined =
+    author.value?.names.map((name: Nameform) => name?.gup_person_id);
+  return gup_person_ids?.join(",");
+});
+
+const searchTerm: Ref<string | undefined> = ref("");
+
+const debounceFn = useDebounceFn(() => {
+  if (searchTerm) {
+    fetchGupPostsByAuthors();
+  }
+}, 500);
+
+watch(authorGupID, () => {
+  searchTerm.value = authorGupID.value;
+});
+
+watch(searchTerm, () => {
+  debounceFn();
+});
 
 const authorPrimary = computed(() => {
   const primaryAuthor = author?.value?.names.find(
