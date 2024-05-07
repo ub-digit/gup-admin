@@ -8,7 +8,7 @@ services:
       NUXT_PUBLIC_API_GUP_BASE_URL: "${ADMIN_BACKEND_PUBLIC_BASE_URL}"
     restart: always
   admin-backend:
-    environent:
+    environment:
       GUP_BASE_URL: "${GUP_FRONTEND_PUBLIC_BASE_URL}"
     volumes:
       # Temporary fix until real index is in place
