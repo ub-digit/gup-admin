@@ -132,7 +132,7 @@
           :post="post"
           :refresh="$route.query"
           :key="post.id"
-          :linkToGup="true"
+          :linkToExternal="true"
         />
       </div>
     </div>

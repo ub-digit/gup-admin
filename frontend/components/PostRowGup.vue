@@ -1,8 +1,8 @@
 <template>
   <div>
     <a
-      v-if="linkToGup"
-      :href="`${config.public.API_GUP_BASE_URL}/publications/show/${post.id}`"
+      v-if="linkToExternal"
+      :href="getURL()"
       target="_blank"
       class="list-group-item list-group-item-action"
     >
@@ -68,7 +68,7 @@
 </template>
 
 <script lang="ts" setup>
-const props = defineProps(["post", "refresh", "linkToGup"]);
+const props = defineProps(["post", "refresh", "linkToExternal"]);
 const { t } = useI18n();
 const config = useRuntimeConfig();
 
@@ -85,6 +85,16 @@ const post_title_truncated = computed(() => {
 const numerOfAuthors = computed(() => {
   return props.post.authors ? props.post.authors.length : 0;
 });
+
+function getURL() {
+  if (props.post.source === "gup") {
+    // id is prefixed with "gup_" in the API response but not in the URL
+    let id_transformed = props.post.id.toString().replace("gup_", "");
+    return `${config.public.API_GUP_BASE_URL}/publications/show/${id_transformed}`;
+  } else {
+    return "#";
+  }
+}
 </script>
 
 <style lang="scss" scoped>
