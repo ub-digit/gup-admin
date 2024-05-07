@@ -98,8 +98,8 @@
       </div>
     </div>
     <div class="col-6">
-      <h2>Publikationer</h2>
-      <div id="search-form" class="mb-2">
+      <h2>Publikationer i GUP</h2>
+      <div id="search-form" class="mb-2 d-none">
         <label class="form-label" for="author-search"
           >Sök efter publikationer i GUP</label
         >
@@ -121,6 +121,7 @@
           :post="post"
           :refresh="$route.query"
           :key="post.id"
+          :linkToGup="true"
         />
       </div>
     </div>
