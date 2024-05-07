@@ -1,4 +1,4 @@
-version: "3.7"
+version: '3.7'
 services:
   admin-frontend:
     image: docker.ub.gu.se/gup-admin-frontend:${GIT_REVISION}${PLATFORM}
