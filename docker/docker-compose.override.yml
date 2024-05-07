@@ -6,8 +6,6 @@ services:
       NUXT_PUBLIC_API_GUP_BASE_URL: "http://localhost:$ADMIN_BACKEND_HOST_PORT"
     volumes:
       - ${GUP_ADMIN_REPO}/frontend:/app
-    networks:
-      - gup-admin
   admin-backend:
     environment:
       MIX_ENV: dev
@@ -15,9 +13,6 @@ services:
     volumes:
       - ${GUP_ADMIN_REPO}/backend:/app
     command: ["sh", "-c", "mix deps.get && mix deps.compile && mix phx.digest && /usr/local/bin/wait-for-it.sh admin-db:5432 elasticsearch:9200 -t 0 -- mix phx.server"]
-    networks:
-      - gup
-      - gup-admin
   index-manager-backend:
     environment:
       - MIX_ENV=dev
@@ -25,19 +20,3 @@ services:
     volumes:
       - ${GUP_ADMIN_REPO}/index_manager:/app
       - ./department-files:/app/data/departments #???
-    networks:
-      - gup-admin
-  admin-db:
-    networks:
-      - gup-admin
-  index-manager-db:
-    networks:
-      - gup-admin
-  elasticsearch:
-    networks:
-      - gup-admin
-networks:
-  gup:
-    name: gup
-    external: true
-  gup-admin:

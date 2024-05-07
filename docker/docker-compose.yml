@@ -3,14 +3,17 @@ name: 'gup-admin'
 services:
   admin-frontend:
     image: docker.ub.gu.se/gup-admin-frontend:${GIT_REVISION}${PLATFORM}
+    restart: always
     ports:
       - "${ADMIN_FRONTEND_HOST_PORT}:5000"
     environment:
       NUXT_API_BASE_URL: "http://admin-backend:4000/"
       NUXT_PUBLIC_ALLOW_AUTHOR_EDIT: ${ADMIN_FRONTEND_ALLOW_AUTHOR_EDIT}
-    restart: always
+    networks:
+      - gup-admin
   admin-backend:
     image: docker.ub.gu.se/gup-admin-backend:${GIT_REVISION}${PLATFORM}
+    restart: always
     ports:
       - "${ADMIN_BACKEND_HOST_PORT}:4000"
     environment:
@@ -20,18 +23,23 @@ services:
       GUP_SERVER_BASE_URL: "${GUP_BACKEND_BASE_URL}"
       GUP_API_KEY: "${GUP_BACKEND_API_KEY}"
       SECRET_KEY_BASE: "${SECRET_KEY_BASE}"
-    restart: always
+    networks:
+      - gup
+      - gup-admin
   index-manager-backend:
     image: docker.ub.gu.se/gup-admin-index-manager-backend:${GIT_REVISION}${PLATFORM}
+    restart: always
     environment:
       ELASTICSEARCH_URL: "${ELASTICSEARCH_URL}"
       GUP_INDEX_MANAGER_API_KEY: "${INDEX_MANAGER_API_KEY}"
       SECRET_KEY_BASE: "${SECRET_KEY_BASE}"
     ports:
       - "${INDEX_MANAGER_HOST_PORT}:4000"
-    restart: always
+    networks:
+      - gup-admin
   admin-db:
     image: postgres:12
+    restart: always
     environment:
       POSTGRES_USER: "${ADMIN_DB_USER}"
       POSTGRES_PASSWORD: "${ADMIN_DB_PASSWORD}"
@@ -39,9 +47,11 @@ services:
     volumes:
       - ./admin-db-initdb.d:/docker-entrypoint-initdb.d
       - ${ADMIN_DB_DATA_HOST_PATH}:/var/lib/postgresql/data
-    restart: always
+    networks:
+      - gup-admin
   index-manager-db:
     image: postgres:12
+    restart: always
     environment:
       POSTGRES_USER: "${ADMIN_DB_USER}"
       POSTGRES_PASSWORD: "${ADMIN_DB_USER}"
@@ -49,9 +59,11 @@ services:
     volumes:
       - ./index-manager-db-initdb.d:/docker-entrypoint-initdb.d
       - ${INDEX_MANAGER_DB_DATA_HOST_PATH}:/var/lib/postgresql/data
-    restart: always
+    networks:
+      - gup-admin
   elasticsearch:
     image: docker.ub.gu.se/gup-admin-elasticsearch:${GIT_REVISION}${PLATFORM}
+    restart: always
     ports:
       - ${ELASTICSEARCH_HOST_PORT}:9200
     environment:
@@ -60,7 +72,8 @@ services:
       - ES_JAVA_OPTS=-Xms1g -Xmx1g
     volumes:
       - ${ELASTICSEARCH_DATA_HOST_PATH}:/usr/share/elasticsearch/data
-    restart: always
+    networks:
+      - gup-admin
   gup-imports:
     image: docker.ub.gu.se/gup-imports:${GIT_REVISION_GUP_IMPORTS}
     restart: always
@@ -71,3 +84,8 @@ services:
     volumes:
       - ${HOST_SCOPUS_NORMALISED_JSON_FILES_DIR}:/data/files/scopus-normalised
       - ${HOST_SCRIPT_FILES_DIR}:/data/scripts
+networks:
+  gup:
+    name: gup
+    external: true
+  gup-admin:
