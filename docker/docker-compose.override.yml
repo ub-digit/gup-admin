@@ -1,9 +1,9 @@
-version: '3.7'
+version: "3.7"
 services:
   admin-frontend:
     command: ["bash", "-c", "yarn install && yarn dev"]
     environment:
-      NUXT_PUBLIC_API_GUP_BASE_URL: "http://localhost:$ADMIN_BACKEND_HOST_PORT"
+      NUXT_PUBLIC_API_GUP_BASE_URL: "http://localhost:$ADMIN_BACKEND_HOST_PORT" # This should be a link directly to gup frontend. We need to be able to link directly to a post in gup from admin-frontend
     volumes:
       - ${GUP_ADMIN_REPO}/frontend:/app
   admin-backend:
@@ -12,11 +12,21 @@ services:
       GUP_BASE_URL: "localhost:8181"
     volumes:
       - ${GUP_ADMIN_REPO}/backend:/app
-    command: ["sh", "-c", "mix deps.get && mix deps.compile && mix phx.digest && /usr/local/bin/wait-for-it.sh admin-db:5432 elasticsearch:9200 -t 0 -- mix phx.server"]
+    command:
+      [
+        "sh",
+        "-c",
+        "mix deps.get && mix deps.compile && mix phx.digest && /usr/local/bin/wait-for-it.sh admin-db:5432 elasticsearch:9200 -t 0 -- mix phx.server",
+      ]
   index-manager-backend:
     environment:
       - MIX_ENV=dev
-    command: ["sh", "-c", "mix deps.get && mix deps.compile && mix phx.digest && /usr/local/bin/wait-for-it.sh index-manager-db:5432 elasticsearch:9200 -t 0 -- mix phx.server"]
+    command:
+      [
+        "sh",
+        "-c",
+        "mix deps.get && mix deps.compile && mix phx.digest && /usr/local/bin/wait-for-it.sh index-manager-db:5432 elasticsearch:9200 -t 0 -- mix phx.server",
+      ]
     volumes:
       - ${GUP_ADMIN_REPO}/index_manager:/app
       - ./department-files:/app/data/departments #???
