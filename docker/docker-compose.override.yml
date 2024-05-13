@@ -5,13 +5,13 @@ services:
     environment:
       NUXT_PUBLIC_API_GUP_BASE_URL: "http://localhost:$ADMIN_BACKEND_HOST_PORT" # This should be a link directly to gup frontend. We need to be able to link directly to a post in gup from admin-frontend
     volumes:
-      - ${GUP_ADMIN_REPO}/frontend:/app
+      - ${GUP_ADMIN_REPO}/frontend:/app # GUP_ADMIN_REPO is not set anywhere in the project
   admin-backend:
     environment:
       MIX_ENV: dev
       GUP_BASE_URL: "localhost:8181"
     volumes:
-      - ${GUP_ADMIN_REPO}/backend:/app
+      - ${GUP_ADMIN_REPO}/backend:/app # GUP_ADMIN_REPO is not set anywhere in the project
     command:
       [
         "sh",
@@ -28,5 +28,5 @@ services:
         "mix deps.get && mix deps.compile && mix phx.digest && /usr/local/bin/wait-for-it.sh index-manager-db:5432 elasticsearch:9200 -t 0 -- mix phx.server",
       ]
     volumes:
-      - ${GUP_ADMIN_REPO}/index_manager:/app
+      - ${GUP_ADMIN_REPO}/index_manager:/app # GUP_ADMIN_REPO is not set anywhere in the project
       - ./department-files:/app/data/departments #???
