@@ -29,4 +29,3 @@ services:
       ]
     volumes:
       - ${GUP_ADMIN_REPO}/index_manager:/app # GUP_ADMIN_REPO is not set anywhere in the project
-      - ./department-files:/app/data/departments #???
