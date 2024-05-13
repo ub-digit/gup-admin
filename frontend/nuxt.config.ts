@@ -1,8 +1,8 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  ssr: false,
+  ssr: true,
   runtimeConfig: {
-    API_BASE_URL: "http://localhost:40411/",  // this should point to admin-backend
+    API_BASE_URL: "http://localhost:40411/", // this should point to admin-backend
     public: {
       API_GUP_BASE_URL: "http://localhost:3010", // this should point to gup-frontend and is used to redirect to posts for show/edit in gup-frontend
       ALLOW_AUTHOR_EDIT: true,
