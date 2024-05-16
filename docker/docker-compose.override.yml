@@ -3,7 +3,7 @@ services:
   admin-frontend:
     command: ["bash", "-c", "yarn install && yarn dev"]
     environment:
-      NUXT_PUBLIC_API_GUP_BASE_URL: "http://localhost:$ADMIN_BACKEND_HOST_PORT" # This should be a link directly to gup frontend. We need to be able to link directly to a post in gup from admin-frontend
+      NUXT_PUBLIC_API_GUP_BASE_URL: "http://localhost:8181" # This should be a link directly to gup frontend. We need to be able to link directly to a post in gup from admin-frontend
     volumes:
       - ${GUP_ADMIN_REPO}/frontend:/app # GUP_ADMIN_REPO is not set anywhere in the project
   admin-backend:
