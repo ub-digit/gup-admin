@@ -19,8 +19,7 @@ RUN apt-get update && \
     apt-get install -y inotify-tools && \
     apt-get clean && rm -f /var/lib/apt/lists/*_*
 
-RUN curl https://repo.hex.pm/installs/1.13.0/rebar3-3.15.2 > rebar3 && \
-    mix local.rebar rebar3 ./rebar3 && \
+RUN mix local.rebar --force && \
     mix local.hex --force
 
 WORKDIR /app
