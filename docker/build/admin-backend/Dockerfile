@@ -1,4 +1,4 @@
-FROM elixir:1.14.4
+FROM elixir:1.15.7
 
 ENV MIX_ENV=prod
 ENV DATABASE_URL=ecto://postgres:postgres@admin-db/gup_admin_dev

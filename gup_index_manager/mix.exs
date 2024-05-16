@@ -5,7 +5,7 @@ defmodule GupIndexManager.MixProject do
     [
       app: :gup_index_manager,
       version: "0.1.0",
-      elixir: "~> 1.14",
+      elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
@@ -45,11 +45,12 @@ defmodule GupIndexManager.MixProject do
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.3"},
       {:finch, "~> 0.13"},
-      {:telemetry_metrics, "=> 0.6.1"},
+      {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:elastix, "~> 0.10.0"},
+      {:ranch, "~> 1.8.0"},
       {:plug_cowboy, "~> 2.5"}
     ]
   end
