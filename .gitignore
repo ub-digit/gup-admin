@@ -1,4 +1,4 @@
 **/.DS_Store
-docker/.env
+#docker/.env
 .output/
 */priv/static
