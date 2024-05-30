@@ -91,6 +91,9 @@ export const useLocaleStore = defineStore("locale", {
         "views.authors.identifier_type.WOS_RESEARCHER_ID": "WOS-id",
         "views.authors.identifier_type.CID": "Cid",
         "views.authors.identifier_type.POP_ID": "Pop-id",
+        "views.authors.identifier_type.SCOPUS_AUTHOR_ID": "Scopus Author ID",
+        "views.authors.identifier_type.WOS_RESEARCHER_ID": "Web of Science ResearcherID",
+        "views.authors.identifier_type.WOS_DAISNG_ID": "Web of Science ID",
 
         "appfooter.contact_link": "https://www.ub.gu.se/node/189487/",
         "appfooter.contact_link_text": "Kontakta oss om GUP-admin",
