@@ -1,2 +1,4 @@
-/pgdata/
+/pgdata
 /scopus-files/*
+#*-initdb.d
+/data

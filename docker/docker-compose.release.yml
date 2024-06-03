@@ -1,15 +1,16 @@
 version: '3.7'
-
 services:
   index-manager-db:
     ports:
-      - "127.0.0.1:5433:5432"
-    volumes:
-      - ${DB_DATA_PATH}:/var/lib/postgresql/data/pgdata
+      - "127.0.0.1:5433:5432" #???
   admin-frontend:
-    image: docker.ub.gu.se/gup-admin-admin-frontend:${GIT_REVISION}${PLATFORM}
     environment:
-      NUXT_API_BASE_URL: "http://backend:4000/"
+      NUXT_PUBLIC_API_GUP_BASE_URL: "${ADMIN_BACKEND_PUBLIC_BASE_URL}"
     restart: always
-    ports:
-      - ${ADMIN_FRONTEND_HOST_PORT}:3000
+  admin-backend:
+    environment:
+      GUP_BASE_URL: "${GUP_FRONTEND_PUBLIC_BASE_URL}"
+    volumes:
+      # Temporary fix until real index is in place
+      - ../data/_source:/app/data/_source
+      - ../data/scopus-normalised:/app/data/scopus-normalised

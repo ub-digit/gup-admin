@@ -1,0 +1,9 @@
+#!/bin/bash
+
+mkdir scopus-files
+mkdir scopus-files/testdata
+mkdir data/admin-db
+mkdir data/elasticsearch
+mkdir data/index-manager-db
+mkdir admin-db-initdb.d
+mkdir index-manager-db-initdb.d
