@@ -3,13 +3,13 @@ defmodule GupIndexManager.Resource.Index do
   alias GupIndexManager.Resource.Index.Config
   alias GupIndexManager.Model
   @publications_index "publications"
-  @persons_index "persons"
+
   @departments_index "departments"
 
   def elastic_url, do: System.get_env("ELASTICSEARCH_URL", "http://localhost:9200")
 
   def get_indexes do
-    [@persons_index, @publications_index, @departments_index]
+    [get_persons_index(), @publications_index, @departments_index]
   end
 
   def reset_index(index) do
@@ -26,7 +26,7 @@ defmodule GupIndexManager.Resource.Index do
     Index.delete(elastic_url(), index)
   end
 
-  def get_persons_index, do: @persons_index
+  def get_persons_index, do: Application.get_env(:gup_index_manager, :person_index_name)
   def get_publications_index, do: @publications_index
   def get_departments_index, do: @departments_index
 
@@ -34,6 +34,7 @@ defmodule GupIndexManager.Resource.Index do
   def create_index(index, {:ok, true}), do: {:ok, "Index: #{index} already exists"}
   def create_index(_index, {:error, error}), do: {:error, error}
   def create_index(index, {:ok, false}) do
+    IO.puts("Create index")
     Index.create(elastic_url(), index, get_config(index))
     |> case do
       {:ok, %{body: %{"error" => reason}}} -> {:error, reason}
@@ -42,9 +43,10 @@ defmodule GupIndexManager.Resource.Index do
     end
   end
 
-  defp get_config(@persons_index), do: Config.persons_config()
+
   defp get_config(@publications_index), do: Config.publications_config()
   defp get_config(@departments_index), do: Config.departments_config()
+  defp get_config(_), do: Config.persons_config()
 
 
   # TODO: Move to publication resource
