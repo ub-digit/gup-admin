@@ -36,11 +36,12 @@ defmodule MergeTestHelpers do
       Elastix.Document.index(url, index, "_doc", person["id"], person, [])
 
     end
+    Elastix.Index.refresh(url, index)
   end
 
 
   # data generation functions
-  def generate_person_input_data(gup_admin_person_id \\ nil) do
+  def generate_person_data(gup_admin_person_id \\ nil) do
     %{
       "id" => gup_admin_person_id,
       "updated_at" => "2019-01-01T00:00:00+01:00",
@@ -58,12 +59,27 @@ defmodule MergeTestHelpers do
       %{
         "start_date" => "2019-01-01T00:00:00+01:00",
         "end_date" => "2019-12-31T00:00:00+01:00",
-        "gup_person_id" => id,
         "first_name" => first_name,
         "last_name" => last_name,
-      }
+      } |> set_gup_person_id(id)
     end)
     Map.put(data, "names", names ++ old_names)
+  end
+
+  defp set_gup_person_id(data, id) do
+    if id do
+      Map.put(data, "gup_person_id", id)
+    else
+      data
+    end
+  end
+
+  def set_gup_admin_id(data, id) do
+    Map.put(data, "id", id)
+  end
+
+  def clear_gup_admin_id(data) do
+    Map.delete(data, "id")
   end
 
   def clear_name_forms(data) do
@@ -72,9 +88,9 @@ defmodule MergeTestHelpers do
 
   def add_identifiers(data, identifiers) do
     old_identifiers = Map.get(data, "identifiers", [])
-    identifiers = Enum.map(identifiers, fn {type, value} ->
+    identifiers = Enum.map(identifiers, fn {code, value} ->
       %{
-        "type" => type,
+        "code" => code,
         "value" => value,
       }
     end)
