@@ -375,6 +375,8 @@ defmodule GupAdmin.Resource.Publication do
       "scopus-id" -> "https://www.scopus.com/record/display.uri?eid=2-s2.0-#{value}&origin=resultslist"
       "isi-id" -> "https://www.webofscience.com/wos/woscc/full-record/WOS:#{value}"
       "pubmed" -> "https://pubmed.ncbi.nlm.nih.gov/#{value}"
+      "handle" -> "https://hdl.handle.net/#{value}"
+      "libris-id" -> "https://libris.kb.se/bib/#{value}"
       _ -> nil
     end
   end
