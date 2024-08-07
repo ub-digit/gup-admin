@@ -76,14 +76,7 @@ const getLogoURL = computed(() => {
 
 <style lang="scss" scoped>
 .addfont {
-  font-family:
-    NimbusSanNovCon-Bol,
-    "Nimbus Sans Novus Cond Bold",
-    Arial Narrow,
-    Helvetica,
-    Arial,
-    "Lucida Grande",
-    sans-serif;
+  font-family: acumin-pro, Helvetica, sans-serif;
   font-size: 1rem;
   @media (min-width: 768px) {
     font-size: 1.7rem;
@@ -100,15 +93,10 @@ header {
     padding-left: 10px;
 
     .header-level-1 {
-      font-family:
-        NimbusSanNovCon-Bol,
-        "Nimbus Sans Novus Cond Bold",
-        Arial Narrow,
-        Helvetica,
-        Arial,
-        "Lucida Grande",
+      font-family: acumin-pro-extra-condensed, HelveticaNeue-CondensedBold,
         sans-serif;
       font-size: 1rem;
+      font-weight: 700;
       line-height: 1.2;
       @media (min-width: 768px) {
         font-size: 1.7rem;
@@ -123,14 +111,7 @@ header {
       }
     }
     .header-level-2 {
-      font-family:
-        NimbusSanNovCon-SemBol,
-        "Nimbus Sans Novus Cond SemiBold",
-        Arial Narrow,
-        Helvetica,
-        Arial,
-        "Lucida Grande",
-        sans-serif;
+      font-family: acumin-pro, Helvetica, sans-serif;
     }
   }
 
