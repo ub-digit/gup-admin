@@ -1,6 +1,7 @@
 // scss-docs-start import-stack
 // Config~/node_modules/bootstrap/scss/uration
 @import "~/node_modules/bootstrap/scss/functions";
+@import url("https://use.typekit.net/zkx2sji.css");
 
 // Variable overrides must come after our functions are imported, but before the rest of the imports.
 $font-family-sans-serif: "Open Sans", Arial, sans-serif; //"Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -10,8 +11,7 @@ $h1-font-size: 3rem;
 $h2-font-size: 1.5rem;
 $headings-margin-bottom: 34px;
 $headings-margin-top: 24px;
-$headings-font-family: "NimbusSanNovCon-SemBol", "Arial Narrow", Helvetica,
-  Arial, "Lucida Grande", sans-serif;
+$headings-font-family: acumin-pro, Helvetica, sans-serif;
 //$warning: #fcf8e3;
 $alert-bg-scale: 0%;
 $link-decoration: none;
