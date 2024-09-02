@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-const zAuthor = z.object({ id: z.number().nullable(), name: z.string() });
+const zAuthorAffiliation = z.object({
+  id: z.number().nullable(),
+  name: z.string(),
+  affiliation_str: z.string().nullish(),
+});
 
 export const zPublication = z.object({
   title: z.string(),
@@ -9,7 +13,7 @@ export const zPublication = z.object({
   publication_type_label: z.string(),
   publication_type_id: z.number(),
   pubyear: z.string(),
-  authors: z.array(zAuthor),
+  authors: z.array(zAuthorAffiliation),
 });
 
 export const zPublicationArray = z.object({
@@ -17,4 +21,11 @@ export const zPublicationArray = z.object({
   showing: z.number(),
   total: z.number(),
 });
+
+export const zAuthorAffiliationArray = z.object({
+  data: z.array(zAuthorAffiliation),
+});
+
 export type Publication = z.infer<typeof zPublication>;
+export type AuthorAffiliation = z.infer<typeof zAuthorAffiliation>;
+export type AuthorAffiliationArray = z.infer<typeof zAuthorAffiliationArray>;

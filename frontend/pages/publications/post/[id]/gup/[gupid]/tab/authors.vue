@@ -8,7 +8,6 @@
     @success="handleAuthorSelected"
     @close="showModalAuthor = false"
   />
-
   <div class="authors mt-4">
     <ul class="list-group list-group-flush">
       <AuthorRow
@@ -29,14 +28,13 @@
 <script setup lang="ts">
 import { useComparePostsStore } from "~/store/compare_posts";
 import { useImportedPostsStore } from "~/store/imported_posts";
-import { useAuthorsStore } from "~/store/authors";
 import { storeToRefs } from "pinia";
-import type { Author } from "~/types/Author";
+import type { AuthorAffiliation } from "~/types/Publication";
 import { ref } from "vue";
 import type { Ref } from "vue";
 
 let showModalAuthor = ref(false);
-let selectedAuthor: Ref<Author | null> = ref(null);
+let selectedAuthor: Ref<AuthorAffiliation | null> = ref(null);
 let selectedAuthorIndex: Ref<number | null> = ref(null);
 let publicationYear: Ref<string | null> = ref(null);
 
@@ -45,9 +43,9 @@ const route = useRoute();
 const importedPostsStore = useImportedPostsStore();
 const { importedPostById } = storeToRefs(importedPostsStore);
 
-const authorsStore = useAuthorsStore();
-const { fetchAuthorsByPublication, addEmptyAuthorToPublication } = authorsStore;
-const { authorsByPublication } = storeToRefs(authorsStore);
+const { fetchAuthorsByPublication, addEmptyAuthorToPublication } =
+  importedPostsStore;
+const { authorsByPublication } = storeToRefs(importedPostsStore);
 
 fetchAuthorsByPublication(route.params.id as string);
 
@@ -56,7 +54,7 @@ const { postsCompareMatrix } = storeToRefs(comparePostsStore);
 
 let config = useRuntimeConfig();
 
-const handleClickedPerson = (author: Author, index: number) => {
+const handleClickedPerson = (author: AuthorAffiliation, index: number) => {
   if (!config.public.ALLOW_AUTHOR_EDIT) return;
   selectedAuthor.value = author;
   selectedAuthorIndex.value = index;
@@ -80,7 +78,7 @@ function addAuthor() {
   addEmptyAuthorToPublication();
 }
 
-function handleAuthorSelected(author: Author) {
+function handleAuthorSelected(author: AuthorAffiliation) {
   if (author) {
     authorsByPublication.value.splice(
       selectedAuthorIndex?.value as number,
@@ -92,7 +90,7 @@ function handleAuthorSelected(author: Author) {
   showModalAuthor.value = false;
 }
 
-function handleMoveUp(author: Author, index: number) {
+function handleMoveUp(author: AuthorAffiliation, index: number) {
   if (index > 0) {
     const temp = authorsByPublication.value[index - 1];
     authorsByPublication.value[index - 1] = author;
@@ -100,7 +98,7 @@ function handleMoveUp(author: Author, index: number) {
   }
 }
 
-function handleMoveDown(author: Author, index: number) {
+function handleMoveDown(author: AuthorAffiliation, index: number) {
   if (index < authorsByPublication.value.length - 1) {
     const temp = authorsByPublication.value[index + 1];
     authorsByPublication.value[index + 1] = author;
@@ -108,7 +106,7 @@ function handleMoveDown(author: Author, index: number) {
   }
 }
 
-function handleRemovePerson(author: Author, index: number) {
+function handleRemovePerson(author: AuthorAffiliation, index: number) {
   if (!config.public.ALLOW_AUTHOR_EDIT) return;
   authorsByPublication.value.splice(index, 1);
 }
