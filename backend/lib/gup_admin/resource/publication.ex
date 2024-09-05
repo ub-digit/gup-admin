@@ -42,63 +42,6 @@ defmodule GupAdmin.Resource.Publication do
     end
   end
 
-
-  # before
-  # authors: [
-  #   %{
-  #     "affiliations" => [
-  #       %{
-  #         "scopus-affiliation-city" => "Perugia",
-  #         "scopus-affiliation-country" => "Italy",
-  #         "scopus-affilname" => "Università degli Studi di Perugia",
-  #         "scopus-afid" => "60003003"
-  #       }
-  #     ],
-  #     "person" => [
-  #       %{
-  #         "first_name" => "Marco",
-  #         "identifiers" => [
-  #           %{"type" => "orcid", "value" => "0000-0002-6082-2116"},
-  #           %{"type" => "scopus-auth-id", "value" => "57271236700"}
-  #         ],
-  #         "last_name" => "Parriani",
-  #         "position" => "1"
-  #       }
-  #     ]
-  #   },
-  #   %{
-  #     "affiliations" => [
-  #       %{
-  #         "scopus-affiliation-city" => "Oslo",
-  #         "scopus-affiliation-country" => "Norway",
-  #         "scopus-affilname" => "University of Olso",
-  #         "scopus-afid" => "60003003"
-  #       }
-  #     ],
-  #     "person" => [
-  #       %{
-  #         "first_name" => "Andrea",
-  #         "identifiers" => [
-  #           %{"type" => "scopus-auth-id", "value" => "57216353866"}
-  #         ],
-  #         "last_name" => "Giustini",
-  #         "position" => "2"
-  #       }
-  #     ]
-  #   }
-  # ]
-#after:
-# data: [
-#   {
-#     name: "Marco Parriani",
-#     affiliation_str: "Università degli Studi di Perugia, Perugia, Italy",
-#   },
-#   {
-#     name: "Andrea Giustini",
-#     affiliation_str: "University of Olso, Oslo, Norway",
-#   },
-# ]
-
   def convert_authors(authors) do
     authors
     |> Enum.map(fn author ->
