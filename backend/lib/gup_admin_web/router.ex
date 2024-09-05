@@ -28,6 +28,7 @@ defmodule GupAdminWeb.Router do
     get "/publication_types", PublicationTypeController, :index
     get "/publications", PublicationController, :index
     get "/publications/:id", PublicationController, :show
+    get "/publications/:id/authors", PublicationController, :show_authors
     delete "/publications/:id", PublicationController, :delete
     get "/publications/duplicates/:id", PublicationController, :get_duplicates
     get "/index", IndexController, :index

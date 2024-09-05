@@ -19,6 +19,15 @@ defmodule GupAdminWeb.PublicationController do
     end
   end
 
+  def show_authors(conn, %{"id" => id}) do
+    Publication.show_authors(id)
+    |> IO.inspect(label: "authors")
+    |> case do
+      :error -> conn |> send_resp(404, Jason.encode!(%{error: %{"message" => "Post not found", "code" => 404}}))
+      res -> json conn, res
+    end
+  end
+
   def get_duplicates(conn, params) do
     json conn, Search.get_duplicates(params)
   end

@@ -8,13 +8,13 @@ export default defineEventHandler(async (event) => {
   const id = event?.context?.params?.id;
   console.log(id);
   console.log(config.API_BASE_URL);
-  /*   const res: AuthorAffiliationArray = await $fetch(
-    `${config.API_BASE_URL}/publication/authors`,
+  const res: AuthorAffiliationArray = await $fetch(
+    `${config.API_BASE_URL}/publications/${id}/authors`,
     {
       params: query,
     }
-  ); */
-
+  );
+/*
   const res: AuthorAffiliationArray = {
     data: [
       {
@@ -33,6 +33,6 @@ export default defineEventHandler(async (event) => {
         affiliation_str: "University of Oslo",
       },
     ],
-  };
+  };*/
   return res;
 });

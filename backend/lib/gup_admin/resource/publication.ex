@@ -42,6 +42,99 @@ defmodule GupAdmin.Resource.Publication do
     end
   end
 
+
+  # before
+  # authors: [
+  #   %{
+  #     "affiliations" => [
+  #       %{
+  #         "scopus-affiliation-city" => "Perugia",
+  #         "scopus-affiliation-country" => "Italy",
+  #         "scopus-affilname" => "Università degli Studi di Perugia",
+  #         "scopus-afid" => "60003003"
+  #       }
+  #     ],
+  #     "person" => [
+  #       %{
+  #         "first_name" => "Marco",
+  #         "identifiers" => [
+  #           %{"type" => "orcid", "value" => "0000-0002-6082-2116"},
+  #           %{"type" => "scopus-auth-id", "value" => "57271236700"}
+  #         ],
+  #         "last_name" => "Parriani",
+  #         "position" => "1"
+  #       }
+  #     ]
+  #   },
+  #   %{
+  #     "affiliations" => [
+  #       %{
+  #         "scopus-affiliation-city" => "Oslo",
+  #         "scopus-affiliation-country" => "Norway",
+  #         "scopus-affilname" => "University of Olso",
+  #         "scopus-afid" => "60003003"
+  #       }
+  #     ],
+  #     "person" => [
+  #       %{
+  #         "first_name" => "Andrea",
+  #         "identifiers" => [
+  #           %{"type" => "scopus-auth-id", "value" => "57216353866"}
+  #         ],
+  #         "last_name" => "Giustini",
+  #         "position" => "2"
+  #       }
+  #     ]
+  #   }
+  # ]
+#after:
+# data: [
+#   {
+#     name: "Marco Parriani",
+#     affiliation_str: "Università degli Studi di Perugia, Perugia, Italy",
+#   },
+#   {
+#     name: "Andrea Giustini",
+#     affiliation_str: "University of Olso, Oslo, Norway",
+#   },
+# ]
+
+  def convert_authors(authors) do
+    authors
+    |> Enum.map(fn author ->
+      person = author |> Map.get("person") |> List.first()
+      affiliations = author |> Map.get("affiliations")
+      affiliation_str = affiliations
+      |> Enum.map(fn affiliation ->
+        "#{affiliation |> Map.get("scopus-affilname")}, #{affiliation |> Map.get("scopus-affiliation-city")}, #{affiliation |> Map.get("scopus-affiliation-country")}"
+      end)
+      %{
+        "name" => get_author_name(person),
+        "affiliation_str" => Enum.join(affiliation_str, ", ")
+      }
+    end)
+    # put array in a map with key data
+    |> then(&%{"data" => &1})
+  end
+
+  def show_authors(id) do
+    Search.search_one(id)
+    |> List.first()
+    |> case do
+      nil -> :error
+      res -> res |> Map.get("_source") |> Map.get("authors") |> convert_authors()
+    end
+  end
+
+  def get_duplicates(params) do
+    Search.get_duplicates(params)
+    |> remap()
+  end
+
+  def mark_as_deleted(id) do
+    Search.mark_as_deleted(id)
+end
+
   def return_res(%{"_source" => %{"deleted" => true}}) do
     :error
   end
