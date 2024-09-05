@@ -46,14 +46,25 @@ defmodule GupAdmin.Resource.Publication do
     authors
     |> Enum.map(fn author ->
       person = author |> Map.get("person") |> List.first()
-      affiliations = author |> Map.get("affiliations")
-      affiliation_str = affiliations
-      |> Enum.map(fn affiliation ->
-        "#{affiliation |> Map.get("scopus-affilname")}, #{affiliation |> Map.get("scopus-affiliation-city")}, #{affiliation |> Map.get("scopus-affiliation-country")}"
-      end)
+      ## FIXME: in WOS, the affiliation is called affilation, in scopus it is affiliations, fix this in the normalisation step
+      affiliations = author |> Map.get("affiliations") || author |> Map.get("affilation")
+      affiliation_list = case affiliations do
+        nil -> []
+        _ ->
+          affiliations
+          |> Enum.map(fn affiliation ->
+            [
+              affiliation |> Map.get("scopus-affilname"),
+              affiliation |> Map.get("scopus-affiliation-city"),
+              affiliation |> Map.get("scopus-affiliation-country")
+            ]
+            |> Enum.reject(&is_nil/1)
+            |> Enum.join(", ")
+          end)
+      end
       %{
         "name" => get_author_name(person),
-        "affiliation_str" => Enum.join(affiliation_str, ", ")
+        "affiliations" => affiliation_list
       }
     end)
     # put array in a map with key data
