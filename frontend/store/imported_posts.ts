@@ -3,10 +3,14 @@ import { defineStore } from "pinia";
 import { useFilterStore } from "~/store/filter";
 import { storeToRefs } from "pinia";
 import nuxtStorage from "nuxt-storage";
-import type { Publication } from "~/types/Publication";
-import { zPublicationArray } from "~/types/Publication";
+import type { Publication, AuthorAffiliation } from "~/types/Publication";
+import {
+  zPublicationArray,
+  zAuthorAffiliationArray,
+} from "~/types/Publication";
 import type { ImportedPostType } from "~/types/PublicationCompareRow";
 import { zImportedPostType } from "~/types/PublicationCompareRow";
+import authors from "~/server/api/author/authors";
 
 export const useImportedPostsStore = defineStore("importedPostsStore", () => {
   const filterStore = useFilterStore();
@@ -21,6 +25,7 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     "xberns",
     "xjostw",
   ]);
+  const authorsByPublication: Ref<AuthorAffiliation[]> = ref([]);
   const selectedUser: Ref<string | null> = ref("");
   const selectedUserOverride: Ref<string> = ref("");
   const importedPosts: Ref<Publication[]> = ref([]);
@@ -118,7 +123,7 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
       ).showing;
     } catch (error) {
       if (error instanceof ZodError) {
-        console.log("Something went wrong: fetchImportedPosts from Zod");
+        console.log("Something went wrong: fetchImportedPosts from Zod", error);
       } else {
         console.log("Something went wrong: fetchImportedPosts");
       }
@@ -185,6 +190,33 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     });
   }
 
+  async function fetchAuthorsByPublication(id: string) {
+    try {
+      const { data, error } = await useFetch(`/api/author/publication/${id}`);
+      if (data?.value?.error) {
+        throw data.value;
+      }
+      authorsByPublication.value = zAuthorAffiliationArray.parse(
+        data.value
+      ).data;
+    } catch (error) {
+      if (error instanceof ZodError) {
+        console.log(error);
+        const new_error = { code: "666", message: "ZodError", data: error };
+
+        console.log("Something went wrong: fetchAuthorsByPublication from Zod");
+      } else {
+        console.log("Something went wrong: fetchAuthorsByPublication");
+      }
+    }
+  }
+  function addEmptyAuthorToPublication() {
+    authorsByPublication.value.push({
+      id: null,
+      name: "Ny Författare",
+      affiliation_str: "University of Oslo",
+    });
+  }
   function $importedReset() {
     // manually reset store here
     (importedPostById.value = null), (errorImportedPostById.value = null);
@@ -193,6 +225,9 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     createImportedPostInGup,
     importedPosts,
     fetchImportedPosts,
+    fetchAuthorsByPublication,
+    addEmptyAuthorToPublication,
+    authorsByPublication,
     numberOfImportedPostsTotal,
     numberOfImportedPostsShowing,
     pendingImportedPosts,

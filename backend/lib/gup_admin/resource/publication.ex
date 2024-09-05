@@ -42,6 +42,42 @@ defmodule GupAdmin.Resource.Publication do
     end
   end
 
+  def convert_authors(authors) do
+    authors
+    |> Enum.map(fn author ->
+      person = author |> Map.get("person") |> List.first()
+      affiliations = author |> Map.get("affiliations")
+      affiliation_str = affiliations
+      |> Enum.map(fn affiliation ->
+        "#{affiliation |> Map.get("scopus-affilname")}, #{affiliation |> Map.get("scopus-affiliation-city")}, #{affiliation |> Map.get("scopus-affiliation-country")}"
+      end)
+      %{
+        "name" => get_author_name(person),
+        "affiliation_str" => Enum.join(affiliation_str, ", ")
+      }
+    end)
+    # put array in a map with key data
+    |> then(&%{"data" => &1})
+  end
+
+  def show_authors(id) do
+    Search.search_one(id)
+    |> List.first()
+    |> case do
+      nil -> :error
+      res -> res |> Map.get("_source") |> Map.get("authors") |> convert_authors()
+    end
+  end
+
+  def get_duplicates(params) do
+    Search.get_duplicates(params)
+    |> remap()
+  end
+
+  def mark_as_deleted(id) do
+    Search.mark_as_deleted(id)
+end
+
   def return_res(%{"_source" => %{"deleted" => true}}) do
     :error
   end

@@ -1,6 +1,8 @@
 import { defineStore } from "pinia";
 import { ZodError, number } from "zod";
 import { zAuthorArray, zAuthor, zAuthorResultList } from "~/types/Author";
+import { zAuthorAffiliationArray } from "~/types/Publication";
+import type { AuthorAffiliation } from "~/types/Publication";
 import type { Author } from "~/types/Author"; // needs type after import to avoid error
 import _ from "lodash";
 import { useDebounceFn } from "@vueuse/core";
@@ -10,7 +12,7 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
   const route = useRoute();
   const router = useRouter();
 
-  const authorsByPublication: Ref<Author[]> = ref([]);
+  const authorsByPublication: Ref<AuthorAffiliation[]> = ref([]);
   const authors: Ref<Author[]> = ref([]);
   interface Meta {
     total: number;
@@ -74,25 +76,6 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
     }
   }
 
-  async function fetchAuthorsByPublication(id: string) {
-    try {
-      const { data, error } = await useFetch(`/api/author/publication/${id}`);
-      if (data?.value?.error) {
-        throw data.value;
-      }
-      authorsByPublication.value = zAuthorResultList.parse(data.value).data;
-    } catch (error) {
-      if (error instanceof ZodError) {
-        console.log(error);
-        const new_error = { code: "666", message: "ZodError", data: error };
-
-        console.log("Something went wrong: fetchAuthorsByPublication from Zod");
-      } else {
-        console.log("Something went wrong: fetchAuthorsByPublication");
-      }
-    }
-  }
-
   async function fetchAuthors() {
     try {
       pendingAuthors.value = true;
@@ -121,26 +104,6 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
     }
   }
 
-  function addEmptyAuthorToPublication() {
-    authorsByPublication.value.push({
-      id: null,
-      year_of_birth: null,
-      email: null,
-      identifiers: [],
-      names: [
-        {
-          first_name: "Ny",
-          last_name: "Författare",
-          full_name: "Ny Författare",
-          gup_person_id: null,
-          start_date: "",
-          end_date: "",
-          primary: false,
-        },
-      ],
-      departments: [],
-    });
-  }
   function paramsSerializer(params: any) {
     //https://github.com/unjs/ufo/issues/62
     if (!params) {
@@ -162,9 +125,7 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
     filters,
     errorAuthors,
     pendingAuthors,
-    addEmptyAuthorToPublication,
     getAuthorById,
     fetchAuthors,
-    fetchAuthorsByPublication,
   };
 });
