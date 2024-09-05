@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const zAuthorAffiliation = z.object({
-  id: z.number().nullable(),
+  id: z.number().nullish(),
   name: z.string(),
   affiliation_str: z.string().nullish(),
 });
