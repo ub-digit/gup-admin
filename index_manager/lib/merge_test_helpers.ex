@@ -33,6 +33,7 @@ defmodule MergeTestHelpers do
     index = Index.get_persons_index()
     url = Index.elastic_url()
     for person <- data do
+      IO.inspect(person["id"], label: "indexing person id")
       Elastix.Document.index(url, index, "_doc", person["id"], person, [])
 
     end

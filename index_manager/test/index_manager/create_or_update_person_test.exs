@@ -4,6 +4,9 @@ defmodule GupIndexManager.CreateOrUpdatePersonTest do
 
   @existing_x_account "xb123"
   @existing_orcid "orcid123"
+  @code_x_account "X_ACCOUNT"
+  @code_orcid "ORCID"
+
   describe "Merge person with some form of identifier" do
 
     setup do
@@ -16,7 +19,14 @@ defmodule GupIndexManager.CreateOrUpdatePersonTest do
         |> MergeTestHelpers.set_gup_admin_id("100")
         |> MergeTestHelpers.add_name_forms([{"John", "Doe", nil}])
         |> MergeTestHelpers.add_identifiers([{"X_ACCOUNT", @existing_x_account}, {"ORCID", @existing_orcid}])
-        elastic_data = [existing_person_data]
+
+        existing_person2_data =
+          MergeTestHelpers.generate_person_data()
+          |> MergeTestHelpers.set_gup_admin_id("101")
+          |> MergeTestHelpers.add_name_forms([{"John", "Doe", nil}, {"John", "Doe", "123456"}])
+          |> MergeTestHelpers.add_identifiers([{"X_ACCOUNT", @existing_x_account}])
+          elastic_data = [existing_person_data, existing_person2_data]
+          # elastic_data = [existing_person_data]
 
         # index data
         MergeTestHelpers.index_data(elastic_data)
@@ -53,6 +63,7 @@ defmodule GupIndexManager.CreateOrUpdatePersonTest do
     end
 
     # incoming data has same x_account as existing person and also new scopus id
+    # @tag :skip
     test "merge existing user with new data containing a new scopus id", setup_data do
       # input data
       person_input_data = setup_data[:existing_person_data]
@@ -65,11 +76,18 @@ defmodule GupIndexManager.CreateOrUpdatePersonTest do
     @tag :skip
     test "merge existing user that has an orcid with new data containing a new ORCID", setup_data do
       # input data
+      identifiers = [
+        {@code_x_account, @existing_x_account},
+        {@code_orcid, "ORCID12_new3"}
+      ]
       person_input_data = setup_data[:existing_person_data]
       |> MergeTestHelpers.clear_identifiers()
-      |> MergeTestHelpers.add_identifiers([{"ORCID", "ORCID12_new3"}, {"X_ACCOUNT", @existing_x_account}])
-      # |> IO.inspect(label: "INPUT DATA MERGE IDENTIFIERS")
-      assert Merger.merge(person_input_data) == {:error, "Colliding ORCID's"}
+      |> MergeTestHelpers.add_identifiers(identifiers)
+      |> MergeTestHelpers.clear_name_forms()
+      |> MergeTestHelpers.add_name_forms([{"Jane", "Doe", "123456"}])
+      IO.inspect(person_input_data, label: "Person input data in test")
+
+      assert Merger.merge(person_input_data) == {:error, "Colliding ORCID and/or X_ACCOUNT"}
     end
     #   assert Merger.merge(person_input_data) == {:ok, [{:create_person, person_input_data}]}
     #   # assert Merger.merge(person_input_data) == {:ok, [{:add_identifier, person_input_data}]}

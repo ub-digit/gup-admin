@@ -1,10 +1,11 @@
-defmodule GupIndexManager.Resource.Persons.Merger do
+defmodule GupIndexManager.Resource.Persons.Merger_bak do
   def merge(person_input_data) when is_map(person_input_data) do
     with {true, person_input_data} <- meets_the_minimum_person_requirements(person_input_data) do
       person_input_data
       |> has_x_account()
       |> load_existing_person_data_with_x_account()
-      |> colliding_identifiers()
+      |> has_orcid()
+      # |> colliding_identifiers()
       # |> has_orcid()
       # |> merge_person()
       # |> match_by_other_identifiers()
@@ -164,7 +165,8 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     new_identifiers = Map.get(person_input_data, "identifiers", [])
     existing_identifiers = Map.get(existing_person_data, "identifiers", [])
 
-    IO.inspect(new_identifiers, label: "NEW IDENTIFIERS")
+    # IO.inspect(new_identifiers, label: "NEW IDENTIFIERS")
+    # IO.inspect(existing_identifiers, label: "EXISTING IDENTIFIERS")
     # new_orcids = Enum.filter(new_identifiers, fn id -> id["code"] == "ORCID" end)
     # existing_orcids = Enum.filter(existing_identifiers, fn id -> id["code"] == "ORCID" end)
 
@@ -176,6 +178,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     #   true -> {:error, "Colliding ORCID's"}
     #   false -> {true, person_input_data, existing_person_data}
     # end
+
     {:error, "Colliding ORCID's"}
   end
 
