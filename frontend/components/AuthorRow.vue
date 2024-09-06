@@ -11,7 +11,15 @@
           </a>
         </div>
         <div>
-          {{ author.affiliation_str }}
+          <ul class="list-unstyled">
+            <li
+              v-for="(affiliation, index) in author.affiliations"
+              :key="index"
+              style="margin-bottom: 0.5rem"
+            >
+              {{ affiliation }}
+            </li>
+          </ul>
         </div>
       </div>
       <div class="col-2 text-center">

@@ -3,7 +3,7 @@ import { z } from "zod";
 const zAuthorAffiliation = z.object({
   id: z.number().nullish(),
   name: z.string(),
-  affiliation_str: z.string().nullish(),
+  affiliations: z.array(z.string()).nullish(),
 });
 
 export const zPublication = z.object({
