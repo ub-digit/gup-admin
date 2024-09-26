@@ -17,7 +17,7 @@ export default defineNuxtConfig({
     shim: false,
     strict: true,
   },
-  modules: ["@pinia/nuxt", "@vueuse/nuxt"],
+  modules: ["@pinia/nuxt", "@vueuse/nuxt", "@sidebase/nuxt-auth"],
   build: {
     transpile: [
       "@fortawesome/fontawesome-svg-core",
