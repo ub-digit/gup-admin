@@ -45,6 +45,16 @@ defmodule GupIndexManager.Resource.Index.Query do
     }
   end
 
+  def find_person_by_gup_admin_id(id) do
+    %{
+      "query" => %{
+        "match" => %{
+          "id" => id
+        }
+      }
+    }
+  end
+
   def get_all_persons do
     %{
       "query" => %{
