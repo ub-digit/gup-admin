@@ -15,7 +15,7 @@ RUN set -ex \
  && yarn install && yarn run build
 
 # production environment
-FROM node:18-bullseye
+FROM node:20-bullseye
 ENV TZ=Europe/Stockholm
 WORKDIR /app
 COPY --from=build /app/release/frontend ./
