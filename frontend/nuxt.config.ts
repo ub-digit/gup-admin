@@ -3,6 +3,8 @@ export default defineNuxtConfig({
   ssr: true,
   runtimeConfig: {
     API_BASE_URL: "http://localhost:40415/", // this should point to admin-backend
+    GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID || "",
+    GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET || "",
     public: {
       API_GUP_BASE_URL: "http://localhost:8181", // this should point to gup-frontend and is used to redirect to posts for show/edit in gup-frontend
       ALLOW_AUTHOR_EDIT: true,
@@ -18,6 +20,12 @@ export default defineNuxtConfig({
     strict: true,
   },
   modules: ["@pinia/nuxt", "@vueuse/nuxt", "@sidebase/nuxt-auth"],
+
+  auth: {
+    provider: {
+      type: "authjs",
+    },
+  },
   build: {
     transpile: [
       "@fortawesome/fontawesome-svg-core",
