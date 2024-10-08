@@ -9,7 +9,9 @@
         <div class="col-4 me-2">
           <div class="row">
             <div class="col" style="min-height: 15px">
-              <Spinner v-if="pendingAuthors" class="me-4" />
+              <ClientOnly>
+                <Spinner v-if="pendingAuthors" class="me-4" />
+              </ClientOnly>
             </div>
           </div>
           <div class="row">
@@ -26,7 +28,6 @@
                 placeholder="Namn eller identifierare"
               />
             </form>
-            <!--             <FilterAuthor :pendingAuthors="pendingAuthors" />  -->
           </div>
           <div class="row">
             <div class="col opacity-50 text-center mb-4">
