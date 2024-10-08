@@ -9,6 +9,9 @@ services:
     environment:
       NUXT_API_BASE_URL: "http://admin-backend:4000/"
       NUXT_PUBLIC_ALLOW_AUTHOR_EDIT: ${ADMIN_FRONTEND_ALLOW_AUTHOR_EDIT}
+      NUXT_GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      NUXT_GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
+
     networks:
       - gup-admin
   admin-backend:
