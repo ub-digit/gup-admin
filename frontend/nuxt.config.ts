@@ -25,6 +25,7 @@ export default defineNuxtConfig({
     provider: {
       type: "authjs",
     },
+    globalAppMiddleware: true,
   },
   build: {
     transpile: [
