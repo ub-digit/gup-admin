@@ -1,22 +1,52 @@
 <template>
-  <div>
-    <button v-if="isLoggedIn" @click="handeSignOut">Sign Out</button>
-    <button v-else @click="handeSignIn">Sign in</button>
+  <div class="container">
+    <main class="form-signin w-25 m-auto">
+      <a href="javascript:void(0)" @click="handeSignIn">
+        <div class="card">
+          <div class="card-body">
+            <img
+              class="w-75 pb-2"
+              src="/gu-logo-login-gu-account@2x-8a8e76fad488c11b78fa089d140b3995.png"
+              alt="gu-logo"
+            />
+            <h4 class="card-title">Logga in med Github</h4>
+            <p>För anställda vid GU med ett x-konto.</p>
+          </div>
+        </div>
+      </a>
+    </main>
 
-    {{ data }}
+    <div class="debug">
+      <h2>debug stuff</h2>
+
+      <button class="btn btn-primary" v-if="isLoggedIn" @click="handeSignOut">
+        Sign Out
+      </button>
+      <button class="btn btn-primary" v-else @click="handeSignIn">
+        Sign in
+      </button>
+
+      <div v-if="isLoggedIn">
+        You are signed in
+        {{ data.user.name }}
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  auth: { unauthenticatedOnly: true, navigateAuthenticatedTo: "/" },
+});
 const { status, data, signIn, signOut } = useAuth();
 
 const isLoggedIn = computed(() => status.value === "authenticated");
 
 async function handeSignIn() {
-  await signIn();
+  await signIn("github");
 }
 
 async function handeSignOut() {
-  await signOut();
+  await signOut("github");
 }
 </script>
