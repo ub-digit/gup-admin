@@ -51,6 +51,16 @@
               t("locale.other_lang")
             }}</LangSelect>
           </div>
+          <div class="col-auto align-self-top">
+            <div style="margin-top: 10px" v-if="isLoggedIn">
+              <span class="me-2">{{ data.user.name }}</span>
+              <span
+                ><a href="javascript:void(0)" @click="handeSignOut"
+                  >Logga ut</a
+                ></span
+              >
+            </div>
+          </div>
         </div>
       </div>
     </header>
@@ -60,6 +70,14 @@
 <script lang="ts" setup>
 import { useImportedPostsStore } from "~/store/imported_posts";
 import { storeToRefs } from "pinia";
+
+const { status, data, signIn, signOut } = useAuth();
+
+const isLoggedIn = computed(() => status.value === "authenticated");
+
+async function handeSignOut() {
+  await signOut("github");
+}
 
 const importedPostsStore = useImportedPostsStore();
 const { users, selectedUser, selectedUserOverride } =
