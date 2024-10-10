@@ -15,22 +15,6 @@
         </div>
       </a>
     </main>
-
-    <div class="debug">
-      <h2>debug stuff</h2>
-
-      <button class="btn btn-primary" v-if="isLoggedIn" @click="handeSignOut">
-        Sign Out
-      </button>
-      <button class="btn btn-primary" v-else @click="handeSignIn">
-        Sign in
-      </button>
-
-      <div v-if="isLoggedIn">
-        You are signed in
-        {{ data.user.name }}
-      </div>
-    </div>
   </div>
 </template>
 
