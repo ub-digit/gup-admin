@@ -2,7 +2,6 @@ import { NuxtAuthHandler } from "#auth";
 
 import GithubProvider from "next-auth/providers/github";
 const config = useRuntimeConfig();
-console.log("config", config);
 export default NuxtAuthHandler({
   secret: config.SECRET_KEY_BASE,
   providers: [
