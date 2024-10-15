@@ -1,6 +1,8 @@
+import { BaseModuleDeclaration } from "./node_modules/@types/estree/index.d";
 // https://nuxt.com/docs/api/configuration/nuxt-config
+
 export default defineNuxtConfig({
-  ssr: false,
+  ssr: true,
   runtimeConfig: {
     API_BASE_URL: "http://localhost:40415/", // this should point to admin-backend
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID || "",
@@ -8,7 +10,8 @@ export default defineNuxtConfig({
     GU_CLIENT_ID: process.env.GU_CLIENT_ID || "",
     GU_CLIENT_SECRET: process.env.GU_CLIENT_SECRET || "",
     AUTH_USERS: process.env.AUTH_USERS || "",
-    AUTH_ORIGIN: process.env.AUTH_ORIGIN || "",
+    authOrigin: "",
+    authBaseUrl: "",
     public: {
       API_GUP_BASE_URL: "http://localhost:8181", // this should point to gup-frontend and is used to redirect to posts for show/edit in gup-frontend
       ALLOW_AUTHOR_EDIT: true,
@@ -30,7 +33,8 @@ export default defineNuxtConfig({
       type: "authjs",
     },
     globalAppMiddleware: true,
-    originEnvKey: "AUTH_ORIGIN",
+    originEnvKey: "NUXT_AUTH_ORIGIN",
+    baseURL: process.env.authBaseUrl,
   },
   build: {
     transpile: [
