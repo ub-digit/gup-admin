@@ -16,6 +16,7 @@ services:
       NUXT_AUTH_USERS: ${AUTH_USERS}
       NUXT_SECRET_KEY_BASE: "${SECRET_KEY_BASE}"
       NUXT_AUTH_ORIGIN: "${AUTH_ORIGIN}"
+      NUXT_AUTH_BASE_URL: "${AUTH_ORIGIN}/api/auth"
 
     networks:
       - gup-admin
