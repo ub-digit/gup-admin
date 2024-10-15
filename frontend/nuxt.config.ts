@@ -1,10 +1,13 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  ssr: true,
+  ssr: false,
   runtimeConfig: {
     API_BASE_URL: "http://localhost:40415/", // this should point to admin-backend
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID || "",
     GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET || "",
+    GU_CLIENT_ID: process.env.GU_CLIENT_ID || "",
+    GU_CLIENT_SECRET: process.env.GU_CLIENT_SECRET || "",
+    AUTH_USERS: process.env.AUTH_USERS || "",
     public: {
       API_GUP_BASE_URL: "http://localhost:8181", // this should point to gup-frontend and is used to redirect to posts for show/edit in gup-frontend
       ALLOW_AUTHOR_EDIT: true,

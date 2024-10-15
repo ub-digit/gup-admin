@@ -31,7 +31,6 @@
               v-model="selectedUserOverride"
             />
           </div>
-
           <div class="col-auto align-self-top">
             <div style="margin-top: 15px">eller</div>
           </div>

@@ -13,5 +13,23 @@ export default NuxtAuthHandler({
   ],
   pages: {
     signIn: "/login",
+    error: "/login",
+  },
+  callbacks: {
+    /* on before signin */
+    async signIn({ user, account, profile, email, credentials }) {
+      console.log("signIn", user, account, profile, email, credentials);
+      let userList = config.AUTH_USERS.split(",");
+      console.log("users2", userList);
+      if (userList.includes(profile.login)) {
+        return true;
+      }
+      return false;
+    },
+    /* on session retrival */
+    async session({ session, user, token }) {
+      console.log("session", session, user, token);
+      return session;
+    },
   },
 });

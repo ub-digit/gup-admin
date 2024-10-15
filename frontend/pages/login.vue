@@ -14,6 +14,11 @@
           </div>
         </div>
       </a>
+
+      <div v-if="hasError" class="alert alert-danger mt-3" role="alert">
+        <div>Någon gick fel vid inloggningen. Försök igen.</div>
+        <div>code: {{ hasError }}</div>
+      </div>
     </main>
   </div>
 </template>
@@ -23,8 +28,10 @@ definePageMeta({
   auth: { unauthenticatedOnly: true, navigateAuthenticatedTo: "/" },
 });
 const { status, data, signIn, signOut } = useAuth();
-
 const isLoggedIn = computed(() => status.value === "authenticated");
+const route = useRoute();
+
+const hasError = computed(() => route.query.error);
 
 async function handeSignIn() {
   await signIn("github");
