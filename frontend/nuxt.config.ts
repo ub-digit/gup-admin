@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   ssr: true,
   debug: true,
   devtools: { enabled: true },
-  secret: process.env.NUXT_SECRET_KEY_BASE || "",
+  secret: "wathever",
 
   runtimeConfig: {
     API_BASE_URL: "http://localhost:40415/", // this should point to admin-backend
