@@ -77,4 +77,13 @@ defmodule Experiment do
     IO.inspect("All others")
   end
 
+  def add_data do
+    MergeTestHelpers.generate_person_data()
+    |> MergeTestHelpers.add_name_forms([{"Anna", "Wåhlin", "101010101"}, {"Alberto C.", "Naveira Garabato", "202020202"}])
+    |> MergeTestHelpers.add_identifiers([{"X_ACCOUNT", "xb1111"}])
+    |> GupIndexManager.Resource.Persons.Merger.merge()
+    |> IO.inspect(label: "Merged data")
+    |> GupIndexManager.Resource.Persons.Execute.execute_actions()
+  end
+
 end
