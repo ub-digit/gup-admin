@@ -30,7 +30,7 @@ export default defineNuxtConfig({
       type: "authjs",
     },
     globalAppMiddleware: true,
-    origin: process.env.AUTH_ORIGIN || "",
+    originEnvKey: "AUTH_ORIGIN",
   },
   build: {
     transpile: [
