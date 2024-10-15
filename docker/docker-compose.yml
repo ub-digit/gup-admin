@@ -15,6 +15,7 @@ services:
       NUXT_GU_CLIENT_SECRET: ${GU_CLIENT_SECRET}
       NUXT_AUTH_USERS: ${AUTH_USERS}
       NUXT_SECRET_KEY_BASE: "${SECRET_KEY_BASE}"
+      NUXT_AUTH_ORIGIN: "${AUTH_ORIGIN}"
 
     networks:
       - gup-admin
