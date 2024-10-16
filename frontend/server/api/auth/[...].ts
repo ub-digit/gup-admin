@@ -10,6 +10,32 @@ export default NuxtAuthHandler({
       clientId: config.GITHUB_CLIENT_ID,
       clientSecret: config.GITHUB_CLIENT_SECRET,
     }),
+
+    /* Google OAuth 
+    {
+  "key": "da798a9a-cfea-4bd6-8158-54d0226bded3",
+  "secret": "aiwVj3J_oi8W7_X9EZdN0xx6hJRfQ6Bn9Jta9AoP",
+  "well_known_url": "https://idp.auth.gu.se/adfs/.well-known/openid-configuration",
+  "scope": "openid profile email"
+}
+    
+    */
+    {
+      id: "GU",
+      name: "GU",
+      type: "oauth",
+      wellKnown: "https://idp.auth.gu.se/adfs/.well-known/openid-configuration",
+      authorization: { params: { scope: "openid email profile" } },
+      idToken: true,
+      clientId: config.GU_CLIENT_ID,
+      clientSecret: config.GU_CLIENT_SECRET,
+      // checks: ["pkce", "state"],
+      profile(profile) {
+        return {
+          login: profile.account,
+        };
+      },
+    },
   ],
   pages: {
     signIn: "/login",
