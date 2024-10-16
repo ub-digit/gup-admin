@@ -52,7 +52,7 @@
           </div>
           <div class="col-auto align-self-top">
             <div style="margin-top: 10px" v-if="isLoggedIn">
-              <span class="me-2">{{ data.user.name }}</span>
+              <span class="me-2">{{ data.user.account }}</span>
               <span
                 ><a href="javascript:void(0)" @click="handeSignOut"
                   >Logga ut</a
@@ -63,6 +63,7 @@
         </div>
       </div>
     </header>
+    {{ data }}
   </div>
 </template>
 
