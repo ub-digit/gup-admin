@@ -1,3 +1,4 @@
+import { name } from "./../../../node_modules/ci-info/index.d";
 import { NuxtAuthHandler } from "#auth";
 
 import GithubProvider from "next-auth/providers/github";
@@ -10,16 +11,6 @@ export default NuxtAuthHandler({
       clientId: config.GITHUB_CLIENT_ID,
       clientSecret: config.GITHUB_CLIENT_SECRET,
     }),
-
-    /* Google OAuth 
-    {
-  "key": "da798a9a-cfea-4bd6-8158-54d0226bded3",
-  "secret": "aiwVj3J_oi8W7_X9EZdN0xx6hJRfQ6Bn9Jta9AoP",
-  "well_known_url": "https://idp.auth.gu.se/adfs/.well-known/openid-configuration",
-  "scope": "openid profile email"
-}
-    
-    */
     {
       id: "GU",
       name: "GU",
@@ -33,7 +24,9 @@ export default NuxtAuthHandler({
       profile(profile) {
         return {
           id: profile.sub,
-          login: profile.account,
+          name: profile.account,
+          email: profile.email,
+          account: profile.account,
         };
       },
     },
@@ -44,10 +37,9 @@ export default NuxtAuthHandler({
   },
   callbacks: {
     /* on before signin */
-    async signIn({ user, account, profile, email, credentials }) {
-      console.log("signIn", user, account, profile, email, credentials);
+    async signIn({ user, account, profile, email }) {
+      console.log("signIn", user, account, profile);
       let userList = config.AUTH_USERS.split(",");
-      console.log("users2", userList);
       console.log("profile2", profile);
       if (userList.includes(profile.account)) {
         return true;
