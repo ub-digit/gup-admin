@@ -93,10 +93,28 @@ defmodule Experiment do
     # |> IO.inspect(label: "Merged data")
     # |> GupIndexManager.Resource.Persons.Execute.execute_actions()
 
+    # MergeTestHelpers.generate_person_data()
+    # |> MergeTestHelpers.set_gup_admin_id("101")
+    # |> MergeTestHelpers.add_name_forms([{"George", "Cloney", "222222"}])
+    # |> MergeTestHelpers.add_identifiers([{"ORCID", "orcid1111"}, {"yada", "yada"}])
+    # |> GupIndexManager.Resource.Persons.sanitize_data()
+    # |> GupIndexManager.Resource.Persons.Merger.merge()
+    # |> IO.inspect(label: "Merged data")
+    # |> GupIndexManager.Resource.Persons.Execute.execute_actions()
+
+
+    # faulty input data
+    # %{}
+    # |> GupIndexManager.Resource.Persons.sanitize_data()
+    # |> GupIndexManager.Resource.Persons.Merger.merge()
+    # |> IO.inspect(label: "Merged data")
+    # |> GupIndexManager.Resource.Persons.Execute.execute_actions()
+
+
     MergeTestHelpers.generate_person_data()
     |> MergeTestHelpers.set_gup_admin_id("101")
     |> MergeTestHelpers.add_name_forms([{"George", "Cloney", "222222"}])
-    |> MergeTestHelpers.add_identifiers([{"ORCID", "orcid1111"}, {"yada", "yada"}])
+    |> MergeTestHelpers.add_identifiers([{"ORCID", "orcid1111"}, {"yada", "yada"}, {"X_ACCOUNT", "x_account_1111ssssss"}])
     |> GupIndexManager.Resource.Persons.sanitize_data()
     |> GupIndexManager.Resource.Persons.Merger.merge()
     |> IO.inspect(label: "Merged data")

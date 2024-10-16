@@ -63,7 +63,7 @@ defmodule GupIndexManager.CreateOrUpdatePersonTest do
       IO.puts("RUNNING FAULTY DATA TEST")
       # empty map representing the incoming data
       person_input_data = %{"names" => [%{"first_name" => "John", "last_name" => "Doe"}], "identifiers" => []}
-      assert Merger.merge(person_input_data) == {:error, "The person_input_data does not meet the minimum requirements"}
+      assert {:error, "The person_input_data does not meet the minimum requirements", _error_data} = Merger.merge(person_input_data)
     end
 
     ################################################################################################
@@ -182,7 +182,7 @@ defmodule GupIndexManager.CreateOrUpdatePersonTest do
 
       IO.inspect(person_input_data, label: "Person input data in test")
 
-      assert Merger.merge(person_input_data) == {:error, "Colliding ORCID and/or X_ACCOUNT"}
+      assert {:error, "Colliding ORCID and/or X_ACCOUNT", _error_data} = Merger.merge(person_input_data)
     end
 
      ################################################################################################
@@ -205,7 +205,7 @@ defmodule GupIndexManager.CreateOrUpdatePersonTest do
 
       IO.inspect(person_input_data, label: "Person input data in test")
 
-      assert Merger.merge(person_input_data) == {:error, "Colliding ORCID and/or X_ACCOUNT"}
+      assert {:error, "Colliding ORCID and/or X_ACCOUNT", _error_data} = Merger.merge(person_input_data)
     end
 
     ################################################################################################
@@ -255,7 +255,7 @@ defmodule GupIndexManager.CreateOrUpdatePersonTest do
 
 
     # end
-    @tag :skip
+    #@tag :skip
     test "index data" do
       Experiment.add_data()
       assert true

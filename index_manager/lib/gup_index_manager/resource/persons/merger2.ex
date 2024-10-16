@@ -25,7 +25,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     else
       # TODO: Log error and data
 
-      {false, data} -> {:error, "The person_input_data does not meet the minimum requirements"}
+      {false, data} -> {:error, "The person_input_data does not meet the minimum requirements", data}
     end
   end
 
@@ -173,13 +173,13 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     |> Enum.any?(fn colliding -> colliding == true end)
     |> case do
       # Pass data for logging
-      true -> {:error, "Colliding ORCID and/or X_ACCOUNT"}
+      true -> {:error, "Colliding ORCID and/or X_ACCOUNT", {person_input_data, existing_data}}
       false -> {false, person_input_data, existing_data}
     end
   end
 
   # Passthrough error
-  def has_matching_gup_person_id({:error, error_message}), do: {:error, error_message}
+  def has_matching_gup_person_id({:error, error_message, error_data}), do: {:error, error_message, error_data}
   # Passthrough ok - does not exist in index
   def has_matching_gup_person_id({:ok, person_input_data}), do: {:ok, person_input_data}
 
@@ -268,7 +268,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   #
   ############################################################################################################################
   def input_data_has_gup_person_id({:ok, person_input_data}), do: {:ok, person_input_data}
-  def input_data_has_gup_person_id({:error, error_message}), do: {:error, error_message}
+  def input_data_has_gup_person_id({:error, error_message, error_data}), do: {:error, error_message, error_data}
 
   ############################################################################################################################
   #
@@ -317,7 +317,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   # no existing data, pass through to create_or_update
   def set_primary_and_secondary_data({:ok, person_input_data}), do: {:ok, person_input_data}
   # error detected in earlier stage, pass through
-  def set_primary_and_secondary_data({:error, error_message}), do: {:error, error_message}
+  def set_primary_and_secondary_data({:error, error_message, error_data}), do: {:error, error_message, error_data}
 
   def get_aggregated_names(existing_data) do
     Enum.reduce(existing_data, [], fn existing_person, acc ->
@@ -328,11 +328,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     |> List.flatten()
   end
 
-  def merge_person({:error, error_message}) do
-    IO.puts("MERGE PERSON ERROR")
-    {:error, error_message}
-  end
-
+  def merge_person({:error, error_message, error_data}), do: {:error, error_message, error_data}
   def merge_person({:ok, person_input_data}) do
     # This is a new person that does not exist in the index
     IO.puts("MERGE PERSON PASSTHROUGH to create_or_update")
@@ -451,10 +447,8 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     {:ok, primary_data, actions}
   end
   # TODO: Supply data for logging
-  def create_or_update_person({:error, error_message}) do
-    {:error, error_message}
-  end
 
+  def create_or_update_person({:error, error_message, error_data}), do: {:error, error_message, error_data}
   def create_or_update_person({:ok, person_input_data}) do
     # This is a new person that does not exist in the index
     {:ok, person_input_data}
