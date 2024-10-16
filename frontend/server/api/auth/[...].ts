@@ -32,6 +32,7 @@ export default NuxtAuthHandler({
       // checks: ["pkce", "state"],
       profile(profile) {
         return {
+          id: profile.sub,
           login: profile.account,
         };
       },
