@@ -76,7 +76,7 @@ const { status, data, signIn, signOut } = useAuth();
 const isLoggedIn = computed(() => status.value === "authenticated");
 
 async function handeSignOut() {
-  await signOut("github");
+  await signOut("GU");
 }
 
 const importedPostsStore = useImportedPostsStore();
