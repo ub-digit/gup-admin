@@ -62,6 +62,7 @@ defmodule MergeTestHelpers do
         "end_date" => "2019-12-31T00:00:00+01:00",
         "first_name" => first_name,
         "last_name" => last_name,
+        "full_name" => "#{first_name} #{last_name}",
       } |> set_gup_person_id(id)
     end)
     Map.put(data, "names", names ++ old_names)

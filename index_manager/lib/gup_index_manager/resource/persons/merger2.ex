@@ -6,6 +6,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   #   Idea: if matching data length is 1 and data is exactly the same, bypass the merge.
   #
   #   If incomming data has an id (gup_admin_id) it's an exixsting person in gup-admin and should probably only be "saved" as is.
+  #   (above might not be true, if the person has had new identifiers added)
   #
   ############################################################################################################################
 
@@ -273,7 +274,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   ############################################################################################################################
   #
   #   Set primary and secondary data (primary is the data set that will be kept as
-  #  current data, secondary data will be marked as deleted)
+  #  current data, secondary data will be merged into primary data and then marked as deleted)
   #
   ############################################################################################################################
 
@@ -370,6 +371,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     |> List.flatten()
   end
 
+  # TODO: needs rewrite to make code more readable. Split into smaller functions
   def merge_names(primary_data, secondary_data) do
     # merge the names from secondary data into primary data
     # if a name form in secondary data has the same gup_person_id as a name form in primary data, update first_name and last_name in primary data
@@ -384,13 +386,25 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     end)  # remove existing names from secondary data to avoid duplicates
     IO.inspect(secondary_names, label: "SECONDARY AGGREGATED NAMES")
 
+    # check if the new/existing names have a gup_person_id
     Enum.map(secondary_names, fn secondary_name ->
       Enum.any?(primary_names, fn primary_name ->
         primary_name["gup_person_id"] == secondary_name["gup_person_id"]
       end)
       |> case do
         true -> {:update_name, secondary_name}
-        false -> needs_new_gup_person_id(secondary_name)
+        false ->
+          # check if first_name and last_name are EXACTLY the same as in primary data
+          # if so, do nothing
+          # else acquire a new gup_person_id
+          Enum.any?(primary_names, fn primary_name ->
+            secondary_name["first_name"] == primary_name["first_name"] and
+            secondary_name["last_name"] == primary_name["last_name"]
+          end)
+          |> case do
+            true -> []
+            false -> needs_new_gup_person_id(secondary_name)
+          end
       end
     end)
     |> List.flatten()

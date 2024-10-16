@@ -255,7 +255,7 @@ defmodule GupIndexManager.CreateOrUpdatePersonTest do
 
 
     # end
-    #@tag :skip
+    @tag :skip
     test "index data" do
       Experiment.add_data()
       assert true
