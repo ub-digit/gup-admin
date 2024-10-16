@@ -1,4 +1,5 @@
 import { name } from "./../../../node_modules/ci-info/index.d";
+import type { Profile } from "./../../../node_modules/next-auth/core/types.d";
 import { NuxtAuthHandler } from "#auth";
 
 import GithubProvider from "next-auth/providers/github";
@@ -10,6 +11,14 @@ export default NuxtAuthHandler({
     GithubProvider.default({
       clientId: config.GITHUB_CLIENT_ID,
       clientSecret: config.GITHUB_CLIENT_SECRET,
+      profile(profile) {
+        return {
+          id: profile.id.toString(),
+          name: profile.login,
+          email: profile.email,
+          image: profile.avatar_url,
+        };
+      },
     }),
     {
       id: "GU",
@@ -20,8 +29,7 @@ export default NuxtAuthHandler({
       idToken: true,
       clientId: config.GU_CLIENT_ID,
       clientSecret: config.GU_CLIENT_SECRET,
-      // checks: ["pkce", "state"],
-      profile(profile) {
+      async profile(profile) {
         return {
           id: profile.sub,
           name: profile.account,
@@ -37,19 +45,14 @@ export default NuxtAuthHandler({
   },
   callbacks: {
     /* on before signin */
-    async signIn({ user, account, profile, email }) {
-      console.log("signIn", user, account, profile);
+    async signIn({ user, profile }) {
       let userList = config.AUTH_USERS.split(",");
-      console.log("profile2", profile);
-      if (userList.includes(profile.account)) {
+      // if github use login, if GU use account
+      let accountName = profile.account ? profile.account : profile.login;
+      if (userList.includes(accountName)) {
         return true;
       }
       return false;
-    },
-    /* on session retrival */
-    async session({ session, user, token }) {
-      console.log("session", session, user, token);
-      return session;
     },
   },
 });
