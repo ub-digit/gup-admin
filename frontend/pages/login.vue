@@ -34,10 +34,10 @@ const route = useRoute();
 const hasError = computed(() => route.query.error);
 
 async function handeSignIn() {
-  await signIn("github");
+  await signIn("GU");
 }
 
 async function handeSignOut() {
-  await signOut("github");
+  await signOut("GU");
 }
 </script>
