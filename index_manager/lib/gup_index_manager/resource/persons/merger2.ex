@@ -344,7 +344,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
 
     actions = merge_names(primary_data, secondary_data)
       |> merge_identifiers(primary_data, secondary_data)
-      |> delete_secondary_data(secondary_data)
+      |> delete_secondary_data(secondary_data, primary_data)
       # TODO: merge departments
 
     case length(actions) do
@@ -355,13 +355,18 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     end
   end
 
-  def delete_secondary_data(actions, secondary_data) do
+  def delete_secondary_data(actions, secondary_data, primary_data) do
     IO.inspect(secondary_data, label: "DELETE SECONDARY DATA")
+    primary_data_id = Map.get(primary_data, "id", nil)
     new_actions = Enum.map(secondary_data, fn secondary_person ->
       id = Map.get(secondary_person, "id")
       case id do
         nil -> []
-        _ -> {:delete_person, id}
+        id ->
+          case primary_data_id == id do
+            true -> []
+            _ -> {:delete_person, id}
+          end
       end
     end)
     IO.inspect(new_actions, label: "NEW ACTIONS")

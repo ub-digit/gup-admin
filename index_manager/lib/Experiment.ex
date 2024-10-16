@@ -78,12 +78,30 @@ defmodule Experiment do
   end
 
   def add_data do
+    #  MergeTestHelpers.generate_person_data()
+    # |> MergeTestHelpers.add_name_forms([{"Anna", "Wåhlin", "101010101"}, {"Alberto C.", "Naveira Garabato", "202020202"}, {"Ulla", "Skoog", nil}])
+    # |> MergeTestHelpers.add_identifiers([{"X_ACCOUNT", "xb1111"}])
+    # |> GupIndexManager.Resource.Persons.Merger.merge()
+    # |> IO.inspect(label: "Merged data")
+    # |> GupIndexManager.Resource.Persons.Execute.execute_actions()
+
+    # MergeTestHelpers.generate_person_data()
+    # |> MergeTestHelpers.add_name_forms([{"Anna", "Wåhlin", "fffff101010101"}])
+    # |> MergeTestHelpers.add_identifiers([{"X_ACCOUNT", "xb111wwwwww1"}])
+    # |> GupIndexManager.Resource.Persons.sanitize_data()
+    # |> GupIndexManager.Resource.Persons.Merger.merge()
+    # |> IO.inspect(label: "Merged data")
+    # |> GupIndexManager.Resource.Persons.Execute.execute_actions()
+
     MergeTestHelpers.generate_person_data()
-    |> MergeTestHelpers.add_name_forms([{"Anna", "Wåhlin", "101010101"}, {"Alberto C.", "Naveira Garabato", "202020202"}])
-    |> MergeTestHelpers.add_identifiers([{"X_ACCOUNT", "xb1111"}])
+    |> MergeTestHelpers.set_gup_admin_id("101")
+    |> MergeTestHelpers.add_name_forms([{"George", "Cloney", "222222"}])
+    |> MergeTestHelpers.add_identifiers([{"ORCID", "orcid1111"}, {"yada", "yada"}])
+    |> GupIndexManager.Resource.Persons.sanitize_data()
     |> GupIndexManager.Resource.Persons.Merger.merge()
     |> IO.inspect(label: "Merged data")
     |> GupIndexManager.Resource.Persons.Execute.execute_actions()
+
   end
 
 end
