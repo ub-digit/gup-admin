@@ -49,7 +49,7 @@ export default NuxtAuthHandler({
       let userList = config.AUTH_USERS.split(",");
       console.log("users2", userList);
       console.log("profile2", profile);
-      if (userList.includes(profile.login)) {
+      if (userList.includes(profile.account)) {
         return true;
       }
       return false;
