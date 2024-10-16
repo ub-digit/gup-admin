@@ -48,6 +48,7 @@ export default NuxtAuthHandler({
       console.log("signIn", user, account, profile, email, credentials);
       let userList = config.AUTH_USERS.split(",");
       console.log("users2", userList);
+      console.log("profile2", profile);
       if (userList.includes(profile.login)) {
         return true;
       }
