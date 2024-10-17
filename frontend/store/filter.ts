@@ -14,7 +14,7 @@ export const useFilterStore = defineStore("filterStore", () => {
   };
 
   const getNeedsAttentionBoolean = (item: string): boolean | undefined => {
-    if (item === "false" || item === undefined) {
+    if (item === "false") {
       return false;
     }
     return true;
