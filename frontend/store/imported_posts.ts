@@ -15,16 +15,9 @@ import authors from "~/server/api/author/authors";
 export const useImportedPostsStore = defineStore("importedPostsStore", () => {
   const filterStore = useFilterStore();
   const { filters } = storeToRefs(filterStore);
-  const users = ref([
-    "xgrkri",
-    "xannje",
-    "xjopau",
-    "xljoha",
-    "xlpero",
-    "xblars",
-    "xberns",
-    "xjostw",
-  ]);
+
+  const { data: authData } = useAuth();
+
   const authorsByPublication: Ref<AuthorAffiliation[]> = ref([]);
   const selectedUser: Ref<string | null> = ref("");
   const selectedUserOverride: Ref<string> = ref("");
@@ -38,16 +31,6 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
   const pendingRemoveImportedPost = ref(false);
   const pendingCreateImportedPostInGup = ref(false);
 
-  if (nuxtStorage?.localStorage?.getData("selectedUser")) {
-    selectedUser.value = nuxtStorage.localStorage.getData("selectedUser");
-  }
-
-  if (nuxtStorage?.localStorage?.getData("selectedUserOverride")) {
-    selectedUserOverride.value = nuxtStorage.localStorage.getData(
-      "selectedUserOverride"
-    );
-  }
-
   watch(selectedUser, () => {
     // save to localstorage
     nuxtStorage?.localStorage?.setData("selectedUser", selectedUser.value);
@@ -56,28 +39,11 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     }
   });
 
-  watch(selectedUserOverride, () => {
-    // save to localstorage
-    nuxtStorage?.localStorage?.setData(
-      "selectedUserOverride",
-      selectedUserOverride.value
-    );
-    if (selectedUserOverride.value?.length === 6) {
-      selectedUser.value = "";
-    }
-  });
-
-  const selectedUserComputed = computed(() => {
-    if (selectedUser.value) {
-      return selectedUser.value;
-    }
-    return selectedUserOverride.value;
-  });
-  async function createImportedPostInGup(id: string, user: string) {
+  async function createImportedPostInGup(id: string) {
     try {
       pendingCreateImportedPostInGup.value = true;
       const { data, error } = await useFetch(`/api/post_to_gup/${id}/`, {
-        params: { user: user },
+        params: { user: authData?.value?.user?.name },
       });
       if (error.value) {
         throw error;
@@ -91,10 +57,10 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     }
   }
 
-  async function mergePosts(id: string, gupid: string, user: string) {
+  async function mergePosts(id: string, gupid: string) {
     try {
       const { data, error } = await useFetch(`/api/merge_posts/`, {
-        params: { id: id, gupid: gupid, user: user },
+        params: { id: id, gupid: gupid, user: authData?.value?.user?.name },
       });
       return data.value;
     } catch (error) {
@@ -240,9 +206,7 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     pendingRemoveImportedPost,
     pendingCreateImportedPostInGup,
     $importedReset,
-    users,
     selectedUser,
     selectedUserOverride,
-    selectedUserComputed,
   };
 });

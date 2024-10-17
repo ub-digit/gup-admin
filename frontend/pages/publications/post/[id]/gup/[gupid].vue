@@ -266,22 +266,17 @@ if (
 }
 
 async function merge() {
-  if (selectedUserComputed.value !== "") {
-    const ok = confirm(t("messages.confirm_merge_in_gup"));
-    if (ok) {
-      const res = await mergePosts(
-        route.params.id as string,
-        route.params.gupid as string,
-        selectedUserComputed.value
-      );
-      if (res) {
-        showModalMerge.value = true;
-      } else if (res.error) {
-        $toast.error(t("messages.merge_in_gup_error"));
-      }
+  const ok = confirm(t("messages.confirm_merge_in_gup"));
+  if (ok) {
+    const res = await mergePosts(
+      route.params.id as string,
+      route.params.gupid as string
+    );
+    if (res) {
+      showModalMerge.value = true;
+    } else if (res.error) {
+      $toast.error(t("messages.merge_in_gup_error"));
     }
-  } else {
-    alert("No user selected");
   }
 }
 async function removePost() {
@@ -334,35 +329,28 @@ async function handleSuccessMerge() {
 }
 
 async function editPost() {
-  if (selectedUserComputed.value !== "") {
-    let ok = null;
-    if (item_row_source === "gup") {
-      ok = confirm(t("messages.confirm_open_in_gup"));
-    } else {
-      ok = confirm(t("messages.confirm_create_in_gup"));
-    }
-    if (ok) {
-      if (item_row_source !== "gup") {
-        const response = await createImportedPostInGup(
-          item_row_id,
-          selectedUserComputed.value
-        );
-        if (!response.error) {
-          const url = response.link;
-          window.open(url, "_blank");
-          showModal.value = true;
-        } else if (response.error) {
-          $toast.error(t("messages.create_in_gup_error"));
-        }
-      } else if (item_row_source === "gup") {
-        window.open(
-          `${config.public.API_GUP_BASE_URL}/publications/show/${item_row_publication_id}`,
-          "_blank"
-        );
-      }
-    }
+  let ok = null;
+  if (item_row_source === "gup") {
+    ok = confirm(t("messages.confirm_open_in_gup"));
   } else {
-    alert("No user selected!");
+    ok = confirm(t("messages.confirm_create_in_gup"));
+  }
+  if (ok) {
+    if (item_row_source !== "gup") {
+      const response = await createImportedPostInGup(item_row_id);
+      if (!response.error) {
+        const url = response.link;
+        window.open(url, "_blank");
+        showModal.value = true;
+      } else if (response.error) {
+        $toast.error(t("messages.create_in_gup_error"));
+      }
+    } else if (item_row_source === "gup") {
+      window.open(
+        `${config.public.API_GUP_BASE_URL}/publications/show/${item_row_publication_id}`,
+        "_blank"
+      );
+    }
   }
 }
 
