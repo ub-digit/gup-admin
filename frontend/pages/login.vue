@@ -20,7 +20,7 @@
         <div>code: {{ hasError }}</div>
       </div>
 
-      <div class="pt-2">
+      <div class="pt-2 visually-hidden">
         <h2>Dev: Logga in med github.</h2>
         <a href="javascript:void(0)" @click="handeSignIn('github')">Login</a>
       </div>
