@@ -1,8 +1,19 @@
+import { debug } from "./node_modules/@types/node/ts4.8/util.d";
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   ssr: true,
+  debug: true,
+  devtools: { enabled: true },
+
   runtimeConfig: {
     API_BASE_URL: "http://localhost:40415/", // this should point to admin-backend
+    GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID || "",
+    GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET || "",
+    GU_CLIENT_ID: process.env.GU_CLIENT_ID || "",
+    GU_CLIENT_SECRET: process.env.GU_CLIENT_SECRET || "",
+    AUTH_USERS: process.env.AUTH_USERS || "",
+    SECRET_KEY_BASE: process.env.SECRET_KEY_BASE || "",
+    authOrigin: "",
     public: {
       API_GUP_BASE_URL: "http://localhost:8181", // this should point to gup-frontend and is used to redirect to posts for show/edit in gup-frontend
       ALLOW_AUTHOR_EDIT: true,
@@ -17,7 +28,16 @@ export default defineNuxtConfig({
     shim: false,
     strict: true,
   },
-  modules: ["@pinia/nuxt", "@vueuse/nuxt"],
+  modules: ["@pinia/nuxt", "@vueuse/nuxt", "@sidebase/nuxt-auth"],
+
+  auth: {
+    originEnvKey: "AUTH_ORIGIN",
+    provider: {
+      type: "authjs",
+    },
+    globalAppMiddleware: true,
+    baseURL: process.env.NUXT_AUTH_BASE_URL || "",
+  },
   build: {
     transpile: [
       "@fortawesome/fontawesome-svg-core",
