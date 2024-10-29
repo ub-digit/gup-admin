@@ -36,7 +36,7 @@
               {{ t("views.index.card.all_data.header") }}
             </h2>
             <p class="card-text">{{ t("views.index.card.all_data.body") }}</p>
-            <LangLink to="/publications" class="btn btn-primary">{{
+            <LangLink to="/organizations" class="btn btn-primary">{{
               t("views.index.card.all_data.link_text")
             }}</LangLink>
           </div>
