@@ -27,9 +27,9 @@ export const useLocaleStore = defineStore("locale", {
         "views.index.card.people.body": "Hantera personer",
         "views.index.card.people.link_text": "Gå till hantera personer",
 
-        "views.index.card.all_data.header": "All data",
-        "views.index.card.all_data.body": "Hantera all data",
-        "views.index.card.all_data.link_text": "Gå till hantera all data",
+        "views.index.card.all_data.header": "Organisationer",
+        "views.index.card.all_data.body": "Hantera organisationer",
+        "views.index.card.all_data.link_text": "Gå till hantera organisationer",
 
         "views.publications.title": "Superduperadmin",
 
@@ -92,7 +92,8 @@ export const useLocaleStore = defineStore("locale", {
         "views.authors.identifier_type.CID": "Cid",
         "views.authors.identifier_type.POP_ID": "Pop-id",
         "views.authors.identifier_type.SCOPUS_AUTHOR_ID": "Scopus Author ID",
-        "views.authors.identifier_type.WOS_RESEARCHER_ID": "Web of Science ResearcherID",
+        "views.authors.identifier_type.WOS_RESEARCHER_ID":
+          "Web of Science ResearcherID",
         "views.authors.identifier_type.WOS_DAISNG_ID": "Web of Science ID",
 
         "appfooter.contact_link": "https://www.ub.gu.se/node/189487/",
