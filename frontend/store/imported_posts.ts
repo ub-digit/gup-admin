@@ -10,7 +10,6 @@ import {
 } from "~/types/Publication";
 import type { ImportedPostType } from "~/types/PublicationCompareRow";
 import { zImportedPostType } from "~/types/PublicationCompareRow";
-import authors from "~/server/api/author/authors";
 
 export const useImportedPostsStore = defineStore("importedPostsStore", () => {
   const filterStore = useFilterStore();
