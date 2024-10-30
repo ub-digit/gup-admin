@@ -158,7 +158,7 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
 
   async function fetchAuthorsByPublication(id: string) {
     try {
-      const { data, error } = await useFetch(`/api/author/publication/${id}`);
+      const { data, error } = await useFetch(`/api/_author/publication/${id}`);
       if (data?.value?.error) {
         throw data.value;
       }
