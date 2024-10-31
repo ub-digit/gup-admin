@@ -2,8 +2,8 @@
   <div>
     <NuxtLink
       :to="{
-        name: 'organizations-id',
-        query: $route.query,
+        name: 'organizations-id-show',
+        query: route.query,
         params: { id: organization.id },
       }"
       class="list-group-item list-group-item-action"
@@ -21,11 +21,9 @@
 </template>
 
 <script lang="ts" setup>
-import type { Nameform } from "~/types/Author";
-import type { Department } from "~/types/Author";
-
-const props = defineProps(["organization"]);
+const { organization } = defineProps(["organization"]);
 const { t } = useI18n();
+const route = useRoute();
 </script>
 
 <style lang="scss" scoped>

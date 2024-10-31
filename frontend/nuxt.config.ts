@@ -27,8 +27,16 @@ export default defineNuxtConfig({
     shim: false,
     strict: true,
   },
-  modules: ["@pinia/nuxt", "@vueuse/nuxt", "@sidebase/nuxt-auth"],
-
+  modules: [
+    "@pinia/nuxt",
+    "@vueuse/nuxt",
+    "@sidebase/nuxt-auth",
+    "@formkit/nuxt",
+  ],
+  formkit: {
+    // Experimental support for auto loading (see note):
+    autoImport: true,
+  },
   auth: {
     originEnvKey: "AUTH_ORIGIN",
     provider: {

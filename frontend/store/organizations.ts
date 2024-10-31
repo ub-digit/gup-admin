@@ -112,6 +112,25 @@ export const useOrganizationsStore = defineStore("organizationsStore", () => {
     }
   }
 
+  async function saveOrganization(org: Organization) {
+    try {
+      const { data, error } = await useFetch(`/api/organization/update`, {
+        method: "PUT",
+        body: org,
+      });
+      if (error.value) {
+        throw error;
+      }
+      if (data?.value?.body?.message === "ok") {
+        return "success";
+      }
+    } catch (error) {
+      console.log("Something went wrong: saveOrganization");
+      // maybe redict to error page
+    } finally {
+    }
+  }
+
   function paramsSerializer(params: any) {
     //https://github.com/unjs/ufo/issues/62
     if (!params) {
@@ -134,5 +153,6 @@ export const useOrganizationsStore = defineStore("organizationsStore", () => {
     pendingOrganizations,
     fetchOrganizationById,
     fetchOrganizations,
+    saveOrganization,
   };
 });
