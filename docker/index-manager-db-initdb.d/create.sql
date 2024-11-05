@@ -64,7 +64,8 @@ CREATE TABLE public.persons (
     id bigint NOT NULL,
     json text,
     inserted_at timestamp(0) without time zone NOT NULL,
-    updated_at timestamp(0) without time zone NOT NULL
+    updated_at timestamp(0) without time zone NOT NULL,
+    deleted boolean DEFAULT false NOT NULL
 );
 
 ALTER TABLE public.persons OWNER TO postgres;
