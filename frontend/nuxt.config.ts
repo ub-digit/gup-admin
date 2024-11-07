@@ -1,4 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+
 export default defineNuxtConfig({
   ssr: true,
   debug: true,
@@ -32,6 +33,7 @@ export default defineNuxtConfig({
     "@vueuse/nuxt",
     "@sidebase/nuxt-auth",
     "@formkit/nuxt",
+    "@nuxtjs/tailwindcss",
   ],
   formkit: {
     // Experimental support for auto loading (see note):

@@ -26,6 +26,10 @@ export const zOrganizationResultList = zod.object({
   data: zOrganizationArray,
 });
 
+export const zOrganizationSearchResultList = zod.object({
+  data: zOrganizationArray,
+});
+
 export type Organization = zod.infer<typeof zOrganization>;
 export type OrganizationArray = zod.infer<typeof zOrganizationArray>;
 export type OrganizationResultList = zod.infer<typeof zOrganizationResultList>;

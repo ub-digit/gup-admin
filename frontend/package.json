@@ -8,10 +8,12 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
+    "@nuxtjs/tailwindcss": "^6.12.2",
     "nuxt": "^3.9.0"
   },
   "dependencies": {
     "@formkit/nuxt": "^1.6.7",
+    "@formkit/pro": "^0.127.6",
     "@fortawesome/fontawesome-svg-core": "^6.2.1",
     "@fortawesome/free-regular-svg-icons": "^6.2.1",
     "@fortawesome/free-solid-svg-icons": "^6.2.1",

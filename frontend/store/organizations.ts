@@ -1,6 +1,10 @@
 import { defineStore } from "pinia";
 import { ZodError, number } from "zod";
-import { zOrganization, zOrganizationResultList } from "~/types/Organizations";
+import {
+  zOrganization,
+  zOrganizationResultList,
+  zOrganizationSearchResultList,
+} from "~/types/Organizations";
 import type {
   Organization,
   OrganizationResultList,
@@ -56,6 +60,29 @@ export const useOrganizationsStore = defineStore("organizationsStore", () => {
     return deepClone;
   });
 
+  async function searchOrganizations() {
+    try {
+      const { data, error } = await useFetch(
+        "/api/organization/organizations_all"
+      );
+      if (data?.value?.error) {
+        throw data.value;
+      }
+      return zOrganizationSearchResultList.parse(data.value).data;
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const new_error = { code: "666", message: "ZodError", data: error };
+        errorOrganizations.value = new_error;
+        console.log(errorOrganizations.value);
+        console.log("Something went wrong: searchOrganizations from Zod");
+      } else {
+        errorOrganizations.value = error.error;
+        console.log(errorOrganizations.value);
+        console.log("Something went wrong: searchOrganizations");
+      }
+    }
+  }
+
   async function fetchOrganizationById(id: string) {
     try {
       const { data, error } = await useFetch(`/api/organization/${id}`);
@@ -76,7 +103,6 @@ export const useOrganizationsStore = defineStore("organizationsStore", () => {
       }
     }
   }
-
   async function fetchOrganizations() {
     try {
       pendingOrganizations.value = true;
@@ -153,6 +179,7 @@ export const useOrganizationsStore = defineStore("organizationsStore", () => {
     pendingOrganizations,
     fetchOrganizationById,
     fetchOrganizations,
+    searchOrganizations,
     saveOrganization,
   };
 });
