@@ -58,7 +58,7 @@ defmodule GupIndexManager.CreateOrUpdatePersonTest do
 
     # Incoming data does not meet the minimun requirements
 
-    #@tag :skip
+    # @tag :skip
     test "check for faulty input data" do
       IO.puts("RUNNING FAULTY DATA TEST")
       # empty map representing the incoming data
@@ -148,10 +148,8 @@ defmodule GupIndexManager.CreateOrUpdatePersonTest do
     ################################################################################################
 
     # incoming data has same x_account as existing person and also new scopus id
-    #@tag :skip
-    test "merge existing user(x_account) with new data containing a new scopus id", setup_data do
-      # input data
-
+    #@tag :skipperson_input_data
+    test "Merge existing user with new scopus id", setup_data do
       person_input_data = setup_data[:existing_person_data]
       |> MergeTestHelpers.clear_gup_admin_id()
       |> MergeTestHelpers.clear_identifiers()
@@ -254,12 +252,34 @@ defmodule GupIndexManager.CreateOrUpdatePersonTest do
     #   |> MergeTestHelpers.set_gup_admin_id("999")
 
 
-    # end
     @tag :skip
-    test "index data" do
-      Experiment.add_data()
-      assert true
+    test "same input data twice", setup_data do
+      IO.puts("HALABALOOBA")
+      # input data
+      person_input_data = setup_data[:existing_person_data]
+      |> MergeTestHelpers.clear_gup_admin_id()
+      |> MergeTestHelpers.clear_name_forms()
+      |> MergeTestHelpers.add_name_forms([{"Johnn", "Doe", @existing_gup_person_id}])
+      |> MergeTestHelpers.clear_identifiers()
+      |> MergeTestHelpers.add_identifiers([{@code_x_account, @existing_x_account}])
+      IO.inspect(person_input_data, label: "Person input data in test")
+      assert {:ok, _primary_data, :no_actions} = Merger.merge(person_input_data)
 
     end
+
+    #@tag :skip
+    test "set primary name", setup_data do
+      # input data
+      person_input_data = setup_data[:existing_person_data]
+      |> MergeTestHelpers.clear_gup_admin_id()
+      |> MergeTestHelpers.clear_name_forms()
+      |> MergeTestHelpers.add_name_forms([{"Svenne", "Banan", "2123121231"}])
+      |> MergeTestHelpers.clear_identifiers()
+      |> MergeTestHelpers.add_identifiers([{@code_x_account, @existing_x_account}])
+      IO.inspect(person_input_data, label: "Person input data in test")
+      assert {:ok, _primary_data, [{:add_name, _data_n1}, {:create_or_update_person}]} = Merger.merge(person_input_data)
+
+    end
+
   end
 end

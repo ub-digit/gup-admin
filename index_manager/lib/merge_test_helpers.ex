@@ -102,4 +102,5 @@ defmodule MergeTestHelpers do
   def clear_identifiers(data) do
     Map.put(data, "identifiers", [])
   end
+
 end

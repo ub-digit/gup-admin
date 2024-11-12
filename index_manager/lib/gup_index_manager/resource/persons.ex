@@ -23,6 +23,7 @@ defmodule GupIndexManager.Resource.Persons do
     |> elem(1)
     |> set_meta(data)
     |> update_index()
+    |> IO.inspect(label: "Person updated")
   end
 
   def set_meta(db_data, data) do
