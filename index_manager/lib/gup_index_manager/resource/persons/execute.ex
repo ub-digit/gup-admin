@@ -3,6 +3,7 @@ defmodule GupIndexManager.Resource.Persons.Execute do
   def execute_actions({:error, error, error_log_data}) do
     IO.puts "Error: #{error}"
     IO.inspect error_log_data
+    %{"error" => error}
   end
 
   def execute_actions({:ok, _primary_data, :no_actions}) do
@@ -14,7 +15,7 @@ defmodule GupIndexManager.Resource.Persons.Execute do
   # end
 
   def execute_actions({:ok, primary_data, actions}) do
-    IO.inspect("asdasdasdasdasdasd")
+    IO.inspect(actions, label: "Actions")
     %{"passed" => "to execute_actions"}
    Enum.reduce(actions, primary_data, fn action, primary_data ->
       execute_action(primary_data, action)
@@ -25,12 +26,14 @@ defmodule GupIndexManager.Resource.Persons.Execute do
 
   end
 
+
   def execute_action(data, {:create_or_update_person}) do
     # Send data to create_or_update_person
     IO.puts "Create or update person"
     GupIndexManager.Resource.Persons.create_or_update_person(data)
     data
   end
+
 
   def execute_action(data, {:add_name, name_data}) do
     names = Map.get(data, "names", [])
@@ -55,18 +58,39 @@ defmodule GupIndexManager.Resource.Persons.Execute do
     }
 
     new_names = List.insert_at(names, 0, new_name)
+    |> IO.inspect(label: "New names")
     Map.put(data, "names", new_names)
   end
 
   def execute_action(data, {:update_name, name}) do
+    IO.puts("---------- dfdd- - --------------------------------------------")
+    IO.inspect(name, label: "name dsfdsdf")
+    IO.inspect(data, label: "name dsfdsdf")
     # Names has the same gup_person_id, so update the name and dates
-    IO.puts "Update name"
-    data
+    name = Map.put(name, "full_name", "#{name["first_name"]} #{name["last_name"]}")
+    |> Map.put("primary", true)
+    id = name["gup_person_id"]
+    |> IO.inspect(label: "ID ---<")
+    names = Map.get(data, "names", [])
+    |> Enum.filter(fn name -> name["gup_person_id"] != id end)
+    |> Enum.map(fn existing_name -> Map.put(existing_name, "primary", false) end)
+    new_names = List.insert_at(names, 0, name)
+    Map.put(data, "names", new_names)
+    |> IO.inspect(label: "names ---<")
+    # IO.inspect(new_names, label: "new_names")
+    # data
   end
 
   def execute_action(data, {:acquire_gup_id, name_data}) do
     name_data = Map.put(name_data, "gup_person_id", acquire_gup_person_id())
     execute_action(data, {:add_name, name_data})
+  end
+
+  def execute_action(data, {:set_primary_name, _name_data}) do
+    names = Map.get(data, "names", [])
+    |> set_primary_name_to_false()
+
+    Map.put(data, "names", names)
   end
 
   def execute_action(data, {:add_identifier, identifier_data}) do
@@ -78,14 +102,11 @@ defmodule GupIndexManager.Resource.Persons.Execute do
   def execute_action(data, {:delete_person, id}) do
     IO.puts "Deleting person #{id}"
     GupIndexManager.Resource.Persons.delete_person(id)
-    # get user from index with id
-    # mark user as deleted "deleted" => true
-    # update index
-    # update db
     data
   end
 
   def acquire_gup_person_id() do
+    # TODO: ask GUP for a new gup_person_id
     :rand.uniform(1000000)
     |> to_string()
     |> Kernel.<>(" holy smoke!")

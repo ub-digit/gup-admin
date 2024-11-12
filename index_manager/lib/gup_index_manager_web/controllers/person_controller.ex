@@ -7,7 +7,7 @@ defmodule GupIndexManagerWeb.PersonController do
 
     case ControllerHelpers.check_api_key(api_key) do
       true ->
-        json conn, Persons.Merger.merge(data)#Persons.create_or_update(data)
+        json conn, Persons.Merger.merge(data) |> GupIndexManager.Resource.Persons.Execute.execute_actions()
       false ->
         json conn, %{status: "error, unauthorized key"}
     end

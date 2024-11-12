@@ -77,4 +77,8 @@ defmodule Experiment do
     IO.inspect("All others")
   end
 
+  def add_data do
+    true
+  end
+
 end
