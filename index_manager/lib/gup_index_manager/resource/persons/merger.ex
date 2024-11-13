@@ -554,7 +554,6 @@ defmodule GupIndexManager.Resource.Persons.Merger do
         end
       end)
     end)
-
     actions ++ new_actions |> List.flatten() |> Enum.uniq()
   end
 
@@ -629,10 +628,6 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   #   Enum.sort_by(names, fn x -> x["start_date"] end)
   #   |> List.last() |> Map.put("primary", true)
   # end
-
-
-
-
 
   def create_or_update_person({:ok, primary_data, :no_actions}) do
     IO.puts("CREATE OR UPDATE existing PERSON with no actions")

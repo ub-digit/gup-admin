@@ -1,13 +1,13 @@
 defmodule GupIndexManager.Resource.Persons.Execute do
 
   def execute_actions({:error, error, error_log_data}) do
-    IO.puts "Error: #{error}"
-    IO.inspect error_log_data
-    %{"error" => error}
+    GupIndexManager.Resource.Logger.log({:error, error, error_log_data})
+    {:error, error, error_log_data}
   end
 
-  def execute_actions({:ok, _primary_data, :no_actions}) do
+  def execute_actions({:ok, primary_data, :no_actions}) do
     IO.inspect("input data exist in index, no actions necessary")
+    {:ok, primary_data, :no_actions}
   end
 
   # def execute_actions({:ok, person_input_data, [:create_or_update_person]}) do
@@ -15,17 +15,15 @@ defmodule GupIndexManager.Resource.Persons.Execute do
   # end
 
   def execute_actions({:ok, primary_data, actions}) do
-    IO.inspect(actions, label: "Actions")
-    %{"passed" => "to execute_actions"}
-   Enum.reduce(actions, primary_data, fn action, primary_data ->
+    # IO.inspect(actions, label: "Actions")
+    result_data = Enum.reduce(actions, primary_data, fn action, primary_data ->
       execute_action(primary_data, action)
-      |> write_to_index(action)
-      |> log_transaction(action)
     end)
+    GupIndexManager.Resource.Logger.log({:transaction, actions, result_data})
+    {:ok, result_data}
   #   |> IO.inspect(label: "Primary data")
 
   end
-
 
   def execute_action(data, {:create_or_update_person}) do
     # Send data to create_or_update_person
