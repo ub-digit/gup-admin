@@ -4,6 +4,8 @@ defmodule GupIndexManager.Model.Person do
 
   schema "persons" do
     field :json, :string
+    field :deleted, :boolean, default: false
+    field :deleted_at, :utc_datetime
     timestamps()
 
   end
@@ -11,7 +13,7 @@ defmodule GupIndexManager.Model.Person do
   @doc false
   def changeset(person, attrs) do
     person
-    |> cast(attrs, [:json])
+    |> cast(attrs, [:json, :deleted, :deleted_at])
     |> validate_required([:json])
   end
   def find_by_id(id) when is_nil(id), do: %GupIndexManager.Model.Person{}
