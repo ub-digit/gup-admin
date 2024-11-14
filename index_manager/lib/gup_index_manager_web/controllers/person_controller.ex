@@ -15,7 +15,7 @@ defmodule GupIndexManagerWeb.PersonController do
 
   def respond({:error, error, error_log_data}, conn) do
     GupIndexManager.Resource.Logger.log({:error, error, error_log_data})
-    json Plug.Conn.put_status(conn, 500), %{status: "500", message: "Internal server error"}
+    json Plug.Conn.put_status(conn, 200), %{status: "200", message: "error #{error}  see log for details"}
 
   end
 
