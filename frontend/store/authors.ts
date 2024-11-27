@@ -79,7 +79,7 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
   async function fetchAuthors() {
     try {
       pendingAuthors.value = true;
-      const { data, error } = await useFetch("/api/author/authors", {
+      const { data, error } = await useFetch("/api/_author/authors", {
         params: { ...filters_for_api.value },
       });
       if (data?.value?.error) {
