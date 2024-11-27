@@ -1,6 +1,7 @@
 # this module will query elasticsearch for posts with filter on origin
 defmodule GupAdmin.Resource.Search do
   @index "publications"
+  @persons_index "persons_index"
   @query_limit 500
   alias GupAdmin.Resource.Search.Query
   alias GupAdmin.Resource.Search.Filter
@@ -222,7 +223,7 @@ defmodule GupAdmin.Resource.Search do
         }
       }
     }
-    {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), "persons", [], query)
+    {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @persons_index, [], query)
     data = hits
     |> Enum.map(fn dep -> Map.get(dep, "_source") end)
     data = Enum.take(data, 1)
@@ -247,7 +248,7 @@ defmodule GupAdmin.Resource.Search do
         }
       }
     }
-    {:ok, %{body: %{"hits" => hits}}} = Elastix.Search.search(elastic_url(), "persons", [], query)
+    {:ok, %{body: %{"hits" => hits}}} = Elastix.Search.search(elastic_url(), @persons_index, [], query)
     data = hits
     |> Map.get("hits")
     |> Enum.take(50)
@@ -268,8 +269,8 @@ defmodule GupAdmin.Resource.Search do
   def search_persons(q) do
     query = Query.search_persons(q)
     IO.inspect(query, label: "search_persons query")
-    Elastix.Search.search(elastic_url(), "persons", [], query)
-    {:ok, %{body: %{"hits" => hits}}} = Elastix.Search.search(elastic_url(), "persons", [], query)
+    Elastix.Search.search(elastic_url(), @persons_index, [], query)
+    {:ok, %{body: %{"hits" => hits}}} = Elastix.Search.search(elastic_url(), @persons_index, [], query)
     data = hits
     |> Map.get("hits")
     |> Enum.take(50)
@@ -285,7 +286,7 @@ defmodule GupAdmin.Resource.Search do
   end
 
   def get_person_count do
-   {:ok, %{body: body}} = Elastix.Search.count(elastic_url(), "persons", [], %{})
+   {:ok, %{body: body}} = Elastix.Search.count(elastic_url(), @persons_index, [], %{})
    body |> Map.get("count")
   end
 
