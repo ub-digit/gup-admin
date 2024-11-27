@@ -26,7 +26,6 @@
                 placeholder="Namn eller identifierare"
               />
             </form>
-            <!--             <FilterAuthor :pendingAuthors="pendingAuthors" />  -->
           </div>
           <div class="row">
             <div class="col opacity-50 text-center mb-4">
@@ -47,7 +46,7 @@
                 <AuthorListRow
                   v-for="author in authors"
                   :author="author"
-                  :key="author.id"
+                  :key="author.id as number"
                 />
               </div>
             </div>
