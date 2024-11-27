@@ -12,26 +12,27 @@
         <h5 class="title mb-0">
           {{ authorPrimaryName.first_name }} {{ authorPrimaryName.last_name }}
         </h5>
-        <small class="text-muted"
+        <small v-if="author.names.length - 1" class="text-muted"
           >+{{ author.names.length - 1 }} ytterligare namnform(er)
         </small>
       </div>
       <p v-if="author.id" class="text-muted mb-2 small">ID: {{ author.id }}</p>
       <div class="d-flex w-100 justify-content-between">
-        <span v-if="authorCurrentDepartment">{{
-          authorCurrentDepartment.name
-        }}</span>
-        <span v-else> Saknar primär avdelning </span>
-        <small class="text-muted"
-          >+
-          <span v-if="authorCurrentDepartment">{{
-            author.departments.length - 1
-          }}</span>
-          <span v-else>{{ author.departments.length }}</span>
-          ytterligare avdelningar</small
-        >
+        <span v-if="authorCurrentDepartment">
+          <span>{{ authorCurrentDepartment.name }}</span>
+          <small class="text-muted"
+            >+
+            <span>{{ author.departments.length - 1 }}</span>
+            <span v-if="authorCurrentDepartment">{{
+              author.departments.length
+            }}</span>
+            ytterligare avdelningar</small
+          >
+        </span>
       </div>
-      <small> {{ author.year_of_birth }}</small>
+      <small v-if="author.year_of_birth"
+        >Födelseår: {{ author.year_of_birth }}</small
+      >
     </NuxtLink>
   </div>
 </template>
