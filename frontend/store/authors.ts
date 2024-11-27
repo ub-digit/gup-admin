@@ -122,6 +122,7 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
     authorsByPublication,
     authorsMeta,
     author,
+    $reset,
     filters,
     errorAuthors,
     pendingAuthors,
