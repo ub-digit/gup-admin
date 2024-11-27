@@ -9,7 +9,9 @@
         <div class="col-4 me-2">
           <div class="row">
             <div class="col" style="min-height: 15px">
-              <Spinner v-if="pendingAuthors" class="me-4" />
+              <ClientOnly>
+                <Spinner v-if="pendingAuthors" class="me-4" />
+              </ClientOnly>
             </div>
           </div>
           <div class="row">
@@ -68,10 +70,14 @@ import { useAuthorsStore } from "../store/authors";
 const input_search_name = ref<HTMLInputElement | null>(null);
 const { t, getLocale } = useI18n();
 const storeAuthor = useAuthorsStore();
-const { fetchAuthors } = storeAuthor;
+const { fetchAuthors, $reset } = storeAuthor;
 fetchAuthors();
 const { authors, authorsMeta, pendingAuthors, filters } =
   storeToRefs(storeAuthor);
+
+onBeforeUnmount(() => {
+  $reset();
+});
 
 watchEffect(() => {
   if (input_search_name.value) {
