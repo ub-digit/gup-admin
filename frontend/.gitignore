@@ -6,4 +6,4 @@ node_modules
 # System files
 *.log
 **/.DS_Store
-*.lock
+**/yarn.lock
