@@ -16,7 +16,7 @@
           </div>
           <div class="row">
             <form class="col mb-3" @submit.prevent="void 0" id="filters">
-              <label for="search_name" class="form-label">Sök författare</label>
+              <label for="search_name" class="form-label">Sök person</label>
               <input
                 ref="input_search_name"
                 name="search_name"
