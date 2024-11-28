@@ -16,7 +16,10 @@
           >+{{ author.names.length - 1 }} ytterligare namnform(er)
         </small>
       </div>
-      <p v-if="author.id" class="text-muted mb-2 small">ID: {{ author.id }}</p>
+      <div v-if="author.id" class="text-muted small">ID: {{ author.id }}</div>
+      <div v-if="getXAccount" class="text-muted mb-2 small">
+        x-konto: {{ getXAccount.value }}
+      </div>
       <div class="d-flex w-100 justify-content-between">
         <span v-if="authorCurrentDepartment">
           <span>{{ authorCurrentDepartment.name }}</span>
@@ -43,6 +46,12 @@ import type { Department } from "~/types/Author";
 
 const props = defineProps(["author"]);
 const { t } = useI18n();
+
+const getXAccount = computed(() => {
+  return props.author.identifiers.find(
+    (identifier: any) => identifier.code === "X_ACCOUNT"
+  );
+});
 
 const authorCurrentDepartment = computed(() => {
   return props.author?.departments?.find(
