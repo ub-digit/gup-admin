@@ -16,7 +16,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
        |> sanitize_data()
       # ##|> has_gup_admin_id()
        |> exists_in_index()
-      #  |> IO.inspect(label: "AFTER EXISTS IN INDEX")
+       |> IO.inspect(label: "AFTER EXISTS IN INDEX")
        |> colliding_identifiers()
        |> input_data_has_gup_person_id()
        |> has_matching_gup_person_id()
@@ -54,6 +54,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
       "identifiers" => Map.get(data, "identifiers", []),
       "year_of_birth" => Map.get(data, "year_of_birth", nil),
       "email" => Map.get(data, "email", nil),
+      "deleted" => Map.get(data, "deleted", false)
     }
   end
 
@@ -179,10 +180,11 @@ defmodule GupIndexManager.Resource.Persons.Merger do
       # |> IO.inspect(label: "MATCHES ->->->__>_>>>>>")
 
     remapped = remap_person_data(matches)
+    |> IO.inspect(label: "REMAPPPED matches")
     |> remove_primary_names()
     |> Enum.uniq()
  #   IO.inspect(remapped, label: "REMAPPPED matches")
-    {length(matches) > 0, person_input_data, remapped}
+    {length(remapped) > 0, person_input_data, remapped}
   end
 
   def match_by_gup_person_id(person_input_data) do
@@ -668,5 +670,6 @@ defmodule GupIndexManager.Resource.Persons.Merger do
       hit
       |> Map.get("_source")
     end)
+    |> Enum.filter(fn person -> Map.get(person, "deleted", false) == false end)
   end
 end
