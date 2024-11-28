@@ -77,7 +77,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
 
       primary_name = Map.put(primary_name, "primary", true)
       [primary_name | secondary_names] |> List.flatten()
-      |> IO.inspect(label: "SANITIZED NAMES")
+#      |> IO.inspect(label: "SANITIZED NAMES")
 
 
 
@@ -181,7 +181,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     remapped = remap_person_data(matches)
     |> remove_primary_names()
     |> Enum.uniq()
-    IO.inspect(remapped, label: "REMAPPPED matches")
+ #   IO.inspect(remapped, label: "REMAPPPED matches")
     {length(matches) > 0, person_input_data, remapped}
   end
 
@@ -442,8 +442,8 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   end
 
   def delete_secondary_data(actions, secondary_data, primary_data) do
-    IO.inspect(secondary_data, label: "DELETE SECONDARY DATA")
-    IO.inspect(primary_data, label: "DELETE SECONDARY DATA primary data")
+  #  IO.inspect(secondary_data, label: "DELETE SECONDARY DATA")
+  #  IO.inspect(primary_data, label: "DELETE SECONDARY DATA primary data")
     primary_data_id = Map.get(primary_data, "id", nil)
     new_actions = Enum.map(secondary_data, fn secondary_person ->
       id = Map.get(secondary_person, "id")
@@ -477,6 +477,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     |> Enum.filter(fn name ->
       is_existing_name_form(primary_names, name) == false
     end)  # remove existing names from secondary data to avoid duplicates
+    # IO.inspect(primary_names, label: "PRIMARY NAMES")
     # IO.inspect(secondary_names, label: "SECONDARY AGGREGATED NAMES")
     # |> IO.inspect(label: "SECONDARY NAMES")
     # check if the new/existing names have a gup_person_id
@@ -485,19 +486,26 @@ defmodule GupIndexManager.Resource.Persons.Merger do
         primary_name["gup_person_id"] == secondary_name["gup_person_id"]
       end)
       |> case do
-        true -> {:update_name, secondary_name} # update first_name and last_name and dates, names has the same gup_person_id
+        true ->
+          IO.puts("primary name has the same gup_person_id as secondary name" )
+          {:update_name, secondary_name} # update first_name and last_name and dates, names has the same gup_person_id
         false ->
-          IO.puts("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx    ")
+   #       IO.puts("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx    ")
           # check if first_name and last_name are EXACTLY the same as in primary data
           # if so, do nothing
           # else acquire a new gup_person_id
           Enum.any?(primary_names, fn primary_name ->
             secondary_name["first_name"] == primary_name["first_name"] and
-            secondary_name["last_name"] == primary_name["last_name"]
+            secondary_name["last_name"] == primary_name["last_name"] and
+            Map.get(secondary_name, "gup_person_id", nil) == nil
           end)
           |> case do
-            true -> update_name_form_dates(primary_names, secondary_name)
-            false -> needs_new_gup_person_id(secondary_name)
+            true ->
+              IO.inspect("update name form dates")
+              update_name_form_dates(primary_names, secondary_name)
+            false ->
+              IO.inspect("needs new gup person id")
+              needs_new_gup_person_id(secondary_name)
           end
       end
     end)
@@ -524,6 +532,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   defp needs_new_gup_person_id(secondary_name) do
     secondary_name
     |> Map.get("gup_person_id", nil)
+    |> IO.inspect(label: "NEEDS NEW GUP PERSON ID?")
     |> case do
       nil -> {:acquire_gup_id, secondary_name}
       _ -> {:add_name, secondary_name}
@@ -567,7 +576,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   end
 
   def set_primary_name({:ok, primary_data, :no_actions}) do
-    IO.inspect("SET PRIMARY NAME with {:ok, primary_data, :no_actions}")
+    #IO.inspect("SET PRIMARY NAME with {:ok, primary_data, :no_actions}")
     {:ok, primary_data, :no_actions}
   end
   def set_primary_name({:ok, primary_data, actions}, input_data) do
@@ -581,13 +590,13 @@ defmodule GupIndexManager.Resource.Persons.Merger do
 
   def set_primary_name({:error, error_message, error_data}, _input_data), do: {:error, error_message, error_data}
   def set_primary_name({:ok, primary_data}, input_data) do
-    IO.inspect("SET PRIMARY NAME with {:ok, primary_data}")
+    #IO.inspect("SET PRIMARY NAME with {:ok, primary_data}")
     {:ok, primary_data, [{:set_primary_name, input_data}]}
   end
 
   def has_name_updates(actions) do
     Enum.any?(actions, fn action -> elem(action, 0) == :update_name or elem(action, 0) == :add_name or elem(action, 0) == :acquire_gup_id end)
-    |> IO.inspect(label: "HAS NAME UPDATES")
+    #|> IO.inspect(label: "HAS NAME UPDATES")
   end
 
   # def set_primary_name({:error, error_message, error_data}, _person_input_data), do: {:error, error_message, error_data}
@@ -630,12 +639,12 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   # end
 
   def create_or_update_person({:ok, primary_data, :no_actions}) do
-    IO.puts("CREATE OR UPDATE existing PERSON with no actions")
+    #IO.puts("CREATE OR UPDATE existing PERSON with no actions")
    {:ok, primary_data, :no_actions}
  end
 
   def create_or_update_person({:ok, primary_data, actions}) do
-     IO.puts("CREATE OR UPDATE PERSON with actions")
+     #IO.puts("CREATE OR UPDATE PERSON with actions")
     {:ok, primary_data, actions ++ [{:create_or_update_person}] |> List.flatten()}
   end
 
@@ -648,7 +657,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   end
 
   def create_or_update_person({:ok, person_input_data}) do
-    IO.inspect("NEW PERSON ssssss")
+    #IO.inspect("NEW PERSON ssssss")
     # This is a new person that does not exist in the index
     {:ok, person_input_data, [{:create_or_update_person}]}
   end
