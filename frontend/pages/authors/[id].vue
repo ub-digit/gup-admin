@@ -1,12 +1,12 @@
 <template>
   <div class="row" v-if="author">
-    <div class="col-6">
+    <div class="col-12" style="max-width: 800px">
       <div class="row">
         <h1>{{ authorPrimary?.first_name }} {{ authorPrimary?.last_name }}</h1>
       </div>
 
       <div id="nameForms" class="row mb-3">
-        <div class="col">
+        <div class="col-3">
           <strong>Namnform(er):</strong>
         </div>
         <div class="col">
@@ -33,7 +33,7 @@
       <div id="departments" class="row mb-3">
         <div class="col">
           <div class="row mb-3">
-            <div class="col">
+            <div class="col-3">
               <strong>Primär tillhörighet:</strong>
             </div>
             <div class="col">
@@ -44,7 +44,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="col">
+            <div class="col-3">
               <strong>Alla tillhörigheter:</strong>
             </div>
             <div class="col">
@@ -71,7 +71,7 @@
       </div>
 
       <div id="yearOfBirth" class="row mb-3">
-        <div class="col">
+        <div class="col-3">
           <strong>Födelseår:</strong>
         </div>
         <div class="col">
@@ -83,13 +83,13 @@
       <div id="identifiers" class="row">
         <div class="col pt-2 pb-2" style="border: 1px solid #ccc">
           <div class="row">
-            <div class="col">
+            <div class="col-3">
               <strong>Identifikatorer:</strong>
             </div>
             <div class="col">
               <div v-if="author?.identifiers?.length" class="row">
                 <div class="row" v-for="identifier in author.identifiers">
-                  <div class="col">
+                  <div class="col-3">
                     {{ t(`views.authors.identifier_type.${identifier.code}`) }}:
                   </div>
                   <div class="col">{{ identifier.value }}</div>
