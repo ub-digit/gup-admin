@@ -23,10 +23,21 @@
                 id="search_name"
                 type="search"
                 v-model="filters.query"
-                class="form-control"
+                class="form-control mb-3"
                 aria-placeholder="Sök författare - Namn eller identifierare"
                 placeholder="Namn eller identifierare"
               />
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  id="isMerged"
+                  name="isMerged"
+                  type="checkbox"
+                  v-model="filters.isMerged"
+                /><label for="isMerged" class="form-check-label"
+                  >Ihopslagna</label
+                >
+              </div>
             </form>
           </div>
           <div class="row">

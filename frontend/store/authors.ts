@@ -26,13 +26,16 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
 
   interface Filter {
     query: string;
+    isMerged: boolean;
   }
   const filters: Filter = reactive({
     query: route.query.query ? (route.query.query as string) : "",
+    isMerged: route.query.isMerged ? (route.query.isMerged as boolean) : false,
   });
 
   function $reset() {
     filters.query = "";
+    filters.isMerged = false;
   }
 
   const debouncedFn = useDebounceFn(() => {
