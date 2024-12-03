@@ -11,4 +11,8 @@ defmodule GupAdmin.Resource.Person do
   def search_persons(q) do
     Search.search_persons(q)
   end
+
+  def get_all_merged_persons do
+    Search.get_all_merged_persons()
+  end
 end

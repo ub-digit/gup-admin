@@ -586,6 +586,38 @@ defmodule Experiment do
         end
 
 
+        def get_records(offset, limit, acc, {:cont, _acc}), do: get_records(offset, limit, acc)
+        def get_records(offset, limit, acc, {:halt, _acc}), do: acc
+        def get_records(offset, limit, acc) do
+          q = %{
+            "size" => limit,
+            "from" => offset,
+            "query" => %{
+              "bool" => %{
+                "must" => %{
+                  "match_all" => %{}
+                }
+              }
+            }
+          }
+          {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), "persons_index", [], q)
+            case length(hits) < limit do
+              true -> get_records(offset, limit, acc ++ filter_on_merged(hits), {:halt, hits ++ acc})
+              false -> get_records(offset + limit, limit, acc ++ filter_on_merged(hits), {:cont, hits ++ acc})
+            end
+        end
+
+
+        def filter_on_merged(hits) do
+          hits
+          |> Enum.filter(fn hit ->
+            Map.get(hit, "_source") |> Map.get("names") |> length() > 1 end )
+        end
+
+
+
+
+
 
 
   end
