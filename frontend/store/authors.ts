@@ -24,13 +24,21 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
   const errorAuthor = ref({});
   const pendingAuthors = ref(false);
 
+  const getBoolean = (item: string): boolean | undefined => {
+    if (item === "false") {
+      return false;
+    }
+    return true;
+  };
   interface Filter {
     query: string;
     isMerged: boolean;
   }
   const filters: Filter = reactive({
     query: route.query.query ? (route.query.query as string) : "",
-    isMerged: route.query.isMerged ? (route.query.isMerged as boolean) : false,
+    isMerged: route.query.isMerged
+      ? getBoolean(route.query.isMerged as string)
+      : false,
   });
 
   function $reset() {
