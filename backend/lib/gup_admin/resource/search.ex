@@ -236,7 +236,7 @@ defmodule GupAdmin.Resource.Search do
   end
 
   def get_all_merged_persons() do
-    def get_records(0, 1000, [])
+    def get_records(0, 10000, [])
   end
 
   def get_records(offset, limit, acc, {:cont, _acc}), do: get_records(offset, limit, acc)
