@@ -4,7 +4,18 @@
       <div class="row">
         <h1>{{ authorPrimary?.first_name }} {{ authorPrimary?.last_name }}</h1>
       </div>
-
+      <div class="row mb-3">
+        <div class="col-3">
+          <strong>Skapad:</strong>
+        </div>
+        <div class="col">{{ createdAt }}</div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-3">
+          <strong>Uppdaterad:</strong>
+        </div>
+        <div class="col">{{ updatedAt }}</div>
+      </div>
       <div id="nameForms" class="row mb-3">
         <div class="col-3">
           <strong>Namnform(er):</strong>
@@ -20,7 +31,7 @@
                 :href="`${config.public.API_GUP_BASE_URL}/admin/people/person/edit/${item.gup_person_id}`"
                 >{{ item.first_name }} {{ item.last_name }}</a
               ><span v-if="item.primary" class="ms-1"
-                ><span class="badge text-bg-primary">Primär</span></span
+                ><span>[Primär]</span></span
               >
               <span v-if="index < author.names.length - 1" class="me-1 ms-1"
                 >|</span
@@ -121,6 +132,28 @@ console.log(author);
 
 const config = useRuntimeConfig();
 console.log(config);
+
+const updatedAt = computed(() => {
+  return new Date(author?.value?.updated_at as string).toLocaleString(
+    getLocale(),
+    {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+    }
+  );
+});
+
+const createdAt = computed(() => {
+  return new Date(author?.value?.created_at as string).toLocaleString(
+    getLocale(),
+    {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+    }
+  );
+});
 
 const authorPrimary = computed(() => {
   const primaryAuthor = author?.value?.names.find(
