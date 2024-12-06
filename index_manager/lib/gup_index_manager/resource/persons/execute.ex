@@ -28,8 +28,15 @@ defmodule GupIndexManager.Resource.Persons.Execute do
   def execute_action(data, {:create_or_update_person}) do
     # Send data to create_or_update_person
     IO.puts "Create or update person"
+    data = set_name_count(data)
     GupIndexManager.Resource.Persons.create_or_update_person(data)
     data
+  end
+
+  def set_name_count(data) do
+    names = Map.get(data, "names", [])
+    name_count = Enum.count(names)
+    Map.put(data, "name_count", name_count)
   end
 
 

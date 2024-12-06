@@ -23,6 +23,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
       # # # |> IO.inspect(label: "AFTER has_matching_gup_person_id")
        |> set_primary_and_secondary_data()
        |> merge_person()
+      #  |> set_is_merged()
       #  |> set_primary_name(person_input_data)
        |> create_or_update_person()
        #TODO: move this outside of the pipe inm order to run tests without commenting out below call
@@ -54,7 +55,8 @@ defmodule GupIndexManager.Resource.Persons.Merger do
       "identifiers" => Map.get(data, "identifiers", []),
       "year_of_birth" => Map.get(data, "year_of_birth", nil),
       "email" => Map.get(data, "email", nil),
-      "deleted" => Map.get(data, "deleted", false)
+      "deleted" => Map.get(data, "deleted", false),
+      "is_merged" => Map.get(data, "is_merged", false)
     }
   end
 
@@ -432,6 +434,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
 
     actions = merge_names(primary_data, secondary_data)
       |> merge_identifiers(primary_data, secondary_data)
+      # |> merge_year_of_birth(primary_data, secondary_data)
       |> delete_secondary_data(secondary_data, primary_data)
       # TODO: merge departments
 
@@ -526,9 +529,6 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     |> Enum.map(fn name ->
       {:update_name, secondary_name, name["gup_person_id"]}
     end)
-
-
-
   end
 
   defp needs_new_gup_person_id(secondary_name) do
@@ -639,6 +639,20 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   #   Enum.sort_by(names, fn x -> x["start_date"] end)
   #   |> List.last() |> Map.put("primary", true)
   # end
+
+  # def merge_year_of_birth(primary_data, secondary_data) do
+  #   primary_year_of_birth = Map.get(primary_data, "year_of_birth", nil)
+  #   secondary_years_of_birth = Enum.map(secondary_data, fn secondary_person -> Map.get(secondary_person, "year_of_birth", nil) end)
+  # end
+
+  def set_is_merged({:ok, person_input_data}), do: {:ok, person_input_data}
+  def set_is_merged({:error, error_message, error_data}), do: {:error, error_message, error_data}
+  def set_is_merged({:ok, primary_data, :no_actions}), do: ({:ok, primary_data, :no_actions})
+  def set_is_merged({:ok, primary_data, actions}) do
+    is_merged = Map.get(primary_data, "names", []) |> length() > 1
+    primary_data = Map.put(primary_data, "is_merged", is_merged)
+    {:ok, primary_data, actions}
+  end
 
   def create_or_update_person({:ok, primary_data, :no_actions}) do
     #IO.puts("CREATE OR UPDATE existing PERSON with no actions")

@@ -129,6 +129,20 @@ defmodule GupAdmin.Resource.Search.Query do
   end
 
   def search_persons(q) do
+    # %{
+    #   size: 100, #@query_limit,
+    #   query: %{
+    #     bool: %{
+    #       must: %{
+    #         query_string: %{
+    #           default_operator: "AND",
+    #           fields: ["names.first_name", "names.last_name", "names.full_name", "identifiers.value"],
+    #           query: q
+    #         }
+    #       }
+    #     }
+    #   }
+    # }
     %{
       size: 100, #@query_limit,
       query: %{
@@ -139,7 +153,10 @@ defmodule GupAdmin.Resource.Search.Query do
               fields: ["names.first_name", "names.last_name", "names.full_name", "identifiers.value"],
               query: q
             }
-          }
+          },
+          filter: [
+            %{term: %{deleted: false}}
+          ]
         }
       }
     }

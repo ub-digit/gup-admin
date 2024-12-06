@@ -1,7 +1,7 @@
 # this module will query elasticsearch for posts with filter on origin
 defmodule GupAdmin.Resource.Search do
   @index "publications"
-  @persons_index "persons_index"
+  @persons_index "persons"
   @query_limit 500
   alias GupAdmin.Resource.Search.Query
   alias GupAdmin.Resource.Search.Filter
@@ -219,10 +219,16 @@ defmodule GupAdmin.Resource.Search do
             "term" => %{
               "id" => id
             }
+          },
+          "filter" => %{
+            "term" => %{
+              "deleted" => false
+            }
           }
         }
       }
     }
+
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), @persons_index, [], query)
     data = hits
     |> Enum.map(fn dep -> Map.get(dep, "_source") end)
@@ -235,36 +241,38 @@ defmodule GupAdmin.Resource.Search do
     }
   end
 
-  def get_all_merged_persons() do
-    get_records(0, 10000, [])
-  end
-
-  def get_records(offset, limit, acc, {:cont, _acc}), do: get_records(offset, limit, acc)
-  def get_records(offset, limit, acc, {:halt, _acc}), do: acc
-  def get_records(offset, limit, acc) do
-    q = %{
-      "size" => limit,
-      "from" => offset,
-      "query" => %{
-        "bool" => %{
-          "must" => %{
-            "match_all" => %{}
+  def get_all_merged_persons(term \\ "") do
+   q =  %{
+    "track_total_hits" => true,
+    "size" => @query_limit,
+    "query" => %{
+      "bool" => %{
+        "must" => [
+          %{
+            "term" => %{
+              "deleted" => false
+            }
+          },
+          %{
+            "range" => %{
+              "name_count" => %{
+                "gt" => 1
+              }
+            }
+          },
+          %{
+            "multi_match" => %{
+              "query" => term,
+              "fields" => ["names.first_name", "names.last_name"]
+            }
           }
-        }
+        ]
       }
     }
-    {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), "persons_index", [], q)
-      case length(hits) < limit do
-        true -> get_records(offset, limit, acc ++ filter_on_merged(hits), {:halt, hits ++ acc})
-        false -> get_records(offset + limit, limit, acc ++ filter_on_merged(hits), {:cont, hits ++ acc})
-      end
-  end
+  }
 
+  {:ok, %{body: %{"hits" => hits}}} = Elastix.Search.search(elastic_url(), @persons_index, [], q)
 
-  def filter_on_merged(hits) do
-    hits
-    |> Enum.filter(fn hit ->
-      Map.get(hit, "_source") |> Map.get("names") |> length() > 1 end )
   end
 
   def get_all_persons() do
@@ -275,6 +283,11 @@ defmodule GupAdmin.Resource.Search do
         "bool" => %{
           "must" => %{
             "match_all" => %{}
+          },
+          "filter" => %{
+            "term" => %{
+              "deleted" => false
+            }
           }
         }
       }
