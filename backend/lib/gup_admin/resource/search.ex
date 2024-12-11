@@ -241,39 +241,7 @@ defmodule GupAdmin.Resource.Search do
     }
   end
 
-  def get_all_merged_persons(term \\ "") do
-   q =  %{
-    "track_total_hits" => true,
-    "size" => @query_limit,
-    "query" => %{
-      "bool" => %{
-        "must" => [
-          %{
-            "term" => %{
-              "deleted" => false
-            }
-          },
-          %{
-            "range" => %{
-              "name_count" => %{
-                "gt" => 1
-              }
-            }
-          },
-          %{
-            "multi_match" => %{
-              "query" => term,
-              "fields" => ["names.first_name", "names.last_name"]
-            }
-          }
-        ]
-      }
-    }
-  }
 
-  {:ok, %{body: %{"hits" => hits}}} = Elastix.Search.search(elastic_url(), @persons_index, [], q)
-
-  end
 
   def get_all_persons() do
     query = %{
@@ -348,5 +316,32 @@ defmodule GupAdmin.Resource.Search do
       |> Enum.sort_by(&(&1["current"]))
       Map.put(person, "departments", departments |> Enum.reverse())
     end)
+  end
+
+
+  def get_merged_persons() do
+    search_merged_persons("")
+  end
+
+  def get_merged_persons(term) do
+    search_merged_persons(term)
+  end
+
+  def search_merged_persons(term) do
+    # get all persons with name_count > 1
+    query = Query.search_merged_persons(term)
+    {:ok, %{body: %{"hits" => hits}}} = Elastix.Search.search(elastic_url(), @persons_index, [], query)
+    data = hits
+    |> Map.get("hits")
+    |> Enum.take(50)
+    |> Enum.map(fn dep -> Map.get(dep, "_source") end)
+    |> sort_names_on_primary()
+    |> sort_person_departments_on_current()
+    %{
+      "total" => Map.get(hits, "total") |> Map.get("value"),
+      "data" => data,
+      "showing" => length(data)
+    }
+
   end
 end
