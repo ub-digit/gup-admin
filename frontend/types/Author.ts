@@ -31,6 +31,8 @@ export const zAuthor = z.object({
   identifiers: z.array(zIdentifier),
   names: z.array(zNameform),
   departments: z.array(zDepartment),
+  created_at: z.string().nullish(),
+  updated_at: z.string().nullish(),
 });
 
 export const zAuthorArray = z.array(zAuthor);

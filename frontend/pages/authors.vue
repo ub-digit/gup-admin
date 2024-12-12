@@ -9,24 +9,36 @@
         <div class="col-4 me-2">
           <div class="row">
             <div class="col" style="min-height: 15px">
-              <Spinner v-if="pendingAuthors" class="me-4" />
+              <ClientOnly>
+                <Spinner v-if="pendingAuthors" class="me-4" />
+              </ClientOnly>
             </div>
           </div>
           <div class="row">
             <form class="col mb-3" @submit.prevent="void 0" id="filters">
-              <label for="search_name" class="form-label">Sök författare</label>
+              <label for="search_name" class="form-label">Sök person</label>
               <input
                 ref="input_search_name"
                 name="search_name"
                 id="search_name"
                 type="search"
                 v-model="filters.query"
-                class="form-control"
+                class="form-control mb-3"
                 aria-placeholder="Sök författare - Namn eller identifierare"
                 placeholder="Namn eller identifierare"
               />
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  id="isMerged"
+                  name="isMerged"
+                  type="checkbox"
+                  v-model="filters.isMerged"
+                /><label for="isMerged" class="form-check-label"
+                  >Ihopslagna</label
+                >
+              </div>
             </form>
-            <!--             <FilterAuthor :pendingAuthors="pendingAuthors" />  -->
           </div>
           <div class="row">
             <div class="col opacity-50 text-center mb-4">
@@ -47,7 +59,7 @@
                 <AuthorListRow
                   v-for="author in authors"
                   :author="author"
-                  :key="author.id"
+                  :key="author.id as number"
                 />
               </div>
             </div>
@@ -69,10 +81,14 @@ import { useAuthorsStore } from "../store/authors";
 const input_search_name = ref<HTMLInputElement | null>(null);
 const { t, getLocale } = useI18n();
 const storeAuthor = useAuthorsStore();
-const { fetchAuthors } = storeAuthor;
+const { fetchAuthors, $reset } = storeAuthor;
 fetchAuthors();
 const { authors, authorsMeta, pendingAuthors, filters } =
   storeToRefs(storeAuthor);
+
+onBeforeUnmount(() => {
+  $reset();
+});
 
 watchEffect(() => {
   if (input_search_name.value) {

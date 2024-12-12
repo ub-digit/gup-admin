@@ -5,7 +5,7 @@ defmodule GupIndexManager.Resource.Persons do
 
   def create_or_update(data) do
     data = data
-    |> sanitize_data()
+    # |> sanitize_data()
     case Search.find_person_by_identifiers(data["identifiers"]) do
       {false, _} -> create_or_update_person(data)
       {true, hits} -> merge_data(hits, data)
@@ -23,6 +23,7 @@ defmodule GupIndexManager.Resource.Persons do
     |> elem(1)
     |> set_meta(data)
     |> update_index()
+    |> IO.inspect(label: "Person updated")
   end
 
   def set_meta(db_data, data) do
@@ -64,37 +65,67 @@ defmodule GupIndexManager.Resource.Persons do
     Search.get_all_persons()
   end
 
-  def sanitize_data(data) do
-    %{
-      "id" => Map.get(data, "id", nil),
-      "names" => sanitize_names(Map.get(data, "names", [])),
-      "departments" => Map.get(data, "departments", []),
-      "identifiers" => Map.get(data, "identifiers", []),
-      "year_of_birth" => Map.get(data, "year_of_birth", nil),
-      "email" => Map.get(data, "email", nil),
-    }
-  end
+  # def sanitize_data(data) do
+  #   %{
+  #     "id" => Map.get(data, "id", nil),
+  #     "names" => sanitize_names(Map.get(data, "names", [])),
+  #     "departments" => Map.get(data, "departments", []),
+  #     "identifiers" => Map.get(data, "identifiers", []),
+  #     "year_of_birth" => Map.get(data, "year_of_birth", nil),
+  #     "email" => Map.get(data, "email", nil),
+  #   }
+  # end
 
-  def sanitize_names(names) do
-    names
-    |> Enum.map(fn name ->
-      %{
-        "first_name" => Map.get(name, "first_name", ""),
-        "last_name" => Map.get(name, "last_name", ""),
-        "full_name" => "#{Map.get(name, "first_name", "")} #{Map.get(name, "last_name", "")}",
-        "start_date" => Map.get(name, "start_date", nil),
-        "end_date" => Map.get(name, "end_date", nil),
-        "gup_person_id" => Map.get(name, "gup_person_id", nil),
-        "primary" => true
+  # def sanitize_names(names) do
+  #   names
+  #   |> Enum.map(fn name ->
+  #     %{
+  #       "first_name" => Map.get(name, "first_name", ""),
+  #       "last_name" => Map.get(name, "last_name", ""),
+  #       "full_name" => "#{Map.get(name, "first_name", "")} #{Map.get(name, "last_name", "")}",
+  #       "start_date" => Map.get(name, "start_date", nil),
+  #       "end_date" => Map.get(name, "end_date", nil),
+  #       "gup_person_id" => Map.get(name, "gup_person_id", nil),
+  #       "primary" => true
 
-      }
-    end)
-  end
+  #     }
+  #   end)
+  # end
 
   def clear_primary_name(data) do
     data
     |> Map.put("names", Enum.map(Map.get(data, "names", []), fn name ->
       Map.put(name, "primary", false)
     end))
+  end
+
+  def delete_person(id) do
+
+
+    time_deleted = DateTime.utc_now()
+   # Fetch the person fron the index
+    data = GupIndexManager.Resource.Index.Search.find_person_by_gup_admin_id(id) # Index object
+    |> elem(1)
+    |> List.first()
+    |> Map.get("_source")
+    |> Map.put("deleted", true)
+    |> Map.put("deleted_at", time_deleted)
+    |> Index.update_record(id, Index.get_persons_index())
+
+
+
+    # set db_person as deleted
+    db_person = Person.find_by_id(id)
+
+
+    attrs = %{
+      "json" => data |> Jason.encode!()
+    }
+    db_person
+    |> Person.changeset(attrs)
+    |> Map.put("deleted", true)
+    |> Map.put("deleted_at", time_deleted)
+    |> GupIndexManager.Repo.update()
+
   end
 end

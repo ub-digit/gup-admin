@@ -24,8 +24,8 @@ defmodule GupIndexManagerWeb.Router do
     put "/publications/pending/:id", PublicationController, :mark_as_pending
     put "/departments/index", DepartmentController, :index
     put "/persons", PersonController, :create_or_update
+    post "/persons", PersonController, :create_or_update
     get "/persons", PersonController, :index
-    get "/reset_index/:index", IndexController, :reset_index
 
 
   end

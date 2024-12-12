@@ -24,15 +24,26 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
   const errorAuthor = ref({});
   const pendingAuthors = ref(false);
 
+  const getBoolean = (item: string): boolean | undefined => {
+    if (item === "false") {
+      return false;
+    }
+    return true;
+  };
   interface Filter {
     query: string;
+    isMerged: boolean;
   }
   const filters: Filter = reactive({
     query: route.query.query ? (route.query.query as string) : "",
+    isMerged: route.query.isMerged
+      ? getBoolean(route.query.isMerged as string)
+      : false,
   });
 
   function $reset() {
     filters.query = "";
+    filters.isMerged = false;
   }
 
   const debouncedFn = useDebounceFn(() => {
@@ -57,7 +68,7 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
 
   async function getAuthorById(id: string) {
     try {
-      const { data, error } = await useFetch(`/api/author/${id}`);
+      const { data, error } = await useFetch(`/api/_author/${id}`);
       if (data?.value?.error) {
         throw data.value;
       }
@@ -79,7 +90,7 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
   async function fetchAuthors() {
     try {
       pendingAuthors.value = true;
-      const { data, error } = await useFetch("/api/author/authors", {
+      const { data, error } = await useFetch("/api/_author/authors", {
         params: { ...filters_for_api.value },
       });
       if (data?.value?.error) {
@@ -122,6 +133,7 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
     authorsByPublication,
     authorsMeta,
     author,
+    $reset,
     filters,
     errorAuthors,
     pendingAuthors,

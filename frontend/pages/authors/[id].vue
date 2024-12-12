@@ -1,35 +1,53 @@
 <template>
   <div class="row" v-if="author">
-    <div class="col-6">
+    <div class="col-12" style="max-width: 800px">
       <div class="row">
         <h1>{{ authorPrimary?.first_name }} {{ authorPrimary?.last_name }}</h1>
       </div>
-
-      <div id="nameForms" class="row">
-        <strong>Namnform(er)</strong>
-
-        <ul class="list-unstyled">
-          <li
-            class="float-start"
-            v-for="(item, index) in author.names"
-            :key="item.gup_person_id"
-          >
-            <a
-              :href="`${config.public.API_GUP_BASE_URL}/admin/people/person/edit/${item.gup_person_id}`"
-              >{{ item.first_name }} {{ item.last_name }}</a
-            ><span v-if="item.primary" class="ms-1">*</span>
-            <span v-if="index < author.names.length - 1" class="me-1 ms-1"
-              >|</span
+      <div class="row mb-3">
+        <div class="col-3">
+          <strong>Skapad:</strong>
+        </div>
+        <div class="col">{{ createdAt }}</div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-3">
+          <strong>Uppdaterad:</strong>
+        </div>
+        <div class="col">{{ updatedAt }}</div>
+      </div>
+      <div id="nameForms" class="row mb-3">
+        <div class="col-3">
+          <strong>Namnform(er):</strong>
+        </div>
+        <div class="col">
+          <ul class="list-unstyled">
+            <li
+              class="float-start"
+              v-for="(item, index) in author.names"
+              :key="item.gup_person_id"
             >
-          </li>
-        </ul>
+              <a
+                :href="`${config.public.API_GUP_BASE_URL}/admin/people/person/edit/${item.gup_person_id}`"
+                >{{ item.first_name }} {{ item.last_name }}</a
+              ><span v-if="item.primary" class="ms-1"
+                ><span>[Primär]</span></span
+              >
+              <span v-if="index < author.names.length - 1" class="me-1 ms-1"
+                >|</span
+              >
+            </li>
+          </ul>
+        </div>
       </div>
 
       <div id="departments" class="row mb-3">
         <div class="col">
           <div class="row mb-3">
+            <div class="col-3">
+              <strong>Primär tillhörighet:</strong>
+            </div>
             <div class="col">
-              <strong>Primär tillhörighet</strong>
               <span v-if="authorCurrentDepartment">
                 {{ authorCurrentDepartment?.name }}
               </span>
@@ -37,8 +55,10 @@
             </div>
           </div>
           <div class="row">
+            <div class="col-3">
+              <strong>Alla tillhörigheter:</strong>
+            </div>
             <div class="col">
-              <strong>Alla tillhörigheter</strong>
               <ul v-if="author?.departments?.length" class="list-unstyled">
                 <li
                   class="float-start"
@@ -62,35 +82,30 @@
       </div>
 
       <div id="yearOfBirth" class="row mb-3">
+        <div class="col-3">
+          <strong>Födelseår:</strong>
+        </div>
         <div class="col">
-          <strong>Födelseår</strong>
           <span v-if="author?.year_of_birth">{{ author.year_of_birth }}</span>
           <span v-else> Saknas </span>
         </div>
       </div>
 
       <div id="identifiers" class="row">
-        <div class="col">
+        <div class="col pt-2 pb-2" style="border: 1px solid #ccc">
           <div class="row">
-            <div class="col">
-              <strong>Identifikatorer</strong>
+            <div class="col-3">
+              <strong>Identifikatorer:</strong>
             </div>
-          </div>
-
-          <div class="row">
             <div class="col">
-              <table v-if="author?.identifiers?.length" class="table">
-                <tbody>
-                  <tr v-for="identifier in author.identifiers">
-                    <th scope="row">
-                      {{
-                        t(`views.authors.identifier_type.${identifier.code}`)
-                      }}:
-                    </th>
-                    <td>{{ identifier.value }}</td>
-                  </tr>
-                </tbody>
-              </table>
+              <div v-if="author?.identifiers?.length" class="row">
+                <div class="row" v-for="identifier in author.identifiers">
+                  <div class="col-3">
+                    {{ t(`views.authors.identifier_type.${identifier.code}`) }}:
+                  </div>
+                  <div class="col">{{ identifier.value }}</div>
+                </div>
+              </div>
               <span v-else>Saknas</span>
             </div>
           </div>
@@ -117,6 +132,28 @@ console.log(author);
 
 const config = useRuntimeConfig();
 console.log(config);
+
+const updatedAt = computed(() => {
+  return new Date(author?.value?.updated_at as string).toLocaleString(
+    getLocale(),
+    {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+    }
+  );
+});
+
+const createdAt = computed(() => {
+  return new Date(author?.value?.created_at as string).toLocaleString(
+    getLocale(),
+    {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+    }
+  );
+});
 
 const authorPrimary = computed(() => {
   const primaryAuthor = author?.value?.names.find(

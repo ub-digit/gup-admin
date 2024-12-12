@@ -5,11 +5,23 @@ import Config
 # The MIX_TEST_PARTITION environment variable can be used
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
+# config :gup_index_manager, GupIndexManager.Repo,
+#   username: "postgres",
+#   password: "postgres",
+#   hostname: "localhost",
+#   database: "gup_index_manager_test#{System.get_env("MIX_TEST_PARTITION")}",
+#   pool: Ecto.Adapters.SQL.Sandbox,
+#   pool_size: 10
+
+
 config :gup_index_manager, GupIndexManager.Repo,
   username: "postgres",
   password: "postgres",
   hostname: "localhost",
-  database: "gup_index_manager_test#{System.get_env("MIX_TEST_PARTITION")}",
+  database: "gup_index_manager_dev",
+  port: "5443",
+  stacktrace: true,
+  show_sensitive_data_on_connection_error: true,
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: 10
 
@@ -31,3 +43,6 @@ config :logger, level: :warning
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
+
+# Config elastic search person index name
+config :gup_index_manager, :person_index_name, "persons_test_index"

@@ -10,6 +10,18 @@ defmodule GupIndexManager.Resource.Index.Search do
     {length(hits) > 0, hits}
   end
 
+  def find_person_by_gup_id(gup_id) do
+    q = Query.find_person_by_gup_id(gup_id)
+    {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(Index.elastic_url(), Index.get_persons_index(), [], q)
+    {length(hits) > 0, hits}
+  end
+
+  def find_person_by_gup_admin_id(gup_admin_id) do
+    q = Query.find_person_by_gup_admin_id(gup_admin_id)
+    {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(Index.elastic_url(), Index.get_persons_index(), [], q)
+    {length(hits) > 0, hits}
+  end
+
   def get_all_persons do
     q = Query.get_all_persons()
     {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(Index.elastic_url(), Index.get_persons_index(), [], q)
@@ -23,5 +35,6 @@ defmodule GupIndexManager.Resource.Index.Search do
       hit
       |> Map.get("_source")
     end)
+    # |> Enum.filter(fn person -> Map.get(person, "deleted", false) == false end)
   end
 end

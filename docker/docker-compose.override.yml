@@ -33,3 +33,10 @@ services:
         "-c",
         "mix deps.get && mix deps.compile && mix phx.digest && /usr/local/bin/wait-for-it.sh index-manager-db:5432 elasticsearch:9200 -t 0 -- mix phx.server",
       ]
+  index-manager-db:
+    ports:
+      - "127.0.0.1:5443:5432"
+  elasticsearch:
+    ports:
+      - "127.0.0.1:9200:9200"
+
