@@ -204,6 +204,9 @@ defmodule GupIndexManager.Resource.Index.Config do
             "analyzer" => "autocomplete",
             "search_analyzer" => "standard"
           },
+          "names.gup_person_id" => %{
+            "type" => "long"
+          },
           "id" => %{
             "type" => "keyword"
           }

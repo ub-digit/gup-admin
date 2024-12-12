@@ -28,8 +28,15 @@ defmodule GupIndexManager.Resource.Persons.Execute do
   def execute_action(data, {:create_or_update_person}) do
     # Send data to create_or_update_person
     IO.puts "Create or update person"
+    data = set_name_count(data)
     GupIndexManager.Resource.Persons.create_or_update_person(data)
     data
+  end
+
+  def set_name_count(data) do
+    names = Map.get(data, "names", [])
+    name_count = Enum.count(names)
+    Map.put(data, "name_count", name_count)
   end
 
 
@@ -105,9 +112,21 @@ defmodule GupIndexManager.Resource.Persons.Execute do
 
   def acquire_gup_person_id() do
     # TODO: ask GUP for a new gup_person_id
-    :rand.uniform(1000000)
-    |> to_string()
-    |> Kernel.<>(" holy smoke!")
+      api_key = System.get_env("GUP_API_KEY")
+      #. https://gup-server-lab.ub.gu.se/v1/people/get_next_id
+      url = "#{gup_server_base_url()}/v1/poeple/get_next_id?api_key=#{api_key}"
+      body = %{}
+      HTTPoison.post(url, body, [{"Content-Type", "application/json"}])
+      |> case do
+        {:ok, %HTTPoison.Response{status_code: 200, body: body}} -> body |> Jason.decode!() |> Map.get("id")
+        {:ok, %HTTPoison.Response{status_code: 404}} -> {:error, "Not found"}
+        {:error, %HTTPoison.Error{reason: reason}} -> {:error, reason}
+      end
+
+  end
+
+  def gup_server_base_url() do
+    System.get_env("GUP_SERVER_BASE_URL", "http://localhost:40191")
   end
 
   def write_to_index(data, {:acquire_gup_person_id, _data}), do: data # no index update needed as data is passed to :add_name action

@@ -14,4 +14,4 @@ read -r -d '' QUERY <<-EOF
   }
 }
 EOF
-docker compose exec elasticsearch curl localhost:9200/persons_index/_delete_by_query   -H "Content-Type: application/json"   -d "$QUERY"
+docker compose exec elasticsearch curl localhost:9200/persons/_delete_by_query   -H "Content-Type: application/json"   -d "$QUERY"

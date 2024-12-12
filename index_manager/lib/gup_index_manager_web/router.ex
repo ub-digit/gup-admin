@@ -26,7 +26,6 @@ defmodule GupIndexManagerWeb.Router do
     put "/persons", PersonController, :create_or_update
     post "/persons", PersonController, :create_or_update
     get "/persons", PersonController, :index
-    get "/reset_index/:index", IndexController, :reset_index
 
 
   end

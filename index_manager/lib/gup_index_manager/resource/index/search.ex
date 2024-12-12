@@ -35,6 +35,6 @@ defmodule GupIndexManager.Resource.Index.Search do
       hit
       |> Map.get("_source")
     end)
-    |> Enum.filter(fn person -> Map.get(person, "deleted", false) == false end)
+    # |> Enum.filter(fn person -> Map.get(person, "deleted", false) == false end)
   end
 end

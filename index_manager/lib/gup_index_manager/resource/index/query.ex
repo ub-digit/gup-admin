@@ -17,6 +17,12 @@ defmodule GupIndexManager.Resource.Index.Query do
           "bool" => %{
             "must" => [
               %{
+                "term" => %{
+                  "deleted" => false
+                }
+
+              },
+              %{
                 "query_string" => %{
                   "fields" => ["identifiers.value.keyword"],
                   "query" => "\"" <> identifier["value"] <> "\"" #escape_characters(identifier["identifier_value"]),
@@ -38,19 +44,42 @@ defmodule GupIndexManager.Resource.Index.Query do
   def find_person_by_gup_id(gup_id) do
     %{
       "query" => %{
-        "match" => %{
+      "bool" => %{
+        "must" => [
+        %{
+          "term" => %{
           "names.gup_person_id" => gup_id
+          }
+        },
+        %{
+          "term" => %{
+          "deleted" => false
+          }
         }
+        ]
+      }
       }
     }
+
   end
 
   def find_person_by_gup_admin_id(id) do
     %{
       "query" => %{
-        "match" => %{
+      "bool" => %{
+        "must" => [
+        %{
+          "term" => %{
           "id" => id
+          }
+        },
+        %{
+          "term" => %{
+          "deleted" => false
+          }
         }
+        ]
+      }
       }
     }
   end

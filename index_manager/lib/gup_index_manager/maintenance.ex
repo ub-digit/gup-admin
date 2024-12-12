@@ -8,7 +8,10 @@ defmodule GupIndexManager.Maintenance do
   end
 
   def setup_index(index_name) do
-    Index.create_index(index_name)
+    Enum.any?(Index.get_indexes(), &(&1 == index_name))
+    |> case do
+      true -> Index.create_index(index_name)
+      false -> IO.puts("Index #{index_name} is not a valid index name.")
+    end
   end
-
 end
