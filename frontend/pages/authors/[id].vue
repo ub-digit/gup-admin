@@ -184,7 +184,7 @@ const getPostsByAuthors = async () => {
     (id) => `authors.person.id:${id}`
   );
   console.log(searchFormatArr.toString(" OR "));
-  const searchStr = searchFormatArr.toString(" OR ");
+  const searchStr = searchFormatArr.join(" OR ");
   await fetchImportedPostsByAuthors(searchStr);
 };
 
