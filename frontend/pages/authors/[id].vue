@@ -1,5 +1,5 @@
 <template>
-  <div class="row" v-if="author">
+  <div class="row mb-2" v-if="author">
     <div class="col-12" style="max-width: 800px">
       <div class="row">
         <h1>{{ authorPrimary?.first_name }} {{ authorPrimary?.last_name }}</h1>
@@ -91,7 +91,7 @@
         </div>
       </div>
 
-      <div id="identifiers" class="row">
+      <div id="identifiers" class="row mb-3">
         <div class="col pt-2 pb-2" style="border: 1px solid #ccc">
           <div class="row">
             <div class="col-3">
@@ -113,17 +113,63 @@
       </div>
     </div>
   </div>
+  <div class="row" v-if="authors">
+    <div class="col-12">
+      <div class="row">
+        <div class="col-12">
+          <button class="btn btn-primary" @click="getPostsByAuthors">
+            Hämta publikationer för namnformer
+            <ClientOnly>
+              <Spinner
+                v-if="pendingImportedPostsByAuthors"
+                class="d-inline-block ms-2"
+              />
+            </ClientOnly>
+          </button>
+          <div class="small">debug authorGupIds: {{ authorGupIds }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-6">
+        <div id="result-list-by-id" class="row">
+          <div
+            class="col scroll"
+            :class="{ 'opacity-50': pendingImportedPostsByAuthors }"
+          >
+            <div
+              v-if="importedPostsByAuthors && !importedPostsByAuthors.length"
+            >
+              {{ t("views.publications.result_list.no_imported_posts_found") }}
+            </div>
+            <div v-else class="list-group list-group-flush border-bottom">
+              <PostRow
+                v-for="post in importedPostsByAuthors"
+                :post="post"
+                :key="post.id"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
 import type { Nameform, Department, Author } from "../../types/Author";
 import { useAuthorsStore } from "../../store/authors";
+import { useImportedPostsStore } from "../../store/imported_posts";
 import { useRoute, useRouter } from "vue-router";
 import { computed } from "vue";
 const { t, getLocale } = useI18n();
 const route = useRoute();
 const router = useRouter();
+const storeImportedPosts = useImportedPostsStore();
+const { fetchImportedPostsByAuthors } = storeImportedPosts;
+const { importedPostsByAuthors, pendingImportedPostsByAuthors } =
+  storeToRefs(storeImportedPosts);
 const storeAuthor = useAuthorsStore();
 const { getAuthorById } = storeAuthor;
 getAuthorById(route.params.id as string);
@@ -132,6 +178,21 @@ console.log(author);
 
 const config = useRuntimeConfig();
 console.log(config);
+
+const getPostsByAuthors = async () => {
+  const searchFormatArr = authorGupIds.value.map(
+    (id) => `authors.person.id:${id}`
+  );
+  console.log(searchFormatArr.toString(" OR "));
+  const searchStr = searchFormatArr.toString(" OR ");
+  await fetchImportedPostsByAuthors(searchStr);
+};
+
+const authorGupIds = computed(() => {
+  return author?.value?.names.map(
+    (nameForm: Nameform) => nameForm.gup_person_id
+  );
+});
 
 const updatedAt = computed(() => {
   return new Date(author?.value?.updated_at as string).toLocaleString(
