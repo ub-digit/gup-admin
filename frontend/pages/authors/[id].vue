@@ -167,7 +167,7 @@ const { t, getLocale } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const storeImportedPosts = useImportedPostsStore();
-const { fetchImportedPostsByAuthors } = storeImportedPosts;
+const { fetchImportedPostsByAuthors, $importedReset } = storeImportedPosts;
 const { importedPostsByAuthors, pendingImportedPostsByAuthors } =
   storeToRefs(storeImportedPosts);
 const storeAuthor = useAuthorsStore();
@@ -225,6 +225,10 @@ const authorPrimary = computed(() => {
   } else {
     return author?.value?.names[0];
   }
+});
+
+onUnmounted(() => {
+  $importedReset();
 });
 
 const authorSecondary = computed(() => {
