@@ -216,7 +216,9 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
   }
   function $importedReset() {
     // manually reset store here
-    (importedPostById.value = null), (errorImportedPostById.value = null);
+    importedPostById.value = null;
+    errorImportedPostById.value = null;
+    importedPostsByAuthors.value = [];
   }
   return {
     createImportedPostInGup,
