@@ -21,19 +21,20 @@ defmodule GupAdmin.Resource.Search do
 
   def search_index(params) do
     params = remap_params(params)
-    q = Query.base(params["title"])
+    q = Query.base(params["query"])
     |> Filter.add_filter(Filter.build_filter(params["filter"]))
     {:ok, %{body: %{"hits" => hits}}} = Elastix.Search.search(elastic_url(), @index, [], q)
     total = Map.get(hits, "total") |> Map.get("value")
     hits = Map.get(hits, "hits")
     {hits, total}
-    |> Publication.remap()
+    |> Publication.remap(params["limit"])
   end
 
   def remap_params(params) do
     %{
-      "title" => params["title"] || "",
-      "filter" => clense_filter(params)
+      "query" => params["query"] || "",
+      "filter" => clense_filter(params),
+      "limit" => params["limit"] || 50
     }
   end
 
