@@ -122,13 +122,15 @@ end
     end
   end
 
-
-
   def remap({hits, total}) do
+    remap({[hits], total}, 50)
+  end
+
+  def remap({hits, total}, amount) do
     hits = hits
     |> Enum.map(fn hit -> hit["_source"] end)
     |> remap_authors()
-    data = Enum.take(hits, 50)
+    data = Enum.take(hits, amount)
     showing = length(data)
     %{
       "total" => total,
