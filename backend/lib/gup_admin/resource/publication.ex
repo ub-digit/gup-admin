@@ -95,7 +95,7 @@ end
 
   def return_res(res) do
     pending = res |> Map.get("_source") |> Map.get("pending")
-    res = res |> Map.get("_source") |> remap("new") |> clear_irrelevant_identifiers()
+    res = res |> Map.get("_source") |> remap("new", "check") |> clear_irrelevant_identifiers()
 
     %{
       "data" => res,
@@ -109,7 +109,7 @@ end
     |> length()
     |> case do
       0 -> %{"statusMessage" => "Post not found", "statusCode" => missing_status}
-      _ -> {:ok, res |> List.first() |> Map.get("_source") |> remap("new")}
+      _ -> {:ok, res |> List.first() |> Map.get("_source") |> remap("new", "check")}
     end
   end
 
@@ -123,7 +123,7 @@ end
   end
 
   def remap({hits, total}) do
-    remap({[hits], total}, 50)
+    remap({hits, total}, 50)
   end
 
   def remap({hits, total}, amount) do
@@ -176,7 +176,7 @@ end
     String.split(data["id"], "_") |> List.last()
   end
 
-  def remap(data, "new") do
+  def remap(data, "new", "check") do
     []
     |> row(get_publication_id(data), [{"display_label", "publication_id"}, {"display_type", "string"}, {"visibility", get_visibility("publication_id")}])
     |> row(data["id"], [{"display_label", "id"}, {"display_type", "string"}, {"visibility", get_visibility("id")}])
