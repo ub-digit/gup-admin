@@ -77,7 +77,7 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
     try {
       pendingImportedPostsByAuthors.value = true;
       const { data, error } = await useFetch("/api/posts_imported", {
-        params: { title: searchStr },
+        params: { query: searchStr },
         onRequest({ request, options }) {
           paramsSerializer(options.params);
         },
