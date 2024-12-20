@@ -41,7 +41,7 @@ export const useFilterStore = defineStore("filterStore", () => {
       ? (route.query.pubtype as string)
       : "",
     query: (route.query.query as string)
-      ? (route.query.title as string)
+      ? (route.query.query as string)
       : undefined,
     year: (route.query.year as string) ? (route.query.year as string) : "",
   });
