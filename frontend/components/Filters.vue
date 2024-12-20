@@ -124,7 +124,7 @@ const filterStore = useFilterStore();
 const { $reset } = filterStore;
 const { filters } = storeToRefs(filterStore);
 
-const title_str = ref(filters.value.title);
+const title_str = ref(filters.value.query);
 
 const yearsArray = computed(() => {
   let startYear = 1999;
@@ -140,7 +140,7 @@ const yearsArray = computed(() => {
 
 // throttle input
 const debouncedFn = useDebounceFn(() => {
-  filters.value.title = title_str.value;
+  filters.value.query = title_str.value;
 }, 500);
 
 onUnmounted(() => {

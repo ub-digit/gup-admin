@@ -21,14 +21,18 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
   const selectedUser: Ref<string | null> = ref("");
   const selectedUserOverride: Ref<string> = ref("");
   const importedPosts: Ref<Publication[]> = ref([]);
+  const importedPostsByAuthors: Ref<Publication[]> = ref([]);
   const numberOfImportedPostsTotal = ref(0);
   const numberOfImportedPostsShowing = ref(0);
+  const numberOfImportedPostsByAuthorsTotal = ref(0);
+  const numberOfImportedPostsByAuthorsShowing = ref(0);
   const importedPostById: Ref<ImportedPostType | null> = ref(null);
   const errorImportedPostById = ref(null);
   const pendingImportedPosts = ref(false);
   const pendingImportedPostById = ref(false);
   const pendingRemoveImportedPost = ref(false);
   const pendingCreateImportedPostInGup = ref(false);
+  const pendingImportedPostsByAuthors = ref(false);
 
   watch(selectedUser, () => {
     // save to localstorage
@@ -66,6 +70,34 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
       console.log(error);
       return error;
     } finally {
+    }
+  }
+
+  async function fetchImportedPostsByAuthors(searchStr: string) {
+    try {
+      pendingImportedPostsByAuthors.value = true;
+      const { data, error } = await useFetch("/api/posts_imported", {
+        params: { query: searchStr },
+        onRequest({ request, options }) {
+          paramsSerializer(options.params);
+        },
+      });
+      // maybe move to meta-object in response from backend
+      importedPostsByAuthors.value = zPublicationArray.parse(data.value).data;
+      numberOfImportedPostsByAuthorsTotal.value = zPublicationArray.parse(
+        data.value
+      ).total;
+      numberOfImportedPostsByAuthorsShowing.value = zPublicationArray.parse(
+        data.value
+      ).showing;
+    } catch (error) {
+      if (error instanceof ZodError) {
+        console.log("Something went wrong: fetchImportedPosts from Zod", error);
+      } else {
+        console.log("Something went wrong: fetchImportedPosts");
+      }
+    } finally {
+      pendingImportedPostsByAuthors.value = false;
     }
   }
 
@@ -184,12 +216,19 @@ export const useImportedPostsStore = defineStore("importedPostsStore", () => {
   }
   function $importedReset() {
     // manually reset store here
-    (importedPostById.value = null), (errorImportedPostById.value = null);
+    importedPostById.value = null;
+    errorImportedPostById.value = null;
+    importedPostsByAuthors.value = [];
   }
   return {
     createImportedPostInGup,
     importedPosts,
     fetchImportedPosts,
+    fetchImportedPostsByAuthors,
+    pendingImportedPostsByAuthors,
+    importedPostsByAuthors,
+    numberOfImportedPostsByAuthorsShowing,
+    numberOfImportedPostsByAuthorsTotal,
     fetchAuthorsByPublication,
     addEmptyAuthorToPublication,
     authorsByPublication,
