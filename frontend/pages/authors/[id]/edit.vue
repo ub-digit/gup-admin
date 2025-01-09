@@ -110,7 +110,7 @@
     >
       Avbryt
     </NuxtLink>
-    <button type="button" class="btn btn-success" @click="saveAuthor()">
+    <button type="button" class="btn btn-success" @click.prevent="saveAuthor()">
       Spara
     </button>
   </form>
@@ -125,7 +125,7 @@
 
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
-import type { Nameform, Department, Author } from "~/types/Author";
+import type { Nameform } from "~/types/Author";
 import { useAuthorsStore } from "~/store/authors";
 import _ from "lodash";
 
