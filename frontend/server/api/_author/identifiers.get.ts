@@ -9,18 +9,35 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
   const query = getQuery(event);
   console.log(config.API_BASE_URL);
+
   const res: IdentifierArray = [
     {
       code: "X_ACCOUNT",
-      value: "x-account_value",
+      value: "x-account",
     },
     {
-      code: "foo",
-      value: "foo_value",
+      code: "ORCID",
+      value: "Orcid",
     },
     {
-      code: "bar",
-      value: "bar_value",
+      code: "CID",
+      value: "Cid",
+    },
+    {
+      code: "SCOPUS_AUTHOR_ID",
+      value: "Scopus author id",
+    },
+    {
+      code: "WOS_RESEARCHER_ID",
+      value: "Wos researcher id",
+    },
+    {
+      code: "WOS_DAISNG_ID",
+      value: "Wos daisng id",
+    },
+    {
+      code: "POP_ID",
+      value: "Pop id",
     },
   ];
   /*const res: IdentifierArray = await $fetch(
