@@ -1,6 +1,6 @@
 <template>
   <h2>Redigera person</h2>
-  <form v-if="authorClone">
+  <!-- <form v-if="authorClone">
     <h3>Namnfomer</h3>
     <div
       style="border: 1px solid #ccc; border-radius: 4px"
@@ -113,7 +113,7 @@
     <button type="button" class="btn btn-success" @click.prevent="saveAuthor()">
       Spara
     </button>
-  </form>
+  </form>-->
 
   <div class="row mt-5">
     <div class="col">
