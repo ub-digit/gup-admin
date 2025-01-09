@@ -32,7 +32,7 @@
         </div>
       </div>
       <div class="mb-3">
-        <div class="form-check">
+        <!--<div class="form-check">
           <input
             class="form-check-input"
             type="radio"
@@ -46,7 +46,7 @@
           >
             Primär namnform
           </label>
-        </div>
+        </div> -->
       </div>
     </div>
     <div class="mb-3">
