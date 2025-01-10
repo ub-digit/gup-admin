@@ -15,7 +15,7 @@
           <input
             type="text"
             class="form-control"
-            id="`first_name_${gup_person_id}`"
+            :id="`first_name_${name.gup_person_id}`"
             v-model="name.first_name"
           />
         </div>
@@ -26,7 +26,7 @@
           <input
             type="text"
             class="form-control"
-            id="`last_name_${gup_person_id}`"
+            :id="`last_name_${name.gup_person_id}`"
             v-model="name.last_name"
           />
         </div>
