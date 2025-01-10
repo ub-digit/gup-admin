@@ -1,6 +1,6 @@
 <template>
   <h2>Redigera person</h2>
-  <form v-if="authorClone">
+  <!--   <form v-if="authorClone">
     <h3>Namnfomer</h3>
     <div
       style="border: 1px solid #ccc; border-radius: 4px"
@@ -120,10 +120,11 @@
       <h3>Submitted data (debug)</h3>
       <pre>{{ submittedData }}</pre>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script setup lang="ts">
+/*
 import { storeToRefs } from "pinia";
 import type { Nameform } from "~/types/Author";
 import { useAuthorsStore } from "~/store/authors";
@@ -165,7 +166,7 @@ function setPrimaryName(gup_person_id: number) {
       name.primary = false;
     }
   });
-}
+}*/
 </script>
 
 <style scoped></style>
