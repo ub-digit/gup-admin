@@ -147,7 +147,7 @@ if (!author.value) {
 await fetchIdentifiers();
 
 if (author.value) {
-  authorClone = _.cloneDeep(author.value);
+  authorClone = _.cloneDeep(author);
 }
 
 function addIdentifierItem() {
