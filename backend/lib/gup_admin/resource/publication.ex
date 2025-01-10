@@ -319,7 +319,7 @@ end
   def enforce_bitstring(data) do
     case is_bitstring(data) do
       true -> data
-      _ -> ""
+      _ -> to_string(data)
     end
   end
 
@@ -339,7 +339,6 @@ end
 
   def sort_authors(authors) do
     authors
-    |> IO.inspect()
     |> List.first()
     |> Map.has_key?("position")
     |> case do
