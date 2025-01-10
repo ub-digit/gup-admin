@@ -1,6 +1,6 @@
 <template>
   <h2>Redigera person</h2>
-  <!--   <form v-if="authorClone">
+  <form v-if="authorClone">
     <h3>Namnfomer</h3>
     <div
       style="border: 1px solid #ccc; border-radius: 4px"
@@ -61,10 +61,14 @@
     <div class="mb-3">
       <h3>Identifikatorer</h3>
       <div style="border: 1px solid #ccc; border-radius: 4px" class="p-3">
-        <div class="mb-3" v-for="identifier in authorClone.identifiers">
+        <div
+          class="mb-3"
+          v-for="(identifier, index) in authorClone.identifiers"
+        >
           <div class="row">
             <div class="col">
               <select
+                :id="`identifier_code_${index}`"
                 class="form-select"
                 v-model="identifier.code"
                 aria-label=""
@@ -81,6 +85,7 @@
             </div>
             <div class="col">
               <input
+                :id="`identifier_value_${index}`"
                 type="text"
                 class="form-control"
                 v-model="identifier.value"
@@ -120,11 +125,10 @@
       <h3>Submitted data (debug)</h3>
       <pre>{{ submittedData }}</pre>
     </div>
-  </div> -->
+  </div>
 </template>
 
 <script setup lang="ts">
-/*
 import { storeToRefs } from "pinia";
 import type { Nameform } from "~/types/Author";
 import { useAuthorsStore } from "~/store/authors";
@@ -166,7 +170,7 @@ function setPrimaryName(gup_person_id: number) {
       name.primary = false;
     }
   });
-}*/
+}
 </script>
 
 <style scoped></style>
