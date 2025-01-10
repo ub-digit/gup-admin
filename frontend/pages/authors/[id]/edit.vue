@@ -160,10 +160,6 @@ const saveAuthor = async () => {
 
 function setPrimaryName(gup_person_id: number) {
   authorClone.value.names.forEach((name: Nameform) => {
-    if (name.gup_person_id === gup_person_id && name.primary === true) {
-      name.primary = true;
-    }
-
     if (name.gup_person_id === gup_person_id) {
       name.primary = true;
     } else {
