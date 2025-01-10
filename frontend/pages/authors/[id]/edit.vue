@@ -139,13 +139,16 @@ const storeAuthor = useAuthorsStore();
 const { author, identifiers } = storeToRefs(storeAuthor);
 const { getAuthorById, fetchIdentifiers, updateAuthor } = storeAuthor;
 const submittedData = ref({});
+let authorClone = null;
 
 if (!author.value) {
   await getAuthorById(route.params.id as string);
 }
 await fetchIdentifiers();
 
-const authorClone = reactive(_.cloneDeep(author));
+if (author.value) {
+  authorClone = _.cloneDeep(author.value);
+}
 
 function addIdentifierItem() {
   authorClone.value.identifiers.push({ code: "", value: "" });
