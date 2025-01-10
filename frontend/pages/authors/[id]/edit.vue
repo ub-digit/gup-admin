@@ -1,11 +1,11 @@
 <template>
   <h2>Redigera person</h2>
-  <form v-if="authorClone">
+  <form v-if="author">
     <h3>Namnfomer</h3>
     <div
       style="border: 1px solid #ccc; border-radius: 4px"
       class="mb-3 p-3"
-      v-for="name in authorClone.names"
+      v-for="name in author.names"
     >
       <div class="row">
         <div class="mb-3 col">
@@ -51,20 +51,13 @@
     </div>
     <div class="mb-3">
       <label for="year_of_birth" class="form-label">Födelseår</label>
-      <input
-        type="text"
-        class="form-control"
-        v-model="authorClone.year_of_birth"
-      />
+      <input type="text" class="form-control" v-model="author.year_of_birth" />
     </div>
 
     <div class="mb-3">
       <h3>Identifikatorer</h3>
       <div style="border: 1px solid #ccc; border-radius: 4px" class="p-3">
-        <div
-          class="mb-3"
-          v-for="(identifier, index) in authorClone.identifiers"
-        >
+        <div class="mb-3" v-for="(identifier, index) in author.identifiers">
           <div class="row">
             <div class="col">
               <select
@@ -139,30 +132,25 @@ const storeAuthor = useAuthorsStore();
 const { author, identifiers } = storeToRefs(storeAuthor);
 const { getAuthorById, fetchIdentifiers, updateAuthor } = storeAuthor;
 const submittedData = ref({});
-let authorClone = null;
 
-if (!author.value) {
-  await getAuthorById(route.params.id as string);
-}
+await getAuthorById(route.params.id as string);
 await fetchIdentifiers();
 
-if (author.value) {
-  authorClone = _.cloneDeep(author);
-}
+//const authorClone = _.cloneDeep(author);
 
 function addIdentifierItem() {
-  authorClone.value.identifiers.push({ code: "", value: "" });
+  author?.value?.identifiers.push({ code: "", value: "" });
 }
 
 const saveAuthor = async () => {
   submittedData.value = await updateAuthor(
     route.params.id as string,
-    authorClone.value
+    author?.value
   );
 };
 
 function setPrimaryName(gup_person_id: number) {
-  authorClone.value.names.forEach((name: Nameform) => {
+  author?.value?.names.forEach((name: Nameform) => {
     if (name.gup_person_id === gup_person_id) {
       name.primary = true;
     } else {
