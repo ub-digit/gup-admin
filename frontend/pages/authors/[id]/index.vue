@@ -174,8 +174,8 @@ const { fetchImportedPostsByAuthors, $importedReset } = storeImportedPosts;
 const { importedPostsByAuthors, pendingImportedPostsByAuthors } =
   storeToRefs(storeImportedPosts);
 const storeAuthor = useAuthorsStore();
-const { getAuthorById } = storeAuthor;
-getAuthorById(route.params.id as string);
+const { fetchAuthorById } = storeAuthor;
+fetchAuthorById(route.params.id as string);
 const { author, authors } = storeToRefs(storeAuthor);
 console.log(author);
 
@@ -183,12 +183,11 @@ const config = useRuntimeConfig();
 console.log(config);
 
 const getPostsByAuthors = async () => {
-  const searchFormatArr = authorGupIds.value.map(
+  const searchFormatArr = authorGupIds?.value?.map(
     (id) => `authors.person.id:${id}`
   );
-  console.log(searchFormatArr.toString(" OR "));
-  const searchStr = searchFormatArr.join(" OR ");
-  await fetchImportedPostsByAuthors(searchStr);
+  const searchStr = searchFormatArr?.join(" OR ");
+  await fetchImportedPostsByAuthors(searchStr as string);
 };
 
 const authorGupIds = computed(() => {

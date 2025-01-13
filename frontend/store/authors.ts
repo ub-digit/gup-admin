@@ -91,7 +91,7 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
       }
     }
   }
-  async function getAuthorById(id: string) {
+  async function fetchAuthorById(id: string) {
     try {
       const { data, error } = await useFetch(`/api/_author/${id}`);
       if (data?.value?.error) {
@@ -179,7 +179,7 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
     filters,
     errorAuthors,
     pendingAuthors,
-    getAuthorById,
+    fetchAuthorById,
     fetchAuthors,
     updateAuthor,
     fetchIdentifiers,
