@@ -1,6 +1,6 @@
 <template>
   <h2>Redigera person</h2>
-  <form v-if="author">
+  <!--<form v-if="author">
     <h3>Namnfomer</h3>
     <div
       style="border: 1px solid #ccc; border-radius: 4px"
@@ -111,7 +111,9 @@
     <button type="button" class="btn btn-success" @click.prevent="saveAuthor()">
       Spara
     </button>
-  </form>
+  </form> -->
+
+  <AuthorForm :author="author" @submit="saveAuthor" submitBtnText="Spara" />
 
   <div class="row mt-5">
     <div class="col">
@@ -123,41 +125,22 @@
 
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
-import type { Nameform } from "~/types/Author";
+import type { Author, Nameform } from "~/types/Author";
 import { useAuthorsStore } from "~/store/authors";
-import _ from "lodash";
+import type { Ref } from "vue";
 
 const route = useRoute();
 const storeAuthor = useAuthorsStore();
-const { author, identifiers } = storeToRefs(storeAuthor);
-const { getAuthorById, fetchIdentifiers, updateAuthor } = storeAuthor;
-const submittedData = ref({});
+const { author } = storeToRefs(storeAuthor);
+const { fetchAuthorById, updateAuthor } = storeAuthor;
+const submittedData: Ref<Author | null> = ref(null);
 
-await getAuthorById(route.params.id as string);
-await fetchIdentifiers();
+await fetchAuthorById(route.params.id as string);
 
-//const authorClone = _.cloneDeep(author);
-
-function addIdentifierItem() {
-  author?.value?.identifiers.push({ code: "", value: "" });
-}
-
-const saveAuthor = async () => {
-  submittedData.value = await updateAuthor(
-    route.params.id as string,
-    author?.value
-  );
+const saveAuthor = async (data: Author) => {
+  console.log("data", data);
+  submittedData.value = await updateAuthor(route.params.id as string, data);
 };
-
-function setPrimaryName(gup_person_id: number) {
-  author?.value?.names.forEach((name: Nameform) => {
-    if (name.gup_person_id === gup_person_id) {
-      name.primary = true;
-    } else {
-      name.primary = false;
-    }
-  });
-}
 </script>
 
 <style scoped></style>
