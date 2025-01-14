@@ -141,16 +141,14 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
   }
 
   const updateAuthor = async (id: string, author: Author) => {
-    console.log(id, author);
     try {
-      const { data } = await useFetch(`/api/_author/${id}`, {
+      const { data, error } = await useFetch(`/api/_author/${id}`, {
         method: "PUT",
         body: author,
       });
-      if (data?.value?.error) {
-        throw data.value;
+      if (error.value) {
+        throw error;
       }
-      console.log("Author updated", data);
       return data;
     } catch (error) {
       console.log("Something went wrong: updateAuthor", error);

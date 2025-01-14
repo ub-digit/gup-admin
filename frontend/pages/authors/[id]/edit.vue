@@ -1,119 +1,12 @@
 <template>
   <h2>Redigera person</h2>
-  <!--<form v-if="author">
-    <h3>Namnfomer</h3>
-    <div
-      style="border: 1px solid #ccc; border-radius: 4px"
-      class="mb-3 p-3"
-      v-for="name in author.names"
-    >
-      <div class="row">
-        <div class="mb-3 col">
-          <label :for="`first_name_${name.gup_person_id}`" class="form-label"
-            >Förnamn</label
-          >
-          <input
-            type="text"
-            class="form-control"
-            :id="`first_name_${name.gup_person_id}`"
-            v-model="name.first_name"
-          />
-        </div>
-        <div class="mb-3 col">
-          <label :for="`last_name_${name.gup_person_id}`" class="form-label"
-            >Efternamn</label
-          >
-          <input
-            type="text"
-            class="form-control"
-            :id="`last_name_${name.gup_person_id}`"
-            v-model="name.last_name"
-          />
-        </div>
-      </div>
-      <div class="mb-3">
-        <div class="form-check">
-          <input
-            class="form-check-input"
-            type="radio"
-            :checked="name.primary"
-            @change="setPrimaryName(name.gup_person_id)"
-            :id="`is_primary_name_${name.gup_person_id}`"
-          />
-          <label
-            class="form-check-label"
-            :for="`is_primary_name_${name.gup_person_id}`"
-          >
-            Primär namnform
-          </label>
-        </div>
-      </div>
-    </div>
-    <div class="mb-3">
-      <label for="year_of_birth" class="form-label">Födelseår</label>
-      <input type="text" class="form-control" v-model="author.year_of_birth" />
-    </div>
-
-    <div class="mb-3">
-      <h3>Identifikatorer</h3>
-      <div style="border: 1px solid #ccc; border-radius: 4px" class="p-3">
-        <div class="mb-3" v-for="(identifier, index) in author.identifiers">
-          <div class="row">
-            <div class="col">
-              <select
-                :id="`identifier_code_${index}`"
-                class="form-select"
-                v-model="identifier.code"
-                aria-label=""
-              >
-                <option disabled value="">Välj identfierare</option>
-
-                <option
-                  v-for="identifier in identifiers"
-                  :value="identifier.code"
-                >
-                  {{ identifier.code }}
-                </option>
-              </select>
-            </div>
-            <div class="col">
-              <input
-                :id="`identifier_value_${index}`"
-                type="text"
-                class="form-control"
-                v-model="identifier.value"
-              />
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <button
-              class="btn btn-primary"
-              @click.prevent="addIdentifierItem()"
-            >
-              Lägg till identifikator
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <NuxtLink
-      class="btn btn-danger me-2"
-      :to="{
-        name: 'authors-id',
-        query: $route.query,
-        params: { id: author.id },
-      }"
-    >
-      Avbryt
-    </NuxtLink>
-    <button type="button" class="btn btn-success" @click.prevent="saveAuthor()">
-      Spara
-    </button>
-  </form> -->
-
-  <AuthorForm :author="author" @submit="saveAuthor" submitBtnText="Spara" />
+  <AuthorForm
+    :author="author as Author"
+    :errors="errors"
+    @submit="saveAuthor"
+    @onCancel="cancelEdit"
+    submitBtnText="Spara"
+  />
 
   <div class="row mt-5">
     <div class="col">
@@ -130,16 +23,32 @@ import { useAuthorsStore } from "~/store/authors";
 import type { Ref } from "vue";
 
 const route = useRoute();
+const router = useRouter();
 const storeAuthor = useAuthorsStore();
 const { author } = storeToRefs(storeAuthor);
 const { fetchAuthorById, updateAuthor } = storeAuthor;
 const submittedData: Ref<Author | null> = ref(null);
+const errors: Ref<string[]> = ref([]);
 
 await fetchAuthorById(route.params.id as string);
 
 const saveAuthor = async (data: Author) => {
   console.log("data", data);
-  submittedData.value = await updateAuthor(route.params.id as string, data);
+  const res = await updateAuthor(route.params.id as string, data);
+  if (res?.value?.errors) {
+    errors.value = res.value.errors;
+  }
+  if (res?.value?.data) {
+    submittedData.value = res.value.data;
+  }
+};
+
+const cancelEdit = () => {
+  router.push({
+    name: "authors-id",
+    params: { id: route.params.id },
+    query: { ...route.query },
+  });
 };
 </script>
 
