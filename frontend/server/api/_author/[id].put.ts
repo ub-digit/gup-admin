@@ -9,7 +9,12 @@ export default defineEventHandler(async (event) => {
   const query = getQuery(event);
   const id = event?.context?.params?.id;
   const data = await readBody(event);
-  return data;
+  const res = {
+    data: data,
+    errors: ["X_ACCOUNT_WRONG_FORMAT", "INVALID_BIRTHYEAR"],
+  };
+  console.log(res);
+  return res;
 
   /*
   console.log("from put to author");

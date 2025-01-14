@@ -1,61 +1,73 @@
 <template>
   <div>
+    <div v-if="errors.length" class="alert alert-danger">
+      <ul>
+        <li v-for="error in errors" :key="error">
+          {{ t(`views.authors.edit.form.errors.${error}`) }}
+        </li>
+      </ul>
+    </div>
     <form v-if="authorReactive">
       <h3>Namnfomer</h3>
-      <div
-        style="border: 1px solid #ccc; border-radius: 4px"
-        class="mb-3 p-3"
-        v-for="name in authorReactive.names"
-      >
-        <div class="row">
-          <div class="mb-3 col">
-            <label :for="`first_name_${name.gup_person_id}`" class="form-label"
-              >Förnamn</label
-            >
-            <input
-              type="text"
-              class="form-control"
-              :id="`first_name_${name.gup_person_id}`"
-              v-model="name.first_name"
-            />
-          </div>
-          <div class="mb-3 col">
-            <label :for="`last_name_${name.gup_person_id}`" class="form-label"
-              >Efternamn</label
-            >
-            <input
-              type="text"
-              class="form-control"
-              :id="`last_name_${name.gup_person_id}`"
-              v-model="name.last_name"
-            />
-          </div>
-        </div>
-        <div class="mb-3">
-          <div class="form-check">
-            <input
-              class="form-check-input"
-              type="radio"
-              :checked="name.primary"
-              @change="setPrimaryName(name.gup_person_id)"
-              :id="`is_primary_name_${name.gup_person_id}`"
-            />
-            <label
-              class="form-check-label"
-              :for="`is_primary_name_${name.gup_person_id}`"
-            >
-              Primär namnform
-            </label>
+      <div class="mb-3 p-3" style="border: 1px solid #ccc; border-radius: 4px">
+        <div class="" v-for="(name, index) in authorReactive.names">
+          <div class="row">
+            <div class="mb-3 col">
+              <label :for="`first_name_${index}`" class="form-label"
+                >Förnamn</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                :id="`first_name_${index}`"
+                v-model="name.first_name"
+              />
+            </div>
+            <div class="mb-3 col">
+              <label :for="`last_name_${index}`" class="form-label"
+                >Efternamn</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                :id="`last_name_${index}`"
+                v-model="name.last_name"
+              />
+            </div>
+            <div class="col mb-3 d-flex align-items-center">
+              <div class="form-check mt-4">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  :checked="name.primary"
+                  @change="setPrimaryName(index as number)"
+                  :id="`is_primary_name_${index}`"
+                />
+                <label
+                  class="form-check-label"
+                  :for="`is_primary_name_${index}`"
+                >
+                  Primär namnform
+                </label>
+              </div>
+            </div>
           </div>
         </div>
+        <button class="btn btn-primary" @click.prevent="addNameformItem()">
+          Lägg till namnform
+        </button>
       </div>
       <div class="mb-3">
-        <label for="year_of_birth" class="form-label">Födelseår</label>
-        <input
-          type="text"
-          class="form-control"
-          v-model="authorReactive.year_of_birth"
-        />
+        <div class="row">
+          <div class="col-3">
+            <label for="year_of_birth" class="form-label">Födelseår</label>
+            <input
+              type="text"
+              class="form-control"
+              v-model="authorReactive.year_of_birth"
+            />
+          </div>
+        </div>
       </div>
 
       <div class="mb-3">
@@ -79,7 +91,7 @@
                     v-for="identifier in identifiers"
                     :value="identifier.code"
                   >
-                    {{ identifier.code }}
+                    {{ t(`views.authors.identifier_type.${identifier.code}`) }}
                   </option>
                 </select>
               </div>
@@ -105,16 +117,9 @@
           </div>
         </div>
       </div>
-      <NuxtLink
-        class="btn btn-danger me-2"
-        :to="{
-          name: 'authors-id',
-          query: $route.query,
-          params: { id: authorReactive.id },
-        }"
-      >
+      <button class="btn btn-danger me-2" @click.prevent="$emit('onCancel')">
         Avbryt
-      </NuxtLink>
+      </button>
       <button
         type="button"
         class="btn btn-success"
@@ -130,7 +135,7 @@
 import { storeToRefs } from "pinia";
 import type { Author, Nameform } from "~/types/Author";
 import { useAuthorsStore } from "~/store/authors";
-
+const { t, getLocale } = useI18n();
 const storeAuthor = useAuthorsStore();
 const { identifiers } = storeToRefs(storeAuthor);
 const { fetchIdentifiers } = storeAuthor;
@@ -138,9 +143,10 @@ const { fetchIdentifiers } = storeAuthor;
 interface Props {
   author: Author;
   submitBtnText?: string;
+  errors: string[];
 }
-const { author, submitBtnText = "Spara" } = defineProps<Props>();
-const emit = defineEmits(["submit"]);
+const { author, submitBtnText = "Spara" } = defineProps<Props>(); // default is set for submitBtnText only
+const emit = defineEmits(["submit", "onCancel"]); // handle these events in your parent component
 
 // make a ref object to use in the form
 const authorReactive: Ref<Author> = ref(author);
@@ -154,10 +160,17 @@ function saveAuthor() {
 function addIdentifierItem() {
   authorReactive?.value?.identifiers.push({ code: "", value: "" });
 }
+function addNameformItem() {
+  authorReactive?.value?.names.push({
+    first_name: "",
+    last_name: "",
+    primary: false,
+  });
+}
 
-function setPrimaryName(gup_person_id: number) {
-  authorReactive?.value?.names.forEach((name: Nameform) => {
-    if (name.gup_person_id === gup_person_id) {
+function setPrimaryName(index: number) {
+  authorReactive?.value?.names.forEach((name: Nameform, index_local) => {
+    if (index_local === index) {
       name.primary = true;
     } else {
       name.primary = false;
