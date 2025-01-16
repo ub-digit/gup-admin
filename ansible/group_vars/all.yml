@@ -1,0 +1,14 @@
+---
+docker_git_repo_url: https://github.com/ub-digit/gup-admin.git
+docker_directory: './docker' # Default is './docker'
+app_name: gup-admin
+
+data_dir: /data/gup-admin
+db_data_dir: /data/gup-admin/db
+index_manager_data_dir: /data/gup-admin/index-manager-db
+backend_source_data_dir: /data/gup-damin/_source
+backend_scopus_normalised_data_dir: /data/gup-admin/scopus-normalised
+scopus_nomalised_json_files_data_dir: /data/gup-admin/scopus-files
+scopus_scripts_data: /data/gup-admin/scopus-scripts
+elasticsearch_data_dir: /data/gup-admin/elasticsearch
+kibana_data_dir: /data/gup-admin/kibana
