@@ -51,7 +51,7 @@ services:
       POSTGRES_PASSWORD: "${DB_PASSWORD}"
       POSTGRES_DB: "${DB_NAME}"
     volumes:
-      - ./admin-db-initdb.d:/docker-entrypoint-initdb.d
+      - ./db-postgres-initdb.d:/docker-entrypoint-initdb.d
       - ${DB_DATA_HOST_PATH}:/var/lib/postgresql/data
     networks:
       - gup-admin
@@ -63,7 +63,7 @@ services:
       POSTGRES_PASSWORD: "${DB_USER}"
       POSTGRES_DB: "${INDEX_MANAGER_DB_NAME}"
     volumes:
-      - ./index-manager-db-initdb.d:/docker-entrypoint-initdb.d
+      - ./index-manager-db-postgres-initdb.d:/docker-entrypoint-initdb.d
       - ${INDEX_MANAGER_DB_DATA_HOST_PATH}:/var/lib/postgresql/data
     networks:
       - gup-admin

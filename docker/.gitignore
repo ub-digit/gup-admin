@@ -1,9 +1,9 @@
 /pgdata
 /scopus-files/*
+/scopus-normalised
 /*-initdb.d/*
-!/admin-db-initdb.d/.gitkeep
-#/index-manager-db.initdb.d
-!/index-manager-db.initdb.d/create.sql
+!/admin-db-postgres-initdb.d/.gitkeep
+!/index-manager-db-postgres-initdb.d/create.sql
 /index-manager-db-data
 /admin-db-data
 /elasticsearch-data
