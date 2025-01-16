@@ -4,13 +4,13 @@ services:
   admin-frontend:
     image: docker.ub.gu.se/gup-admin-frontend:${GIT_REVISION}${PLATFORM}
     restart: always
+    env_file:
+      - secrets.env
     environment:
       NUXT_API_BASE_URL: "${BACKEND_BASE_URL}"
       NUXT_PUBLIC_ALLOW_AUTHOR_EDIT: ${FRONTEND_ALLOW_AUTHOR_EDIT}
       NUXT_GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
-      NUXT_GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
       NUXT_GU_CLIENT_ID: ${GU_CLIENT_ID}
-      NUXT_GU_CLIENT_SECRET: ${GU_CLIENT_SECRET}
       NUXT_AUTH_USERS: ${AUTH_USERS}
       NUXT_SECRET_KEY_BASE: "${SECRET_KEY_BASE}"
     ports:
@@ -20,11 +20,11 @@ services:
   admin-backend:
     image: docker.ub.gu.se/gup-admin-backend:${GIT_REVISION}${PLATFORM}
     restart: always
+    env_file:
+      - secrets.env
     environment:
       ELASTICSEARCH_URL: "${ELASTICSEARCH_URL}"
       INDEX_MANAGER_URL: "${INDEX_MANAGER_URL}"
-      INDEX_MANAGER_API_KEY: "${INDEX_MANAGER_API_KEY}"
-      GUP_API_KEY: "${GUP_BACKEND_API_KEY}"
       SECRET_KEY_BASE: "${SECRET_KEY_BASE}"
     volumes:
       # Temporary fix until real index is in place
@@ -38,10 +38,10 @@ services:
   index-manager-backend:
     image: docker.ub.gu.se/gup-admin-index-manager-backend:${GIT_REVISION}${PLATFORM}
     restart: always
+    env_file:
+      - secrets.env
     environment:
       ELASTICSEARCH_URL: "${ELASTICSEARCH_URL}"
-      INDEX_MANAGER_API_KEY: "${INDEX_MANAGER_API_KEY}"
-      SECRET_KEY_BASE: "${SECRET_KEY_BASE}"
     ports:
       - "${INDEX_MANAGER_HOST_PORT}:4000"
     networks:
@@ -85,9 +85,10 @@ services:
   gup-imports:
     image: docker.ub.gu.se/gup-imports:${GIT_REVISION_GUP_IMPORTS}
     restart: always
+    env_file:
+      - secrets.env
     environment:
       - GUP_ADMIN_BASE_URL=${INDEX_MANAGER_URL} #???? container env variable should be prefixed INDEX_MANAGER instead?
-      - GUP_ADMIN_API_KEY=${INDEX_MANAGER_API_KEY}
     tty: true
     volumes:
       - ${SCOPUS_NORMALISED_JSON_FILES_HOST_PATH}:/data/files/scopus-normalised
