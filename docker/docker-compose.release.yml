@@ -5,11 +5,11 @@ services:
       - "127.0.0.1:5433:5432" #???
   admin-frontend:
     environment:
-      NUXT_PUBLIC_API_GUP_BASE_URL: "${ADMIN_BACKEND_PUBLIC_BASE_URL}"
+      NUXT_PUBLIC_API_GUP_BASE_URL: "https://${ADMIN_BACKEND_HOSTNAME}"
     restart: always
   admin-backend:
     environment:
-      GUP_BASE_URL: "${GUP_FRONTEND_PUBLIC_BASE_URL}"
+      GUP_BASE_URL: "${GUP_FRONTEND_BASE_URL}"
     volumes:
       # Temporary fix until real index is in place
       - ../data/_source:/app/data/_source
