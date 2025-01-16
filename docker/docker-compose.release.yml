@@ -13,7 +13,3 @@ services:
     environment:
       GUP_BASE_URL: "${GUP_FRONTEND_PUBLIC_URL}"
       GUP_SERVER_BASE_URL: "${GUP_BACKEND_PUBLIC_URL}"
-    volumes:
-      # Temporary fix until real index is in place
-      - ../data/_source:/app/data/_source
-      - ../data/scopus-normalised:/app/data/scopus-normalised
