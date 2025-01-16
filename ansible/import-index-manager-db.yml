@@ -1,0 +1,9 @@
+---
+- name: Import index manager database
+  hosts: all
+  roles:
+  - role: ub-ansible-import-db
+    vars:
+      db_service: index-manager-db
+      database_variant: postgres
+      db_dump_filename: index-manager-database.sql
