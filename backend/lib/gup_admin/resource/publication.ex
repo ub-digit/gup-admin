@@ -2,7 +2,7 @@ defmodule GupAdmin.Resource.Publication do
   alias GupAdmin.Resource.Search
 
   def index_manager_base_url do
-    System.fetch_env!("GUP_INDEX_MANAGER_URL")
+    System.get_env("INDEX_MANAGER_URL") || "http://localhost:4010"
   end
 
   # post to external site with httpoison
@@ -24,7 +24,7 @@ defmodule GupAdmin.Resource.Publication do
     end
     # set gup post in index as pending
     index_body = %{} |> Jason.encode!()
-    api_key_index = System.get_env("GUP_INDEX_MANAGER_API_KEY")
+    api_key_index = System.get_env("INDEX_MANAGER_API_KEY")
     HTTPoison.put("#{index_manager_base_url()}/publications/pending/gup_#{gup_id}?api_key=#{api_key_index}", index_body, [{"Content-Type", "application/json"}])
     url =  "#{gup_server_base_url()}/v1/published_publications_admin/#{gup_id}?api_key=#{api_key}&username=#{gup_user}#{merge_with_id}"
     publication_identifiers = show_raw(publication_id)

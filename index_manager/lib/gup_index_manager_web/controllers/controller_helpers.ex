@@ -12,6 +12,6 @@ defmodule GupIndexManagerWeb.ControllerHelpers do
   end
 
   defp get_api_key() do
-    System.get_env("GUP_INDEX_MANAGER_API_KEY")
+    System.get_env("INDEX_MANAGER_API_KEY")
   end
 end
