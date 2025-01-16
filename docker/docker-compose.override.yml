@@ -9,7 +9,7 @@ services:
   admin-backend:
     environment:
       MIX_ENV: dev
-      GUP_BASE_URL: "localhost:8181"
+      GUP_BASE_URL: "http://localhost:8181"
     volumes:
       - ../backend:/app # GUP_ADMIN_REPO is not set anywhere in the project
       # Temporary fix until real index is in place
