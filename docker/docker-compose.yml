@@ -25,8 +25,8 @@ services:
     restart: always
     environment:
       ELASTICSEARCH_URL: "${ELASTICSEARCH_URL}"
-      GUP_INDEX_MANAGER_URL: "${INDEX_MANAGER_URL}"
-      GUP_INDEX_MANAGER_API_KEY: "${INDEX_MANAGER_API_KEY}"
+      INDEX_MANAGER_URL: "${ADMIN_INDEX_MANAGER_URL}"
+      INDEX_MANAGER_API_KEY: "${ADMIN_INDEX_MANAGER_API_KEY}"
       GUP_SERVER_BASE_URL: "${GUP_BACKEND_BASE_URL}"
       GUP_API_KEY: "${GUP_BACKEND_API_KEY}"
       SECRET_KEY_BASE: "${SECRET_KEY_BASE}"
@@ -40,10 +40,10 @@ services:
     restart: always
     environment:
       ELASTICSEARCH_URL: "${ELASTICSEARCH_URL}"
-      GUP_INDEX_MANAGER_API_KEY: "${INDEX_MANAGER_API_KEY}"
+      INDEX_MANAGER_API_KEY: "${ADMIN_INDEX_MANAGER_API_KEY}"
       SECRET_KEY_BASE: "${SECRET_KEY_BASE}"
     ports:
-      - "${INDEX_MANAGER_HOST_PORT}:4000"
+      - "${ADMIN_INDEX_MANAGER_HOST_PORT}:4000"
     networks:
       - gup
       - gup-admin
@@ -65,10 +65,10 @@ services:
     environment:
       POSTGRES_USER: "${ADMIN_DB_USER}"
       POSTGRES_PASSWORD: "${ADMIN_DB_USER}"
-      POSTGRES_DB: "${INDEX_MANAGER_DB_NAME}"
+      POSTGRES_DB: "${ADMIN_INDEX_MANAGER_DB_NAME}"
     volumes:
       - ./index-manager-db-initdb.d:/docker-entrypoint-initdb.d
-      - ${INDEX_MANAGER_DB_DATA_HOST_PATH}:/var/lib/postgresql/data
+      - ${ADMIN_INDEX_MANAGER_DB_DATA_HOST_PATH}:/var/lib/postgresql/data
     networks:
       - gup-admin
   elasticsearch:
@@ -86,8 +86,8 @@ services:
     image: docker.ub.gu.se/gup-imports:${GIT_REVISION_GUP_IMPORTS}
     restart: always
     environment:
-      - GUP_ADMIN_BASE_URL=${INDEX_MANAGER_URL} #???? container env variable should be prefixed INDEX_MANAGER instead?
-      - GUP_ADMIN_API_KEY=${INDEX_MANAGER_API_KEY}
+      - GUP_ADMIN_BASE_URL=${ADMIN_INDEX_MANAGER_URL} #???? container env variable should be prefixed INDEX_MANAGER instead?
+      - GUP_ADMIN_API_KEY=${ADMIN_INDEX_MANAGER_API_KEY}
     tty: true
     volumes:
       - ${HOST_SCOPUS_NORMALISED_JSON_FILES_DIR}:/data/files/scopus-normalised
