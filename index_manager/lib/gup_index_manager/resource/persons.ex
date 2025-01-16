@@ -100,8 +100,6 @@ defmodule GupIndexManager.Resource.Persons do
   end
 
   def delete_person(id) do
-
-
     time_deleted = DateTime.utc_now()
    # Fetch the person fron the index
     data = GupIndexManager.Resource.Index.Search.find_person_by_gup_admin_id(id) # Index object
@@ -110,22 +108,18 @@ defmodule GupIndexManager.Resource.Persons do
     |> Map.get("_source")
     |> Map.put("deleted", true)
     |> Map.put("deleted_at", time_deleted)
-    |> Index.update_record(id, Index.get_persons_index())
 
-
+    Index.update_record(data, id, Index.get_persons_index())
 
     # set db_person as deleted
     db_person = Person.find_by_id(id)
-
-
     attrs = %{
-      "json" => data |> Jason.encode!()
+      "json" => data |> Jason.encode!(),
+      "deleted" => true,
+      "deleted_at" => time_deleted
     }
     db_person
     |> Person.changeset(attrs)
-    |> Map.put("deleted", true)
-    |> Map.put("deleted_at", time_deleted)
     |> GupIndexManager.Repo.update()
-
   end
 end
