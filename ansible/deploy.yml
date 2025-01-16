@@ -1,0 +1,57 @@
+---
+- name: Deploy
+  hosts: all
+  tasks:
+
+  - name: Include default environment variables
+    ansible.builtin.include_vars:
+      file: default_env.yml
+      name: env_variables
+
+  - name: Include environment variables
+    ansible.builtin.include_vars:
+      file: '{{ inventory_hostname }}/env.yml'
+      name: env_variables
+      hash_behaviour: merge
+
+  - name: Include default secret environment variables
+    ansible.builtin.include_vars:
+      file: default_secret_env.yml
+      name: secret_env_variables
+
+  - name: Include secret environment variables
+    ansible.builtin.include_vars:
+      file: '{{ inventory_hostname }}/secret_env.yml'
+      name: secret_env_variables
+      hash_behaviour: merge
+
+  - name: Ensure data directory
+    become: yes
+    ansible.builtin.file:
+      path: '{{ data_dir }}''
+      state: directory
+      owner: "{{ ansible_user }}"
+      group: "{{ ansible_user }}"
+      mode: '755'
+
+  - name: Ensure data sub-directies
+    become: yes
+    ansible.builtin.file:
+      path: '{{ item }}'
+      state: directory
+      owner: "{{ ansible_user }}"
+      group: "{{ ansible_user }}"
+      mode: '755'
+    loop:
+      - '{{ db_data_dir }}'
+      - '{{ elasticsearch_data_dir }}'
+      - '{{ index_manager_data_dir }}'
+      - '{{ backend_source_data_dir }}'
+      - '{{ backend_scopus_normalised_data_dir }}'
+      - '{{ scopus_normalised_json_files_data_dir }}'
+      - '{{ scopus_scripts_data_dir }}'
+      - '{{ kibana_data_dir }}'
+
+  - name: Deploy app
+    include_role:
+      name: ub-ansible-deploy
