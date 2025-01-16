@@ -1,3 +1,11 @@
 #!/bin/bash
 mkdir db-postgres-initdb.d
 mkdir index-manager-db-postgres-initdb.d
+mkdir admin-db-data
+mkdir elasticsearch-data
+mkdir index-manager-db-data
+mkdir scopus-files
+mkdir scopus-scripts
+mkdir kibana-data
+mkdir _source
+mkdir scopus-normalised
