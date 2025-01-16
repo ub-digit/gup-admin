@@ -26,6 +26,10 @@ services:
       INDEX_MANAGER_API_KEY: "${INDEX_MANAGER_API_KEY}"
       GUP_API_KEY: "${GUP_BACKEND_API_KEY}"
       SECRET_KEY_BASE: "${SECRET_KEY_BASE}"
+    volumes:
+      # Temporary fix until real index is in place
+      - ${BACKEND_SOURCE_HOST_PATH}:/app/data/_source
+      - ${BACKEND_SCOPUS_NORMALISED_HOST_PATH}:/app/data/scopus-normalised
     ports:
       - "${BACKEND_HOST_PORT}:4000"
     networks:
@@ -86,8 +90,8 @@ services:
       - GUP_ADMIN_API_KEY=${INDEX_MANAGER_API_KEY}
     tty: true
     volumes:
-      - ${HOST_SCOPUS_NORMALISED_JSON_FILES_DIR}:/data/files/scopus-normalised
-      - ${HOST_SCRIPT_FILES_DIR}:/data/scripts
+      - ${SCOPUS_NORMALISED_JSON_FILES_HOST_PATH}:/data/files/scopus-normalised
+      - ${SCOPUS_SCRIPTS_HOST_PATH}:/data/scripts
     ports:
       - ${ELASTICSEARCH_HOST_PORT}:9200
     networks:

@@ -14,9 +14,6 @@ services:
       GUP_SERVER_BASE_URL: "http://gup-backend:4000"
     volumes:
       - ../backend:/app # GUP_ADMIN_REPO is not set anywhere in the project
-      # Temporary fix until real index is in place
-      - ../data/_source:/release/data/_source
-      - ../data/scopus-normalised:/release/data/scopus-normalised
     command:
       [
         "sh",
