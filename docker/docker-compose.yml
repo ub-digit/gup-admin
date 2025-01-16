@@ -4,27 +4,25 @@ services:
   admin-frontend:
     image: docker.ub.gu.se/gup-admin-frontend:${GIT_REVISION}${PLATFORM}
     restart: always
-    ports:
-      - "${ADMIN_FRONTEND_HOST_PORT}:5000"
     environment:
-      NUXT_API_BASE_URL: "http://admin-backend:4000/"
+      NUXT_API_BASE_URL: "${ADMIN_BACKEND_URL}"
+      NUXT_PUBLIC_API_GUP_BASE_URL: "${NUXT_API_GUP_BASE_URL}"
       NUXT_PUBLIC_ALLOW_AUTHOR_EDIT: ${ADMIN_FRONTEND_ALLOW_AUTHOR_EDIT}
       NUXT_GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
       NUXT_GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
       NUXT_GU_CLIENT_ID: ${GU_CLIENT_ID}
       NUXT_GU_CLIENT_SECRET: ${GU_CLIENT_SECRET}
       NUXT_AUTH_USERS: ${AUTH_USERS}
-      NUXT_SECRET_KEY_BASE: "${SECRET_KEY_BASE}"
-      NUXT_AUTH_ORIGIN: "${AUTH_ORIGIN}"
+      #NUXT_AUTH_ORIGIN: "${AUTH_ORIGIN}" does not seems to be used
       NUXT_AUTH_BASE_URL: "${AUTH_ORIGIN}/api/auth"
-
+      NUXT_SECRET_KEY_BASE: "${SECRET_KEY_BASE}"
+    ports:
+      - "${ADMIN_FRONTEND_HOST_PORT}:5000"
     networks:
       - gup-admin
   admin-backend:
     image: docker.ub.gu.se/gup-admin-backend:${GIT_REVISION}${PLATFORM}
     restart: always
-    ports:
-      - "${ADMIN_BACKEND_HOST_PORT}:4000"
     environment:
       ELASTICSEARCH_URL: "${ELASTICSEARCH_URL}"
       GUP_INDEX_MANAGER_URL: "${INDEX_MANAGER_URL}"
@@ -32,6 +30,8 @@ services:
       GUP_SERVER_BASE_URL: "${GUP_BACKEND_BASE_URL}"
       GUP_API_KEY: "${GUP_BACKEND_API_KEY}"
       SECRET_KEY_BASE: "${SECRET_KEY_BASE}"
+    ports:
+      - "${ADMIN_BACKEND_HOST_PORT}:4000"
     networks:
       - gup
       - gup-admin
@@ -74,8 +74,6 @@ services:
   elasticsearch:
     image: docker.ub.gu.se/gup-admin-elasticsearch:${GIT_REVISION}${PLATFORM}
     restart: always
-    ports:
-      - ${ELASTICSEARCH_HOST_PORT}:9200
     environment:
       - xpack.security.enabled=false
       - "discovery.type=single-node"
@@ -94,6 +92,23 @@ services:
     volumes:
       - ${HOST_SCOPUS_NORMALISED_JSON_FILES_DIR}:/data/files/scopus-normalised
       - ${HOST_SCRIPT_FILES_DIR}:/data/scripts
+    ports:
+      - ${ELASTICSEARCH_HOST_PORT}:9200
+    networks:
+      - gup-admin
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.1.3
+    restart: always
+    environment:
+      SERVER_NAME: ${KIBANA_SERVER_NAME}
+      SERVER_PUBLIC_URL: ${KIBANA_PUBLIC_URL}
+      ELASTICSEARCH_HOSTS: '["${ELASTICSEARCH_URL}"]'
+      SERVER_BASEPATH: ${KIBANA_SERVER_BASEPATH}
+      SERVER_REWRITEBASEPATH: "true"
+    volumes:
+      - ${KIBANA_DATA_HOST_DIR}:/usr/share/kibana/data
+    ports:
+      - ${KIBANA_HOST_PORT}:5601
     networks:
       - gup-admin
 networks:
