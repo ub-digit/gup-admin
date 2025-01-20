@@ -43,7 +43,7 @@ services:
     environment:
       ELASTICSEARCH_URL: "${ELASTICSEARCH_URL}"
     ports:
-      - "${INDEX_MANAGER_HOST_PORT}:4000"
+      - "${INDEX_MANAGER_BACKEND_HOST_PORT}:4000"
     networks:
       - gup
       - gup-admin
