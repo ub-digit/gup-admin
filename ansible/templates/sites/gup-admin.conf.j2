@@ -16,8 +16,8 @@
     ProxyPass        /oai http://localhost:10471/oai/api
     ProxyPassReverse /oai http://localhost:10471/oai/api
 
-    ProxyPass        /index-manager http://localhost:{{ backend_index_manager_host_port }}/
-    ProxyPassReverse /index-manager http://localhost:{{ backend_index_manager_host_port }}/
+    ProxyPass        /index-manager http://localhost:{{ index_manager_backend_host_port }}/
+    ProxyPassReverse /index-manager http://localhost:{{ index_manager_backend_host_port }}/
     ProxyPass        /kibana http://localhost:{{ kibana_host_port }}/kibana
     ProxyPassReverse /kibana http://localhost:{{ kibana_host_port }}/kibana
     ProxyPass        / http://localhost:{{ frontend_host_port }}/
