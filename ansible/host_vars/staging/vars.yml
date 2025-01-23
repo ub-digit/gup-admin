@@ -1,0 +1,11 @@
+---
+docker_git_revision: ansible-deploy
+git_revision: author-edit-017
+git_revision_gup_imports: release-2023.08-001
+frontend_host_port: 20410
+backend_host_port: 20415
+index_manager_backend_host_port: 20411
+elasticsearch_host_port: 20413
+kibana_host_port: 20416
+backend_hostname: "{{ app_name }}-server-staging.ub.gu.se"
+frontend_hostname: "{{ app_name }}-staging.ub.gu.se"
