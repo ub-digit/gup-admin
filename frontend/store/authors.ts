@@ -1,7 +1,9 @@
 import { defineStore } from "pinia";
 import { ZodError, number } from "zod";
 import { zAuthorArray, zAuthor, zAuthorResultList } from "~/types/Author";
-import { zAuthorAffiliationArray } from "~/types/Publication";
+//import { zAuthorAffiliationArray } from "~/types/Publication";
+import { zIdentifierArray } from "~/types/Identifier";
+import type { Identifier } from "~/types/Identifier";
 import type { AuthorAffiliation } from "~/types/Publication";
 import type { Author } from "~/types/Author"; // needs type after import to avoid error
 import _ from "lodash";
@@ -23,6 +25,9 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
   const errorAuthors = ref({});
   const errorAuthor = ref({});
   const pendingAuthors = ref(false);
+
+  const identifiers: Ref<Identifier[]> = ref([]);
+  const errorIdentifiers = ref({});
 
   const getBoolean = (item: string): boolean | undefined => {
     if (item === "false") {
@@ -66,7 +71,27 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
     return deepClone;
   });
 
-  async function getAuthorById(id: string) {
+  async function fetchIdentifiers() {
+    try {
+      const { data, error } = await useFetch("/api/_author/identifiers");
+      if (data?.value?.error) {
+        throw data.value;
+      }
+      identifiers.value = zIdentifierArray.parse(data.value);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const new_error = { code: "666", message: "ZodError", data: error };
+        errorIdentifiers.value = new_error;
+        console.log(errorIdentifiers.value);
+        console.log("Something went wrong: getIdentifiers from Zod");
+      } else {
+        errorIdentifiers.value = error.error;
+        console.log(errorIdentifiers.value);
+        console.log("Something went wrong: getIdentifiers");
+      }
+    }
+  }
+  async function fetchAuthorById(id: string) {
     try {
       const { data, error } = await useFetch(`/api/_author/${id}`);
       if (data?.value?.error) {
@@ -115,6 +140,21 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
     }
   }
 
+  const updateAuthor = async (id: string, author: Author) => {
+    try {
+      const { data, error } = await useFetch(`/api/_author/${id}`, {
+        method: "PUT",
+        body: author,
+      });
+      if (error.value) {
+        throw error;
+      }
+      return data;
+    } catch (error) {
+      console.log("Something went wrong: updateAuthor", error);
+    }
+  };
+
   function paramsSerializer(params: any) {
     //https://github.com/unjs/ufo/issues/62
     if (!params) {
@@ -137,7 +177,11 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
     filters,
     errorAuthors,
     pendingAuthors,
-    getAuthorById,
+    fetchAuthorById,
     fetchAuthors,
+    updateAuthor,
+    fetchIdentifiers,
+    identifiers,
+    errorIdentifiers,
   };
 });

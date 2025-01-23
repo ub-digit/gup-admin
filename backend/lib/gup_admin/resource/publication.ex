@@ -311,10 +311,18 @@ end
     end
   end
 
+
   def get_author_name(author) do
-    last_name = author["last_name"] || ""
-    first_name = author["first_name"] || ""
-    first_name <> " " <> last_name
+    last_name = enforce_bitstring(author["last_name"] || "")
+    first_name = enforce_bitstring(author["first_name"] || "")
+    first_name <> " " <> last_name |> String.trim()
+  end
+
+  def enforce_bitstring(data) do
+    case is_bitstring(data) do
+      true -> data
+      _ -> to_string(data)
+    end
   end
 
   def get_authors(data) do
@@ -333,7 +341,6 @@ end
 
   def sort_authors(authors) do
     authors
-    |> IO.inspect()
     |> List.first()
     |> Map.has_key?("position")
     |> case do
