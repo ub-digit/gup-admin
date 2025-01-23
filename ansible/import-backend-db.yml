@@ -4,6 +4,6 @@
   roles:
   - role: ub-ansible-import-db
     vars:
-      db_service: db
+      db_service: admin-db
       database_variant: postgres
       db_dump_filename: database.sql
