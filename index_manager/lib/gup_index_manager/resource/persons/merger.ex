@@ -12,21 +12,16 @@ defmodule GupIndexManager.Resource.Persons.Merger do
 
   def merge(person_input_data) do
     with {true, person_input_data} <- meets_minimum_person_requirements(person_input_data) do
-       d = person_input_data
+       person_input_data
        |> sanitize_data()
-      # ##|> has_gup_admin_id()
        |> exists_in_index()
-       |> IO.inspect(label: "AFTER EXISTS IN INDEX")
        |> colliding_identifiers()
        |> input_data_has_gup_person_id()
        |> has_matching_gup_person_id()
-      # # # |> IO.inspect(label: "AFTER has_matching_gup_person_id")
        |> set_primary_and_secondary_data()
        |> merge_person()
-      #  |> set_is_merged()
-      #  |> set_primary_name(person_input_data)
        |> create_or_update_person()
-       #TODO: move this outside of the pipe inm order to run tests without commenting out below call
+       #TODO: move this outside of the pipe in order to run tests without commenting out below call
 
       # {"elem_0" => d |> elem(0), "elem_1" => d |> elem(1), "elem_2" => d |> elem(2), "elem_3" => d |> elem(3)}
        #%{"elem_0" => d |> elem(0), "elem_1" => d |> elem(1), "elem_2" => d |> elem(2)}
@@ -433,6 +428,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     # IO.inspect(secondary_data, label: "SECONDARY DATA")
 
     actions = merge_names(primary_data, secondary_data)
+      |> merge_year_of_birth(primary_data, secondary_data, person_input_data)
       |> merge_identifiers(primary_data, secondary_data)
       # |> merge_year_of_birth(primary_data, secondary_data)
       |> delete_secondary_data(secondary_data, primary_data)
@@ -482,9 +478,6 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     |> Enum.filter(fn name ->
       is_existing_name_form(primary_names, name) == false
     end)  # remove existing names from secondary data to avoid duplicates
-    # IO.inspect(primary_names, label: "PRIMARY NAMES")
-    # IO.inspect(secondary_names, label: "SECONDARY AGGREGATED NAMES")
-    # |> IO.inspect(label: "SECONDARY NAMES")
     # check if the new/existing names have a gup_person_id
     Enum.map(secondary_names, fn secondary_name ->
       Enum.any?(primary_names, fn primary_name ->
@@ -495,7 +488,6 @@ defmodule GupIndexManager.Resource.Persons.Merger do
           IO.puts("primary name has the same gup_person_id as secondary name" )
           {:update_name, secondary_name} # update first_name and last_name and dates, names has the same gup_person_id
         false ->
-   #       IO.puts("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx    ")
           # check if first_name and last_name are EXACTLY the same as in primary data
           # if so, do nothing
           # else acquire a new gup_person_id
@@ -575,6 +567,27 @@ defmodule GupIndexManager.Resource.Persons.Merger do
       existing_identifier["code"] == new_identifier["code"] and
         existing_identifier["value"] == new_identifier["value"]
     end)
+  end
+
+  def merge_year_of_birth(actions, primary_data, secondary_data, incoming_person_data) do
+    primary_year_of_birth = Map.get(primary_data, "year_of_birth", nil)
+    secondary_years_of_birth = Enum.map(secondary_data, fn secondary_person -> Map.get(secondary_person, "year_of_birth", nil) end)
+    incoming_year_of_birth = Map.get(incoming_person_data, "year_of_birth", nil)
+    yob = case incoming_year_of_birth do
+      nil -> primary_year_of_birth || get_secondary_year_of_birth(secondary_years_of_birth)
+      _ -> incoming_year_of_birth
+    end
+    case yob do
+      nil -> actions
+      year_of_birth ->
+        actions ++ [{:update_year_of_birth, year_of_birth}]
+    end
+
+  end
+
+  def get_secondary_year_of_birth(secondary_years_of_birth) do
+    Enum.filter(secondary_years_of_birth, fn yob -> yob != nil end)
+    |> List.first()
   end
 
   def set_primary_name({:ok, primary_data, :no_actions}) do

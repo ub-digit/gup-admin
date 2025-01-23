@@ -110,6 +110,10 @@ defmodule GupIndexManager.Resource.Persons.Execute do
     data
   end
 
+  def execute_action(data, {:update_year_of_birth, year_of_birth_data}) do
+    Map.put(data, "year_of_birth", year_of_birth_data)
+  end
+
   def acquire_gup_person_id() do
     # TODO: ask GUP for a new gup_person_id
       api_key = System.get_env("GUP_API_KEY")
