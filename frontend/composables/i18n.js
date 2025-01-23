@@ -92,8 +92,14 @@ export const useLocaleStore = defineStore("locale", {
         "views.authors.identifier_type.CID": "Cid",
         "views.authors.identifier_type.POP_ID": "Pop-id",
         "views.authors.identifier_type.SCOPUS_AUTHOR_ID": "Scopus Author ID",
-        "views.authors.identifier_type.WOS_RESEARCHER_ID": "Web of Science ResearcherID",
+        "views.authors.identifier_type.WOS_RESEARCHER_ID":
+          "Web of Science ResearcherID",
         "views.authors.identifier_type.WOS_DAISNG_ID": "Web of Science ID",
+
+        "views.authors.edit.form.errors.X_ACCOUNT_WRONG_FORMAT":
+          "Ogiltigt x-konto",
+        "views.authors.edit.form.errors.INVALID_BIRTHYEAR":
+          "Ogiltigt födelseår",
 
         "appfooter.contact_link": "https://www.ub.gu.se/node/189487/",
         "appfooter.contact_link_text": "Kontakta oss om GUP-admin",

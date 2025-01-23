@@ -1,4 +1,3 @@
-import { debug } from "./node_modules/@types/node/ts4.8/util.d";
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   ssr: true,

@@ -26,7 +26,7 @@ export const useFilterStore = defineStore("filterStore", () => {
     wos: boolean | undefined;
     manual: boolean | undefined;
     pubtype: string;
-    title: string | undefined;
+    query: string | undefined;
     year: string;
   }
 
@@ -40,8 +40,8 @@ export const useFilterStore = defineStore("filterStore", () => {
     pubtype: (route.query.pubtype as string)
       ? (route.query.pubtype as string)
       : "",
-    title: (route.query.title as string)
-      ? (route.query.title as string)
+    query: (route.query.query as string)
+      ? (route.query.query as string)
       : undefined,
     year: (route.query.year as string) ? (route.query.year as string) : "",
   });
@@ -52,7 +52,7 @@ export const useFilterStore = defineStore("filterStore", () => {
       (filters.wos = false),
       (filters.manual = false),
       (filters.pubtype = ""),
-      (filters.title = undefined),
+      (filters.query = undefined),
       (filters.year = "");
   }
 
