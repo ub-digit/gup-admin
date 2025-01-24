@@ -13,7 +13,7 @@ services:
       NUXT_GU_CLIENT_ID: ${GU_CLIENT_ID}
       NUXT_AUTH_USERS: ${AUTH_USERS}
     ports:
-      - "${FRONTEND_HOST_PORT}:5000"
+      - "${FRONTEND_HOST_PORT}:3000"
     networks:
       - gup-admin
   admin-backend:
