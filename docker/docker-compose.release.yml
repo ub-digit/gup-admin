@@ -6,8 +6,8 @@ services:
   admin-frontend:
     environment:
       NUXT_AUTH_BASE_URL: "${FRONTEND_PUBLIC_URL}"
+      NUXT_AUTH_ORIGIN: "${FRONTEND_PUBLIC_URL}"
       NUXT_PUBLIC_API_GUP_BASE_URL: "${GUP_FRONTEND_PUBLIC_URL}"
-      NUXT_AUTH_ORIGIN: "${GUP_FRONTEND_PUBLIC_URL}"
     restart: always
   admin-backend:
     environment:
