@@ -44,12 +44,22 @@
       mode: '755'
     loop:
       - "{{ db_data_dir }}"
-      - "{{ elasticsearch_data_dir }}"
       - "{{ index_manager_db_data_dir }}"
       - "{{ backend_source_data_dir }}"
       - "{{ backend_scopus_normalised_data_dir }}"
       - "{{ scopus_normalised_json_files_data_dir }}"
       - "{{ scopus_scripts_data_dir }}"
+
+  - name: Ensure elasticsearch directories
+    become: yes
+    ansible.builtin.file:
+      path: "{{ item }}"
+      state: directory
+      owner: '1000'
+      group: '1000'
+      mode: '755'
+    loop:
+      - "{{ elasticsearch_data_dir }}"
       - "{{ kibana_data_dir }}"
 
   - name: Deploy app
