@@ -3,6 +3,33 @@ defmodule GupIndexManager.Resource.Persons do
   alias GupIndexManager.Resource.Index
   alias GupIndexManager.Model.Person
 
+  require Logger
+
+  ################################
+  # Vocabulary
+  # IM/im = index manager
+
+  def create(person_data_as_map) do
+    Logger.debug("IM:R.create: person_data_as_map: #{inspect(person_data_as_map)}")
+    create_or_update_person(person_data_as_map)
+  end
+
+  def update(id, %{"id" => id} = person_data_as_map) do
+    Logger.debug("IM:R.update: id: #{id}, person_data_as_map: #{inspect(person_data_as_map)}")
+    create_or_update_person(person_data_as_map)
+  end
+  def update(url_id, %{"id" => data_id}) do
+    Logger.debug("IM:R.update: ID_MISMATCH_BETWEEN_URL_AND_DATA url_id: #{url_id}, data_id: #{data_id}")
+    {:error, %{errors: %{im_message: "ID_MISMATCH_BETWEEN_URL_AND_DATA"}}}
+  end
+
+  def delete(doc_id) do
+    Logger.debug("IM:R.delete: doc_id: #{doc_id}")
+    delete_person(doc_id)
+  end
+
+  # -----------------------------------------------------------------------------------------------
+
   def create_or_update(data) do
     data = data
     # |> sanitize_data()

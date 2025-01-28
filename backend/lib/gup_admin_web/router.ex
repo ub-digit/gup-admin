@@ -20,6 +20,7 @@ defmodule GupAdminWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug GupAdminWeb.Plugs.ApiKeyPlug
   end
 
   scope "/", GupAdminWeb do
@@ -42,10 +43,14 @@ defmodule GupAdminWeb.Router do
 
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", GupAdminWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", GupAdminWeb do
+    pipe_through :api
+    get    "/person_id_codes", PersonController, :get_id_codes
+    post   "/persons"        , PersonController, :create
+    put    "/persons/:id"    , PersonController, :update
+    get    "/persons/:id"    , PersonController, :show
+    delete "/persons/:id"    , PersonController, :delete
+  end
 
   # Enables LiveDashboard only for development
   #
