@@ -23,6 +23,7 @@ defmodule GupAdminWeb.PersonController do
 
   # PUT /persons/:id
   def update( conn, %{"id" => id, "data" => person_map}) do
+    Logger.debug(person_map);
     handle_request_from_fe(conn, :update, [id, person_map])
   end
 
@@ -56,7 +57,7 @@ defmodule GupAdminWeb.PersonController do
       # Validation error
       {:error, %{errors: %{fe_validation: validation_error_list},
                            data:          full_person_map}}  ->
-      send_response(conn, 422, %{errors: %{validation: validation_error_list},
+      send_response(conn, 200, %{errors: %{validation: validation_error_list},
                                  data:   full_person_map})
 
       # CRUD success

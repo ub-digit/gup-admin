@@ -7,22 +7,14 @@ export default defineEventHandler(async (event) => {
   }
   const config = useRuntimeConfig();
   const query = getQuery(event);
+  query.api_key = config.ADMIN_BACKEND_API_KEY;
   const id = event?.context?.params?.id;
   const data = await readBody(event);
-  const res = {
-    data: data,
-    errors: ["X_ACCOUNT_WRONG_FORMAT", "INVALID_BIRTHYEAR"],
-  };
-  console.log(res);
-  return res;
 
-  /*
-  console.log("from put to author");
-  console.log("id", id);
-  console.log("data", data);
-  const res = await $fetch(`${config.API_BASE_URL}/person/${id}`, {
-    method: "POST",
-    body: JSON.stringify(data),
+  const res = await $fetch(`${config.API_BASE_URL}/api/persons/${id}`, {
+    method: "PUT",
+    body: JSON.stringify({ data }),
+    params: query,
   });
-  return res;*/
+  return res;
 });

@@ -78,26 +78,22 @@ defmodule GupAdmin.Resource.Person.PersonValidator do
     Logger.debug("Validating person: #{inspect(person)}")
     []
     |> validate_id(person)
-    |> validate_updated_at(person)
-    |> validate_created_at(person)
+    #|> validate_updated_at(person)
+    #|> validate_created_at(person)
     |> validate_year_of_birth(person)
     |> validate_identifiers(person)
     |> validate_names(person)
-    |> validate_departments(person)
+    #|> validate_departments(person)
   end
   defp do_validate(_person), do: {:error, ["ERROR_PERSON_NOT_A_MAP"]}
 
   # "id"
 
-  defp validate_id(errors, %{"id" => id}) when is_binary(id) and byte_size(id) > 0 do
-    if Regex.match?(@regex_GUPADMIN_ID, id) do
+  defp validate_id(errors, %{"id" => id}) when is_integer(id) do
       errors
-    else
-      [@invalid_GUPADMIN_ID | errors]
-    end
   end
   defp validate_id(errors, _person) do
-    errors
+    [@invalid_GUPADMIN_ID | errors]
   end
 
   # "updated_at" / "created_at"

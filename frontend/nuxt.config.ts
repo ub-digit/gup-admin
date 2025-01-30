@@ -1,11 +1,12 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  ssr: true,
+  ssr: false,
   debug: true,
   devtools: { enabled: true },
 
   runtimeConfig: {
     API_BASE_URL: "http://localhost:40415/", // this should point to admin-backend
+    ADMIN_BACKEND_API_KEY: process.env.ADMIN_BACKEND_API_KEY || "",
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID || "",
     GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET || "",
     GU_CLIENT_ID: process.env.GU_CLIENT_ID || "",
