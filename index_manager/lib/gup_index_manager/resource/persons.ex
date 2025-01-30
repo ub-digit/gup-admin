@@ -14,13 +14,12 @@ defmodule GupIndexManager.Resource.Persons do
     create_or_update_person(person_data_as_map)
   end
 
-  def update(id, %{"id" => id} = person_data_as_map) do
-    Logger.debug("IM:R.update: id: #{id}, person_data_as_map: #{inspect(person_data_as_map)}")
-    create_or_update_person(person_data_as_map)
-  end
-  def update(url_id, %{"id" => data_id}) do
-    Logger.debug("IM:R.update: ID_MISMATCH_BETWEEN_URL_AND_DATA url_id: #{url_id}, data_id: #{data_id}")
-    {:error, %{errors: %{im_message: "ID_MISMATCH_BETWEEN_URL_AND_DATA"}}}
+  def update(url_id, %{"id" => data_id} = person_data_as_map) do
+    Logger.debug("IM:R.update: url_id: #{url_id}, person_data_as_map: #{inspect(person_data_as_map)}")
+    case String.to_integer(url_id) == data_id do
+      true -> create_or_update_person(person_data_as_map)
+      false -> {:error, %{errors: %{im_message: "ID_MISMATCH_BETWEEN_URL_AND_DATA"}}}
+    end
   end
 
   def delete(doc_id) do
