@@ -37,7 +37,7 @@ defmodule GupAdminWeb.Router do
     get "/publications/compare/imported_id/:imported_id/gup_id/:gup_id", PublicationController, :compare
     post "/publications/merge/:publication_id/:gup_id/:gup_user", PublicationController, :merge_publications
     get "/departments", DepartmentController, :get_departments
-    get "/persons", PersonController, :search
+    # get "/persons", PersonController, :search
     get "/persons/:id", PersonController, :get_one
 
 
@@ -47,6 +47,7 @@ defmodule GupAdminWeb.Router do
     pipe_through :api
     get    "/person_id_codes", PersonController, :get_id_codes
     post   "/persons"        , PersonController, :create
+    get    "/persons"        , PersonController, :search
     put    "/persons/:id"    , PersonController, :update
     get    "/persons/:id"    , PersonController, :show
     delete "/persons/:id"    , PersonController, :delete

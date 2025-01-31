@@ -207,6 +207,7 @@ defmodule GupAdmin.Resource.Person do
 
   defp digest_response_from_se_success(status_code_from_se, %{"_id" => _id, "_source" => source}) do
     Logger.debug("BE:R.digest_response_from_se_success: status_code_from_se: #{status_code_from_se}, _source: #{inspect(source)}")
+    IO.inspect(source, label: "SOURCE IN DIGEST RESPONSE FROM SE")
     {:ok, %{success: %{status_code: status_code_from_se,
                        body:        source }}}
   end
