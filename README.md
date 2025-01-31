@@ -13,6 +13,9 @@ Before you run **docker-compose up -d** check
 
 ### index and data
 
+check index in browser
+http://localhost:40413/persons/\_search?pretty
+
 cd docker
 ./setup_index.sh
 ./index.sh
