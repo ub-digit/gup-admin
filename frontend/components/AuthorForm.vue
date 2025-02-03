@@ -62,7 +62,7 @@
           <div class="col-3">
             <label for="year_of_birth" class="form-label">Födelseår</label>
             <input
-              type="text"
+              type="number"
               class="form-control"
               v-model="authorReactive.year_of_birth"
             />
