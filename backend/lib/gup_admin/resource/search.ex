@@ -215,18 +215,22 @@ defmodule GupAdmin.Resource.Search do
   def get_person(id) do
     query = %{
       "query" => %{
-        "bool" => %{
-          "must" => %{
-            "term" => %{
-              "id" => id
-            }
-          },
-          "filter" => %{
-            "term" => %{
-              "deleted" => false
-            }
+      "bool" => %{
+        "must" => [
+        %{
+          "term" => %{
+          "id" => id
           }
         }
+        ],
+        "must_not" => [
+          %{
+            "term" => %{
+              "deleted" => true
+            }
+          }
+        ]
+      }
       }
     }
 
@@ -245,6 +249,22 @@ defmodule GupAdmin.Resource.Search do
 
 
   def get_all_persons() do
+    # query = %{
+    #   "track_total_hits" => true,
+    #   "size" => @query_limit,
+    #   "query" => %{
+    #     "bool" => %{
+    #       "must" => %{
+    #         "match_all" => %{}
+    #       },
+    #       "filter" => %{
+    #         "term" => %{
+    #           "deleted" => false
+    #         }
+    #       }
+    #     }
+    #   }
+    # }
     query = %{
       "track_total_hits" => true,
       "size" => @query_limit,
@@ -253,9 +273,9 @@ defmodule GupAdmin.Resource.Search do
           "must" => %{
             "match_all" => %{}
           },
-          "filter" => %{
+          "must_not" => %{
             "term" => %{
-              "deleted" => false
+              "deleted" => true
             }
           }
         }

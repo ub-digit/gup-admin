@@ -33,13 +33,16 @@ const errors: Ref<string[]> = ref([]);
 await fetchAuthorById(route.params.id as string);
 
 const saveAuthor = async (data: Author) => {
-  console.log("data", data);
   const res = await updateAuthor(route.params.id as string, data);
-  if (res?.value?.errors) {
-    errors.value = res.value.errors;
-  }
-  if (res?.value?.data) {
-    submittedData.value = res.value.data;
+  if (res?.status === "success") {
+    router.push({
+      name: "authors-id",
+      params: { id: route.params.id },
+      query: { ...route.query },
+    });
+  } else if (res?.status === "error") {
+    errors.value = res.errors;
+    window.scrollTo(0, 0);
   }
 };
 

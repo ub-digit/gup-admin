@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   }
   const config = useRuntimeConfig();
   const query = getQuery(event);
-
+  query.api_key = config.ADMIN_BACKEND_API_KEY;
   interface AuthorObject {
     data: Author[];
   }
@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
   console.log(config.API_BASE_URL);
   const id = event?.context?.params?.id;
   const res: AuthorObject = await $fetch(
-    `${config.API_BASE_URL}persons/${id}`,
+    `${config.API_BASE_URL}/api/persons/${id}`,
     {
       params: query,
     }
@@ -96,5 +96,5 @@ export default defineEventHandler(async (event) => {
       },
     ],
   }; */
-  return res.data;
+  return res;
 });

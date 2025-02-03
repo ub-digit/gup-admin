@@ -96,10 +96,32 @@ export const useLocaleStore = defineStore("locale", {
           "Web of Science ResearcherID",
         "views.authors.identifier_type.WOS_DAISNG_ID": "Web of Science ID",
 
-        "views.authors.edit.form.errors.X_ACCOUNT_WRONG_FORMAT":
+        "views.authors.edit.form.errors.INVALID_GUPADMIN_ID":
+          "INVALID_GUPADMIN_ID",
+        "views.authors.edit.form.errors.INVALID_UPDATED_AT":
+          "INVALID_UPDATED_AT",
+        "views.authors.edit.form.errors.INVALID_CREATED_AT":
+          "INVALID_CREATED_AT",
+        "views.authors.edit.form.errors.INVALID_ID_X_ACCOUNT":
           "Ogiltigt x-konto",
-        "views.authors.edit.form.errors.INVALID_BIRTHYEAR":
-          "Ogiltigt födelseår",
+        "views.authors.edit.form.errors.INVALID_ID_SCOPUS_AUTHOR_ID":
+          "Ogiltigt scopus-id",
+        "views.authors.edit.form.errors.INVALID_ID_ORCID": "Ogiltigt orcid",
+        "views.authors.edit.form.errors.INVALID_ID_POP_ID": "Ogiltigt pop-id",
+        "views.authors.edit.form.errors.INVALID_NAME_START_DATE":
+          "INVALID_NAME_START_DATE",
+        "views.authors.edit.form.errors.INVALID_NAME_END_DATE":
+          "INVALID_NAME_END_DATE",
+        "views.authors.edit.form.errors.INVALID_NAME_GUP_PERSON_ID":
+          "INVALID_NAME_GUP_PERSON_ID",
+        "views.authors.edit.form.errors.INVALID_NAME_PRIMARY":
+          "INVALID_NAME_PRIMARY",
+        "views.authors.edit.form.errors.INVALID_YEAR_OF_BIRTH":
+          "INVALID_YEAR_OF_BIRTH",
+        "views.authors.edit.form.errors.ERROR_UNKNOWN_IDENTIFICATION_CODE___IDENTIFIER-INVALID":
+          "ERROR_UNKNOWN_IDENTIFICATION_CODE___IDENTIFIER-INVALID",
+        "views.authors.edit.form.errors.INVALID_NAME_FIRST_NAME":
+          "INVALID_NAME_FIRST_NAME",
 
         "appfooter.contact_link": "https://www.ub.gu.se/node/189487/",
         "appfooter.contact_link_text": "Kontakta oss om GUP-admin",

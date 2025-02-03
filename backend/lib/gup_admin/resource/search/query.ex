@@ -129,6 +129,7 @@ defmodule GupAdmin.Resource.Search.Query do
   end
 
   def search_persons(q) do
+    IO.inspect("search_persons query")
     # %{
     #   size: 100, #@query_limit,
     #   query: %{
@@ -143,6 +144,30 @@ defmodule GupAdmin.Resource.Search.Query do
     #     }
     #   }
     # }
+    # %{
+    #   # @query_limit,
+    #   size: 100,
+    #   query: %{
+    #     bool: %{
+    #       must: %{
+    #         query_string: %{
+    #           default_operator: "AND",
+    #           fields: [
+    #             "names.first_name",
+    #             "names.last_name",
+    #             "names.full_name",
+    #             "identifiers.value"
+    #           ],
+    #           query: q
+    #         }
+    #       },
+    #       filter: [
+    #         %{term: %{deleted: false}}
+    #       ]
+    #     }
+    #   }
+    # }
+
     %{
       # @query_limit,
       size: 100,
@@ -161,7 +186,13 @@ defmodule GupAdmin.Resource.Search.Query do
             }
           },
           filter: [
-            %{term: %{deleted: false}}
+            %{
+              bool: %{
+                must_not: [
+                  %{term: %{deleted: true}}
+                ]
+              }
+            }
           ]
         }
       }
@@ -169,15 +200,41 @@ defmodule GupAdmin.Resource.Search.Query do
   end
 
   def search_merged_persons(term \\ "") do
+    # %{
+    #   "track_total_hits" => true,
+    #   "size" => 100,
+    #   "query" => %{
+    #     "bool" => %{
+    #       "must" => get_merged_query_type(escape_characters(term)),
+
+    #       "filter" => [
+    #         %{"term" => %{"deleted" => false}},
+    #         %{
+    #           "script" => %{
+    #             "script" => %{
+    #               "source" => "doc['name_count'].size() > 0 && doc['name_count'].value > 1",
+    #               "lang" => "painless"
+    #             }
+    #           }
+    #         }
+    #       ]
+    #     }
+    #   }
+    # }
     %{
       "track_total_hits" => true,
       "size" => 100,
       "query" => %{
         "bool" => %{
           "must" => get_merged_query_type(escape_characters(term)),
-
           "filter" => [
-            %{"term" => %{"deleted" => false}},
+            %{
+              "bool" => %{
+                "must_not" => [
+                  %{"term" => %{"deleted" => true}}
+                ]
+              }
+            },
             %{
               "script" => %{
                 "script" => %{

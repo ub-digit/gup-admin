@@ -17,6 +17,7 @@ defmodule GupIndexManager.Model.Person do
     |> validate_required([:json])
   end
   def find_by_id(id) when is_nil(id), do: %GupIndexManager.Model.Person{}
+  def find_by_id(id) when is_binary(id), do: find_by_id(String.to_integer(id))
   def find_by_id(id) do
     GupIndexManager.Repo.get(GupIndexManager.Model.Person, id)
     |> case do

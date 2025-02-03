@@ -30,10 +30,12 @@ defmodule GupIndexManagerWeb.Router do
 
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", GupIndexManagerWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", GupIndexManagerWeb do
+    pipe_through :api
+    post   "/persons"    , PersonController, :create
+    put    "/persons/:id", PersonController, :update
+    delete "/persons/:id", PersonController, :delete
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:gup_index_manager, :dev_routes) do
