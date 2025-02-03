@@ -77,7 +77,7 @@ defmodule GupAdmin.Resource.Person.PersonValidator do
   defp do_validate(person) when is_map(person) do
     Logger.debug("Validating person: #{inspect(person)}")
     []
-    |> validate_id(person)
+    #|> validate_id(person)
     #|> validate_updated_at(person)
     #|> validate_created_at(person)
     |> validate_year_of_birth(person)
