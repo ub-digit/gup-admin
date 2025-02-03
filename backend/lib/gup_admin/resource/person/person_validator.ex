@@ -54,7 +54,7 @@ defmodule GupAdmin.Resource.Person.PersonValidator do
   @regex_DATE                    ~r/^\d{4}-\d{2}-\d{2}$/
   @regex_NAME                    ~r/^.+$/            # TO DO
 
-  @regex_GUP_PERSON_ID           ~r/^\d+$/           # TO DO
+  @regex_GUP_PERSON_ID           ~r/^\d+$/           # TO DO this will not be necessary as we check for integer in pattern.
 
   @regex_GUP_DEP_ID              ~r/^\d+$/           # TO DO
 
@@ -257,12 +257,8 @@ defmodule GupAdmin.Resource.Person.PersonValidator do
   defp validate_name_end_date(errors, %{"end_date" => value}) when is_nil(value), do: errors
   defp validate_name_end_date(errors, _), do: [@invalid_NAME_END_DATE | errors]
 
-  defp validate_name_gup_person_id(errors, %{"gup_person_id" => value}) when is_binary(value) and byte_size(value) > 0 do
-    if Regex.match?(@regex_GUP_PERSON_ID, value) do
+  defp validate_name_gup_person_id(errors, %{"gup_person_id" => value}) when is_integer(value) do
       errors
-    else
-      [@invalid_NAME_GUP_PERSON_ID | errors]
-    end
   end
   defp validate_name_gup_person_id(errors, _), do: [@invalid_NAME_GUP_PERSON_ID | errors]
 
