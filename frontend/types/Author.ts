@@ -21,7 +21,7 @@ export const zNameform = z.object({
 
 export const zIdentifier = z.object({
   code: z.string(),
-  value: z.string(),
+  value: z.string().nullable(),
 });
 
 export const zAuthor = z.object({

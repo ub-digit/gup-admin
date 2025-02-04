@@ -73,20 +73,12 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
 
   async function fetchIdentifiers() {
     try {
-      const { data, error } = await useFetch("/api/_author/identifiers");
-      if (data?.value?.error) {
-        throw data.value;
-      }
-      identifiers.value = zIdentifierArray.parse(data.value);
+      const { data } = await useFetch("/api/_author/identifiers");
+      identifiers.value = zIdentifierArray.parse(data?.value);
     } catch (error) {
       if (error instanceof ZodError) {
-        const new_error = { code: "666", message: "ZodError", data: error };
-        errorIdentifiers.value = new_error;
-        console.log(errorIdentifiers.value);
         console.log("Something went wrong: getIdentifiers from Zod");
       } else {
-        errorIdentifiers.value = error.error;
-        console.log(errorIdentifiers.value);
         console.log("Something went wrong: getIdentifiers");
       }
     }

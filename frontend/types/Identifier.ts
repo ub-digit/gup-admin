@@ -3,7 +3,7 @@ import { z } from "zod";
 
 export const zIdentifier = z.object({
   code: z.string(),
-  value: z.string(),
+  value: z.string().nullish(),
 });
 
 export const zIdentifierArray = z.array(zIdentifier);
