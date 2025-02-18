@@ -122,6 +122,8 @@ export const useLocaleStore = defineStore("locale", {
           "ERROR_UNKNOWN_IDENTIFICATION_CODE___IDENTIFIER-INVALID",
         "views.authors.edit.form.errors.INVALID_NAME_FIRST_NAME":
           "INVALID_NAME_FIRST_NAME",
+        "views.authors.edit.form.errors.INVALID_NAME_LAST_NAME":
+          "INVALID_NAME_LAST_NAME",
 
         "appfooter.contact_link": "https://www.ub.gu.se/node/189487/",
         "appfooter.contact_link_text": "Kontakta oss om GUP-admin",
