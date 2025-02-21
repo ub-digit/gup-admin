@@ -88,11 +88,15 @@
           >
             <div class="row">
               <div class="col">
+                <span v-if="identifier.value">
+                  {{ t(`views.authors.identifier_type.${identifier.code}`) }}
+                </span>
                 <select
                   :id="`identifier_code_${index}`"
                   class="form-select"
                   v-model="identifier.code"
                   aria-label=""
+                  v-else
                 >
                   <option disabled value="">Välj identfierare</option>
 
@@ -106,11 +110,25 @@
               </div>
               <div class="col">
                 <input
+                  :disabled="
+                    dissallowedToEditIdentifiers.includes(identifier.code)
+                  "
                   :id="`identifier_value_${index}`"
                   type="text"
                   class="form-control"
                   v-model="identifier.value"
                 />
+              </div>
+              <div class="col-2">
+                <button
+                  :disabled="
+                    dissallowedToEditIdentifiers.includes(identifier.code)
+                  "
+                  class="btn btn-danger"
+                  @click.prevent="authorReactive.identifiers.splice(index, 1)"
+                >
+                  Ta bort
+                </button>
               </div>
             </div>
           </div>
@@ -148,6 +166,11 @@ const { t, getLocale } = useI18n();
 const storeAuthor = useAuthorsStore();
 const { identifiers } = storeToRefs(storeAuthor);
 const { fetchIdentifiers } = storeAuthor;
+const config = useRuntimeConfig();
+
+const dissallowedToEditIdentifiers = computed(() =>
+  config?.public?.DISALLOW_EDIT_PERSON_IDENTIFICATION_CODES.split(",")
+);
 
 interface Props {
   author: Author;
@@ -167,7 +190,7 @@ function saveAuthor() {
 }
 
 function addIdentifierItem() {
-  authorReactive?.value?.identifiers.push({ code: "", value: "" });
+  authorReactive?.value?.identifiers.push({ code: "", value: null });
 }
 function addNameformItem() {
   authorReactive?.value?.names.push({

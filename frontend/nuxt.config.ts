@@ -13,10 +13,13 @@ export default defineNuxtConfig({
     GU_CLIENT_SECRET: process.env.GU_CLIENT_SECRET || "",
     AUTH_USERS: process.env.AUTH_USERS || "",
     SECRET_KEY_BASE: process.env.SECRET_KEY_BASE || "",
+
     authOrigin: "",
     public: {
       API_GUP_BASE_URL: "http://localhost:8181", // this should point to gup-frontend and is used to redirect to posts for show/edit in gup-frontend
       ALLOW_AUTHOR_EDIT: true,
+      DISALLOW_EDIT_PERSON_IDENTIFICATION_CODES:
+        process.env.DISALLOW_EDIT_PERSON_IDENTIFICATION_CODES || "",
     },
     /*         server: {
           host: process.env.NUXT_HOST,

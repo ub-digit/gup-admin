@@ -38,10 +38,22 @@ defmodule GupAdmin.Resource.Person do
     System.get_env("VALID_PERSON_IDENTIFICATION_CODES") || default
   end
 
+  def id_codes_to_exclude do
+    default = ""
+    exlude = System.get_env("EXCLUDE_PERSON_IDENTIFICATION_CODES") || default
+    Logger.debug("BE:R.id_codes_to_exclude: id_codes_to_exclude: #{exlude}")
+    exlude
+    |> String.split(",")
+    |> Enum.map(&String.trim/1)
+
+  end
+
   def create_id_codes_map(id_codes) when is_binary(id_codes) do
+
     id_codes
     |> String.split(",")
     |> Enum.map(&String.trim/1)
+    |> Enum.reject(fn code -> code in id_codes_to_exclude() end)
     |> then(fn codes -> %{id_codes: codes} end)
   end
 
