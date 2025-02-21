@@ -91,6 +91,7 @@ defmodule GupIndexManagerWeb.PersonController do
   end
 
   defp send_response(conn, status_code, body_map) do
+    Logger.info("HEYYYY")
     conn
     |> put_status(status_code)
     |> json(body_map)

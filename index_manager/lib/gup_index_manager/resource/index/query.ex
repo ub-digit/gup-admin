@@ -8,6 +8,7 @@ defmodule GupIndexManager.Resource.Index.Query do
         }
       }
     }
+    |> IO.inspect()
   end
 
   def identifier_blocks(identifiers) do
@@ -17,10 +18,15 @@ defmodule GupIndexManager.Resource.Index.Query do
           "bool" => %{
             "must" => [
               %{
-                "term" => %{
-                  "deleted" => false
+                "bool" => %{
+                  "must_not" => [
+                    %{
+                      "term" => %{
+                        "deleted" => true
+                      }
+                    }
+                  ]
                 }
-
               },
               %{
                 "query_string" => %{

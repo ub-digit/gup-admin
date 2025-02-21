@@ -1,4 +1,6 @@
 defmodule GupIndexManager.Resource.Persons do
+  alias GupIndexManager.Resource.Persons.Execute
+  alias GupIndexManager.Resource.Persons.Merger
   alias GupIndexManager.Resource.Index.Search
   alias GupIndexManager.Resource.Index
   alias GupIndexManager.Model.Person
@@ -11,13 +13,37 @@ defmodule GupIndexManager.Resource.Persons do
 
   def create(person_data_as_map) do
     Logger.debug("IM:R.create: person_data_as_map: #{inspect(person_data_as_map)}")
+    # merge_actions_list = Merger.merge(person_data_as_map)
+    # check for missing gup_person_id and aquire if missing
+
+    person_data_as_map = check_gup_person_id(person_data_as_map)
     create_or_update_person(person_data_as_map)
+  end
+
+  def check_gup_person_id(person_data_as_map) do
+    names = Map.get( person_data_as_map, "names", [])
+    |> Enum.map(fn name -> set_gup_person_id(name) end)
+    Map.put(person_data_as_map, "names", names)
+  end
+
+  def set_gup_person_id(name) do
+    # IO.inspect(name, label: "SET GUP PERSON ID")
+    gup_person_id = Map.get(name, "gup_person_id", nil)
+    case gup_person_id do
+      nil ->
+        # IO.inspect("NO ID")
+        Map.put(name, "gup_person_id", Execute.acquire_gup_person_id())
+        # |> IO.inspect(label: "SET GUP PERSON ID DONE")
+      _ -> name
+    end
   end
 
   def update(url_id, %{"id" => data_id} = person_data_as_map) do
     Logger.debug("IM:R.update: url_id: #{url_id}, person_data_as_map: #{inspect(person_data_as_map)}")
     case String.to_integer(url_id) == data_id do
-      true -> create_or_update_person(person_data_as_map)
+      true ->
+        person_data_as_map = check_gup_person_id(person_data_as_map)
+        create_or_update_person(person_data_as_map)
       false -> {:error, %{errors: %{im_message: "ID_MISMATCH_BETWEEN_URL_AND_DATA"}}}
     end
   end

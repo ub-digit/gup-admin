@@ -79,4 +79,45 @@ defmodule Experiment do
     Enum.map(1..count, fn _ -> generate_dummy_post() end)
     |> Enum.map(fn post -> GupIndexManager.Resource.Publication.create_or_update(post) end)
   end
+
+  def create() do
+    %{
+      "names" => [
+        %{
+          "first_name" => "John",
+          "last_name" => "Doe",
+          "full_name" => "John Doe",
+          "start_date" => "2023-03-09",
+          "end_date" => nil,
+          "gup_person_id" => "11111",
+          "primary" => true
+        },
+        %{
+          "first_name" => "Jane",
+          "last_name" => "Doe",
+          "full_name" => "Jane Doe",
+          "start_date" => "2023-03-09",
+          "end_date" => nil,
+          "primary" => false
+        },
+        %{
+          "first_name" => "John",
+          "last_name" => "Smith",
+          "full_name" => "John Smith",
+          "start_date" => "2023-03-09",
+          "end_date" => nil,
+          "primary" => false
+        }
+
+      ],
+      "identifiers" => [
+        %{
+          "code" => "X_ACCOUNT",
+          "value" => "xbemib"
+        }
+      ],
+    }
+    |> IO.inspect(label: "Generated post")
+    |> GupIndexManager.Resource.Persons.create()
+  end
 end

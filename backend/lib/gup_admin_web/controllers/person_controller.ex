@@ -23,7 +23,8 @@ defmodule GupAdminWeb.PersonController do
 
   # PUT /persons/:id
   def update( conn, %{"id" => id, "data" => person_map}) do
-    Logger.debug(person_map);
+    # Logger.debug(person_map);
+    Logger.debug("HEY")
     handle_request_from_fe(conn, :update, [id, person_map])
   end
 

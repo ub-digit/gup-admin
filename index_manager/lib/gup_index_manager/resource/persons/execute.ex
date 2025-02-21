@@ -68,9 +68,6 @@ defmodule GupIndexManager.Resource.Persons.Execute do
   end
 
   def execute_action(data, {:update_name, name}) do
-    IO.puts("---------- dfdd- - --------------------------------------------")
-    IO.inspect(name, label: "name dsfdsdf")
-    IO.inspect(data, label: "name dsfdsdf")
     # Names has the same gup_person_id, so update the name and dates
     name = Map.put(name, "full_name", "#{name["first_name"]} #{name["last_name"]}")
     |> Map.put("primary", true)
@@ -114,6 +111,11 @@ defmodule GupIndexManager.Resource.Persons.Execute do
     Map.put(data, "year_of_birth", year_of_birth_data)
   end
 
+  def acquire_gup_person_id(:fake) do
+    # Fake gup_person_id
+    :rand.uniform(100000)
+  end
+
   def acquire_gup_person_id() do
     # TODO: ask GUP for a new gup_person_id
       api_key = System.get_env("GUP_API_KEY")
@@ -154,13 +156,5 @@ defmodule GupIndexManager.Resource.Persons.Execute do
     data
   end
 
-  # def log_transaction(data, {action, _data}) do
-  #   IO.puts "Logging transaction for user #{action}"
-  #   data
-  # end
 
-  # def log_transaction(data, {action, _data, _id}) do
-  #   IO.puts "Logging transaction for user #{action}"
-  #   data
-  # end
 end

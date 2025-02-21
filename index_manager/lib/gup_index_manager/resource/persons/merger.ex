@@ -15,6 +15,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
        person_input_data
        |> sanitize_data()
        |> exists_in_index()
+       |> IO.inspect(label: "EXISTS IN INDEX")
        |> colliding_identifiers()
        |> input_data_has_gup_person_id()
        |> has_matching_gup_person_id()
