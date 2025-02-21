@@ -34,7 +34,7 @@
                 v-model="name.last_name"
               />
             </div>
-            <div class="col mb-3 d-flex align-items-center">
+            <div class="col-2 mb-3 d-flex align-items-center">
               <div class="form-check mt-4">
                 <input
                   class="form-check-input"
@@ -47,9 +47,18 @@
                   class="form-check-label"
                   :for="`is_primary_name_${index}`"
                 >
-                  Primär namnform
+                  Primär
                 </label>
               </div>
+            </div>
+            <div class="col-2 mb-3 d-flex align-items-center">
+              <button
+                :disabled="name?.gup_person_id ? true : false"
+                class="btn btn-danger mt-4"
+                @click.prevent="authorReactive.names.splice(index, 1)"
+              >
+                Ta bort
+              </button>
             </div>
           </div>
         </div>
