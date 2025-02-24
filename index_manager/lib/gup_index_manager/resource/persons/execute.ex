@@ -115,7 +115,6 @@ defmodule GupIndexManager.Resource.Persons.Execute do
   end
 
   def acquire_gup_person_id() do
-    # TODO: ask GUP for a new gup_person_id
       api_key = System.get_env("GUP_API_KEY")
       #. https://gup-server-lab.ub.gu.se/v1/people/get_next_id
       url = "#{gup_server_base_url()}/v1/poeple/get_next_id?api_key=#{api_key}"
@@ -126,6 +125,8 @@ defmodule GupIndexManager.Resource.Persons.Execute do
         {:ok, %HTTPoison.Response{status_code: 404}} -> {:error, "Not found"}
         {:error, %HTTPoison.Error{reason: reason}} -> {:error, reason}
       end
+
+      :rand.uniform(999999999)
 
   end
 
