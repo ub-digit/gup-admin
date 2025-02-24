@@ -91,32 +91,6 @@ defmodule GupIndexManager.Resource.Persons do
     Search.get_all_persons()
   end
 
-  # def sanitize_data(data) do
-  #   %{
-  #     "id" => Map.get(data, "id", nil),
-  #     "names" => sanitize_names(Map.get(data, "names", [])),
-  #     "departments" => Map.get(data, "departments", []),
-  #     "identifiers" => Map.get(data, "identifiers", []),
-  #     "year_of_birth" => Map.get(data, "year_of_birth", nil),
-  #     "email" => Map.get(data, "email", nil),
-  #   }
-  # end
-
-  # def sanitize_names(names) do
-  #   names
-  #   |> Enum.map(fn name ->
-  #     %{
-  #       "first_name" => Map.get(name, "first_name", ""),
-  #       "last_name" => Map.get(name, "last_name", ""),
-  #       "full_name" => "#{Map.get(name, "first_name", "")} #{Map.get(name, "last_name", "")}",
-  #       "start_date" => Map.get(name, "start_date", nil),
-  #       "end_date" => Map.get(name, "end_date", nil),
-  #       "gup_person_id" => Map.get(name, "gup_person_id", nil),
-  #       "primary" => true
-
-  #     }
-  #   end)
-  # end
 
   def clear_primary_name(data) do
     data
