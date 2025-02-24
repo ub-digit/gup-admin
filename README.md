@@ -13,6 +13,24 @@ Before you run **docker-compose up -d** check
 
 ### index and data
 
+check index in browser
+http://localhost:40413/persons/\_search?pretty
+
+OR
+
+curl -X GET "http://localhost:40413/persons/\_search?pretty" -H 'Content-Type: application/json' -d'
+{
+"size": 10000,
+"sort": [
+{
+"id": {
+"order": "asc"
+}
+}
+]
+}
+'
+
 cd docker
 ./setup_index.sh
 ./index.sh

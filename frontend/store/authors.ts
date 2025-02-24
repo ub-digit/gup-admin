@@ -73,20 +73,12 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
 
   async function fetchIdentifiers() {
     try {
-      const { data, error } = await useFetch("/api/_author/identifiers");
-      if (data?.value?.error) {
-        throw data.value;
-      }
-      identifiers.value = zIdentifierArray.parse(data.value);
+      const { data } = await useFetch("/api/_author/identifiers");
+      identifiers.value = zIdentifierArray.parse(data?.value);
     } catch (error) {
       if (error instanceof ZodError) {
-        const new_error = { code: "666", message: "ZodError", data: error };
-        errorIdentifiers.value = new_error;
-        console.log(errorIdentifiers.value);
         console.log("Something went wrong: getIdentifiers from Zod");
       } else {
-        errorIdentifiers.value = error.error;
-        console.log(errorIdentifiers.value);
         console.log("Something went wrong: getIdentifiers");
       }
     }
@@ -94,10 +86,11 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
   async function fetchAuthorById(id: string) {
     try {
       const { data, error } = await useFetch(`/api/_author/${id}`);
-      if (data?.value?.error) {
-        throw data.value;
+      if (data?.error?.value) {
+        throw data?.error?.value;
       }
-      author.value = zAuthor.parse(data.value as Author);
+      console.log(data?.value.success.data);
+      author.value = zAuthor.parse(data.value.success.data as Author);
     } catch (error) {
       if (error instanceof ZodError) {
         const new_error = { code: "666", message: "ZodError", data: error };
@@ -146,10 +139,14 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
         method: "PUT",
         body: author,
       });
-      if (error.value) {
-        throw error;
+      if (data?.value?.success?.data.status === "ok") {
+        return {
+          status: "success",
+          errors: [],
+        };
+      } else if (data?.value?.errors.validation.length > 0) {
+        return { status: "error", errors: data?.value?.errors?.validation };
       }
-      return data;
     } catch (error) {
       console.log("Something went wrong: updateAuthor", error);
     }

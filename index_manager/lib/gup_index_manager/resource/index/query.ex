@@ -44,20 +44,22 @@ defmodule GupIndexManager.Resource.Index.Query do
   def find_person_by_gup_id(gup_id) do
     %{
       "query" => %{
-      "bool" => %{
-        "must" => [
-        %{
-          "term" => %{
-          "names.gup_person_id" => gup_id
-          }
-        },
-        %{
-          "term" => %{
-          "deleted" => false
-          }
+        "bool" => %{
+          "must" => [
+            %{
+              "term" => %{
+                "names.gup_person_id" => gup_id
+              }
+            }
+          ],
+          "must_not" => [
+            %{
+              "term" => %{
+                "deleted" => true
+              }
+            }
+          ]
         }
-        ]
-      }
       }
     }
 
@@ -72,12 +74,14 @@ defmodule GupIndexManager.Resource.Index.Query do
           "term" => %{
           "id" => id
           }
-        },
-        %{
-          "term" => %{
-          "deleted" => false
-          }
         }
+        ],
+        "must_not" => [
+          %{
+            "term" => %{
+              "deleted" => true
+            }
+          }
         ]
       }
       }
@@ -86,9 +90,7 @@ defmodule GupIndexManager.Resource.Index.Query do
 
   def get_all_persons do
     %{
-      "query" => %{
-        "match_all" => %{}
-      }
+
     }
   end
 end

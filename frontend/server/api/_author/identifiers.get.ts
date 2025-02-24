@@ -8,9 +8,10 @@ export default defineEventHandler(async (event) => {
   }
   const config = useRuntimeConfig();
   const query = getQuery(event);
+  query.api_key = config.ADMIN_BACKEND_API_KEY;
   console.log(config.API_BASE_URL);
 
-  const res: IdentifierArray = [
+  /*const res: IdentifierArray = [
     {
       code: "X_ACCOUNT",
       value: "x-account",
@@ -39,12 +40,11 @@ export default defineEventHandler(async (event) => {
       code: "POP_ID",
       value: "Pop id",
     },
-  ];
-  /*const res: IdentifierArray = await $fetch(
-    `${config.API_BASE_URL}/identifers`,
-    {
-      params: query,
-    }
-  );*/
-  return res;
+  ];*/
+  const res = await $fetch(`${config.API_BASE_URL}/api/person_id_codes`, {
+    params: query,
+  });
+  // wrap each object in the array with an object with a data key
+  const res_with_obj = res?.id_codes?.map((item: string) => ({ code: item }));
+  return res_with_obj;
 });

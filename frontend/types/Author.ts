@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 export const zDepartment = z.object({
-  id: z.number(),
+  gup_department_id: z.string(),
   name: z.string(),
-  type: z.string(),
+  type: z.string().nullish(),
   start_date: z.string().nullish(),
   end_date: z.string().nullish(),
   current: z.boolean().optional(),
@@ -21,7 +21,7 @@ export const zNameform = z.object({
 
 export const zIdentifier = z.object({
   code: z.string(),
-  value: z.string(),
+  value: z.string().nullable(),
 });
 
 export const zAuthor = z.object({
