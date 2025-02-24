@@ -126,7 +126,7 @@ defmodule GupIndexManager.Resource.Persons.Execute do
         {:error, %HTTPoison.Error{reason: reason}} -> {:error, reason}
       end
 
-      :rand.uniform(999999999)
+      #  :rand.uniform(999999999)
 
   end
 
