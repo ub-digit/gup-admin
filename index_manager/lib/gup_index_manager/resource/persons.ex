@@ -11,16 +11,41 @@ defmodule GupIndexManager.Resource.Persons do
 
   def create(person_data_as_map) do
     Logger.debug("IM:R.create: person_data_as_map: #{inspect(person_data_as_map)}")
+    # merge_actions_list = Merger.merge(person_data_as_map)
+    # check for missing gup_person_id and aquire if missing
+
+    person_data_as_map = check_gup_person_id(person_data_as_map)
     create_or_update_person(person_data_as_map)
+  end
+
+  def check_gup_person_id(person_data_as_map) do
+    names = Map.get( person_data_as_map, "names", [])
+    |> Enum.map(fn name -> set_gup_person_id(name) end)
+    Map.put(person_data_as_map, "names", names)
+  end
+
+  def set_gup_person_id(name) do
+    # IO.inspect(name, label: "SET GUP PERSON ID")
+    gup_person_id = Map.get(name, "gup_person_id", nil)
+    case gup_person_id do
+      nil ->
+        # IO.inspect("NO ID")
+        Map.put(name, "gup_person_id", GupIndexManager.Resource.Persons.Execute.acquire_gup_person_id())
+        # |> IO.inspect(label: "SET GUP PERSON ID DONE")
+      _ -> name
+    end
   end
 
   def update(url_id, %{"id" => data_id} = person_data_as_map) do
     Logger.debug("IM:R.update: url_id: #{url_id}, person_data_as_map: #{inspect(person_data_as_map)}")
     case String.to_integer(url_id) == data_id do
-      true -> create_or_update_person(person_data_as_map)
+      true ->
+        person_data_as_map = check_gup_person_id(person_data_as_map)
+        create_or_update_person(person_data_as_map)
       false -> {:error, %{errors: %{im_message: "ID_MISMATCH_BETWEEN_URL_AND_DATA"}}}
     end
   end
+
 
   def delete(doc_id) do
     Logger.debug("IM:R.delete: doc_id: #{doc_id}")
@@ -91,32 +116,6 @@ defmodule GupIndexManager.Resource.Persons do
     Search.get_all_persons()
   end
 
-  # def sanitize_data(data) do
-  #   %{
-  #     "id" => Map.get(data, "id", nil),
-  #     "names" => sanitize_names(Map.get(data, "names", [])),
-  #     "departments" => Map.get(data, "departments", []),
-  #     "identifiers" => Map.get(data, "identifiers", []),
-  #     "year_of_birth" => Map.get(data, "year_of_birth", nil),
-  #     "email" => Map.get(data, "email", nil),
-  #   }
-  # end
-
-  # def sanitize_names(names) do
-  #   names
-  #   |> Enum.map(fn name ->
-  #     %{
-  #       "first_name" => Map.get(name, "first_name", ""),
-  #       "last_name" => Map.get(name, "last_name", ""),
-  #       "full_name" => "#{Map.get(name, "first_name", "")} #{Map.get(name, "last_name", "")}",
-  #       "start_date" => Map.get(name, "start_date", nil),
-  #       "end_date" => Map.get(name, "end_date", nil),
-  #       "gup_person_id" => Map.get(name, "gup_person_id", nil),
-  #       "primary" => true
-
-  #     }
-  #   end)
-  # end
 
   def clear_primary_name(data) do
     data
