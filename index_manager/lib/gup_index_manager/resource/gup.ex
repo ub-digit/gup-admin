@@ -75,7 +75,7 @@ defmodule GupIndexManager.Resource.Gup do
       Logger.debug("ADDRESS: #{send_updated_data_url(id)}")
       Logger.debug("Attempting to send updated data to Gup for person: #{inspect(person)} with id: #{id}")
       # HTTPoison.post(send_updated_data_url(id), person, [{"Content-Type", "application/json"}])
-      HTTPoison.put(send_updated_data_url(id), person, [{"Content-Type", "application/json"}])
+      HTTPoison.put(send_updated_data_url(id), person |> Jason.encode!(), [{"Content-Type", "application/json"}])
       |> case do
         _ -> Logger.debug("Successfully updated person with id: #{id}")
         # {:ok, %HTTPoison.Response{status_code: 200}} -> Logger.debug("Successfully updated person with id: #{id}")
