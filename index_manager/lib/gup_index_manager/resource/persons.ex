@@ -15,6 +15,7 @@ defmodule GupIndexManager.Resource.Persons do
     # check for missing gup_person_id and aquire if missing
 
     person_data_as_map = check_gup_person_id(person_data_as_map)
+    |> send_updated_data_to_gup()
     create_or_update_person(person_data_as_map)
   end
 
@@ -22,6 +23,7 @@ defmodule GupIndexManager.Resource.Persons do
     names = Map.get( person_data_as_map, "names", [])
     |> Enum.map(fn name -> set_gup_person_id(name) end)
     Map.put(person_data_as_map, "names", names)
+
   end
 
   def set_gup_person_id(name) do
@@ -31,6 +33,7 @@ defmodule GupIndexManager.Resource.Persons do
       nil ->
         # IO.inspect("NO ID")
         Map.put(name, "gup_person_id", GupIndexManager.Resource.Persons.Execute.acquire_gup_person_id())
+        Map.put(name, "new_gup_person_id", true)
         # |> IO.inspect(label: "SET GUP PERSON ID DONE")
       _ -> name
     end
@@ -51,6 +54,57 @@ defmodule GupIndexManager.Resource.Persons do
     Logger.debug("IM:R.delete: doc_id: #{doc_id}")
     delete_person(doc_id)
   end
+
+
+  def send_updated_data_to_gup(person_as_a_map) do
+
+    names =  Map.get(person_as_a_map, "names")
+    |> Enum.map(fn name ->
+      case Map.get(name, "new_gup_person_id", false) do
+        true -> execute_update_to_gup(person_as_a_map, name)
+        false -> name
+      end
+    end)
+    # rid map of new_gup_person_id
+    Map.put(person_as_a_map, "names", names)
+  end
+
+  def execute_update_to_gup(person_as_a_map, name) do
+    name = Map.delete(name, "new_gup_person_id")
+    person_as_a_map
+    |> Map.put("names", [name])
+    api_key = System.get_env("GUP_BACKEND_API_KEY")
+    url = "http://gup-backend:3000/v1/people/1226646?api_key=an-api-key"
+    body = %{"person" => person_as_a_map} |> Jason.encode!()
+
+
+    HTTPoison.post(url, body, [{"Content-Type", "application/json"}])
+
+
+    # post to gup url
+    #http://localhost:8181/torii/redirect.html
+    #return name
+    name
+  end
+
+
+
+  # def acquire_gup_person_id() do
+  #   Logger.debug("IM:R.acquire_gup_person_id")
+  #     api_key = System.get_env("GUP_BACKEND_API_KEY")
+  #     url = "#{gup_server_base_url()}/v1/people/get_next_id?api_key=#{api_key}"
+  #     Logger.debug("IM:R.acquire_gup_person_id: url: #{url}")
+  #     HTTPoison.get(url, [{"Content-Type", "application/json"}])
+  #     |> case do
+  #       {:ok, %HTTPoison.Response{status_code: 200, body: body}} -> body |> Jason.decode!() |> Map.get("id")
+  #       {:ok, %HTTPoison.Response{status_code: 404}} -> {:error, "Not found"}
+  #       {:error, %HTTPoison.Error{reason: reason}} -> {:error, reason}
+  #     end
+  # end
+
+  # def gup_server_base_url() do
+  #   System.get_env("GUP_BACKEND_BASE_URL", "http://localhost:40191")
+  # end
 
   # -----------------------------------------------------------------------------------------------
 

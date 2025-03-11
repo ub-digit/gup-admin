@@ -9,7 +9,7 @@ defmodule GupIndexManagerWeb.PersonController do
 
     case ControllerHelpers.check_api_key(api_key) do
       true ->
-        Persons.Merger.merge(data) |> GupIndexManager.Resource.Persons.Execute.execute_actions() |> respond(conn)
+        Persons.Merger.merge(data) |> GupIndexManager.Resource.Persons.Execute.execute_actions() |> GupIndexManager.Resource.Gup.update_gup() |> respond(conn)
       false ->
         json Plug.Conn.put_status(conn, 401), %{status: "401", message: "error, unauthorized key"}
     end

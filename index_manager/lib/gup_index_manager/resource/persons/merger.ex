@@ -177,7 +177,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
       # |> IO.inspect(label: "MATCHES ->->->__>_>>>>>")
 
     remapped = remap_person_data(matches)
-    |> IO.inspect(label: "REMAPPPED matches")
+    # |> IO.inspect(label: "REMAPPPED matches")
     |> remove_primary_names()
     |> Enum.uniq()
  #   IO.inspect(remapped, label: "REMAPPPED matches")
@@ -243,7 +243,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   ############################################################################################################################
 
   def colliding_identifiers({_person_exist_in_index = true, person_input_data, existing_data}) do
-    #IO.puts("Person EXISTS IN INDEX, CHECK FOR COLLIDING IDENTIFIERS")
+    IO.puts("Person EXISTS IN INDEX, CHECK FOR COLLIDING IDENTIFIERS")
 
     search_colliding_identifiers(person_input_data, existing_data)
     |> Enum.any?(fn colliding -> colliding == true end)
@@ -260,7 +260,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   def has_matching_gup_person_id({:ok, person_input_data}), do: {:ok, person_input_data}
 
   def has_matching_gup_person_id({_has_gup_person_id = false, person_input_data, existing_data}),
-    do: {false, person_input_data, existing_data}
+    do: {false, person_input_data, existing_data}; IO.puts("NO MATCHING GUP PERSON ID")
 
   def has_matching_gup_person_id({_has_gup_person_id = true, gup_person_id, person_input_data, existing_data}) do
     # Check if person input data has a gup_person_id in the name that exists in the existing data
@@ -413,7 +413,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     |> List.flatten()
   end
   def merge_person({:ok, data}) do
-    # IO.inspect("MERGE PERSON no secondary data")
+     #IO.inspect("MERGE PERSON no secondary data")
     # IO.inspect(data, label: "DATA")
     {:ok, data}
   end
@@ -466,7 +466,6 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   def merge_names(primary_data, secondary_data) do
     #  IO.inspect(primary_data, label: "PRIMARY DATA")
     #  IO.inspect(secondary_data, label: "Secondary DATA")
-
     # merge the names from secondary data into primary data
     # if a name form in secondary data has the same gup_person_id as a name form in primary data, update first_name and last_name in primary data
     # if a name form in secondary data does not exist in primary data, add it to primary data
@@ -668,7 +667,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   end
 
   def create_or_update_person({:ok, primary_data, :no_actions}) do
-    #IO.puts("CREATE OR UPDATE existing PERSON with no actions")
+    IO.puts("CREATE OR UPDATE existing PERSON with no actions")
    {:ok, primary_data, :no_actions}
  end
 
@@ -686,9 +685,34 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   end
 
   def create_or_update_person({:ok, person_input_data}) do
-    #IO.inspect("NEW PERSON ssssss")
     # This is a new person that does not exist in the index
-    {:ok, person_input_data, [{:create_or_update_person}]}
+    IO.puts("CREATE OR UPDATE NEW PERSON")
+    {actions, person_input_data} = check_name_forms_for_gup_person_id(person_input_data)
+    {:ok, person_input_data, actions ++ [{:create_or_update_person}] |> List.flatten()}
+  end
+
+  def check_name_forms_for_gup_person_id(person_input_data) do
+    names = Map.get(person_input_data, "names", [])
+    actions = Enum.reduce(names, [], fn name, acc ->
+        case Map.get(name, "gup_person_id", nil) do
+          nil ->
+            acc ++ [{:acquire_gup_id, name}]
+          _ -> acc
+        end
+      end)
+      |> List.flatten()
+      |> Enum.uniq()
+
+      new_names = Enum.map(names, fn name ->
+        case Map.get(name, "gup_person_id", nil) do
+          nil -> nil
+          _ -> name
+        end
+      end)
+      |> Enum.filter(fn name -> name != nil end)
+
+      {actions, Map.put(person_input_data, "names", new_names)}
+
   end
 
   def remap_person_data(hits) do
