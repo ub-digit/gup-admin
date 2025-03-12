@@ -48,11 +48,18 @@ defmodule GupIndexManager.Resource.Persons.Merger do
       "names" => sanitize_names(Map.get(data, "names", [])),
       "departments" => Map.get(data, "departments", []),
       "identifiers" => Map.get(data, "identifiers", []),
-      "year_of_birth" => Map.get(data, "year_of_birth", nil),
+      "year_of_birth" => get_year_of_birth(data),
       "email" => Map.get(data, "email", nil),
       "deleted" => Map.get(data, "deleted", false),
       "is_merged" => Map.get(data, "is_merged", false)
     }
+  end
+
+  def get_year_of_birth(data) do
+    case Map.get(data, "year_of_birth", nil) do
+      nil -> nil
+      year -> String.to_integer(year)
+    end
   end
 
   def sanitize_names(names) do

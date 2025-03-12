@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 export const zDepartment = z.object({
-  gup_department_id: z.string(),
-  name: z.string(),
+  gup_department_id: z.string().nullish(),
+  name: z.string().nullish(),
   type: z.string().nullish(),
   start_date: z.string().nullish(),
   end_date: z.string().nullish(),

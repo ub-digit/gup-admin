@@ -18,12 +18,11 @@ defmodule GupIndexManager.Resource.Gup do
     "#{gup_server_base_url()}/v1/people/#{id}?api_key=#{gup_backand_api_key()}"
   end
 
-
-  def update_gup({:ok, data, actions}) do
-    compose_updated_data(data)
+  def update_gup({:ok, person_data, actions}), do: update_gup(person_data)
+  def update_gup(person_data) do
+    compose_updated_data(person_data)
     |> send_updated_data_to_gup()
-
-    {:ok, data}
+    {:ok, person_data}
   end
 
   def update_gup({:error, error, error_log_data}) do
@@ -34,7 +33,7 @@ defmodule GupIndexManager.Resource.Gup do
     Logger.debug("IM:Gup.acquire_gup_person_id")
     HTTPoison.get(next_gup_id_url(), [{"Content-Type", "application/json"}])
     |> case do
-      {:ok, %HTTPoison.Response{status_code: 200, body: body}} -> body |> Jason.decode!() |> Map.get("id")
+      {:ok, %HTTPoison.Response{status_code: 200, body: body}} -> body |> Jason.decode!() |> Map.get("id") |> String.to_integer()
       {:ok, %HTTPoison.Response{status_code: 404}} -> {:error, "Not found"}
       {:error, %HTTPoison.Error{reason: reason}} -> {:error, reason}
     end
