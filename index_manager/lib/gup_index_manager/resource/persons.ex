@@ -14,12 +14,12 @@ defmodule GupIndexManager.Resource.Persons do
     # merge_actions_list = Merger.merge(person_data_as_map)
     # check for missing gup_person_id and aquire if missing
 
-    person_data_as_map = check_gup_person_id(person_data_as_map)
-    |> send_updated_data_to_gup()
-    create_or_update_person(person_data_as_map)
+    # person_data_as_map = check_gup_person_id(person_data_as_map)
+    # |> send_updated_data_to_gup()
+    # create_or_update_person(person_data_as_map)
   end
 
-  def check_gup_person_id(person_data_as_map) do
+  def check_for_missing_gup_person_id(person_data_as_map) do
     names = Map.get( person_data_as_map, "names", [])
     |> Enum.map(fn name -> set_gup_person_id(name) end)
     Map.put(person_data_as_map, "names", names)
@@ -27,12 +27,11 @@ defmodule GupIndexManager.Resource.Persons do
   end
 
   def set_gup_person_id(name) do
-    # IO.inspect(name, label: "SET GUP PERSON ID")
     gup_person_id = Map.get(name, "gup_person_id", nil)
     case gup_person_id do
       nil ->
         # IO.inspect("NO ID")
-        Map.put(name, "gup_person_id", GupIndexManager.Resource.Persons.Execute.acquire_gup_person_id())
+        Map.put(name, "gup_person_id", GupIndexManager.Resource.Gup.get_next_gup_id())
         Map.put(name, "new_gup_person_id", true)
         # |> IO.inspect(label: "SET GUP PERSON ID DONE")
       _ -> name
@@ -42,10 +41,15 @@ defmodule GupIndexManager.Resource.Persons do
   def update(url_id, %{"id" => data_id} = person_data_as_map) do
     Logger.debug("IM:R.update: url_id: #{url_id}, person_data_as_map: #{inspect(person_data_as_map)}")
     case String.to_integer(url_id) == data_id do
-      true ->
-        person_data_as_map = check_gup_person_id(person_data_as_map)
+
+       true ->
+        Logger.debug("IM:R.update: ID MATCH")
+        merge_actions_list = GupIndexManager.Resource.Persons.Merger.merge(person_data_as_map) # Check if for no delete actions
+        Logger.debug("IM:R.update: merge_actions_list: #{inspect(merge_actions_list)}")
+        person_data_as_map = check_for_missing_gup_person_id(person_data_as_map)
         create_or_update_person(person_data_as_map)
-      false -> {:error, %{errors: %{im_message: "ID_MISMATCH_BETWEEN_URL_AND_DATA"}}}
+        GupIndexManager.Resource.Gup.update_gup(person_data_as_map)
+       false -> {:error, %{errors: %{im_message: "ID_MISMATCH_BETWEEN_URL_AND_DATA"}}}
     end
   end
 
@@ -55,56 +59,6 @@ defmodule GupIndexManager.Resource.Persons do
     delete_person(doc_id)
   end
 
-
-  def send_updated_data_to_gup(person_as_a_map) do
-
-    names =  Map.get(person_as_a_map, "names")
-    |> Enum.map(fn name ->
-      case Map.get(name, "new_gup_person_id", false) do
-        true -> execute_update_to_gup(person_as_a_map, name)
-        false -> name
-      end
-    end)
-    # rid map of new_gup_person_id
-    Map.put(person_as_a_map, "names", names)
-  end
-
-  def execute_update_to_gup(person_as_a_map, name) do
-    name = Map.delete(name, "new_gup_person_id")
-    person_as_a_map
-    |> Map.put("names", [name])
-    api_key = System.get_env("GUP_BACKEND_API_KEY")
-    url = "http://gup-backend:3000/v1/people/1226646?api_key=an-api-key"
-    body = %{"person" => person_as_a_map} |> Jason.encode!()
-
-
-    HTTPoison.post(url, body, [{"Content-Type", "application/json"}])
-
-
-    # post to gup url
-    #http://localhost:8181/torii/redirect.html
-    #return name
-    name
-  end
-
-
-
-  # def acquire_gup_person_id() do
-  #   Logger.debug("IM:R.acquire_gup_person_id")
-  #     api_key = System.get_env("GUP_BACKEND_API_KEY")
-  #     url = "#{gup_server_base_url()}/v1/people/get_next_id?api_key=#{api_key}"
-  #     Logger.debug("IM:R.acquire_gup_person_id: url: #{url}")
-  #     HTTPoison.get(url, [{"Content-Type", "application/json"}])
-  #     |> case do
-  #       {:ok, %HTTPoison.Response{status_code: 200, body: body}} -> body |> Jason.decode!() |> Map.get("id")
-  #       {:ok, %HTTPoison.Response{status_code: 404}} -> {:error, "Not found"}
-  #       {:error, %HTTPoison.Error{reason: reason}} -> {:error, reason}
-  #     end
-  # end
-
-  # def gup_server_base_url() do
-  #   System.get_env("GUP_BACKEND_BASE_URL", "http://localhost:40191")
-  # end
 
   # -----------------------------------------------------------------------------------------------
 
@@ -157,6 +111,7 @@ defmodule GupIndexManager.Resource.Persons do
   end
 
   def update_index(%{"id" => id} = data) do
+    IO.inspect(data, label: "Updating index !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     data = Map.put(data, "id", id)
     Index.update_record(data, id, Index.get_persons_index())
   end

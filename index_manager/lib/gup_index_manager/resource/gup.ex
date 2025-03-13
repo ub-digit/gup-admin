@@ -3,11 +3,10 @@ defmodule GupIndexManager.Resource.Gup do
 
   def gup_server_base_url() do
     System.fetch_env!("GUP_BACKEND_BASE_URL")
-    System.get_env("GUP_BACKEND_BASE_URL", "http://localhost:40191")
   end
 
   def gup_backand_api_key() do
-    System.get_env("GUP_BACKEND_API_KEY")
+    System.fetch_env!("GUP_BACKEND_API_KEY")
   end
 
   def next_gup_id_url() do
@@ -18,6 +17,9 @@ defmodule GupIndexManager.Resource.Gup do
     "#{gup_server_base_url()}/v1/people/#{id}?api_key=#{gup_backand_api_key()}"
   end
 
+
+  def update_gup({:error, error, error_log_data}), do: {:error, error, error_log_data}
+
   def update_gup({:ok, person_data, actions}), do: update_gup(person_data)
   def update_gup(person_data) do
     compose_updated_data(person_data)
@@ -25,19 +27,22 @@ defmodule GupIndexManager.Resource.Gup do
     {:ok, person_data}
   end
 
-  def update_gup({:error, error, error_log_data}) do
-    {:error, error, error_log_data}
-  end
+
 
   def get_next_gup_id() do
     Logger.debug("IM:Gup.acquire_gup_person_id")
     HTTPoison.get(next_gup_id_url(), [{"Content-Type", "application/json"}])
     |> case do
-      {:ok, %HTTPoison.Response{status_code: 200, body: body}} -> body |> Jason.decode!() |> Map.get("id") |> String.to_integer()
+      {:ok, %HTTPoison.Response{status_code: 200, body: body}} -> body |> Jason.decode!() |> Map.get("id") |> convert_to_integer()
       {:ok, %HTTPoison.Response{status_code: 404}} -> {:error, "Not found"}
       {:error, %HTTPoison.Error{reason: reason}} -> {:error, reason}
     end
   end
+
+  def convert_to_integer(val) when is_bitstring(val), do: String.to_integer(val)
+  def convert_to_integer(val) when is_integer(val), do: val
+  def convert_to_integer(_), do: nil
+
 
   def compose_updated_data(person_as_a_map) do
     names =  Map.get(person_as_a_map, "names")
@@ -50,10 +55,8 @@ defmodule GupIndexManager.Resource.Gup do
           "last_name" => name["last_name"],
           "year_of_birth" => person_as_a_map["year_of_birth"],
           "xaccount" => get_xaccount(identifiers)
-
         }
       }, name["gup_person_id"]}
-
         acc ++ [p]
     end)
   end
@@ -76,10 +79,10 @@ defmodule GupIndexManager.Resource.Gup do
       # HTTPoison.post(send_updated_data_url(id), person, [{"Content-Type", "application/json"}])
       HTTPoison.put(send_updated_data_url(id), person |> Jason.encode!(), [{"Content-Type", "application/json"}])
       |> case do
-        _ -> Logger.debug("Successfully updated person with id: #{id}")
-        # {:ok, %HTTPoison.Response{status_code: 200}} -> Logger.debug("Successfully updated person with id: #{id}")
-        # {:ok, %HTTPoison.Response{status_code: 404}} -> Logger.error("Person with id: #{id} not found")
-        # {:error, %HTTPoison.Error{reason: reason}} -> Logger.error("Error updating person with id: #{id}. Reason: #{reason}")
+        # _ -> Logger.debug("Successfully updated person with id: #{id}")
+        {:ok, %HTTPoison.Response{status_code: 200}} -> Logger.debug("Successfully updated person with id: #{id}")
+        {:ok, %HTTPoison.Response{status_code: 404}} -> Logger.error("Person with id: #{id} not found")
+        {:error, %HTTPoison.Error{reason: reason}} -> Logger.error("Error updating person with id: #{id}. Reason: #{reason}")
       end
     end)
   end
