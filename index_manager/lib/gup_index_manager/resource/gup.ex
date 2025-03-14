@@ -2,11 +2,11 @@ defmodule GupIndexManager.Resource.Gup do
   require Logger
 
   def gup_server_base_url() do
-    System.fetch_env!("GUP_BACKEND_BASE_URL")
+    System.fetch_env!("GUP_SERVER_BASE_URL")
   end
 
   def gup_backand_api_key() do
-    System.fetch_env!("GUP_BACKEND_API_KEY")
+    System.fetch_env!("GUP_API_KEY")
   end
 
   def next_gup_id_url() do
