@@ -51,7 +51,8 @@ defmodule GupIndexManager.Resource.Persons.Merger do
       "year_of_birth" => get_year_of_birth(Map.get(data, "year_of_birth", nil)),
       "email" => Map.get(data, "email", nil),
       "deleted" => Map.get(data, "deleted", false),
-      "is_merged" => Map.get(data, "is_merged", false)
+      "is_merged" => Map.get(data, "is_merged", false),
+      "force_primary_name" => Map.get(data, "force_primary_name", false)
     }
   end
 
@@ -512,8 +513,11 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     end)
     |> List.flatten()
 
-    case Map.get(person_input_data, "force_primary_name", false) do
-      true -> force_set_primary_name(name_actions, person_input_data)
+    force = Map.get(person_input_data, "force_primary_name", true)
+    IO.inspect(force, label: "FORCE PRIMARY NAME --- --- --- --- --- --- --- -- --- -- --- -- -- -- -- -- -- ")
+    case force do
+      true ->
+        force_set_primary_name(name_actions, person_input_data)
       _ -> name_actions
     end
     # |> IO.inspect(label: "NAME ACTIONS")

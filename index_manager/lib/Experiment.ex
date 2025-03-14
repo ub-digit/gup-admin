@@ -2,6 +2,7 @@ defmodule Experiment do
   @moduledoc """
   Module to generate dummy posts with randomized content using string keys.
   """
+require Logger
 
   # Template for a dummy post
   @base_post %{
@@ -79,4 +80,17 @@ defmodule Experiment do
     Enum.map(1..count, fn _ -> generate_dummy_post() end)
     |> Enum.map(fn post -> GupIndexManager.Resource.Publication.create_or_update(post) end)
   end
+
+
+  def find do
+    z = [%{"v" => 1, "name" => "leif"}, %{"v" => 2, "name" => "leif"}, %{"v" => 3, "name" => "leif"}, %{"v" => 4, "name" => "leif"}, %{"v" => 5, "name" => "leif"}]
+    # in case there is a map in z that has a key "v" with value 3, return that maps value for key "name"
+    Enum.find_value(z, fn %{"v" => v, "name" => name} -> if v == 3, do: name end)
+
+
+
+
+  end
+
+
 end
