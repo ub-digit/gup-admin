@@ -80,7 +80,7 @@ defmodule GupAdmin.Resource.Person.PersonValidator do
     #|> validate_id(person)
     #|> validate_updated_at(person)
     #|> validate_created_at(person)
-    |> validate_year_of_birth(person)
+    # |> validate_year_of_birth(person)
     |> validate_identifiers(person)
     |> validate_names(person)
     #|> validate_departments(person)
