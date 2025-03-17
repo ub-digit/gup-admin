@@ -53,6 +53,13 @@
             <div class="col">
               <span v-if="authorCurrentDepartment">
                 {{ authorCurrentDepartment?.name }}
+                <span class="small"
+                  >(
+                  {{ authorCurrentDepartment?.start_date }}
+                  <span v-if="authorCurrentDepartment?.end_date">
+                    - {{ authorCurrentDepartment?.end_date }}</span
+                  >)</span
+                >
               </span>
               <span v-else> Saknas </span>
             </div>
@@ -70,6 +77,12 @@
                   :key="department.id"
                 >
                   {{ department.name }}
+                  <span class="small"
+                    >({{ department.start_date }}
+                    <span v-if="department.end_date"
+                      >- {{ department.end_date }}</span
+                    >)</span
+                  >
                   <span v-if="department.current" class="ms-1">*</span>
                   <span
                     v-if="index < author.departments.length - 1"
