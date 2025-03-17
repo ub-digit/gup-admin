@@ -51,16 +51,16 @@
               <strong>Primär tillhörighet:</strong>
             </div>
             <div class="col">
-              <span v-if="authorCurrentDepartment">
+              <div v-if="authorCurrentDepartment">
                 {{ authorCurrentDepartment?.name }}
-                <span class="small"
-                  >(
+                <br />
+                <span style="font-size: 0.7rem">
                   {{ authorCurrentDepartment?.start_date }}
                   <span v-if="authorCurrentDepartment?.end_date">
                     - {{ authorCurrentDepartment?.end_date }}</span
-                  >)</span
+                  ></span
                 >
-              </span>
+              </div>
               <span v-else> Saknas </span>
             </div>
           </div>
@@ -69,28 +69,23 @@
               <strong>Alla tillhörigheter:</strong>
             </div>
             <div class="col">
-              <ul v-if="author?.departments?.length" class="list-unstyled">
-                <li
-                  class="float-start"
+              <div v-if="author?.departments?.length" class="list-unstyled">
+                <div
+                  class="mb-2"
                   v-for="(department, index) in author.departments"
-                  x
                   :key="department.id"
                 >
-                  {{ department.name }}
-                  <span class="small"
-                    >({{ department.start_date }}
+                  {{ department.name
+                  }}<span v-if="department.current" class="ms-1">*</span>
+                  <br />
+                  <span style="font-size: 0.7rem"
+                    >{{ department.start_date }}
                     <span v-if="department.end_date"
                       >- {{ department.end_date }}</span
-                    >)</span
+                    ></span
                   >
-                  <span v-if="department.current" class="ms-1">*</span>
-                  <span
-                    v-if="index < author.departments.length - 1"
-                    class="me-1 ms-1"
-                    >|</span
-                  >
-                </li>
-              </ul>
+                </div>
+              </div>
               <span v-else> Saknas </span>
             </div>
           </div>
@@ -108,7 +103,7 @@
       </div>
 
       <div id="identifiers" class="row mb-3">
-        <div class="col pt-2 pb-2" style="border: 1px solid #ccc">
+        <div class="col pt-2 pb-2">
           <div class="row">
             <div class="col-3">
               <strong>Identifikatorer:</strong>
@@ -116,10 +111,14 @@
             <div class="col">
               <div v-if="author?.identifiers?.length" class="row">
                 <div class="row" v-for="identifier in author.identifiers">
-                  <div class="col-3">
-                    {{ t(`views.authors.identifier_type.${identifier.code}`) }}:
+                  <div class="col-12 mb-2">
+                    <span style="font-weight: bold"
+                      >{{
+                        t(`views.authors.identifier_type.${identifier.code}`)
+                      }}:</span
+                    >
+                    {{ identifier.value }}
                   </div>
-                  <div class="col">{{ identifier.value }}</div>
                 </div>
               </div>
               <span v-else>Saknas</span>
@@ -142,7 +141,9 @@
               />
             </ClientOnly>
           </button>
-          <div class="small">debug authorGupIds: {{ authorGupIds }}</div>
+          <div style="display: none">
+            debug authorGupIds: {{ authorGupIds }}
+          </div>
         </div>
       </div>
     </div>
