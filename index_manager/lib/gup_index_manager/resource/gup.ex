@@ -20,7 +20,7 @@ defmodule GupIndexManager.Resource.Gup do
 
   def update_gup({:error, error, error_log_data}), do: {:error, error, error_log_data}
 
-  def update_gup({:ok, person_data, actions}), do: update_gup(person_data)
+  def update_gup({:ok, person_data, _actions}), do: update_gup(person_data)
   def update_gup(person_data) do
     compose_updated_data(person_data)
     |> send_updated_data_to_gup()
@@ -74,7 +74,6 @@ defmodule GupIndexManager.Resource.Gup do
   def send_updated_data_to_gup(data) do
       # Enum.each(data, fn {peroson, id} -> IO.inspect(id, label: "ID") end)
     Enum.each(data, fn {person, id} ->
-      Logger.debug("ADDRESS: #{send_updated_data_url(id)}")
       Logger.debug("Attempting to send updated data to Gup for person: #{inspect(person)} with id: #{id}")
       # HTTPoison.post(send_updated_data_url(id), person, [{"Content-Type", "application/json"}])
       HTTPoison.put(send_updated_data_url(id), person |> Jason.encode!(), [{"Content-Type", "application/json"}])

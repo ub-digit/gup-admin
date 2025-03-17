@@ -30,10 +30,8 @@ defmodule GupIndexManager.Resource.Persons do
     gup_person_id = Map.get(name, "gup_person_id", nil)
     case gup_person_id do
       nil ->
-        # IO.inspect("NO ID")
-        Map.put(name, "gup_person_id", GupIndexManager.Resource.Gup.get_next_gup_id())
-        Map.put(name, "new_gup_person_id", true)
-        # |> IO.inspect(label: "SET GUP PERSON ID DONE")
+        new_gup_person_id = GupIndexManager.Resource.Gup.get_next_gup_id()
+        Map.put(name, "gup_person_id", new_gup_person_id)
       _ -> name
     end
   end
@@ -43,12 +41,17 @@ defmodule GupIndexManager.Resource.Persons do
     case String.to_integer(url_id) == data_id do
 
        true ->
-        Logger.debug("IM:R.update: ID MATCH")
-        merge_actions_list = GupIndexManager.Resource.Persons.Merger.merge(person_data_as_map) # Check if for no delete actions
-        Logger.debug("IM:R.update: merge_actions_list: #{inspect(merge_actions_list)}")
+        _merge_actions_list = GupIndexManager.Resource.Persons.Merger.merge(person_data_as_map) # Check if for no delete actions
+
+        # TODO: Check merge_actions_list for delete actions and abort if found
         person_data_as_map = check_for_missing_gup_person_id(person_data_as_map)
         create_or_update_person(person_data_as_map)
-        GupIndexManager.Resource.Gup.update_gup(person_data_as_map)
+        res = GupIndexManager.Resource.Gup.update_gup(person_data_as_map)
+        case res do
+        {:ok, _person_data} -> %{"status" => "ok"}
+        _ -> {:error, %{errors: %{im_message: "ERROR_SENDING_DATA_TO_GUP"}}}
+        end
+
        false -> {:error, %{errors: %{im_message: "ID_MISMATCH_BETWEEN_URL_AND_DATA"}}}
     end
   end
@@ -111,7 +114,6 @@ defmodule GupIndexManager.Resource.Persons do
   end
 
   def update_index(%{"id" => id} = data) do
-    IO.inspect(data, label: "Updating index !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     data = Map.put(data, "id", id)
     Index.update_record(data, id, Index.get_persons_index())
   end
