@@ -5,11 +5,12 @@ defmodule GupIndexManagerWeb.PersonController do
 
   require Logger
 
-  def create_or_update(conn,  %{"data" => data, "api_key" => api_key}) do
-
+  def create_or_update(conn,  %{"data" => data, "api_key" => api_key} = params) do
+    force_primary_name = Map.get(params, "force_primary_name", false)
+    Logger.debug "IM:C.create_or_update: force_primary_name: #{inspect(force_primary_name)}"
     case ControllerHelpers.check_api_key(api_key) do
       true ->
-        Persons.Merger.merge(data) |> GupIndexManager.Resource.Persons.Execute.execute_actions() |> respond(conn)
+        Persons.Merger.merge(Map.put(data, "force_primary_name", force_primary_name == "true")) |> Persons.Execute.execute_actions() |> GupIndexManager.Resource.Gup.update_gup() |> respond(conn)
       false ->
         json Plug.Conn.put_status(conn, 401), %{status: "401", message: "error, unauthorized key"}
     end

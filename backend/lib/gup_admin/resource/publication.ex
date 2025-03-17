@@ -2,12 +2,12 @@ defmodule GupAdmin.Resource.Publication do
   alias GupAdmin.Resource.Search
 
   def index_manager_base_url do
-    System.get_env("GUP_INDEX_MANAGER_URL") || "http://localhost:4010"
+    System.fetch_env!("GUP_INDEX_MANAGER_URL")
   end
 
   # post to external site with httpoison
   def post_publication_to_gup(id, gup_user) do
-    api_key = System.get_env("GUP_API_KEY")
+    api_key = System.fetch_env!("GUP_API_KEY")
     url = "#{gup_server_base_url()}/v1/drafts_admin?api_key=#{api_key}&username=#{gup_user}"
     pub = show_raw(id)
     body = %{"publication" => pub} |> Jason.encode!()

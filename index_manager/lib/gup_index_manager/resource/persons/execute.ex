@@ -1,12 +1,14 @@
 defmodule GupIndexManager.Resource.Persons.Execute do
 
+  require Logger
+
   def execute_actions({:error, error, error_log_data}) do
     GupIndexManager.Resource.Logger.log({:error, error, error_log_data})
     {:error, error, error_log_data}
   end
 
   def execute_actions({:ok, primary_data, :no_actions}) do
-    IO.inspect("input data exist in index, no actions necessary")
+    # IO.inspect("input data exist in index, no actions necessary")
     {:ok, primary_data, :no_actions}
   end
 
@@ -15,19 +17,20 @@ defmodule GupIndexManager.Resource.Persons.Execute do
   # end
 
   def execute_actions({:ok, primary_data, actions}) do
-    # IO.inspect(actions, label: "Actions")
+    Logger.debug("IM:R.execute_actions: ACTIONS: #{inspect(actions)}")
     result_data = Enum.reduce(actions, primary_data, fn action, primary_data ->
       execute_action(primary_data, action)
     end)
-    GupIndexManager.Resource.Logger.log({:transaction, actions, result_data})
-    {:ok, result_data}
-  #   |> IO.inspect(label: "Primary data")
+
+    Logger.debug("IM:R.execute_actions: result_data: #{inspect(result_data)}")
+    {:ok, result_data, actions}
 
   end
 
   def execute_action(data, {:create_or_update_person}) do
     # Send data to create_or_update_person
-    IO.puts "Create or update person"
+    # IO.puts "Create or update person"
+    # check if data needs to be sent to gup
     data = set_name_count(data)
     GupIndexManager.Resource.Persons.create_or_update_person(data)
     data
@@ -68,9 +71,6 @@ defmodule GupIndexManager.Resource.Persons.Execute do
   end
 
   def execute_action(data, {:update_name, name}) do
-    IO.puts("---------- dfdd- - --------------------------------------------")
-    IO.inspect(name, label: "name dsfdsdf")
-    IO.inspect(data, label: "name dsfdsdf")
     # Names has the same gup_person_id, so update the name and dates
     name = Map.put(name, "full_name", "#{name["first_name"]} #{name["last_name"]}")
     |> Map.put("primary", true)
@@ -87,7 +87,7 @@ defmodule GupIndexManager.Resource.Persons.Execute do
   end
 
   def execute_action(data, {:acquire_gup_id, name_data}) do
-    name_data = Map.put(name_data, "gup_person_id", acquire_gup_person_id())
+    name_data = Map.put(name_data, "gup_person_id", GupIndexManager.Resource.Gup.get_next_gup_id())
     execute_action(data, {:add_name, name_data})
   end
 
@@ -115,22 +115,20 @@ defmodule GupIndexManager.Resource.Persons.Execute do
   end
 
   def acquire_gup_person_id() do
-    # TODO: ask GUP for a new gup_person_id
-      api_key = System.get_env("GUP_API_KEY")
-      #. https://gup-server-lab.ub.gu.se/v1/people/get_next_id
-      url = "#{gup_server_base_url()}/v1/poeple/get_next_id?api_key=#{api_key}"
-      body = %{}
-      HTTPoison.post(url, body, [{"Content-Type", "application/json"}])
+    Logger.debug("IM:R.acquire_gup_person_id")
+      api_key = System.fetch_env!("GUP_API_KEY")
+      url = "#{gup_server_base_url()}/v1/people/get_next_id?api_key=#{api_key}"
+      Logger.debug("IM:R.acquire_gup_person_id: url: #{url}")
+      HTTPoison.get(url, [{"Content-Type", "application/json"}])
       |> case do
         {:ok, %HTTPoison.Response{status_code: 200, body: body}} -> body |> Jason.decode!() |> Map.get("id")
         {:ok, %HTTPoison.Response{status_code: 404}} -> {:error, "Not found"}
         {:error, %HTTPoison.Error{reason: reason}} -> {:error, reason}
       end
-
   end
 
   def gup_server_base_url() do
-    System.get_env("GUP_SERVER_BASE_URL", "http://localhost:40191")
+    System.fetch_env!("GUP_SERVER_BASE_URL")
   end
 
   def write_to_index(data, {:acquire_gup_person_id, _data}), do: data # no index update needed as data is passed to :add_name action

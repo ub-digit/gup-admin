@@ -48,18 +48,24 @@ defmodule GupIndexManager.Resource.Persons.Merger do
       "names" => sanitize_names(Map.get(data, "names", [])),
       "departments" => Map.get(data, "departments", []),
       "identifiers" => Map.get(data, "identifiers", []),
-      "year_of_birth" => Map.get(data, "year_of_birth", nil),
+      "year_of_birth" => get_year_of_birth(Map.get(data, "year_of_birth", nil)),
       "email" => Map.get(data, "email", nil),
       "deleted" => Map.get(data, "deleted", false),
-      "is_merged" => Map.get(data, "is_merged", false)
+      "is_merged" => Map.get(data, "is_merged", false),
+      "force_primary_name" => Map.get(data, "force_primary_name", false)
     }
   end
+
+  def get_year_of_birth(y_o_b) when is_bitstring(y_o_b), do: String.to_integer(y_o_b)
+  def get_year_of_birth(y_o_b) when is_integer(y_o_b), do: y_o_b
+  def get_year_of_birth(_), do: nil
 
   def sanitize_names(names) do
     # For now we assume that only one name consists in the input data
     # This may change if gup_admin will allow editing of persons
-    {primary_name, secondary_names} = names
-    |> Enum.map(fn name ->
+    # {primary_name, secondary_names} =
+      names
+     |> Enum.map(fn name ->
       %{
         "first_name" => Map.get(name, "first_name", ""),
         "last_name" => Map.get(name, "last_name", ""),
@@ -70,11 +76,11 @@ defmodule GupIndexManager.Resource.Persons.Merger do
         "primary" => false
 
       }
-     end)
-     |> List.pop_at(0)
+      end)
+    # |> List.pop_at(0)
 
-      primary_name = Map.put(primary_name, "primary", true)
-      [primary_name | secondary_names] |> List.flatten()
+    #   primary_name = Map.put(primary_name, "primary", true)
+    #   [primary_name | secondary_names] |> List.flatten()
 #      |> IO.inspect(label: "SANITIZED NAMES")
 
 
@@ -177,7 +183,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
       # |> IO.inspect(label: "MATCHES ->->->__>_>>>>>")
 
     remapped = remap_person_data(matches)
-    |> IO.inspect(label: "REMAPPPED matches")
+    # |> IO.inspect(label: "REMAPPPED matches")
     |> remove_primary_names()
     |> Enum.uniq()
  #   IO.inspect(remapped, label: "REMAPPPED matches")
@@ -243,7 +249,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   ############################################################################################################################
 
   def colliding_identifiers({_person_exist_in_index = true, person_input_data, existing_data}) do
-    #IO.puts("Person EXISTS IN INDEX, CHECK FOR COLLIDING IDENTIFIERS")
+    IO.puts("Person EXISTS IN INDEX, CHECK FOR COLLIDING IDENTIFIERS")
 
     search_colliding_identifiers(person_input_data, existing_data)
     |> Enum.any?(fn colliding -> colliding == true end)
@@ -260,7 +266,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   def has_matching_gup_person_id({:ok, person_input_data}), do: {:ok, person_input_data}
 
   def has_matching_gup_person_id({_has_gup_person_id = false, person_input_data, existing_data}),
-    do: {false, person_input_data, existing_data}
+    do: {false, person_input_data, existing_data}; IO.puts("NO MATCHING GUP PERSON ID")
 
   def has_matching_gup_person_id({_has_gup_person_id = true, gup_person_id, person_input_data, existing_data}) do
     # Check if person input data has a gup_person_id in the name that exists in the existing data
@@ -413,7 +419,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     |> List.flatten()
   end
   def merge_person({:ok, data}) do
-    # IO.inspect("MERGE PERSON no secondary data")
+     #IO.inspect("MERGE PERSON no secondary data")
     # IO.inspect(data, label: "DATA")
     {:ok, data}
   end
@@ -427,7 +433,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     # IO.inspect("MERGE PERSON----------------------")
     # IO.inspect(secondary_data, label: "SECONDARY DATA")
 
-    actions = merge_names(primary_data, secondary_data)
+    actions = merge_names(primary_data, secondary_data, person_input_data)
       |> merge_year_of_birth(primary_data, secondary_data, person_input_data)
       |> merge_identifiers(primary_data, secondary_data)
       # |> merge_year_of_birth(primary_data, secondary_data)
@@ -463,10 +469,9 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   end
 
   # TODO: needs rewrite to make code more readable. Split into smaller functions
-  def merge_names(primary_data, secondary_data) do
+  def merge_names(primary_data, secondary_data, person_input_data) do
     #  IO.inspect(primary_data, label: "PRIMARY DATA")
     #  IO.inspect(secondary_data, label: "Secondary DATA")
-
     # merge the names from secondary data into primary data
     # if a name form in secondary data has the same gup_person_id as a name form in primary data, update first_name and last_name in primary data
     # if a name form in secondary data does not exist in primary data, add it to primary data
@@ -479,7 +484,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
       is_existing_name_form(primary_names, name) == false
     end)  # remove existing names from secondary data to avoid duplicates
     # check if the new/existing names have a gup_person_id
-    Enum.map(secondary_names, fn secondary_name ->
+    name_actions = Enum.map(secondary_names, fn secondary_name ->
       Enum.any?(primary_names, fn primary_name ->
         primary_name["gup_person_id"] == secondary_name["gup_person_id"]
       end)
@@ -507,9 +512,39 @@ defmodule GupIndexManager.Resource.Persons.Merger do
       end
     end)
     |> List.flatten()
+
+    force = Map.get(person_input_data, "force_primary_name", true)
+    IO.inspect(force, label: "FORCE PRIMARY NAME --- --- --- --- --- --- --- -- --- -- --- -- -- -- -- -- -- ")
+    case force do
+      true ->
+        force_set_primary_name(name_actions, person_input_data)
+      _ -> name_actions
+    end
     # |> IO.inspect(label: "NAME ACTIONS")
   end    # TODO: later check if the name has a primary
 
+  def force_set_primary_name(name_actions, person_input_data) do
+    input_name = List.first(Map.get(person_input_data, "names", []))
+
+    name_actions
+    |> Enum.map(fn name_action ->
+      name = elem(name_action, 1)
+      action = elem(name_action, 0)
+      same_name =
+        name["first_name"] == input_name["first_name"] and
+        name["last_name"] == input_name["last_name"]
+        case same_name do
+          false -> name_action
+          true -> case action do
+            :add_name -> {:add_name, Map.put(name, "primary", true)}
+            :update_name -> {:update_name,  Map.put(name, "primary", true), elem(name_action, 2)}
+            :acquire_gup_id -> {:acquire_gup_id, Map.put(name, "primary", true)}
+          end
+        end
+    end)
+
+
+  end
 
   def update_name_form_dates(primary_names, secondary_name) do
     #TODO: check if dates are the same, if not update
@@ -668,7 +703,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   end
 
   def create_or_update_person({:ok, primary_data, :no_actions}) do
-    #IO.puts("CREATE OR UPDATE existing PERSON with no actions")
+    IO.puts("CREATE OR UPDATE existing PERSON with no actions")
    {:ok, primary_data, :no_actions}
  end
 
@@ -686,9 +721,35 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   end
 
   def create_or_update_person({:ok, person_input_data}) do
-    #IO.inspect("NEW PERSON ssssss")
     # This is a new person that does not exist in the index
-    {:ok, person_input_data, [{:create_or_update_person}]}
+    IO.puts("CREATE OR UPDATE NEW PERSON")
+    {actions, person_input_data} = check_name_forms_for_gup_person_id(person_input_data)
+
+    {:ok, person_input_data, actions ++ [{:create_or_update_person}] |> List.flatten()}
+  end
+
+  def check_name_forms_for_gup_person_id(person_input_data) do
+    names = Map.get(person_input_data, "names", [])
+    actions = Enum.reduce(names, [], fn name, acc ->
+        case Map.get(name, "gup_person_id", nil) do
+          nil ->
+            acc ++ [{:acquire_gup_id, name}]
+          _ -> acc
+        end
+      end)
+      |> List.flatten()
+      |> Enum.uniq()
+
+      new_names = Enum.map(names, fn name ->
+        case Map.get(name, "gup_person_id", nil) do
+          nil -> nil
+          _ -> name
+        end
+      end)
+      |> Enum.filter(fn name -> name != nil end)
+
+      {actions, Map.put(person_input_data, "names", new_names)}
+
   end
 
   def remap_person_data(hits) do
