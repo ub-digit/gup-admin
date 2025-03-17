@@ -40,9 +40,9 @@ defmodule GupAdmin.Resource.Person do
 
   def id_codes_to_exclude do
     default = ""
-    exlude = System.get_env("EXCLUDE_PERSON_IDENTIFICATION_CODES") || default
-    Logger.debug("BE:R.id_codes_to_exclude: id_codes_to_exclude: #{exlude}")
-    exlude
+    exclude = System.get_env("EXCLUDE_PERSON_IDENTIFICATION_CODES") || default
+    Logger.debug("BE:R.id_codes_to_exclude: id_codes_to_exclude: #{exclude}")
+    exclude
     |> String.split(",")
     |> Enum.map(&String.trim/1)
 
