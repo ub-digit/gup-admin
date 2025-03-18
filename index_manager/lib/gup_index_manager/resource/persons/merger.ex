@@ -435,6 +435,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
 
     actions = merge_names(primary_data, secondary_data, person_input_data)
       |> merge_year_of_birth(primary_data, secondary_data, person_input_data)
+      |> merge_departments(primary_data, secondary_data, person_input_data)
       |> merge_identifiers(primary_data, secondary_data)
       # |> merge_year_of_birth(primary_data, secondary_data)
       |> delete_secondary_data(secondary_data, primary_data)
@@ -514,7 +515,6 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     |> List.flatten()
 
     force = Map.get(person_input_data, "force_primary_name", true)
-    IO.inspect(force, label: "FORCE PRIMARY NAME --- --- --- --- --- --- --- -- --- -- --- -- -- -- -- -- -- ")
     case force do
       true ->
         force_set_primary_name(name_actions, person_input_data)
@@ -542,7 +542,26 @@ defmodule GupIndexManager.Resource.Persons.Merger do
           end
         end
     end)
+  end
 
+  def merge_departments(actions, primary_data, secondary_data, person_input_data) do
+    input_deps = Map.get(person_input_data, "departments", [])
+    primary_deps = Map.get(primary_data, "departments", [])
+    secondary_deps = Enum.map(secondary_data, fn secondary_person -> Map.get(secondary_person, "departments", []) end) |> List.flatten() |> Enum.uniq()
+
+    new_deps = case length(input_deps) > 0 do
+      true -> input_deps
+      false -> case length(primary_deps) > length(secondary_deps) do
+        true -> primary_deps
+        false -> secondary_deps
+      end
+
+    end
+
+    case length(new_deps) do
+      0 -> actions
+      _ -> actions ++ [{:update_departments, new_deps}]
+    end
 
   end
 
