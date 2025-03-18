@@ -28,7 +28,7 @@ defmodule GupIndexManager.Resource.Persons.Execute do
   end
 
   def execute_action(data, {:update_departments, department_data}) do
-    data = Map.put(data, "departments", department_data)
+    Map.put(data, "departments", department_data)
   end
 
   def execute_action(data, {:create_or_update_person}) do

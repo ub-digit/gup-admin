@@ -545,12 +545,12 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   end
 
   def merge_departments(actions, primary_data, secondary_data, person_input_data) do
-    deps = Map.get(person_input_data, "departments", [])
+    input_deps = Map.get(person_input_data, "departments", [])
     primary_deps = Map.get(primary_data, "departments", [])
     secondary_deps = Enum.map(secondary_data, fn secondary_person -> Map.get(secondary_person, "departments", []) end) |> List.flatten() |> Enum.uniq()
 
-    new_deps = case length(deps) > 0 do
-      true -> deps
+    new_deps = case length(input_deps) > 0 do
+      true -> input_deps
       false -> case length(primary_deps) > length(secondary_deps) do
         true -> primary_deps
         false -> secondary_deps
