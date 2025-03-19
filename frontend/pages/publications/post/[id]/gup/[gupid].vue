@@ -51,7 +51,7 @@
             />
             <PostDisplayCompare
               v-if="!isPendingUpdate"
-              :dataMatrix="importedPostById && importedPostById.data"
+              :dataMatrix="importedPostById?.data"
             />
           </div>
         </div>
@@ -164,27 +164,17 @@ const {
   fetchImportedPosts,
   createImportedPostInGup,
   mergePosts,
-  $importedReset,
 } = importedPostsStore;
 const {
   importedPostById,
   pendingImportedPostById,
   pendingCreateImportedPostInGup,
   errorImportedPostById,
-  selectedUserComputed,
 } = storeToRefs(importedPostsStore);
 const comparePostsStore = useComparePostsStore();
-const { fetchGupPostsByTitle, fetchGupPostsById, fetchComparePostsMatrix } =
-  comparePostsStore;
-const {
-  gupPostsByTitle,
-  pendingGupPostsByTitle,
-  gupPostsById,
-  pendingGupPostsById,
-  postsCompareMatrix,
-  errorPostsCompareMatrix,
-  pendingComparePost,
-} = storeToRefs(comparePostsStore);
+const { fetchComparePostsMatrix } = comparePostsStore;
+const { postsCompareMatrix, errorPostsCompareMatrix, pendingComparePost } =
+  storeToRefs(comparePostsStore);
 
 if (route.params.gupid === "empty" || route.params.gupid === "error") {
   await fetchImportedPostById(route.params.id as string);
@@ -264,7 +254,6 @@ if (
     (item) => item.display_label === "title"
   )?.first?.value?.title as string;
 }
-
 async function merge() {
   const ok = confirm(t("messages.confirm_merge_in_gup"));
   if (ok) {

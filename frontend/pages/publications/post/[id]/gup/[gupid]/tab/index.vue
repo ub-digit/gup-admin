@@ -81,13 +81,12 @@ import { storeToRefs } from "pinia";
 
 const { t } = useI18n();
 const route = useRoute();
-const router = useRouter();
 const searchTitleStr: Ref<string> = ref("");
 
 const comparePostsStore = useComparePostsStore();
 const importedPostsStore = useImportedPostsStore();
-const { fetchGupPostsByTitle, fetchGupPostsById, fetchComparePostsMatrix } =
-  comparePostsStore;
+const { fetchGupPostsByTitle, fetchGupPostsById } = comparePostsStore;
+
 const {
   gupPostsByTitle,
   pendingGupPostsByTitle,
@@ -96,13 +95,8 @@ const {
   postsCompareMatrix,
 } = storeToRefs(comparePostsStore);
 
-const {
-  importedPostById,
-  pendingImportedPostById,
-  pendingCreateImportedPostInGup,
-  errorImportedPostById,
-  selectedUser,
-} = storeToRefs(importedPostsStore);
+const { importedPostById, errorImportedPostById } =
+  storeToRefs(importedPostsStore);
 
 const debounceFn = useDebounceFn(() => {
   if (importedPostById) {
@@ -119,10 +113,11 @@ let item_row_id: string = "";
 if (
   route.params.gupid !== "empty" &&
   route.params.gupid !== "error" &&
+  postsCompareMatrix &&
   postsCompareMatrix.value
 ) {
   item_row_title = postsCompareMatrix?.value?.find(
-    (item) => item.display_label === "title"
+    (item) => item?.display_label === "title"
   )?.first.value.title;
   item_row_id = postsCompareMatrix.value.find(
     (item) => item.display_label === "id"
