@@ -304,10 +304,6 @@
 </template>
 
 <script lang="ts" setup>
-import Spinner from "./Spinner.vue";
-
-const config = useRuntimeConfig();
-
 const { t } = useI18n();
 const props = defineProps(["dataMatrix"]);
 const numberOfAuthorsToList = 3;
