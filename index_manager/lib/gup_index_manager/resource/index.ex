@@ -63,6 +63,7 @@ defmodule GupIndexManager.Resource.Index do
     |> Enum.map(fn publication ->
       publication.json |> Jason.decode!()
       |> Map.put("attended", publication.attended)
+      |> Map.put("deleted", publication.deleted)
     end)
   end
 

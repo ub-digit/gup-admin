@@ -71,8 +71,14 @@ defmodule GupAdmin.Resource.Search.Query do
                   }
                 },
                 %{
-                  "term" => %{
-                    "deleted" => false
+                  "query" => %{
+                    "bool" => %{
+                      "must_not" => %{
+                        "term" => %{
+                          "deleted" => true
+                        }
+                      }
+                    }
                   }
                 }
               ]
@@ -96,8 +102,14 @@ defmodule GupAdmin.Resource.Search.Query do
               }
             },
             %{
-              "term" => %{
-                "deleted" => false
+              "query" => %{
+                "bool" => %{
+                  "must_not" => %{
+                    "term" => %{
+                      "deleted" => true
+                    }
+                  }
+                }
               }
             }
           ]
