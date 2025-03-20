@@ -49,7 +49,7 @@ defmodule GupIndexManager.Resource.Index do
 
 
   # TODO: Move to publication resource
-  def rebuild_index do
+  def rebuild_index() do
     create_index(@publications_index)
     Model.Publication |> GupIndexManager.Repo.all()
     |> remap_for_index()
