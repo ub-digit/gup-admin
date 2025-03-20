@@ -20,8 +20,11 @@ defmodule GupIndexManager.Resource.Gup do
 
   def update_gup({:error, error, error_log_data}), do: {:error, error, error_log_data}
 
-  def update_gup({:ok, person_data, _actions}), do: update_gup(person_data)
-  def update_gup(person_data) do
+  def update_gup({:ok, person_data, _actions}, initial_load), do: update_gup(person_data, initial_load)
+  def update_gup(person_data, _initial_load = true) do
+     {:ok, person_data}
+  end
+  def update_gup(person_data, _initial_load = false) do
     compose_updated_data(person_data)
     |> send_updated_data_to_gup()
     {:ok, person_data}
