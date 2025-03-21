@@ -2,6 +2,8 @@ defmodule GupIndexManager.Resource.Index do
   alias Elastix.Index
   alias GupIndexManager.Resource.Index.Config
   alias GupIndexManager.Model
+  require Logger
+  import Ecto.Query
   @publications_index "publications"
   @departments_index "departments"
 
@@ -10,6 +12,40 @@ defmodule GupIndexManager.Resource.Index do
   def get_indexes do
     [get_persons_index(), @publications_index, @departments_index]
   end
+
+  # ----------------------------- Rebuild index bulk -----------------------------
+  def rebuild_publication_index_bulk(limit \\ 10000, offset \\ 0) do
+    Logger.info("Rebuilding index posts #{offset} to #{offset + limit}")
+    # Fetch publication range from the database
+    from(p in Model.Publication, select: p, limit: ^limit, offset: ^offset)
+    |> GupIndexManager.Repo.all()
+    |> build_bulk_rows()
+    |> bulk_index(limit, offset)
+  end
+
+  def build_bulk_rows([]), do: {:ok, "Done"}
+  def build_bulk_rows(publications) do
+    publications
+    |> remap_for_index()
+    |> remap_for_bulk(@publications_index)
+  end
+
+  def remap_for_bulk(data, index) do
+    Enum.map(data, fn publication ->
+      [%{"index" =>  %{"_index" => index, "_id" => publication["id"]}},
+      publication]
+    end)
+    |> List.flatten()
+  end
+
+  def bulk_index({:ok, "Done"}, _, _), do: {:ok, "Done"}
+  def bulk_index(index_data, limit, offset) do
+    Elastix.Bulk.post(elastic_url(), index_data)
+    offset = offset + limit
+    rebuild_publication_index_bulk(limit, offset)
+  end
+
+  # --------------------------------------------------------------------------------
 
   def reset_index(index) do
     Enum.member?(get_indexes(), index)
