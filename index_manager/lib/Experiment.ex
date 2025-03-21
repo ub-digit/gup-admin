@@ -2,7 +2,11 @@ defmodule Experiment do
   @moduledoc """
   Module to generate dummy posts with randomized content using string keys.
   """
-require Logger
+  import Ecto.Query
+  alias GupIndexManager.Model
+  alias GupIndexManager.Repo
+
+  require Logger
 
   # Template for a dummy post
   @base_post %{
@@ -86,11 +90,45 @@ require Logger
     z = [%{"v" => 1, "name" => "leif"}, %{"v" => 2, "name" => "leif"}, %{"v" => 3, "name" => "leif"}, %{"v" => 4, "name" => "leif"}, %{"v" => 5, "name" => "leif"}]
     # in case there is a map in z that has a key "v" with value 3, return that maps value for key "name"
     Enum.find_value(z, fn %{"v" => v, "name" => name} -> if v == 3, do: name end)
-
-
-
-
   end
 
+  def rebuild_index_bulk(limit\\ 1, offset \\ 0) do
+    IO.inspect("Rebuilding index posts #{offset} to #{offset + limit}")
+    from(p in GupIndexManager.Model.Publication, select: p, limit: ^limit, offset: ^offset)
+    |> GupIndexManager.Repo.all()
+    |> build_bulk_rows(limit, offset)
+    |> bulk_index(limit, offset)
+
+  end
+  def bulk_index({:ok, "Done"}, _, _), do: {:ok, "Done"}
+  def bulk_index(index_data, limit, offset) do
+    Elastix.Bulk.post("http://elasticsearch:9200", index_data)
+    offset = offset + limit
+    rebuild_index_bulk(limit, offset)
+  end
+
+  def build_bulk_rows([], _limit, _offset), do: {:ok, "Done"}
+  def build_bulk_rows(data, _limit, _offset) do
+    data
+    |> remap_for_index()
+    |> remap_for_bulk("publications")
+  end
+
+  def remap_for_index(publications) do
+    publications
+    |> Enum.map(fn publication ->
+      publication.json |> Jason.decode!()
+      |> Map.put("attended", publication.attended)
+      |> Map.put("deleted", publication.deleted)
+    end)
+  end
+
+  def remap_for_bulk(data, index) do
+    Enum.map(data, fn publication ->
+      [%{"index" =>  %{"_index" => index, "_id" => publication["id"]}},
+      publication]
+    end)
+    |> List.flatten()
+  end
 
 end
