@@ -131,4 +131,10 @@ defmodule Experiment do
     |> List.flatten()
   end
 
+
+  def get_from_db do
+    GupIndexManager.Model.Department
+    |> GupIndexManager.Repo.all()
+
+  end
 end

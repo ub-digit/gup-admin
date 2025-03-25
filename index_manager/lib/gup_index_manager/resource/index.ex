@@ -161,4 +161,25 @@ defmodule GupIndexManager.Resource.Index do
         end
     end
   end
+
+  def update_department(attrs) do
+    json = attrs
+    |> Map.get("json")
+    |> Jason.decode!()
+
+    Elastix.Document.index(elastic_url(), @departments_index, "_doc", attrs["department_id"], json, [])
+    |> case do
+      {:ok, %{body: %{ "error" => error}}} -> {:error, error}
+      {:ok, _} -> {:ok, "ok"}
+    end
+    |> case do
+      {:error, error} -> %{"error" => error}
+      {:ok, _} ->
+        Elastix.Index.refresh(elastic_url(), @departments_index)
+        |> case do
+          {:ok, %{body: %{ "error" => error}}} -> {:error, error}
+          {:ok, _} -> %{"status" => "ok"}
+        end
+    end
+  end
  end

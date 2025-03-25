@@ -2,7 +2,7 @@ defmodule GupIndexManager.Model.Department do
   use Ecto.Schema
   import Ecto.Changeset
 
-  schema "department" do
+  schema "departments" do
     field :json, :string
     field :department_id, :integer
 
@@ -16,7 +16,7 @@ defmodule GupIndexManager.Model.Department do
     |> validate_required([:json, :department_id])
   end
 
-  def find_by_department_id(department_id) do
+  def find_department_by_department_id(department_id) do
     GupIndexManager.Model.Department
     |> GupIndexManager.Repo.get_by(department_id: department_id)
     |> case do

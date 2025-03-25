@@ -419,8 +419,10 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     |> List.flatten()
   end
   def merge_person({:ok, data}) do
-     #IO.inspect("MERGE PERSON no secondary data")
+     IO.inspect("MERGE PERSON no secondary data xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
     # IO.inspect(data, label: "DATA")
+    name = Map.get(data, "names", []) |> List.first() |> Map.put("primary", true)
+    data = Map.put(data, "names", [name])
     {:ok, data}
   end
 
