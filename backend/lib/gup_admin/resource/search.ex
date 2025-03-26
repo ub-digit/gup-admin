@@ -159,47 +159,69 @@ defmodule GupAdmin.Resource.Search do
     HTTPoison.delete(url, [{"Content-Type", "application/json"}])
   end
   # TODO: Move to query module
-  def search_departments(%{"term" => term, "year" => year}) do
-    query = %{
+  def search_departments(%{"query" => query}) do
+    # q = %{
+    #   "track_total_hits" => true,
+    #   "query" => %{
+    #     "bool" => %{
+    #       "must" => [
+    #         %{
+    #           "query_string" => %{
+    #             "default_operator" => "AND",
+    #             "fields" => ["name^15"],
+    #             "query" => query
+    #           }
+    #         },
+            # %{
+            #   "range" => %{
+            #     "start_year" => %{
+            #       "lte" => year
+            #     }
+            #   }
+            # },
+            # %{
+            #   "bool" => %{
+            #     "should" => [
+            #       %{
+            #         "range" => %{
+            #           "end_year" => %{
+            #             "gte" => year
+            #           }
+            #         }
+            #       },
+            #       %{
+            #         "bool" => %{
+            #           "must_not" => %{
+            #             "exists" => %{
+            #               "field" => "end_year"
+            #             }
+            #           }
+            #         }
+            #       }
+            #     ]
+            #   }
+            # }
+    #       ]
+    #     }
+    #   }
+    # }
+
+    q = %{
+      "track_total_hits" => true,
       "query" => %{
         "bool" => %{
           "must" => [
-            %{
-              "query_string" => %{
-                "default_operator" => "AND",
-                "fields" => ["name^15"],
-                "query" => term
-              }
-            },
-            %{
-              "range" => %{
-                "start_year" => %{
-                  "lte" => year
+            if String.trim(query) == "" do
+              %{"match_all" => %{}}
+            else
+              %{
+                "query_string" => %{
+                  "default_operator" => "AND",
+                  "fields" => ["name^15", "name_en^15", "orgdbid^10"],
+                  "query" => query
                 }
               }
-            },
-            %{
-              "bool" => %{
-                "should" => [
-                  %{
-                    "range" => %{
-                      "end_year" => %{
-                        "gte" => year
-                      }
-                    }
-                  },
-                  %{
-                    "bool" => %{
-                      "must_not" => %{
-                        "exists" => %{
-                          "field" => "end_year"
-                        }
-                      }
-                    }
-                  }
-                ]
-              }
-            }
+            end
           ]
         }
       }
@@ -207,9 +229,15 @@ defmodule GupAdmin.Resource.Search do
 
 
 
-    {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(elastic_url(), "departments", [], query)
-    hits
+    {:ok, %{body: %{"hits" => hits}}} = Elastix.Search.search(elastic_url(), "departments", [], q)
+    data = hits
+    |> Map.get("hits")
     |> Enum.map(fn dep -> Map.get(dep, "_source") end)
+    %{
+      "total" => Map.get(hits, "total") |> Map.get("value"),
+      "data" => data,
+      "showing" => length(data)
+    }
   end
 
   def get_person(id) do
@@ -249,22 +277,6 @@ defmodule GupAdmin.Resource.Search do
 
 
   def get_all_persons() do
-    # query = %{
-    #   "track_total_hits" => true,
-    #   "size" => @query_limit,
-    #   "query" => %{
-    #     "bool" => %{
-    #       "must" => %{
-    #         "match_all" => %{}
-    #       },
-    #       "filter" => %{
-    #         "term" => %{
-    #           "deleted" => false
-    #         }
-    #       }
-    #     }
-    #   }
-    # }
     query = %{
       "track_total_hits" => true,
       "size" => @query_limit,
