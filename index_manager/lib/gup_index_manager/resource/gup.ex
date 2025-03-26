@@ -54,21 +54,11 @@ defmodule GupIndexManager.Resource.Gup do
           "first_name" => name["first_name"],
           "last_name" => name["last_name"],
           "year_of_birth" => person_as_a_map["year_of_birth"],
-          "xaccount" => get_xaccount(identifiers)
+          "identifiers" => identifiers
         }
       }, name["gup_person_id"]}
         acc ++ [p]
     end)
-  end
-
-
-  def get_xaccount(identifiers) do
-    IO.inspect(identifiers, label: "IDENTIFIERS")
-    val = Enum.find(identifiers, fn identifier -> identifier["code"] == "X_ACCOUNT" end)
-    case val do
-      nil -> nil
-      _ -> val |> Map.get("value", nil)
-    end
   end
 
   def send_updated_data_to_gup(data) do
