@@ -1,0 +1,1 @@
+docker compose exec index-manager-db psql -U postgres -d gup_index_manager_dev -f docker-entrypoint-initdb.d/departments.sql
