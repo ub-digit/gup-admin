@@ -126,7 +126,6 @@ defmodule GupIndexManager.Resource.Index.Config do
         }
       }
     }
-
   end
 
   def persons_config do

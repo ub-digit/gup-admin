@@ -17,7 +17,6 @@ defmodule GupIndexManager.Resource.Gup do
     "#{gup_server_base_url()}/v1/people/#{id}?api_key=#{gup_backand_api_key()}"
   end
 
-
   def update_gup({:error, error, error_log_data}), do: {:error, error, error_log_data}
 
   def update_gup({:ok, person_data, _actions}, initial_load), do: update_gup(person_data, initial_load)
@@ -29,8 +28,6 @@ defmodule GupIndexManager.Resource.Gup do
     |> send_updated_data_to_gup()
     {:ok, person_data}
   end
-
-
 
   def get_next_gup_id() do
     Logger.debug("IM:Gup.acquire_gup_person_id")

@@ -184,7 +184,6 @@ defmodule GupIndexManager.Resource.Persons.Merger do
 
     remapped = remap_person_data(matches)
     # |> IO.inspect(label: "REMAPPPED matches")
-    |> remove_primary_names()
     |> Enum.uniq()
  #   IO.inspect(remapped, label: "REMAPPPED matches")
     {length(remapped) > 0, person_input_data, remapped}
@@ -373,8 +372,12 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     # There is exixting data in the index
     # set first exixting data as primary
     # add incomming data as secondary
-    primary_data = hd(existing_data)
-    secondary_data = (tl(existing_data) ++ [person_input_data]) |> List.flatten() |> Enum.uniq()
+    primary_data = case {hd(existing_data), person_input_data["force_primary_name"]} do
+      {primary_data, true} -> Map.put(primary_data, "names", primary_data["names"] |> Enum.map(fn name -> Map.put(name, "primary", false) end))
+      {primary_data, false} -> primary_data
+    end
+
+    secondary_data = (tl(existing_data) ++ [person_input_data]) |> List.flatten() |> Enum.uniq() |> remove_primary_names()
     {:ok, primary_data, secondary_data, person_input_data}
   end
 
@@ -419,8 +422,10 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     |> List.flatten()
   end
   def merge_person({:ok, data}) do
-     #IO.inspect("MERGE PERSON no secondary data")
+     IO.inspect("MERGE PERSON no secondary data xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
     # IO.inspect(data, label: "DATA")
+    name = Map.get(data, "names", []) |> List.first() |> Map.put("primary", true)
+    data = Map.put(data, "names", [name])
     {:ok, data}
   end
 
@@ -518,7 +523,9 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     case force do
       true ->
         force_set_primary_name(name_actions, person_input_data)
-      _ -> name_actions
+      _ ->
+        IO.inspect(name_actions, label: "NAME ACTIONS xxxxxxxxxxxxxxxxxxxx....xxxxxxxxxxxxxxxxxxxxx...xxxxxxxxxxxxxxxxxxxxxxxxxx...xxxxxxxxxxxxxxx")
+        name_actions
     end
     # |> IO.inspect(label: "NAME ACTIONS")
   end    # TODO: later check if the name has a primary

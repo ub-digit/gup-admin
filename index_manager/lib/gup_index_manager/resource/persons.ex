@@ -46,7 +46,7 @@ defmodule GupIndexManager.Resource.Persons do
         # TODO: Check merge_actions_list for delete actions and abort if found
         person_data_as_map = check_for_missing_gup_person_id(person_data_as_map)
         create_or_update_person(person_data_as_map)
-        res = GupIndexManager.Resource.Gup.update_gup(person_data_as_map)
+        res = GupIndexManager.Resource.Gup.update_gup(person_data_as_map, false)
         case res do
         {:ok, _person_data} -> %{"status" => "ok"}
         _ -> {:error, %{errors: %{im_message: "ERROR_SENDING_DATA_TO_GUP"}}}
