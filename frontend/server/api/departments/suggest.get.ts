@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
   const query = getQuery(event);
   console.log("query", query);
-  const res: DepartmentArray = {
+  /*const res: DepartmentArray = {
     data: [
       {
         id: 1798,
@@ -39316,10 +39316,10 @@ export default defineEventHandler(async (event) => {
     ],
     showing: 13,
     total: 70,
-  };
+  };*/
 
-  /*   const res = await $fetch(
-    `${config.API_BASE_URL}/departments/?term=${query.term}&year=${query.year}`
-  ); */
+  const res = await $fetch(
+    `${config.API_BASE_URL}/departments?query=${query.query}`
+  );
   return res;
 });
