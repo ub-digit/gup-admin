@@ -129,42 +129,54 @@
     </div>
   </div>
   <div class="row" v-if="authors">
-    <div class="col-12">
+    <div class="col-6">
       <div class="row">
-        <div class="col-12">
-          <button class="btn btn-primary" @click="getPostsByAuthors">
-            Hämta publikationer för namnformer
-            <ClientOnly>
-              <Spinner
-                v-if="pendingImportedPostsByAuthors"
-                class="d-inline-block ms-2"
-              />
-            </ClientOnly>
-          </button>
+        <div class="col-6">
+          <h2>Publikationer</h2>
+        </div>
+        <div class="col">
+          <ClientOnly>
+            <Spinner
+              v-if="pendingImportedPostsByAuthors"
+              class="d-inline-block ms-2"
+            />
+          </ClientOnly>
           <div style="display: none">
             debug authorGupIds: {{ authorGupIds }}
           </div>
         </div>
       </div>
-    </div>
-    <div class="row">
-      <div class="col-6">
-        <div id="result-list-by-id" class="row">
-          <div
-            class="col scroll"
-            :class="{ 'opacity-50': pendingImportedPostsByAuthors }"
-          >
-            <div
-              v-if="importedPostsByAuthors && !importedPostsByAuthors.length"
-            >
-              {{ t("views.publications.result_list.no_imported_posts_found") }}
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <div class="col opacity-50 text-center mb-4">
+              <strong>
+                {{ numberOfImportedPostsByAuthorsShowing }}
+                {{ t("views.publications.result_list.meta.of") }}
+                {{ numberOfImportedPostsByAuthorsTotal }}
+                {{ t("views.publications.result_list.meta.posts") }}</strong
+              >
             </div>
-            <div v-else class="list-group list-group-flush border-bottom">
-              <PostRow
-                v-for="post in importedPostsByAuthors"
-                :post="post"
-                :key="post.id"
-              />
+          </div>
+          <div id="result-list-by-id" class="row">
+            <div
+              class="col scroll"
+              :class="{ 'opacity-50': pendingImportedPostsByAuthors }"
+            >
+              <div
+                v-if="importedPostsByAuthors && !importedPostsByAuthors.length"
+              >
+                {{
+                  t("views.publications.result_list.no_imported_posts_found")
+                }}
+              </div>
+              <div v-else class="list-group list-group-flush border-bottom">
+                <PostRow
+                  v-for="post in importedPostsByAuthors"
+                  :post="post"
+                  :key="post.id"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -185,8 +197,12 @@ const route = useRoute();
 const router = useRouter();
 const storeImportedPosts = useImportedPostsStore();
 const { fetchImportedPostsByAuthors, $importedReset } = storeImportedPosts;
-const { importedPostsByAuthors, pendingImportedPostsByAuthors } =
-  storeToRefs(storeImportedPosts);
+const {
+  importedPostsByAuthors,
+  pendingImportedPostsByAuthors,
+  numberOfImportedPostsByAuthorsShowing,
+  numberOfImportedPostsByAuthorsTotal,
+} = storeToRefs(storeImportedPosts);
 const storeAuthor = useAuthorsStore();
 const { fetchAuthorById } = storeAuthor;
 fetchAuthorById(route.params.id as string);
@@ -219,6 +235,10 @@ const updatedAt = computed(() => {
       day: "numeric",
     }
   );
+});
+
+watch(author, () => {
+  getPostsByAuthors();
 });
 
 const createdAt = computed(() => {
