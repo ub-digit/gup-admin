@@ -147,7 +147,7 @@ const departmentStore = useDepartmentStore();
 const { department } = storeToRefs(departmentStore);
 
 const { fetchDepartment } = departmentStore;
-await fetchDepartment(route.params.id);
+await fetchDepartment(route.params.id as string);
 </script>
 
 <style scoped></style>
