@@ -27,6 +27,11 @@ export const useLocaleStore = defineStore("locale", {
         "views.index.card.people.body": "Hantera personer",
         "views.index.card.people.link_text": "Gå till hantera personer",
 
+        "views.index.card.departments.header": "Institutioner",
+        "views.index.card.departments.body": "Hantera institutioner",
+        "views.index.card.departments.link_text":
+          "Gå till hantera all institutioner",
+
         "views.index.card.all_data.header": "All data",
         "views.index.card.all_data.body": "Hantera all data",
         "views.index.card.all_data.link_text": "Gå till hantera all data",

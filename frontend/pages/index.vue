@@ -33,11 +33,13 @@
         <div class="card">
           <div class="card-body">
             <h2 class="card-title">
-              {{ t("views.index.card.all_data.header") }}
+              {{ t("views.index.card.departments.header") }}
             </h2>
-            <p class="card-text">{{ t("views.index.card.all_data.body") }}</p>
-            <LangLink to="/publications" class="btn btn-primary">{{
-              t("views.index.card.all_data.link_text")
+            <p class="card-text">
+              {{ t("views.index.card.departments.body") }}
+            </p>
+            <LangLink to="/departments" class="btn btn-primary">{{
+              t("views.index.card.departments.link_text")
             }}</LangLink>
           </div>
         </div>
