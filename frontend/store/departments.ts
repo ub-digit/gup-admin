@@ -21,6 +21,25 @@ export const useDepartmentStore = defineStore("DepartmentStore", () => {
     query: route.query.query as string,
   });
 
+  const createDepartment = async (department: Department) => {
+    try {
+      const { data, error } = await useFetch("/api/departments/", {
+        method: "POST",
+        body: department,
+      });
+      if (data?.value?.success?.data.status === "ok") {
+        return {
+          status: "success",
+          errors: [],
+        };
+      } else if (data?.value?.errors.validation.length > 0) {
+        return { status: "error", errors: data?.value?.errors?.validation };
+      }
+    } catch (error) {
+      console.log("Something went wrong: createDepartment", error);
+    }
+  };
+
   const updateDepartment = async (id: string, department: Department) => {
     try {
       const { data, error } = await useFetch(`/api/departments/${id}`, {
@@ -112,6 +131,7 @@ export const useDepartmentStore = defineStore("DepartmentStore", () => {
     fetchDepartments,
     fetchDepartment,
     updateDepartment,
+    createDepartment,
     departments,
     pendingDepartments,
     numberOfDepartmentsTotal,

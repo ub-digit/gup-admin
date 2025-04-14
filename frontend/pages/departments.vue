@@ -50,6 +50,16 @@
           </div>
         </div>
         <div class="col">
+          <div class="row mb-4">
+            <div class="col d-flex justify-content-end">
+              <NuxtLink
+                class="btn btn-primary"
+                :class="!isVisible ? 'd-none' : ''"
+                :to="{ name: 'departments-new' }"
+                >Skapa ny institution +</NuxtLink
+              >
+            </div>
+          </div>
           <div class="row">
             <NuxtPage />
           </div>
@@ -72,6 +82,13 @@ const router = useRouter();
 
 const departmentStore = useDepartmentStore();
 const { fetchDepartments } = departmentStore;
+
+const isVisible = computed(() => {
+  if (route.name === "departments-id-show" || route.name === "departments") {
+    return true;
+  }
+  return false;
+});
 
 // throttle input
 const debouncedFn = useDebounceFn(() => {
