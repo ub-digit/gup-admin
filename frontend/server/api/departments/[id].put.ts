@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
   const query = getQuery(event);
   query.api_key = config.ADMIN_BACKEND_API_KEY;
-  const id = event?.context?.params?.id;
+  const id = event?.context?.params?.id as string;
   const data = await readBody(event);
 
   const res = await $fetch(`${config.API_BASE_URL}/api/departments/${id}`, {
