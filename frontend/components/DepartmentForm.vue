@@ -38,7 +38,7 @@
                 >
                 <input
                   name="start_year"
-                  type="text"
+                  type="number"
                   class="form-control"
                   v-model="departmentReactive.start_year"
                 />
@@ -46,7 +46,7 @@
               <div class="col">
                 <label for="end_year" class="form-label">Slutår</label>
                 <input
-                  type="text"
+                  type="number"
                   class="form-control"
                   v-model="departmentReactive.end_year"
                 />
