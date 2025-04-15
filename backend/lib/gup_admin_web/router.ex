@@ -51,6 +51,9 @@ defmodule GupAdminWeb.Router do
     put    "/persons/:id"    , PersonController, :update
     get    "/persons/:id"    , PersonController, :show
     delete "/persons/:id"    , PersonController, :delete
+    get    "/departments/:id" , DepartmentController, :show
+    put    "/departments/:id"    , DepartmentController, :update
+
   end
 
   # Enables LiveDashboard only for development
