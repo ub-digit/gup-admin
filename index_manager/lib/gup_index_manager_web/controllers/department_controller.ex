@@ -38,6 +38,7 @@ defmodule GupIndexManagerWeb.DepartmentController do
 
   # Create [POST /departments/:id]
   def create(conn, %{"api_key" => api_key, "data" => department_data}) do
+
     Logger.debug "IM:C.create: data: #{inspect(department_data)}"
     handle_request_from_be(conn, api_key, :create, [department_data])
   end
@@ -70,9 +71,11 @@ defmodule GupIndexManagerWeb.DepartmentController do
 
   defp respond_to_be(result_from_resource, conn) do
     id = Map.get(result_from_resource, "id", nil)
+    IO.inspect("-----------------------------------------------------------------")
+    Logger.debug "IM:C.respond_to_be: id: #{inspect(id)}"
     case result_from_resource do
       %{"status" => "ok"} ->
-        body_map = %{status: "ok", departmendt_id: id}
+        body_map = %{status: "ok", department_id: id}
         send_response(conn, 200, body_map)
 
       {:error, %{errors: %{im_message: "ID_MISMATCH_BETWEEN_URL_AND_DATA"}} = errors_map} ->
