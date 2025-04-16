@@ -41,12 +41,12 @@ defmodule GupIndexManager.Resource.Departments do
   end
 
   def update(id, department_data) do
-    department_id = Map.get(department_data, "id")
-    db_department = GupIndexManager.Model.Department.find_department_by_department_id(department_id)
+    # department_id = Map.get(department_data, "id")
+    db_department = GupIndexManager.Model.Department.find_department_by_department_id(id)
     IO.inspect(db_department, label: "db_department")
     attrs = %{
       "json" => department_data |> Jason.encode!(),
-      "department_id" => department_id
+      "department_id" => id
     }
 
     db_department
@@ -54,7 +54,10 @@ defmodule GupIndexManager.Resource.Departments do
     |> GupIndexManager.Repo.insert_or_update()
     Index.update_department(attrs)
 
-    %{"status_generate_department" => "200", "message" => "Department updated"}
+    %{
+      "status" => "ok",
+      "id" =>  id
+    }
   end
 
 
