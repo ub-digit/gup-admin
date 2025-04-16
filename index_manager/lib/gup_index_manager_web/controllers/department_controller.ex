@@ -69,9 +69,6 @@ defmodule GupIndexManagerWeb.DepartmentController do
 #-----------------------------------------------------------------------------------------------
 
   defp respond_to_be(result_from_resource, conn) do
-    IO.inspect("--------------------------------------------------")
-    IO.inspect(result_from_resource, label: "IM:C.respond_to_be: result_from_resource")
-    IO.inspect("--------------------------------------------------")
     id = Map.get(result_from_resource, "id", nil)
     case result_from_resource do
       %{"status" => "ok"} ->
