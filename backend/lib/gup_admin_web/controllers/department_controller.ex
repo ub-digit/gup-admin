@@ -51,14 +51,14 @@ defmodule GupAdminWeb.DepartmentController do
     case result_from_resource do
 
       # Identifier codes
-      {:ok, %{id_codes: %{status_code: status_code, body: body_map}}} ->
-        send_response(conn, status_code, body_map)
+      # {:ok, %{id_codes: %{status_code: status_code, body: body_map}}} ->
+      #   send_response(conn, status_code, body_map)
 
       # Validation error
       {:error, %{errors: %{fe_validation: validation_error_list},
-                           data:          full_person_map}}  ->
+                           data:          department_data}}  ->
       send_response(conn, 200, %{errors: %{validation: validation_error_list},
-                                 data:   full_person_map})
+                                 data:   department_data})
 
       # CRUD success
       {:ok, %{success: %{status_code: status_code, body: body_map}}} ->
