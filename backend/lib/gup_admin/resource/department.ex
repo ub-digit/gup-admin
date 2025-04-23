@@ -36,13 +36,12 @@ defmodule GupAdmin.Resource.Department do
   # To IM: POST /department [CREATE]
   def create(department_data) do
     Logger.debug("BE:R.create: department_data: #{inspect(department_data)}")
-    # Logger.debug("BE:R.create: person_data_as_map: #{inspect(person_data_as_map)}")
-    # case PersonValidator.validate(person_data_as_map) do
-    #    :ok -> map2json(%{data: person_data_as_map})
-    #           |> do_create()
-    #   {:error, validation_error_list} -> {:error, %{errors: %{fe_validation: validation_error_list},
-    #                                                 data:   person_data_as_map}}
-    # end
+    case GupAdmin.Resource.Department.DepartmentValidator.validate(department_data) do
+      {:ok, department_data} -> map2json(%{data: department_data})
+             |> do_create()
+     {:error, validation_error_list} -> {:error, %{errors: %{fe_validation: validation_error_list},
+                                                   data:   department_data}}
+   end
   end
 
   defp do_create({:ok, body}) do
@@ -64,7 +63,6 @@ defmodule GupAdmin.Resource.Department do
     end
   end
   defp do_update({:ok, body}, id) do
-    IO.inspect("dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd")
     handle_request_to_im(:put, "#{@im_endpoint}/#{id}", [200], headers: @send_and_receive_json,
                                                                body:    body)
   end

@@ -4,25 +4,26 @@ defmodule GupIndexManager.Model.Department do
 
   schema "departments" do
     field :json, :string
-    field :department_id, :integer
-
     timestamps()
   end
 
   @doc false
   def changeset(department, attrs) do
     department
-    |> cast(attrs, [:json, :department_id])
-    |> validate_required([:json, :department_id])
+    |> cast(attrs, [:json])
+    |> validate_required([:json])
   end
 
-  def find_department_by_department_id(department_id) do
+
+  def find_department_by_id(id) when is_nil(id), do: %GupIndexManager.Model.Department{}
+  def find_department_by_id(id) do
     GupIndexManager.Model.Department
-    |> GupIndexManager.Repo.get_by(department_id: department_id)
+    |> GupIndexManager.Repo.get_by(id: id)
     |> case do
-      nil -> %GupIndexManager.Model.Department{}
-      department -> department
+      nil ->
+        %GupIndexManager.Model.Department{}
+      department ->
+        department
     end
   end
 end
-# iex(26)> GupIndexManager.Repo.get_by(GupIndexManager.Model.Publication, publication_id: "gup_317922fff")

@@ -2,51 +2,47 @@ defmodule GupIndexManager.Resource.Departments do
   alias GupIndexManager.Model.Department
   alias GupIndexManager.Resource.Index
 
-  # def elastic_url do
-  #   System.get_env("ELASTICSEARCH_URL", "http://localhost:9200")
-  # end
 
+  def create(%{"id" => id} = department_data) when not is_nil(id) do
+    id = Map.get(department_data, "id", nil)
+    db_department = GupIndexManager.Model.Department.find_department_by_id(id)
+    IO.inspect(db_department, label: "db_department >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
-
-  # def initialize do
-  #   {:ok, departments} = File.read("../data/departments/departments.json")
-  #   data = departments
-  #   |> Jason.decode()
-  #   |> elem(1)
-  #   |> Map.get("departments")
-  #   |> Enum.map(fn dep -> remap_for_index(dep, "departments") end)
-  #   |> List.flatten()
-
-  #   Elastix.Index.delete(elastic_url(), "departments")
-  #   Elastix.Index.create(elastic_url(), "departments", GupIndexManager.Resource.Index.Config.departments_config())
-  #   # Elastix.Index.create(elastic_url(), "departments", %{})
-  #   Elastix.Bulk.post(elastic_url(), data)
-  # end
-
-  def create(department_data) do
-    department_id = Map.get(department_data, "id")
-    db_department = GupIndexManager.Model.Department.find_department_by_department_id(department_id)
-    IO.inspect(db_department, label: "db_department")
     attrs = %{
-      "json" => department_data |> Jason.encode!(),
-      "department_id" => department_id
+      "id" => id,
+      "json" => department_data |> Jason.encode!()
     }
 
-    db_department
+    db_department = db_department
     |> Department.changeset(attrs)
     |> GupIndexManager.Repo.insert_or_update()
+    |> IO.inspect(label: "db_department mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm")
+    |> elem(1)
+
+    attrs = Map.put(attrs, "id", db_department.id)
     Index.update_department(attrs)
 
-    %{"status_generate_department" => "200", "message" => "Department created"}
+    %{"status" => "ok",
+      "id" => db_department.id,
+    }
   end
 
+  def create(department_data) do
+    IO.inspect("GET GUP DEPARTMENT ID", label: "GET GUP DEPARTMENT ID >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+    # lacking department id, get one from gup
+    id = get_gup_department_id()
+    department_data = Map.put(department_data, "id", id)
+    create(department_data)
+  end
+
+  def get_gup_department_id(), do: :rand.uniform(1_000_000)
+
+
   def update(id, department_data) do
-    # department_id = Map.get(department_data, "id")
-    db_department = GupIndexManager.Model.Department.find_department_by_department_id(id)
+    db_department = GupIndexManager.Model.Department.find_department_by_id(id)
     IO.inspect(db_department, label: "db_department")
     attrs = %{
-      "json" => department_data |> Jason.encode!(),
-      "department_id" => id
+      "json" => department_data |> Jason.encode!()
     }
 
     db_department
@@ -56,7 +52,7 @@ defmodule GupIndexManager.Resource.Departments do
 
     %{
       "status" => "ok",
-      "id" =>  id
+      "id" =>  db_department.id
     }
   end
 
