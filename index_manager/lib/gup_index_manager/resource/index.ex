@@ -167,7 +167,7 @@ defmodule GupIndexManager.Resource.Index do
     |> Map.get("json")
     |> Jason.decode!()
 
-    Elastix.Document.index(elastic_url(), @departments_index, "_doc", attrs["department_id"], json, [])
+    Elastix.Document.index(elastic_url(), @departments_index, "_doc", attrs["id"], json, [])
     |> case do
       {:ok, %{body: %{ "error" => error}}} -> {:error, error}
       {:ok, _} -> {:ok, "ok"}

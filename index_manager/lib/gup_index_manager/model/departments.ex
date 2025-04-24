@@ -10,8 +10,8 @@ defmodule GupIndexManager.Model.Department do
   @doc false
   def changeset(department, attrs) do
     department
-    |> cast(attrs, [:json])
-    |> validate_required([:json])
+    |> cast(attrs, [:id, :json])
+    |> validate_required([:id, :json])
   end
 
 

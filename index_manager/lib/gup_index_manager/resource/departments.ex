@@ -6,7 +6,6 @@ defmodule GupIndexManager.Resource.Departments do
   def create(%{"id" => id} = department_data) when not is_nil(id) do
     id = Map.get(department_data, "id", nil)
     db_department = GupIndexManager.Model.Department.find_department_by_id(id)
-    IO.inspect(db_department, label: "db_department >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
     attrs = %{
       "id" => id,
@@ -16,7 +15,6 @@ defmodule GupIndexManager.Resource.Departments do
     db_department = db_department
     |> Department.changeset(attrs)
     |> GupIndexManager.Repo.insert_or_update()
-    |> IO.inspect(label: "db_department mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm")
     |> elem(1)
 
     attrs = Map.put(attrs, "id", db_department.id)
@@ -28,7 +26,6 @@ defmodule GupIndexManager.Resource.Departments do
   end
 
   def create(department_data) do
-    IO.inspect("GET GUP DEPARTMENT ID", label: "GET GUP DEPARTMENT ID >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
     # lacking department id, get one from gup
     id = get_gup_department_id()
     department_data = Map.put(department_data, "id", id)
@@ -39,8 +36,8 @@ defmodule GupIndexManager.Resource.Departments do
 
 
   def update(id, department_data) do
+    IO.inspect(id, label: "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss")
     db_department = GupIndexManager.Model.Department.find_department_by_id(id)
-    IO.inspect(db_department, label: "db_department")
     attrs = %{
       "json" => department_data |> Jason.encode!()
     }
@@ -52,7 +49,7 @@ defmodule GupIndexManager.Resource.Departments do
 
     %{
       "status" => "ok",
-      "id" =>  db_department.id
+      "id" =>  id
     }
   end
 
