@@ -40,7 +40,7 @@ const saveDepartment = async (department: Department) => {
   if (res?.status === "success") {
     router.push({
       name: "departments-id-show",
-      params: { id: route.params.id },
+      params: { id: res?.department_id },
       query: { ...route.query },
     });
   } else if (res?.status === "error") {

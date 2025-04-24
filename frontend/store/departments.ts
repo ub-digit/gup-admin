@@ -21,11 +21,11 @@ export const useDepartmentStore = defineStore("DepartmentStore", () => {
     query: route.query.query as string,
   });
 
-  const createDepartment = async (department: Department) => {
+  const createDepartment = async (new_department: Department) => {
     try {
-      const { data, error } = await useFetch("/api/departments/", {
+      const { data, error } = await useFetch("/api/departments/new", {
         method: "POST",
-        body: department,
+        body: new_department,
       });
       if (data?.value?.success?.data.status === "ok") {
         return {
@@ -49,6 +49,7 @@ export const useDepartmentStore = defineStore("DepartmentStore", () => {
       if (data?.value?.success?.data.status === "ok") {
         return {
           status: "success",
+          department_id: data?.value?.success?.data.id,
           errors: [],
         };
       } else if (data?.value?.errors.validation.length > 0) {
