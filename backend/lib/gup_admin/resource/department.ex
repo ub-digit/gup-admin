@@ -1,6 +1,8 @@
 defmodule GupAdmin.Resource.Department do
 
   require Logger
+  alias GupAdmin.Resource.Search
+  alias Elastix, as: SE
 
   ################################
   # Vocabulary
