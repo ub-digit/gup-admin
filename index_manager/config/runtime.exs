@@ -21,6 +21,9 @@ if System.get_env("PHX_SERVER") do
 end
 
 if config_env() == :prod do
+  config :logger, :default_handler,
+    formatter: LoggerJSON.Formatters.Basic.new(metadata: [:request_id, :url])
+
   database_url =
     System.get_env("DATABASE_URL") ||
       raise """
