@@ -17,11 +17,10 @@ defmodule GupIndexManager.Resource.Departments do
     |> GupIndexManager.Repo.insert_or_update()
     |> elem(1)
 
-    attrs = Map.put(attrs, "id", db_department.id)
     Index.update_department(attrs)
 
     %{"status" => "ok",
-      "id" => db_department.id,
+      "id" => id,
     }
   end
 
@@ -36,10 +35,10 @@ defmodule GupIndexManager.Resource.Departments do
 
 
   def update(id, department_data) do
-    IO.inspect(id, label: "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss")
     db_department = GupIndexManager.Model.Department.find_department_by_id(id)
     attrs = %{
-      "json" => department_data |> Jason.encode!()
+      "json" => department_data |> Jason.encode!(),
+      "id" => id
     }
 
     db_department
