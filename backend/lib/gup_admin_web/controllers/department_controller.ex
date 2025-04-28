@@ -17,7 +17,7 @@ defmodule GupAdminWeb.DepartmentController do
     handle_request_from_fe(conn, :get_id_codes, [])
   end
 
-  # POST /departments/:id
+  # POST /departments/
   def create( conn, %{"data" => department_data}) do
     handle_request_from_fe(conn, :create, [department_data])
   end
