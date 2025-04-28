@@ -6,10 +6,13 @@ export default defineEventHandler(async (event) => {
   }
   const config = useRuntimeConfig();
   const query = getQuery(event);
+  query.api_key = config.ADMIN_BACKEND_API_KEY;
   const id = event?.context?.params?.id;
-  //const res = await $fetch(`${config.API_BASE_URL}/departments/${id}`); //createError({ statusCode: 404, statusMessage: 'Post Not Found' })//$fetch('/api/store_gup/', {query: {id: id}});
+  const res = await $fetch(`${config.API_BASE_URL}/api//departments/${id}`, {
+    params: query,
+  });
 
-  const res = {
+  /*const res = {
     id: 1798,
     name: "Akademin Valand",
     parent: null,
@@ -40,6 +43,6 @@ export default defineEventHandler(async (event) => {
     orgnr: "086600",
     is_internal: true,
     children: [],
-  };
+  };*/
   return res;
 });

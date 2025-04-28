@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 export const zDepartment = z.object({
-  id: z.number(),
-  name: z.string(),
+  id: z.number().nullable(),
+  name: z.string().nullish(),
   created_at: z.string().nullish(),
   updated_at: z.string().nullish(),
   name_sv: z.string(),
@@ -10,12 +10,12 @@ export const zDepartment = z.object({
   start_year: z.number().nullish(),
   end_year: z.number().nullish(),
   faculty_id: z.number().nullish(),
-  parentid: z.nullable(z.number()),
-  grandparentid: z.nullable(z.number()),
+  parentid: z.number().nullish(),
+  grandparentid: z.number().nullish(),
   created_by: z.string().nullish(),
-  updated_by: z.nullable(z.string()),
-  staffnotes: z.nullable(z.string()),
-  orgdbid: z.nullable(z.string()),
+  updated_by: z.string().nullish(),
+  staffnotes: z.string().nullish(),
+  orgdbid: z.string().nullish(),
   orgnr: z.string().nullish(),
   is_internal: z.boolean().nullish(),
 });

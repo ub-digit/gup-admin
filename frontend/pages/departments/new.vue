@@ -29,6 +29,7 @@ const departmentStore = useDepartmentStore();
 //const { department } = storeToRefs(departmentStore);
 
 const department: Department = reactive({
+  id: null,
   name_sv: "",
   name_en: "",
   start_year: null,
@@ -46,7 +47,7 @@ const saveDepartment = async (department: Department) => {
   if (res?.status === "success") {
     router.push({
       name: "departments-id-show",
-      params: { id: route.params.id },
+      params: { id: res?.id },
       query: { ...route.query },
     });
   } else if (res?.status === "error") {

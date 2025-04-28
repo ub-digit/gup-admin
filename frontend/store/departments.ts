@@ -30,6 +30,7 @@ export const useDepartmentStore = defineStore("DepartmentStore", () => {
       if (data?.value?.success?.data.status === "ok") {
         return {
           status: "success",
+          id: data?.value?.success?.data.id,
           errors: [],
         };
       } else if (data?.value?.errors.validation.length > 0) {
@@ -49,7 +50,7 @@ export const useDepartmentStore = defineStore("DepartmentStore", () => {
       if (data?.value?.success?.data.status === "ok") {
         return {
           status: "success",
-          department_id: data?.value?.success?.data.id,
+          id: data?.value?.success?.data.id,
           errors: [],
         };
       } else if (data?.value?.errors.validation.length > 0) {
@@ -66,7 +67,9 @@ export const useDepartmentStore = defineStore("DepartmentStore", () => {
       if (error.value) {
         throw error;
       }
-      department.value = zDepartment.parse(data.value);
+      department.value = zDepartment.parse(
+        data.value.success.data as Department
+      );
     } catch (error) {
       if (error instanceof ZodError) {
         console.log("Something went wrong: fetchDepartment from Zod", error);
