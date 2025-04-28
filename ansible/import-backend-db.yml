@@ -6,4 +6,4 @@
     vars:
       db_service: admin-db
       database_variant: postgres
-      db_dump_filename: database.sql
+      db_dump_filename: backend-database.sql

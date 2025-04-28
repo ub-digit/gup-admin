@@ -18,10 +18,10 @@ if [[ ! " $targets " =~ " $target " ]]; then
 fi
 
 ./run-playbook.sh $target export-db
-cp ./data/database.sql ../docker/db-postgres-initdb.d/database.sql
-cp ./data/index-manager-database.sql ../docker/index-manager-db-postgres-initdb.d/database.sql
-
-echo "Database dump has been copied to postgres-initdb.d directory"
 
 cd ../docker
-../mkdirs
+./mkdirs
+cp ../ansible/data/backend-database.sql ./db-postgres-initdb.d/database.sql
+cp ../ansible/data/index-manager-database.sql ./index-manager-db-postgres-initdb.d/database.sql
+
+echo "Database dump has been copied to postgres-initdb.d directory"
