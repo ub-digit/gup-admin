@@ -24,11 +24,11 @@ defmodule GupIndexManagerWeb.PersonController do
   end
 
   def respond({:ok, _data, :no_actions}, conn) do
-    json Plug.Conn.put_status(conn, 200), %{status: "200", message: "No actions necessary"}
+    json Plug.Conn.put_status(conn, 200), %{status: "200", message: "No actions necessary", data: _data}
   end
 
   def respond({:ok, _res_data}, conn) do
-    json Plug.Conn.put_status(conn, 201), %{status: "201", message: "Person updated"}
+    json Plug.Conn.put_status(conn, 201), %{status: "201", message: "Person updated", data: _res_data}
   end
 
   def index(conn, _params) do
