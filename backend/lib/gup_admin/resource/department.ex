@@ -52,7 +52,7 @@ defmodule GupAdmin.Resource.Department do
     {:error, map2json_error_map(error_message)}
   end
 
-  # To IM: PUT /persons/:id [UPDATE]
+  # To IM: PUT /department/:id [UPDATE]
   def update(id, department_data) do
     # Logger.debug("BE:R.update: person_data_as_map: #{inspect(department_data)}")
     case GupAdmin.Resource.Department.DepartmentValidator.validate(department_data) do
