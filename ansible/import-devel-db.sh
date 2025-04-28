@@ -17,12 +17,12 @@ if [[ ! " $targets " =~ " $target " ]]; then
     exit 1;
 fi
 
-./run-playbook.sh $target export-db
-cd ..
+#./run-playbook.sh $target export-db
+cd ../docker
 
-RUNNING=$(docker compose ps db -q)
+RUNNING=$(docker compose ps admin-db -q)
 if [[ -z "$RUNNING" ]]; then
-  echo "The service 'db' is down, run docker compose up -d db in docker directory"
+  echo "The service 'admin-db' is down, run docker compose up -d admin-db in docker directory"
   exit 1;
 fi
 
@@ -32,9 +32,9 @@ if [[ -z "$RUNNING" ]]; then
   exit 1;
 fi
 
-docker compose exec db bash -c 'psql -d postgres -U $POSTGRES_USER -c "DROP DATABASE IF EXISTS $POSTGRES_DB;"'
-docker compose exec db bash -c 'psql -d postgres -U $POSTGRES_USER -c "CREATE DATABASE $POSTGRES_DB;"'
-docker compose exec -T db bash -c 'psql -d $POSTGRES_DB $POSTGRES_USER' < ../ansible/data/database.sql
+docker compose exec admin-db bash -c 'psql -d postgres -U $POSTGRES_USER -c "DROP DATABASE IF EXISTS $POSTGRES_DB;"'
+docker compose exec admin-db bash -c 'psql -d postgres -U $POSTGRES_USER -c "CREATE DATABASE $POSTGRES_DB;"'
+docker compose exec -T admin-db bash -c 'psql -d $POSTGRES_DB $POSTGRES_USER' < ../ansible/data/database.sql
 
 docker compose exec index-manager-db bash -c 'psql -d postgres -U $POSTGRES_USER -c "DROP DATABASE IF EXISTS $POSTGRES_DB;"'
 docker compose exec index-manager-db bash -c 'psql -d postgres -U $POSTGRES_USER -c "CREATE DATABASE $POSTGRES_DB;"'
