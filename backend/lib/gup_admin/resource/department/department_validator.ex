@@ -1,29 +1,40 @@
 defmodule GupAdmin.Resource.Department.DepartmentValidator do
   def validate(department_data) do
-    # Validate the department data
-    # errors = []
+    case do_validate(department_data) do
+      [] -> {:ok, department_data}
+      errors -> {:error, errors}
+    end
+  end
 
-    # # Check if the department name is present
-    # if Map.get(department_data, "name") == nil do
-    #   errors = ["Department name is required" | errors]
-    # end
+  defp do_validate(department_data) do
+    []
+    |> validate_name_en(department_data)
+    |> validate_name_sv(department_data)
+    |> validate_start_year(department_data)
+  end
 
-    # # Check if the department code is present
-    # if Map.get(department_data, "code") == nil do
-    #   errors = ["Department code is required" | errors]
-    # end
+  defp validate_name_en(errors, department_data) do
+    case Map.get(department_data, "name_en") do
+      "" -> ["DEPARTMENT_NAME_EN_REQUIRED" | errors]
+      _ -> errors
+    end
+  end
 
-    # # Check if the department type is present
-    # if Map.get(department_data, "type") == nil do
-    #   errors = ["Department type is required" | errors]
-    # end
+  defp validate_name_sv(errors, department_data) do
+    case Map.get(department_data, "name_sv") do
+      "" -> ["DEPARTMENT_NAME_SV_REQUIRED" | errors]
+      _ -> errors
+    end
+  end
 
-    # # Return the validation result
-    # if Enum.empty?(errors) do
-    #   {:ok, department_data}
-    # else
-    #   {:error, %{errors: %{validation: errors}}}
-    # end
-    {:ok, department_data}
+  defp validate_start_year(errors, department_data) do
+    case Map.get(department_data, "start_year") do
+      nil ->
+        ["DEPARTMENT_START_YEAR_REQUIRED" | errors]
+      start_year when is_integer(start_year) ->
+        errors
+      _ ->
+        ["DEPARTMENT_START_YEAR_INVALID" | errors]
+    end
   end
 end
