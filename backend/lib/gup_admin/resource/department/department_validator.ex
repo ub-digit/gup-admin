@@ -8,9 +8,9 @@ defmodule GupAdmin.Resource.Department.DepartmentValidator do
 
   defp do_validate(department_data) do
     []
+    |> validate_start_year(department_data)
     |> validate_name_en(department_data)
     |> validate_name_sv(department_data)
-    |> validate_start_year(department_data)
   end
 
   defp validate_name_en(errors, department_data) do
