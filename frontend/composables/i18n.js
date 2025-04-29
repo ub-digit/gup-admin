@@ -38,6 +38,8 @@ export const useLocaleStore = defineStore("locale", {
           "DEPARTMENT_NAME_SV_REQUIRED",
         "views.departments.edit.form.errors.DEPARTMENT_START_YEAR_INVALID":
           "DEPARTMENT_START_YEAR_INVALID",
+        "views.departments.edit.form.errors.DEPARTMENT_START_YEAR_REQUIRED":
+          "DEPARTMENT_START_YEAR_REQUIRED",
 
         "views.index.card.all_data.header": "All data",
         "views.index.card.all_data.body": "Hantera all data",
