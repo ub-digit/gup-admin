@@ -21,8 +21,18 @@ if System.get_env("PHX_SERVER") do
 end
 
 if config_env() == :prod do
+  config :logger,
+    level: :info
+
   config :logger, :default_handler,
-    formatter: LoggerJSON.Formatters.Basic.new(metadata: [:request_id, :url])
+    formatter: LoggerJSON.Formatters.Basic.new(metadata: [:request_id, :method, :path, :status, :duration, :user_agent, :url])
+
+  config :logger,
+    compile_time_purge_matching: [
+      [level_lower_than: :info]
+    ]
+
+
 
   database_url =
     System.get_env("DATABASE_URL") ||
