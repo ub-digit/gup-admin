@@ -32,6 +32,13 @@ export const useLocaleStore = defineStore("locale", {
         "views.index.card.departments.link_text":
           "Gå till hantera all institutioner",
 
+        "views.departments.edit.form.errors.DEPARTMENT_NAME_EN_REQUIRED":
+          "DEPARTMENT_NAME_EN_REQUIRED",
+        "views.departments.edit.form.errors.DEPARTMENT_NAME_SV_REQUIRED":
+          "DEPARTMENT_NAME_SV_REQUIRED",
+        "views.departments.edit.form.errors.DEPARTMENT_START_YEAR_INVALID":
+          "DEPARTMENT_START_YEAR_INVALID",
+
         "views.index.card.all_data.header": "All data",
         "views.index.card.all_data.body": "Hantera all data",
         "views.index.card.all_data.link_text": "Gå till hantera all data",

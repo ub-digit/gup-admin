@@ -3,7 +3,7 @@
     <div v-if="errors?.length" class="alert alert-danger">
       <ul>
         <li v-for="error in errors" :key="error">
-          {{ t(`views.authors.edit.form.errors.${error}`) }}
+          {{ t(`views.departments.edit.form.errors.${error}`) }}
         </li>
       </ul>
     </div>
