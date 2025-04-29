@@ -62,6 +62,15 @@
               v-model="departmentReactive.orgnr"
             />
           </div>
+          <div class="col-12 mb-3">
+            <label for="Orgdbid" class="form-label">Orgdbid</label>
+            <input
+              name="Orgdbid"
+              type="text"
+              class="form-control"
+              v-model="departmentReactive.orgdbid"
+            />
+          </div>
         </div>
       </div>
 
