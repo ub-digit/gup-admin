@@ -25,7 +25,7 @@ if config_env() == :prod do
     level: :info
 
   config :logger, :default_handler,
-    formatter: LoggerJSON.Formatters.Basic.new(metadata: [:request_id, :method, :path, :status, :duration, :user_agent, :url])
+    formatter: LoggerJSON.Formatters.Elastic.new(metadata: [:request_id, :method, :path, :status, :duration, :user_agent, :url])
 
   config :logger,
     compile_time_purge_matching: [
