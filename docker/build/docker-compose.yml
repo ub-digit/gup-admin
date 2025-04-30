@@ -16,13 +16,15 @@ services:
         - GIT_REPO_URL=${GIT_REPO_URL}
         - GIT_REVISION=${GIT_REVISION}
       labels:
-        gu.ub.logging_format: JSON
+        gu.ub.logging_encoding: JSON
+        gu.ub.logging_format: ECS
   elasticsearch:
     image: docker.ub.gu.se/gup-admin-elasticsearch:${GIT_REVISION}${PLATFORM}
     build:
       context: ./elasticsearch
       labels:
-        gu.ub.logging_format: JSON
+        gu.ub.logging_encoding: JSON
+        gu.ub.logging_format: ECS
   index-manager-backend:
     image: docker.ub.gu.se/gup-admin-index-manager-backend:${GIT_REVISION}${PLATFORM}
     build:
@@ -31,4 +33,5 @@ services:
         - GIT_REPO_URL=${GIT_REPO_URL}
         - GIT_REVISION=${GIT_REVISION}
       labels:
-        gu.ub.logging_format: JSON
+        gu.ub.logging_encoding: JSON
+        gu.ub.logging_format: ECS
