@@ -27,10 +27,6 @@
           <td>{{ department.id }}</td>
         </tr>
         <tr>
-          <th>Namn</th>
-          <td>{{ department.name }}</td>
-        </tr>
-        <tr>
           <th>Namn (sv)</th>
           <td>{{ department.name_sv }}</td>
         </tr>
