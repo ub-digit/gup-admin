@@ -36,7 +36,8 @@ const department: Department = reactive({
   end_year: null,
   orgnr: "",
 });
-const { updateDepartment, createDepartment } = departmentStore;
+const { updateDepartment, createDepartment, fetchDepartments } =
+  departmentStore;
 const errors: Ref<string[]> = ref([]);
 
 // deepclone object to use in form v-model
@@ -45,6 +46,9 @@ const errors: Ref<string[]> = ref([]);
 const saveDepartment = async (department: Department) => {
   const res = await createDepartment(department);
   if (res?.status === "success") {
+    await fetchDepartments(
+      route?.query.query ? (route?.query.query as string) : ""
+    );
     router.push({
       name: "departments-id-show",
       params: { id: res?.id },

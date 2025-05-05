@@ -9,9 +9,6 @@
         @submit="saveDepartment"
         @onCancel="cancelEdit"
       />
-
-      <div>debug</div>
-      {{ department }}
     </div>
   </div>
 </template>
@@ -27,7 +24,7 @@ const router = useRouter();
 const departmentStore = useDepartmentStore();
 
 const { department } = storeToRefs(departmentStore);
-const { fetchDepartment, updateDepartment } = departmentStore;
+const { fetchDepartment, updateDepartment, fetchDepartments } = departmentStore;
 const errors: Ref<string[]> = ref([]);
 
 await fetchDepartment(route?.params?.id as string);
@@ -38,6 +35,7 @@ await fetchDepartment(route?.params?.id as string);
 const saveDepartment = async (department: Department) => {
   const res = await updateDepartment(route.params.id as string, department);
   if (res?.status === "success") {
+    await fetchDepartments(route?.query.query as string);
     router.push({
       name: "departments-id-show",
       params: { id: res?.id },

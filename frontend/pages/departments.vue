@@ -55,7 +55,7 @@
               <NuxtLink
                 class="btn btn-primary"
                 :class="!isVisible ? 'd-none' : ''"
-                :to="{ name: 'departments-new' }"
+                :to="{ name: 'departments-new', query: $route?.query }"
                 >Skapa ny institution +</NuxtLink
               >
             </div>
