@@ -56,7 +56,7 @@
                 class="btn btn-primary"
                 :class="!isVisible ? 'd-none' : ''"
                 :to="{ name: 'departments-new', query: $route?.query }"
-                >Skapa ny institution +</NuxtLink
+                >Skapa ny organisation +</NuxtLink
               >
             </div>
           </div>
