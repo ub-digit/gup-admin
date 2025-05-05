@@ -112,18 +112,6 @@
           <th>Updated at</th>
           <td>{{ department.updated_at }}</td>
         </tr>
-        <tr>
-          <th>Created by</th>
-          <td>
-            {{ department.created_by ? department.created_by : "missing" }}
-          </td>
-        </tr>
-        <tr>
-          <th>Updated by</th>
-          <td>
-            {{ department.updated_by ? department.updated_by : "missing" }}
-          </td>
-        </tr>
       </tbody>
     </table>
 
