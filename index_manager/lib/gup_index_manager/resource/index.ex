@@ -166,6 +166,8 @@ defmodule GupIndexManager.Resource.Index do
     json = attrs
     |> Map.get("json")
     |> Jason.decode!()
+    |> Map.put("created_at", attrs["created_at"])
+    |> Map.put("updated_at", attrs["updated_at"])
 
     Elastix.Document.index(elastic_url(), @departments_index, "_doc", attrs["id"], json, [])
     |> case do

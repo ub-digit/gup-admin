@@ -17,6 +17,10 @@ defmodule GupIndexManager.Resource.Departments do
     |> GupIndexManager.Repo.insert_or_update()
     |> elem(1)
 
+    IO.inspect(db_department, label: "db_department XOXOXOXOXOXOXOXOXOXOXOXOXO")
+    attrs = attrs
+    |> Map.put("created_at", db_department.inserted_at)
+    |> Map.put("updated_at", db_department.updated_at)
     Index.update_department(attrs)
 
     %{"status" => "ok",
@@ -44,6 +48,11 @@ defmodule GupIndexManager.Resource.Departments do
     db_department
     |> Department.changeset(attrs)
     |> GupIndexManager.Repo.insert_or_update()
+    |> elem(1)
+
+    attrs = attrs
+    |> Map.put("created_at", db_department.inserted_at)
+    |> Map.put("updated_at", db_department.updated_at)
     Index.update_department(attrs)
 
     %{
