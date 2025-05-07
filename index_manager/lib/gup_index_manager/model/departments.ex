@@ -4,7 +4,6 @@ defmodule GupIndexManager.Model.Department do
 
   schema "departments" do
     field :json, :string
-    field :id, :integer
     field :is_faculty, :boolean, default: false
     field :parent_id, :integer
     timestamps()
