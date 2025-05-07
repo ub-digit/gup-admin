@@ -18,16 +18,17 @@
     "@gtm-support/vue-gtm": "^2.0.0",
     "@pinia/nuxt": "^0.4.6",
     "@sidebase/nuxt-auth": "^0.9.3",
-    "next-auth": "4.21.1",
     "@vueuse/nuxt": "^9.11.0",
     "bootstrap": "^5.2.3",
     "lodash": "^4.17.21",
     "marked": "^4.2.12",
+    "next-auth": "4.21.1",
     "nuxt-storage": "^1.2.2",
     "pinia": "^2.0.29",
     "prettier": "^3.0.3",
     "sass": "^1.57.1",
     "sass-loader": "^13.2.0",
+    "vue-multiselect": "^3.2.0",
     "vue-toast-notification": "^3.0",
     "zod": "^3.22.4"
   }

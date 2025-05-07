@@ -54,7 +54,19 @@
           </div>
           <div class="col-12 mb-3" v-if="!departmentReactive.is_faculty">
             <label for="parentID" class="form-label">Välj förälder</label>
-            <input type="search" id="parentID" class="form-control" />
+            <Multiselect
+              id="parentID"
+              v-model="selectedDepartment"
+              :options="departments"
+              :internal-search="false"
+              placeholder="Välj förälder"
+              track-by="id"
+              label="name_sv"
+              :searchable="true"
+              @search-change="fetchDepartments"
+              :loading="isLoadingDepartments"
+              optionsLimit="2"
+            ></Multiselect>
           </div>
           <div class="col-12 mb-3">
             <div class="row">
@@ -115,6 +127,8 @@
 </template>
 
 <script setup lang="ts">
+import { Value } from "sass";
+import multiselect from "~/plugins/multiselect";
 import type { Department } from "~/types/Department";
 const { t, getLocale } = useI18n();
 
@@ -123,6 +137,24 @@ interface Props {
   submitBtnText?: string;
   errors: string[];
 }
+
+const selectedDepartment = ref(null);
+
+const isLoadingDepartments = ref(false);
+
+const departments: Ref<Department[]> = ref([]);
+
+const fetchDepartments = async (query: string) => {
+  isLoadingDepartments.value = true;
+  const { data, error } = await useFetch("/api/departments/suggest/", {
+    params: { query },
+  });
+  if (error.value) {
+    console.error("Error fetching departments:", error.value);
+  }
+  departments.value = data?.value?.data as Department[];
+  isLoadingDepartments.value = false;
+};
 const { department, submitBtnText = "Spara" } = defineProps<Props>(); // default is set for submitBtnText only
 const emit = defineEmits(["submit", "onCancel"]); // handle these events in your parent component
 
@@ -130,6 +162,13 @@ const emit = defineEmits(["submit", "onCancel"]); // handle these events in your
 const departmentReactive: Ref<Department> = ref(department);
 
 function saveDepartment() {
+  if (departmentReactive.value.is_faculty) {
+    departmentReactive.value.parentid = null;
+  } else {
+    departmentReactive.value.parentid = selectedDepartment.value?.id
+      ? selectedDepartment.value.id
+      : null;
+  }
   emit("submit", departmentReactive.value);
 }
 </script>
