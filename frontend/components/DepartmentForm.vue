@@ -65,7 +65,7 @@
               :searchable="true"
               @search-change="fetchDepartments"
               :loading="isLoadingDepartments"
-              optionsLimit="2"
+              optionsLimit="20"
             ></Multiselect>
           </div>
           <div class="col-12 mb-3">
