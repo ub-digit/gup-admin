@@ -31,6 +31,32 @@
             />
           </div>
           <div class="col-12 mb-3">
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                v-model="departmentReactive.is_faculty"
+                id="isFaculty"
+              />
+              <label class="form-check-label" for="isFaculty">
+                Faktultet
+              </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                v-model="departmentReactive.is_internal"
+                id="isInternal"
+              />
+              <label class="form-check-label" for="isInternal"> Intern </label>
+            </div>
+          </div>
+          <div class="col-12 mb-3" v-if="!departmentReactive.is_faculty">
+            <label for="parentID" class="form-label">Välj förälder</label>
+            <input type="search" id="parentID" class="form-control" />
+          </div>
+          <div class="col-12 mb-3">
             <div class="row">
               <div class="col">
                 <label for="start_year" class="form-label"
