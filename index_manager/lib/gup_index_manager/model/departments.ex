@@ -4,13 +4,15 @@ defmodule GupIndexManager.Model.Department do
 
   schema "departments" do
     field :json, :string
+    field :id, :integer
+    field :is_faculty, :boolean, default: false
+    field :parent_id, :integer
     timestamps()
   end
 
-  @doc false
   def changeset(department, attrs) do
     department
-    |> cast(attrs, [:id, :json])
+    |> cast(attrs, [:id, :json, :inserted_at, :updated_at, :is_faculty, :parent_id])
     |> validate_required([:id, :json])
   end
 

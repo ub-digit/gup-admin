@@ -21,7 +21,7 @@ SET default_table_access_method = heap;
 
 
 
-CREATE TABLE public.departments (
+CREATE TABLE IF NOT EXISTS public.departments (
     id bigint NOT NULL,
     json text,
     inserted_at timestamp(0) without time zone NOT NULL,
