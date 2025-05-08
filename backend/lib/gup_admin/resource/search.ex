@@ -238,7 +238,7 @@ defmodule GupAdmin.Resource.Search do
               %{
                 "query_string" => %{
                   "default_operator" => "AND",
-                  "fields" => ["name^15", "name_en^15", "orgdbid^10"],
+                  "fields" => ["name_sv^15", "name_en^15", "orgdbid^10"],
                   "query" => query
                 }
               }
