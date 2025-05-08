@@ -184,4 +184,66 @@ defmodule GupIndexManager.Resource.Index do
         end
     end
   end
+
+  def reindex_departments() do
+    # Get all departments from the database
+    departments = Model.Department |> GupIndexManager.Repo.all()
+    # Create a map with id as key
+    input_map = Enum.reduce(departments, %{}, fn department, acc ->
+      Map.put(acc, department.id, %{
+        id: department.id,
+        parent_id: department.parent_id,
+        is_faculty: department.is_faculty,
+        data: Jason.decode!(department.json)
+      })
+    end)
+
+    # Create a list of items with hierarchy
+    hierarchy_map(input_map)
+    |> Enum.each(fn item ->
+      # Index each item in Elasticsearch
+      Elastix.Document.index(elastic_url(), @departments_index, "_doc", Map.get(item, "id"), item, [])
+    end)
+  end
+
+      # Loop over all data in a map (with id as key)
+  # like this:
+  # %{1 => %{id: 1, parent_id: nil, is_faculty: true, data: %{name: "Faculty of Science"}},
+  #   2 => %{id: 2, parent_id: nil, is_faculty: true, data: %{name: "Faculty of Arts"}},
+  #   3 => %{id: 3, parent_id: nil, is_faculty: true, data: %{name: "Faculty of Engineering"}},
+  #   4 => %{id: 4, parent_id: 1, is_faculty: false, data: %{name: "Department of Physics"}},
+  #   ...
+  #   15 => %{id: 15, parent_id: 6, is_faculty: false, data: %{name: "Molecular Biology Department"}}
+  # }
+  # Create a list of items where each item has the format:
+  # %{id: id, hierarchy: [id1, id2, ...], is_faculty: is_faculty, name: name}
+  # Hierarchy is a list of ids from the root to the item's parent (it should NOT include the item itself)
+  def hierarchy_map(input_map) do
+    input_map
+    |> Enum.reduce([], fn {id, item}, acc ->
+      hierarchy = get_hierarchy(input_map, id, item)
+      # Remove the item id from the hierarchy
+      hierarchy = List.delete(hierarchy, id)
+      # Reverse the hierarchy to get the order from root to item
+      hierarchy = Enum.reverse(hierarchy)
+      # Add the hierarchy to the item
+      IO.inspect(hierarchy, label: "hierarchy .....................................................:XXXXXX")
+      item_data = Map.get(item, :data)
+      [Map.put(item_data, :hierarchy, hierarchy) | acc]
+    end)
+  end
+
+  # Get the hierarchy for a given item
+  defp get_hierarchy(input_map, id, item) do
+    case item.parent_id do
+      nil -> [id]
+      parent_id ->
+        parent_item = Map.get(input_map, parent_id)
+        if parent_item do
+          [id | get_hierarchy(input_map, parent_id, parent_item)]
+        else
+          [id]
+        end
+    end
+  end
  end
