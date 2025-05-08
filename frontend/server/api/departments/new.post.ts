@@ -8,13 +8,28 @@ export default defineEventHandler(async (event) => {
   const query = getQuery(event);
   query.api_key = config.ADMIN_BACKEND_API_KEY;
   //const id = event?.context?.params?.id;
-  const data = await readBody(event);
+  const dataObj = await readBody(event);
 
-  console.log("data new", data);
-
+  // create object formatted for backend
+  const reqObj = {
+    data: {
+      id: dataObj.id,
+      name_sv: dataObj.name_sv,
+      name_en: dataObj.name_en,
+      start_year: dataObj.start_year,
+      end_year: dataObj.end_year,
+      staffnotes: dataObj.staffnotes,
+      orgdbid: dataObj.orgdbid,
+      orgnr: dataObj.orgnr,
+      is_internal: dataObj.is_internal,
+    },
+    parent_id: dataObj.parentid,
+    is_faculty: dataObj.is_faculty,
+  };
+  console.log("reqObj", reqObj);
   const res = await $fetch(`${config.API_BASE_URL}/api/departments/`, {
     method: "POST",
-    body: JSON.stringify({ data }),
+    body: JSON.stringify({ reqObj }),
     params: query,
   });
 

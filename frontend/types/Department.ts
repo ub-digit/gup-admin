@@ -10,7 +10,6 @@ export const zDepartment = z.object({
   end_year: z.number().nullish(),
   faculty_id: z.number().nullish(),
   parentid: z.number().nullish(), // replace with list of hierarchy
-  grandparentid: z.number().nullish(), // replace with list of hierarchy
   staffnotes: z.string().nullish(),
   orgdbid: z.string().nullish(),
   orgnr: z.string().nullish(),
