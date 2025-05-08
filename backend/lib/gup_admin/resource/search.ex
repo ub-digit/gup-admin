@@ -206,6 +206,27 @@ defmodule GupAdmin.Resource.Search do
     #   }
     # }
 
+    # q = %{
+    #   "track_total_hits" => true,
+    #   "query" => %{
+    #     "bool" => %{
+    #       "must" => [
+    #         if String.trim(query) == "" do
+    #           %{"match_all" => %{}}
+    #         else
+    #           %{
+    #             "query_string" => %{
+    #               "default_operator" => "AND",
+    #               "fields" => ["name^15", "name_en^15", "orgdbid^10"],
+    #               "query" => query
+    #             }
+    #           }
+    #         end
+    #       ]
+    #     }
+    #   }
+    # }
+
     q = %{
       "track_total_hits" => true,
       "query" => %{
@@ -224,8 +245,17 @@ defmodule GupAdmin.Resource.Search do
             end
           ]
         }
-      }
+      },
+      "sort" => if String.trim(query) == "" do
+                  [%{"updated_at" => %{"order" => "desc"}}]
+                else
+                  []
+                end
     }
+
+
+
+
 
 
 

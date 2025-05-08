@@ -3,7 +3,7 @@
     <div v-if="errors?.length" class="alert alert-danger">
       <ul>
         <li v-for="error in errors" :key="error">
-          {{ t(`views.authors.edit.form.errors.${error}`) }}
+          {{ t(`views.departments.edit.form.errors.${error}`) }}
         </li>
       </ul>
     </div>
@@ -31,6 +31,44 @@
             />
           </div>
           <div class="col-12 mb-3">
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                v-model="departmentReactive.is_faculty"
+                id="isFaculty"
+              />
+              <label class="form-check-label" for="isFaculty">
+                Faktultet
+              </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                v-model="departmentReactive.is_internal"
+                id="isInternal"
+              />
+              <label class="form-check-label" for="isInternal"> Intern </label>
+            </div>
+          </div>
+          <div class="col-12 mb-3" v-if="!departmentReactive.is_faculty">
+            <label for="parentID" class="form-label">Välj förälder</label>
+            <Multiselect
+              id="parentID"
+              v-model="selectedDepartment"
+              :options="departments"
+              :internal-search="false"
+              placeholder="Välj förälder"
+              track-by="id"
+              label="name_sv"
+              :searchable="true"
+              @search-change="fetchDepartments"
+              :loading="isLoadingDepartments"
+              optionsLimit="20"
+            ></Multiselect>
+          </div>
+          <div class="col-12 mb-3">
             <div class="row">
               <div class="col">
                 <label for="start_year" class="form-label"
@@ -38,7 +76,7 @@
                 >
                 <input
                   name="start_year"
-                  type="text"
+                  type="number"
                   class="form-control"
                   v-model="departmentReactive.start_year"
                 />
@@ -46,7 +84,7 @@
               <div class="col">
                 <label for="end_year" class="form-label">Slutår</label>
                 <input
-                  type="text"
+                  type="number"
                   class="form-control"
                   v-model="departmentReactive.end_year"
                 />
@@ -60,6 +98,15 @@
               type="text"
               class="form-control"
               v-model="departmentReactive.orgnr"
+            />
+          </div>
+          <div class="col-12 mb-3">
+            <label for="Orgdbid" class="form-label">Orgdbid</label>
+            <input
+              name="Orgdbid"
+              type="text"
+              class="form-control"
+              v-model="departmentReactive.orgdbid"
             />
           </div>
         </div>
@@ -80,6 +127,8 @@
 </template>
 
 <script setup lang="ts">
+import { Value } from "sass";
+import multiselect from "~/plugins/multiselect";
 import type { Department } from "~/types/Department";
 const { t, getLocale } = useI18n();
 
@@ -88,6 +137,24 @@ interface Props {
   submitBtnText?: string;
   errors: string[];
 }
+
+const selectedDepartment = ref(null);
+
+const isLoadingDepartments = ref(false);
+
+const departments: Ref<Department[]> = ref([]);
+
+const fetchDepartments = async (query: string) => {
+  isLoadingDepartments.value = true;
+  const { data, error } = await useFetch("/api/departments/suggest/", {
+    params: { query },
+  });
+  if (error.value) {
+    console.error("Error fetching departments:", error.value);
+  }
+  departments.value = data?.value?.data as Department[];
+  isLoadingDepartments.value = false;
+};
 const { department, submitBtnText = "Spara" } = defineProps<Props>(); // default is set for submitBtnText only
 const emit = defineEmits(["submit", "onCancel"]); // handle these events in your parent component
 
@@ -95,6 +162,13 @@ const emit = defineEmits(["submit", "onCancel"]); // handle these events in your
 const departmentReactive: Ref<Department> = ref(department);
 
 function saveDepartment() {
+  if (departmentReactive.value.is_faculty) {
+    departmentReactive.value.parentid = null;
+  } else {
+    departmentReactive.value.parentid = selectedDepartment.value?.id
+      ? selectedDepartment.value.id
+      : null;
+  }
   emit("submit", departmentReactive.value);
 }
 </script>

@@ -21,6 +21,26 @@ export const useDepartmentStore = defineStore("DepartmentStore", () => {
     query: route.query.query as string,
   });
 
+  const createDepartment = async (new_department: Department) => {
+    try {
+      const { data, error } = await useFetch("/api/departments/new", {
+        method: "POST",
+        body: new_department,
+      });
+      if (data?.value?.success?.data.status === "ok") {
+        return {
+          status: "success",
+          id: data?.value?.success?.data.id,
+          errors: [],
+        };
+      } else if (data?.value?.errors.validation.length > 0) {
+        return { status: "error", errors: data?.value?.errors?.validation };
+      }
+    } catch (error) {
+      console.log("Something went wrong: createDepartment", error);
+    }
+  };
+
   const updateDepartment = async (id: string, department: Department) => {
     try {
       const { data, error } = await useFetch(`/api/departments/${id}`, {
@@ -30,6 +50,7 @@ export const useDepartmentStore = defineStore("DepartmentStore", () => {
       if (data?.value?.success?.data.status === "ok") {
         return {
           status: "success",
+          id: data?.value?.success?.data.id,
           errors: [],
         };
       } else if (data?.value?.errors.validation.length > 0) {
@@ -46,7 +67,9 @@ export const useDepartmentStore = defineStore("DepartmentStore", () => {
       if (error.value) {
         throw error;
       }
-      department.value = zDepartment.parse(data.value);
+      department.value = zDepartment.parse(
+        data.value.success.data as Department
+      );
     } catch (error) {
       if (error instanceof ZodError) {
         console.log("Something went wrong: fetchDepartment from Zod", error);
@@ -112,6 +135,7 @@ export const useDepartmentStore = defineStore("DepartmentStore", () => {
     fetchDepartments,
     fetchDepartment,
     updateDepartment,
+    createDepartment,
     departments,
     pendingDepartments,
     numberOfDepartmentsTotal,
