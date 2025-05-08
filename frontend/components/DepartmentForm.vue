@@ -161,6 +161,29 @@ const emit = defineEmits(["submit", "onCancel"]); // handle these events in your
 // make a ref object to use in the form
 const departmentReactive: Ref<Department> = ref(department);
 
+if (departmentReactive.value.hierarchy?.length === 0) {
+  departmentReactive.value.is_faculty = true;
+  selectedDepartment.value = null;
+} else {
+  departmentReactive.value.is_faculty = false;
+}
+
+if (!departmentReactive.value.is_faculty) {
+  const id =
+    departmentReactive.value.hierarchy?.[
+      departmentReactive.value.hierarchy.length - 1
+    ];
+  const { data, error } = await useFetch(`/api/departments/${id}/`);
+  if (error.value) {
+    selectedDepartment.value = null;
+    console.error("Error fetching department:", error.value);
+  } else {
+    selectedDepartment.value = data?.value?.success.data as Department;
+  }
+} else {
+  selectedDepartment.value = null;
+}
+
 function saveDepartment() {
   if (departmentReactive.value.is_faculty) {
     departmentReactive.value.parentid = null;

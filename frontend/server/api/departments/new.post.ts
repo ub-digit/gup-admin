@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
   console.log("reqObj", reqObj);
   const res = await $fetch(`${config.API_BASE_URL}/api/departments/`, {
     method: "POST",
-    body: JSON.stringify({ reqObj }),
+    body: JSON.stringify(reqObj),
     params: query,
   });
 

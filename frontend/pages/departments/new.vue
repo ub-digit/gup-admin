@@ -37,6 +37,7 @@ const department: Department = reactive({
   orgnr: "",
   orgdbid: "",
   is_faculty: false,
+  parentid: null,
 });
 const { updateDepartment, createDepartment, fetchDepartments } =
   departmentStore;
