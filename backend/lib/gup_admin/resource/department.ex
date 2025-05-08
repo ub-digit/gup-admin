@@ -37,7 +37,7 @@ defmodule GupAdmin.Resource.Department do
 
   # To IM: POST /department [CREATE]
   def create(department_data) do
-    Logger.debug("BE:R.create: department_data: #{inspect(department_data)}")
+    # Logger.debug("BE:R.create: department_data: #{inspect(department_data)}")
     case GupAdmin.Resource.Department.DepartmentValidator.validate(department_data) do
       {:ok, department_data} -> map2json(%{data: department_data})
              |> do_create()

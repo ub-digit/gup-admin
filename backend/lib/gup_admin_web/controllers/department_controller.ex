@@ -18,12 +18,18 @@ defmodule GupAdminWeb.DepartmentController do
   end
 
   # POST /departments/
-  def create( conn, %{"data" => department_data}) do
+  def create( conn, %{"data" => department_data, "parent_id" => parent_id} = params) do
+    department_data = department_data
+    |> Map.put("is_faculty", Map.get(params, "is_faculty", false))
+    |> Map.put("parent_id", parent_id)
     handle_request_from_fe(conn, :create, [department_data])
   end
 
   # PUT /departments/:id
-  def update( conn, %{"id" => id, "data" => department_data}) do
+  def update( conn, %{"id" => id, "data" => department_data, "parent_id" => parent_id} = params) do
+    department_data = department_data
+    |> Map.put("is_faculty", Map.get(params, "is_faculty", false))
+    |> Map.put("parent_id", parent_id)
     handle_request_from_fe(conn, :update, [id, department_data])
   end
 
