@@ -181,31 +181,60 @@ defmodule GupAdmin.Resource.Search.Query do
     # }
 
     %{
-      # @query_limit,
       size: 100,
       query: %{
-        bool: %{
-          must: %{
-            query_string: %{
-              default_operator: "AND",
-              fields: [
-                "names.first_name",
-                "names.last_name",
-                "names.full_name",
-                "identifiers.value"
-              ],
-              query: q
+        function_score: %{
+          query: %{
+            bool: %{
+              must: %{
+                query_string: %{
+                  default_operator: "AND",
+                  fields: [
+                    "names.first_name",
+                    "names.last_name",
+                    "names.full_name",
+                    "identifiers.value"
+                  ],
+                  query: q
+                }
+              },
+              filter: [
+                %{
+                  bool: %{
+                    must_not: [
+                      %{term: %{deleted: true}}
+                    ]
+                  }
+                }
+              ]
             }
           },
-          filter: [
+          functions: [
             %{
-              bool: %{
-                must_not: [
-                  %{term: %{deleted: true}}
-                ]
-              }
+              filter: %{
+                nested: %{
+                  path: "identifiers",
+                  query: %{
+                    term: %{"identifiers.code" => "POP_ID"}
+                  }
+                }
+              },
+              weight: 30000
+            },
+            %{
+              filter: %{
+                nested: %{
+                  path: "identifiers",
+                  query: %{
+                    term: %{"identifiers.code" => "X_ACCOUNT"}
+                  }
+                }
+              },
+              weight: 200
             }
-          ]
+          ],
+          score_mode: "max",
+          boost_mode: "multiply"
         }
       }
     }

@@ -208,6 +208,13 @@ defmodule GupIndexManager.Resource.Index.Config do
           },
           "id" => %{
             "type" => "keyword"
+          },
+          "identifiers" => %{
+            "type" => "nested",
+            "properties" => %{
+              "code" => %{"type" => "keyword"},
+              "value" => %{"type" => "keyword"}
+            }
           }
         }
       }
