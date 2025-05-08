@@ -84,6 +84,7 @@ defmodule GupIndexManager.Resource.Persons do
     |> GupIndexManager.Repo.insert_or_update()
     |> elem(1)
     |> set_meta(data)
+    |> copy_identifiers_to_nested()
     |> update_index()
     |> IO.inspect(label: "Person updated")
   end
@@ -93,6 +94,12 @@ defmodule GupIndexManager.Resource.Persons do
     |> Map.put("id", Map.get(db_data, :id))
     |> Map.put("created_at", Map.get(db_data, :inserted_at))
     |> Map.put("updated_at", Map.get(db_data, :updated_at))
+  end
+
+  def copy_identifiers_to_nested(data) do
+    identifiers = Map.get(data, "identifiers", [])
+    data = Map.put(data, "nested_identifiers", identifiers)
+    data
   end
 
   def merge_data(existing_data, new_data) do

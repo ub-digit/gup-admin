@@ -213,9 +213,9 @@ defmodule GupAdmin.Resource.Search.Query do
             %{
               filter: %{
                 nested: %{
-                  path: "identifiers",
+                  path: "nested_identifiers",
                   query: %{
-                    term: %{"identifiers.code" => "POP_ID"}
+                    term: %{"nested_identifiers.code" => "POP_ID"}
                   }
                 }
               },
@@ -224,9 +224,9 @@ defmodule GupAdmin.Resource.Search.Query do
             %{
               filter: %{
                 nested: %{
-                  path: "identifiers",
+                  path: "nested_identifiers",
                   query: %{
-                    term: %{"identifiers.code" => "X_ACCOUNT"}
+                    term: %{"nested_identifiers.code" => "X_ACCOUNT"}
                   }
                 }
               },
