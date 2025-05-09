@@ -109,7 +109,7 @@ defmodule GupAdmin.Resource.Department do
 
   defp send_request_to_im(method, url, headers, body) do
     Logger.debug("BE:R.send_request_to_im: method: #{method}, url: #{url}")
-    options = [recv_timeout: 5000, timeout: 5000] # Change these values as needed
+    options = [recv_timeout: :infinity, timeout: :infinity] # Change these values as needed
     case method do
       :post   -> HTTPoison.post(url, body, headers, options)
       :put    -> HTTPoison.put(url, body, headers, options)

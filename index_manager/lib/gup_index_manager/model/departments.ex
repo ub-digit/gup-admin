@@ -11,7 +11,7 @@ defmodule GupIndexManager.Model.Department do
 
   def changeset(department, attrs) do
     department
-    |> cast(attrs, [:id, :json, :inserted_at, :updated_at, :is_faculty, :parent_id])
+    |> cast(attrs, [:id, :json, :is_faculty, :parent_id])
     |> validate_required([:id, :json])
   end
 
