@@ -166,7 +166,7 @@ defmodule GupIndexManager.Resource.Index do
     json = attrs
     |> Map.get("json")
     |> Jason.decode!()
-    |> Map.put("created_at", attrs["created_at"])
+    |> Map.put("created_at", attrs["inserted_at"])
     |> Map.put("updated_at", attrs["updated_at"])
 
     Elastix.Document.index(elastic_url(), @departments_index, "_doc", attrs["id"], json, [])
@@ -194,7 +194,8 @@ defmodule GupIndexManager.Resource.Index do
         id: department.id,
         parent_id: department.parent_id,
         is_faculty: department.is_faculty,
-        data: Jason.decode!(department.json)
+        data: Jason.decode!(department.json) |> Map.put("created_at", department.inserted_at) |>
+          Map.put("updated_at", department.updated_at)
       })
     end)
 
@@ -227,7 +228,6 @@ defmodule GupIndexManager.Resource.Index do
       # Reverse the hierarchy to get the order from root to item
       hierarchy = Enum.reverse(hierarchy)
       # Add the hierarchy to the item
-      IO.inspect(hierarchy, label: "hierarchy .....................................................:XXXXXX")
       item_data = Map.get(item, :data)
       [Map.put(item_data, :hierarchy, hierarchy) | acc]
     end)
