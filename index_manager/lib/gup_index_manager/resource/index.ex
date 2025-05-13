@@ -80,6 +80,7 @@ defmodule GupIndexManager.Resource.Index do
 
   defp get_config(@publications_index), do: Config.publications_config()
   defp get_config(@departments_index), do: Config.departments_config()
+
   defp get_config(_), do: Config.persons_config()
 
 
@@ -186,10 +187,13 @@ defmodule GupIndexManager.Resource.Index do
   end
 
   def reindex_departments() do
+    # reset index
+    reset_index(@departments_index)
+
     # Get all departments from the database
-    departments = Model.Department |> GupIndexManager.Repo.all()
+    index_data = Model.Department |> GupIndexManager.Repo.all()
     # Create a map with id as key
-    input_map = Enum.reduce(departments, %{}, fn department, acc ->
+    |> Enum.reduce(%{}, fn department, acc ->
       Map.put(acc, department.id, %{
         id: department.id,
         parent_id: department.parent_id,
@@ -200,11 +204,13 @@ defmodule GupIndexManager.Resource.Index do
     end)
 
     # Create a list of items with hierarchy
-    hierarchy_map(input_map)
-    |> Enum.each(fn item ->
-      # Index each item in Elasticsearch
-      Elastix.Document.index(elastic_url(), @departments_index, "_doc", Map.get(item, "id"), item, [])
+    |> hierarchy_map()
+    # Map the items to the format required for bulk indexing
+    |> Enum.map(fn item ->
+      [%{"index" =>  %{"_index" => @departments_index, "_id" => Map.get(item, "id")}}, item]
     end)
+    |> List.flatten()
+    Elastix.Bulk.post(elastic_url(), index_data)
   end
 
       # Loop over all data in a map (with id as key)
