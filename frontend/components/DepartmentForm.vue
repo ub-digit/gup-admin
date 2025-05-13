@@ -33,6 +33,7 @@
           <div class="col-12 mb-3">
             <div class="form-check">
               <input
+                :disabled="departmentReactive.id ? true : false"
                 class="form-check-input"
                 type="checkbox"
                 v-model="departmentReactive.is_faculty"
