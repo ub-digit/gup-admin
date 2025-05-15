@@ -1,5 +1,8 @@
 <template>
   <div v-if="department" class="row">
+    <div class="row">
+      <DepartmentBreadcrumb :department="department" />
+    </div>
     <div class="col">
       <h2>Redigera institution</h2>
 

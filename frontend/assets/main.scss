@@ -4,7 +4,8 @@
 @import url("https://use.typekit.net/zkx2sji.css");
 
 // Variable overrides must come after our functions are imported, but before the rest of the imports.
-$font-family-sans-serif: "Open Sans", Arial, sans-serif; //"Helvetica Neue", Helvetica, Arial, sans-serif;
+$font-family-sans-serif:
+  "Open Sans", Arial, sans-serif; //"Helvetica Neue", Helvetica, Arial, sans-serif;
 
 $blue: #025da6;
 $h1-font-size: 3rem;
@@ -52,7 +53,7 @@ $utilities-border-colors: blue;
 @import "~/node_modules/bootstrap/scss/navbar";
 @import "~/node_modules/bootstrap/scss/card";
 @import "~/node_modules/bootstrap/scss/accordion";
-// @import "~/node_modules/bootstrap/scss/breadcrumb";
+@import "~/node_modules/bootstrap/scss/breadcrumb";
 // @import "~/node_modules/bootstrap/scss/pagination";
 @import "~/node_modules/bootstrap/scss/badge";
 @import "~/node_modules/bootstrap/scss/alert";
