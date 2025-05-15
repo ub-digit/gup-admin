@@ -13,7 +13,9 @@
       </NuxtLink>
     </div>
   </div>
-
+  <div class="row">
+    <DepartmentBreadcrumb :department="department" />
+  </div>
   <div class="row" v-if="department">
     <div class="col-12" style="max-width: 800px">
       <div class="row">
