@@ -137,4 +137,19 @@ defmodule Experiment do
     |> GupIndexManager.Repo.all()
 
   end
+   @people "people"
+   @departments "departments"
+
+   def people do
+     @people
+   end
+   def departments do
+     @departments
+   end
+
+   def send_to(type) do
+     "Sending #{type} to gup"
+   end
+
+
 end
