@@ -9,7 +9,7 @@ WORKDIR /root
 RUN set -ex \
   && git clone $GIT_REPO_URL release -b $GIT_REVISION --depth 1
 
-FROM elixir:1.14.4
+FROM elixir:1.18-otp-27
 
 ENV MIX_ENV=prod
 ENV DATABASE_URL=ecto://postgres:postgres@index-manager-db/gup_index_manager_dev
