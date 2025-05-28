@@ -23,6 +23,7 @@ defmodule GupIndexManager.Resource.Departments do
     |> elem(1)
     Index.reindex_departments()
 
+
     %{"status" => "ok",
       "id" => id,
     }
@@ -42,7 +43,7 @@ defmodule GupIndexManager.Resource.Departments do
     |> Map.delete("is_faculty")
   end
 
-  def get_gup_department_id(), do: :rand.uniform(1_000_000)
+  def get_gup_department_id(), do: GupIndexManager.Resource.Index.get_next_gup_id(GipIndexManager.Resource.Gup.departments())
 
 
   def update(id, department_data) do

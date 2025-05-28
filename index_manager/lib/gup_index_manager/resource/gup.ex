@@ -13,6 +13,7 @@ defmodule GupIndexManager.Resource.Gup do
 
   def gup_backand_api_key() do
     System.fetch_env!("GUP_API_KEY")
+    "api-key"
   end
 
   def next_gup_id_url(entity_type) do
@@ -41,6 +42,8 @@ defmodule GupIndexManager.Resource.Gup do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} -> body |> Jason.decode!() |> Map.get("id") |> convert_to_integer()
       {:ok, %HTTPoison.Response{status_code: 404}} -> {:error, "Not found"}
       {:error, %HTTPoison.Error{reason: reason}} -> {:error, reason}
+      {:ok, %HTTPoison.Response{status_code: 500, body: body}} -> IO.inspect("Got 500")
+
     end
   end
 
@@ -68,10 +71,10 @@ defmodule GupIndexManager.Resource.Gup do
     end)
   end
 
-  def send_updated_data_to_gup(data) do
+  def send_updated_data_to_gup(data, entity_type) do
     Enum.each(data, fn {person, id} ->
       Logger.debug("Attempting to send updated data to Gup for person: #{inspect(person)} with id: #{id}")
-      HTTPoison.put(send_updated_data_url(id), person |> Jason.encode!(), [{"Content-Type", "application/json"}])
+      HTTPoison.put(send_updated_data_url(id, entity_type), person |> Jason.encode!(), [{"Content-Type", "application/json"}])
       |> case do
         {:ok, %HTTPoison.Response{status_code: 200}} -> Logger.debug("Successfully updated person with id: #{id}")
         {:ok, %HTTPoison.Response{status_code: 404}} -> Logger.error("Person with id: #{id} not found")
