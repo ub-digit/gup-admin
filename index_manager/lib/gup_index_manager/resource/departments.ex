@@ -21,7 +21,7 @@ defmodule GupIndexManager.Resource.Departments do
     |> Department.changeset(attrs)
     |> GupIndexManager.Repo.insert_or_update()
     |> elem(1)
-    Index.reindex_departments()
+    re_index_and_report_to_gup()
 
 
     %{"status" => "ok",
@@ -43,7 +43,7 @@ defmodule GupIndexManager.Resource.Departments do
     |> Map.delete("is_faculty")
   end
 
-  def get_gup_department_id(), do: GupIndexManager.Resource.Index.get_next_gup_id(GipIndexManager.Resource.Gup.departments())
+  def get_gup_department_id(), do: GupIndexManager.Resource.Gup.get_next_gup_id(GupIndexManager.Resource.Gup.departments())
 
 
   def update(id, department_data) do
@@ -64,8 +64,7 @@ defmodule GupIndexManager.Resource.Departments do
     attrs = attrs
     |> Map.put("created_at", db_department.inserted_at)
     |> Map.put("updated_at", db_department.updated_at)
-    # Index.update_department(attrs)
-    Index.reindex_departments()
+    re_index_and_report_to_gup()
 
     %{
       "status" => "ok",
@@ -73,7 +72,18 @@ defmodule GupIndexManager.Resource.Departments do
     }
   end
 
+  def re_index_and_report_to_gup() do
+    Index.reindex_departments()
+    |> case do
+      {:ok, _} -> update_gup()
+      {:error, error} -> IO.inspect(error, label: "Error reindexing departments")
+    end
+  end
 
+  def update_gup() do
+    data = Index.Search.get_all_departments()
+    GupIndexManager.Resource.Gup.update_gup(data, _initial_load = false, GupIndexManager.Resource.Gup.departments())
+  end
 
   def remap_for_index(dep, index) do
     IO.inspect(dep, label: "dep")

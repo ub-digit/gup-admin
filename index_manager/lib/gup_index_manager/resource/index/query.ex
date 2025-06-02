@@ -93,4 +93,20 @@ defmodule GupIndexManager.Resource.Index.Query do
 
     }
   end
+
+  def get_all_departments do
+    %{
+      "query" => %{
+        "bool" => %{
+          "must_not" => [
+            %{
+              "term" => %{
+                "deleted" => true
+              }
+            }
+          ]
+        }
+      }
+    }
+  end
 end

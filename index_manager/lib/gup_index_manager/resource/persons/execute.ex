@@ -40,12 +40,6 @@ defmodule GupIndexManager.Resource.Persons.Execute do
     data
   end
 
-  def set_name_count(data) do
-    names = Map.get(data, "names", [])
-    name_count = Enum.count(names)
-    Map.put(data, "name_count", name_count)
-  end
-
 
   def execute_action(data, {:add_name, name_data}) do
     names = Map.get(data, "names", [])
@@ -91,7 +85,8 @@ defmodule GupIndexManager.Resource.Persons.Execute do
   end
 
   def execute_action(data, {:acquire_gup_id, name_data}) do
-    name_data = Map.put(name_data, "gup_person_id", GupIndexManager.Resource.Gup.get_next_gup_id())
+    name_data = Map.put(name_data, "gup_person_id", GupIndexManager.Resource.Gup.get_next_gup_id(GupIndexManager.Resource.Gup.people()))
+    Logger.debug("IM:R.execute_action: acquire_gup_id: #{inspect(name_data)}")
     execute_action(data, {:add_name, name_data})
   end
 
@@ -155,6 +150,13 @@ defmodule GupIndexManager.Resource.Persons.Execute do
     IO.puts "Logging transaction for user #{action |> elem(0)}"
     data
   end
+
+  def set_name_count(data) do
+    names = Map.get(data, "names", [])
+    name_count = Enum.count(names)
+    Map.put(data, "name_count", name_count)
+  end
+
 
   # def log_transaction(data, {action, _data}) do
   #   IO.puts "Logging transaction for user #{action}"

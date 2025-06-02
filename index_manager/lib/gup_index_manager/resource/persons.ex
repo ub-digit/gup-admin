@@ -30,7 +30,7 @@ defmodule GupIndexManager.Resource.Persons do
     gup_person_id = Map.get(name, "gup_person_id", nil)
     case gup_person_id do
       nil ->
-        new_gup_person_id = GupIndexManager.Resource.Gup.get_next_gup_id()
+        new_gup_person_id = GupIndexManager.Resource.Gup.get_next_gup_id(GupIndexManager.Resource.Gup.people())
         Map.put(name, "gup_person_id", new_gup_person_id)
       _ -> name
     end

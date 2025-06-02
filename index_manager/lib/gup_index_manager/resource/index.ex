@@ -211,6 +211,7 @@ defmodule GupIndexManager.Resource.Index do
     end)
     |> List.flatten()
     Elastix.Bulk.post(elastic_url(), index_data)
+    |> IO.inspect(label: "Bulk index response")
   end
 
       # Loop over all data in a map (with id as key)

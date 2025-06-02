@@ -13,22 +13,25 @@ defmodule GupIndexManager.Resource.Gup do
 
   def gup_backand_api_key() do
     System.fetch_env!("GUP_API_KEY")
-    "api-key"
   end
 
   def next_gup_id_url(entity_type) do
     "#{gup_server_base_url()}/v1/#{entity_type}/get_next_id?api_key=#{gup_backand_api_key()}"
   end
 
-  def send_updated_data_url(id, entity_type) do
+  def send_updated_data_url(id, entity_type = @people) do
     "#{gup_server_base_url()}/v1/#{entity_type}/#{id}?api_key=#{gup_backand_api_key()}"
   end
 
-  def update_gup({:error, error, error_log_data}), do: {:error, error, error_log_data}
-  def update_gup({:ok, entity_data, _actions}, initial_load, entity_type), do: update_gup(entity_data, initial_load, entity_type)
-  def update_gup(entity_data, _initial_load = true) do
-     {:ok, entity_data}
+  def send_updated_data_url(entity_type = @departments) do
+    "#{gup_server_base_url()}/v1/#{entity_type}?api_key=#{gup_backand_api_key()}"
   end
+
+  def update_gup({:error, error, error_log_data}), do: {:error, error, error_log_data}
+  def update_gup(entity_data, _initial_load = true) do
+    {:ok, entity_data}
+ end
+  def update_gup({:ok, entity_data, _actions}, initial_load, entity_type), do: update_gup(entity_data, initial_load, entity_type)
   def update_gup(entity_data, _initial_load = false, entity_type) do
     compose_updated_data(entity_data, entity_type)
     |> send_updated_data_to_gup(entity_type)
@@ -71,10 +74,10 @@ defmodule GupIndexManager.Resource.Gup do
     end)
   end
 
-  def send_updated_data_to_gup(data, entity_type) do
+  def send_updated_data_to_gup(data, _entity_type = @people) do
     Enum.each(data, fn {person, id} ->
       Logger.debug("Attempting to send updated data to Gup for person: #{inspect(person)} with id: #{id}")
-      HTTPoison.put(send_updated_data_url(id, entity_type), person |> Jason.encode!(), [{"Content-Type", "application/json"}])
+      HTTPoison.put(send_updated_data_url(id, @people), person |> Jason.encode!(), [{"Content-Type", "application/json"}])
       |> case do
         {:ok, %HTTPoison.Response{status_code: 200}} -> Logger.debug("Successfully updated person with id: #{id}")
         {:ok, %HTTPoison.Response{status_code: 404}} -> Logger.error("Person with id: #{id} not found")
@@ -82,4 +85,15 @@ defmodule GupIndexManager.Resource.Gup do
       end
     end)
   end
+
+  def send_updated_data_to_gup(data, _entity_type = @departments) do
+    Logger.debug("Attempting to send updated data to Gup for department: #{inspect(data)}")
+    HTTPoison.put(send_updated_data_url(@departments), data |> Jason.encode!(), [{"Content-Type", "application/json"}])
+    |> case do
+      {:ok, %HTTPoison.Response{status_code: 200}} -> Logger.debug("Successfully updated department data")
+      {:ok, %HTTPoison.Response{status_code: 404}} -> Logger.error("Department not found")
+      {:error, %HTTPoison.Error{reason: reason}} -> Logger.error("Error updating department data. Reason: #{reason}")
+    end
+  end
+
 end
