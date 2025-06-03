@@ -82,6 +82,7 @@ defmodule GupIndexManager.Resource.Departments do
 
   def update_gup() do
     data = Index.Search.get_all_departments()
+    IO.inspect(data, label: "data to update gup xnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnx")
     GupIndexManager.Resource.Gup.update_gup(data, _initial_load = false, GupIndexManager.Resource.Gup.departments())
   end
 

@@ -24,7 +24,7 @@ defmodule GupIndexManager.Resource.Gup do
   end
 
   def send_updated_data_url(entity_type = @departments) do
-    "#{gup_server_base_url()}/v1/#{entity_type}?api_key=#{gup_backand_api_key()}"
+    "#{gup_server_base_url()}/v1/organisations?api_key=#{gup_backand_api_key()}"
   end
 
   def update_gup({:error, error, error_log_data}), do: {:error, error, error_log_data}
@@ -87,8 +87,9 @@ defmodule GupIndexManager.Resource.Gup do
   end
 
   def send_updated_data_to_gup(data, _entity_type = @departments) do
-    Logger.debug("Attempting to send updated data to Gup for department: #{inspect(data)}")
-    HTTPoison.put(send_updated_data_url(@departments), data |> Jason.encode!(), [{"Content-Type", "application/json"}])
+    body = %{"organisations" => data}
+    Logger.debug("Attempting to send updated data to Gup for department: #{inspect(body)}")
+    HTTPoison.put(send_updated_data_url(@departments), body |> Jason.encode!(), [{"Content-Type", "application/json"}])
     |> case do
       {:ok, %HTTPoison.Response{status_code: 200}} -> Logger.debug("Successfully updated department data")
       {:ok, %HTTPoison.Response{status_code: 404}} -> Logger.error("Department not found")

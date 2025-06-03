@@ -211,6 +211,7 @@ defmodule GupIndexManager.Resource.Index do
     end)
     |> List.flatten()
     Elastix.Bulk.post(elastic_url(), index_data)
+    Elastix.Index.refresh(elastic_url(), @departments_index)
     |> IO.inspect(label: "Bulk index response")
   end
 
