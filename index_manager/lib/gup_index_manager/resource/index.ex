@@ -237,7 +237,7 @@ defmodule GupIndexManager.Resource.Index do
       hierarchy = Enum.reverse(hierarchy)
       # Add the hierarchy to the item
       item_data = Map.get(item, :data)
-      [Map.put(item_data, :hierarchy, hierarchy) | acc]
+      [Map.put(item_data, "hierarchy", hierarchy) | acc]
     end)
   end
 

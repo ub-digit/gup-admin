@@ -23,7 +23,8 @@ defmodule GupIndexManager.Resource.Gup do
     "#{gup_server_base_url()}/v1/#{entity_type}/#{id}?api_key=#{gup_backand_api_key()}"
   end
 
-  def send_updated_data_url(entity_type = @departments) do
+  def send_updated_data_url(_entity_type = @departments) do
+    # IO.inspect("------------------------------------- GET URL FOR GUP ORGANISATIONS -------------------------------------")
     "#{gup_server_base_url()}/v1/organisations?api_key=#{gup_backand_api_key()}"
   end
 
@@ -87,6 +88,7 @@ defmodule GupIndexManager.Resource.Gup do
   end
 
   def send_updated_data_to_gup(data, _entity_type = @departments) do
+    IO.inspect("------------------------------------- SEND UPDATED DATA TO GUP ORGANISATIONS ---------------------------------PPPPPPPPPPPPPPPPPPPPPP----")
     body = %{"organisations" => data}
     Logger.debug("Attempting to send updated data to Gup for department: #{inspect(body)}")
     HTTPoison.put(send_updated_data_url(@departments), body |> Jason.encode!(), [{"Content-Type", "application/json"}])

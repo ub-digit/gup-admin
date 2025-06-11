@@ -2,10 +2,21 @@ defmodule GupIndexManager.Resource.Departments do
   alias GupIndexManager.Model.Department
   alias GupIndexManager.Resource.Index
 
+# When creating a department from GUP
+  def create(data, parent_id, is_faculty) do
+    data
+    |>Map.put("parent_id", parent_id)
+    |>Map.put("is_faculty", is_faculty)
+    |> create()
+  end
 
   def create(%{"id" => id} = department_data) when not is_nil(id) do
     id = Map.get(department_data, "id", nil)
     db_department = GupIndexManager.Model.Department.find_department_by_id(id)
+
+    IO.inspect("------------------------------------- CREATE DEPARTMENT -------------------------------------")
+    IO.inspect(department_data, label: "parent_id in department_data ")
+    IO.inspect("-------------------------------------END CREATE DEPARTMENT -------------------------------------")
 
     # if db_departments created_at is nil this is a new department created inside gup-admin
     # if it is not nil, its an exixting department in gup and the created_at from the json should be used
@@ -39,7 +50,7 @@ defmodule GupIndexManager.Resource.Departments do
   def strip_non_stored_properties(department_data) do
     department_data
     |> Map.delete("hierarchy")
-    |> Map.delete("parent_id")
+    # |> Map.delete("parent_id")
     |> Map.delete("is_faculty")
   end
 
@@ -82,7 +93,7 @@ defmodule GupIndexManager.Resource.Departments do
 
   def update_gup() do
     data = Index.Search.get_all_departments()
-    IO.inspect(data, label: "data to update gup xnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnx")
+    # IO.inspect(data, label: "data to update gup xnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnx")
     GupIndexManager.Resource.Gup.update_gup(data, _initial_load = false, GupIndexManager.Resource.Gup.departments())
   end
 

@@ -106,7 +106,8 @@ defmodule GupIndexManager.Resource.Index.Query do
             }
           ]
         }
-      }
+      },
+      "size" => 10000
     }
   end
 end

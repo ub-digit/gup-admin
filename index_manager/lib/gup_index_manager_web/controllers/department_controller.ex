@@ -36,6 +36,11 @@ defmodule GupIndexManagerWeb.DepartmentController do
 
 #-----------------------------------------------------------------------------------------------
 
+def create(conn, %{"api_key" => api_key, "data" => department_data, "parent_id" => parent_id, "is_faculty" => is_faculty}) do
+  Logger.debug "IM:C.create: data: #{inspect(department_data)}"
+  handle_request_from_be(conn, api_key, :create, [department_data, parent_id, is_faculty])
+end
+
   # Create [POST /departments/:id]
   def create(conn, %{"api_key" => api_key, "data" => department_data}) do
     Logger.debug "IM:C.create: data: #{inspect(department_data)}"
