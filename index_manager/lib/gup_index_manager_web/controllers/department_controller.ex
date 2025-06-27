@@ -35,9 +35,16 @@ defmodule GupIndexManagerWeb.DepartmentController do
   # IM/im = index manager
 
 #-----------------------------------------------------------------------------------------------
+def create(conn, %{"api_key" => api_key, "data" => department_data, "parent_id" => parent_id, "is_faculty" => is_faculty, "initial_load" => initial_load}) do
+  # IO.inspect(parent_id, label: "HITTING THE CREATE FUNCTION IN DEPARTMENT CONTROLLER")
+  # Logger.debug "IM:C.create: data: #{inspect(department_data)}"
+  handle_request_from_be(conn, api_key, :create, [department_data, parent_id, is_faculty])
+end
+
 
 def create(conn, %{"api_key" => api_key, "data" => department_data, "parent_id" => parent_id, "is_faculty" => is_faculty}) do
-  Logger.debug "IM:C.create: data: #{inspect(department_data)}"
+  # IO.inspect(parent_id, label: "HITTING THE CREATE FUNCTION IN DEPARTMENT CONTROLLER")
+  # Logger.debug "IM:C.create: data: #{inspect(department_data)}"
   handle_request_from_be(conn, api_key, :create, [department_data, parent_id, is_faculty])
 end
 

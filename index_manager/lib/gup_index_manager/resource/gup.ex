@@ -88,7 +88,7 @@ defmodule GupIndexManager.Resource.Gup do
   end
 
   def send_updated_data_to_gup(data, _entity_type = @departments) do
-    IO.inspect("------------------------------------- SEND UPDATED DATA TO GUP ORGANISATIONS ---------------------------------PPPPPPPPPPPPPPPPPPPPPP----")
+    # IO.inspect("------------------------------------- SEND UPDATED DATA TO GUP ORGANISATIONS ---------------------------------PPPPPPPPPPPPPPPPPPPPPP----")
     body = %{"organisations" => data}
     Logger.debug("Attempting to send updated data to Gup for department: #{inspect(body)}")
     HTTPoison.put(send_updated_data_url(@departments), body |> Jason.encode!(), [{"Content-Type", "application/json"}])

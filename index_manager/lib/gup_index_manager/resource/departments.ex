@@ -4,6 +4,7 @@ defmodule GupIndexManager.Resource.Departments do
 
 # When creating a department from GUP
   def create(data, parent_id, is_faculty) do
+    # IO.inspect(parent_id, label: "parent_id in create department --------------------------------------")
     data
     |>Map.put("parent_id", parent_id)
     |>Map.put("is_faculty", is_faculty)
@@ -14,9 +15,9 @@ defmodule GupIndexManager.Resource.Departments do
     id = Map.get(department_data, "id", nil)
     db_department = GupIndexManager.Model.Department.find_department_by_id(id)
 
-    IO.inspect("------------------------------------- CREATE DEPARTMENT -------------------------------------")
-    IO.inspect(department_data, label: "parent_id in department_data ")
-    IO.inspect("-------------------------------------END CREATE DEPARTMENT -------------------------------------")
+    # IO.inspect("------------------------------------- CREATE DEPARTMENT -------------------------------------")
+    # IO.inspect(department_data, label: "parent_id in department_data ")
+    # IO.inspect("-------------------------------------END CREATE DEPARTMENT -------------------------------------")
 
     # if db_departments created_at is nil this is a new department created inside gup-admin
     # if it is not nil, its an exixting department in gup and the created_at from the json should be used
