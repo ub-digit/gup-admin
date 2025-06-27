@@ -169,7 +169,10 @@ if (departmentReactive.value.hierarchy?.length === 0) {
   departmentReactive.value.is_faculty = false;
 }
 
-if (!departmentReactive.value.is_faculty) {
+if (
+  !departmentReactive.value.is_faculty &&
+  departmentReactive.value.id !== null
+) {
   const id =
     departmentReactive.value.hierarchy?.[
       departmentReactive.value.hierarchy.length - 1
