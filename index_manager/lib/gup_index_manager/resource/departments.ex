@@ -2,10 +2,22 @@ defmodule GupIndexManager.Resource.Departments do
   alias GupIndexManager.Model.Department
   alias GupIndexManager.Resource.Index
 
+# When creating a department from GUP
+  def create(data, parent_id, is_faculty) do
+    # IO.inspect(parent_id, label: "parent_id in create department --------------------------------------")
+    data
+    |>Map.put("parent_id", parent_id)
+    |>Map.put("is_faculty", is_faculty)
+    |> create()
+  end
 
   def create(%{"id" => id} = department_data) when not is_nil(id) do
     id = Map.get(department_data, "id", nil)
     db_department = GupIndexManager.Model.Department.find_department_by_id(id)
+
+    # IO.inspect("------------------------------------- CREATE DEPARTMENT -------------------------------------")
+    # IO.inspect(department_data, label: "parent_id in department_data ")
+    # IO.inspect("-------------------------------------END CREATE DEPARTMENT -------------------------------------")
 
     # if db_departments created_at is nil this is a new department created inside gup-admin
     # if it is not nil, its an exixting department in gup and the created_at from the json should be used
@@ -21,7 +33,8 @@ defmodule GupIndexManager.Resource.Departments do
     |> Department.changeset(attrs)
     |> GupIndexManager.Repo.insert_or_update()
     |> elem(1)
-    Index.reindex_departments()
+    re_index_and_report_to_gup()
+
 
     %{"status" => "ok",
       "id" => id,
@@ -38,11 +51,11 @@ defmodule GupIndexManager.Resource.Departments do
   def strip_non_stored_properties(department_data) do
     department_data
     |> Map.delete("hierarchy")
-    |> Map.delete("parent_id")
+    # |> Map.delete("parent_id")
     |> Map.delete("is_faculty")
   end
 
-  def get_gup_department_id(), do: :rand.uniform(1_000_000)
+  def get_gup_department_id(), do: GupIndexManager.Resource.Gup.get_next_gup_id(GupIndexManager.Resource.Gup.departments())
 
 
   def update(id, department_data) do
@@ -63,8 +76,7 @@ defmodule GupIndexManager.Resource.Departments do
     attrs = attrs
     |> Map.put("created_at", db_department.inserted_at)
     |> Map.put("updated_at", db_department.updated_at)
-    # Index.update_department(attrs)
-    Index.reindex_departments()
+    re_index_and_report_to_gup()
 
     %{
       "status" => "ok",
@@ -72,7 +84,19 @@ defmodule GupIndexManager.Resource.Departments do
     }
   end
 
+  def re_index_and_report_to_gup() do
+    Index.reindex_departments()
+    |> case do
+      {:ok, _} -> update_gup()
+      {:error, error} -> IO.inspect(error, label: "Error reindexing departments")
+    end
+  end
 
+  def update_gup() do
+    data = Index.Search.get_all_departments()
+    # IO.inspect(data, label: "data to update gup xnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnxnx")
+    GupIndexManager.Resource.Gup.update_gup(data, _initial_load = false, GupIndexManager.Resource.Gup.departments())
+  end
 
   def remap_for_index(dep, index) do
     IO.inspect(dep, label: "dep")

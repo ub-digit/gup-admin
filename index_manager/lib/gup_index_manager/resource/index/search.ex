@@ -37,4 +37,18 @@ defmodule GupIndexManager.Resource.Index.Search do
     end)
     # |> Enum.filter(fn person -> Map.get(person, "deleted", false) == false end)
   end
+
+  def get_all_departments do
+    q = Query.get_all_departments()
+    {:ok, %{body: %{"hits" => %{"hits" => hits}}}} = Elastix.Search.search(Index.elastic_url(), Index.get_departments_index(), [], q)
+    hits
+    |> remap_departments()
+  end
+  def remap_departments(hits) do
+    hits
+    |> Enum.map(fn hit ->
+      hit
+      |> Map.get("_source")
+    end)
+  end
 end

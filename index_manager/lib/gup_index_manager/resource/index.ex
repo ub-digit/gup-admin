@@ -205,12 +205,16 @@ defmodule GupIndexManager.Resource.Index do
 
     # Create a list of items with hierarchy
     |> hierarchy_map()
+    |> IO.inspect()
     # Map the items to the format required for bulk indexing
     |> Enum.map(fn item ->
       [%{"index" =>  %{"_index" => @departments_index, "_id" => Map.get(item, "id")}}, item]
     end)
     |> List.flatten()
     Elastix.Bulk.post(elastic_url(), index_data)
+
+    Elastix.Index.refresh(elastic_url(), @departments_index)
+    |> IO.inspect(label: "Bulk index response")
   end
 
       # Loop over all data in a map (with id as key)
@@ -235,7 +239,7 @@ defmodule GupIndexManager.Resource.Index do
       hierarchy = Enum.reverse(hierarchy)
       # Add the hierarchy to the item
       item_data = Map.get(item, :data)
-      [Map.put(item_data, :hierarchy, hierarchy) | acc]
+      [Map.put(item_data, "hierarchy", hierarchy) | acc]
     end)
   end
 
