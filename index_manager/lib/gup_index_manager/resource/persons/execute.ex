@@ -120,7 +120,7 @@ defmodule GupIndexManager.Resource.Persons.Execute do
 
   def acquire_gup_person_id() do
     Logger.debug("IM:R.acquire_gup_person_id")
-      api_key = System.fetch_env!("GUP_API_KEY")
+      api_key = System.fetch_env!("GUP_BACKEND_API_KEY")
       url = "#{gup_server_base_url()}/v1/people/get_next_id?api_key=#{api_key}"
       Logger.debug("IM:R.acquire_gup_person_id: url: #{url}")
       HTTPoison.get(url, [{"Content-Type", "application/json"}])
