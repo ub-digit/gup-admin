@@ -209,7 +209,7 @@ defmodule GupIndexManager.Resource.Index.Config do
           "id" => %{
             "type" => "keyword"
           },
-          "identifiers" => %{
+          "nested_identifiers" => %{
             "type" => "nested",
             "properties" => %{
               "code" => %{"type" => "keyword"},
