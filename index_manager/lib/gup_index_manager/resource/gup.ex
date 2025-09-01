@@ -39,6 +39,12 @@ defmodule GupIndexManager.Resource.Gup do
     {:ok, entity_data}
   end
 
+  def update_gup(entity_data, _initial_load = true, _entity_type) do
+    {:ok, entity_data}
+ end
+
+
+
   def get_next_gup_id(entity_type) do
     Logger.debug("IM:Gup.acquire_gup_entity_id for entity_type: #{entity_type}")
     HTTPoison.get(next_gup_id_url(entity_type), [{"Content-Type", "application/json"}])
