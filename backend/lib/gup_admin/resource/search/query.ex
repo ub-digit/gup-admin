@@ -71,7 +71,6 @@ defmodule GupAdmin.Resource.Search.Query do
                   }
                 },
                 %{
-                  "query" => %{
                     "bool" => %{
                       "must_not" => %{
                         "term" => %{
@@ -80,7 +79,6 @@ defmodule GupAdmin.Resource.Search.Query do
                       }
                     }
                   }
-                }
               ]
             }
           }
@@ -102,7 +100,6 @@ defmodule GupAdmin.Resource.Search.Query do
               }
             },
             %{
-              "query" => %{
                 "bool" => %{
                   "must_not" => %{
                     "term" => %{
@@ -111,7 +108,6 @@ defmodule GupAdmin.Resource.Search.Query do
                   }
                 }
               }
-            }
           ]
         }
       }

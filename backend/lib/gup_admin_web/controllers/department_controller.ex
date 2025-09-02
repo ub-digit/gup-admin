@@ -21,6 +21,7 @@ defmodule GupAdminWeb.DepartmentController do
   def create( conn, %{"data" => department_data, "parent_id" => parent_id} = params) do
     department_data = department_data
     |> Map.put("is_faculty", Map.get(params, "is_faculty", false))
+    |> Map.put("initial_load", Map.get(params, "initial_load", false))
     |> Map.put("parent_id", parent_id)
     handle_request_from_fe(conn, :create, [department_data])
   end
