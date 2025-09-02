@@ -34,25 +34,32 @@ defmodule GupIndexManagerWeb.DepartmentController do
   # BE/be = backend (Gup Admin backend)
   # IM/im = index manager
 
+
 #-----------------------------------------------------------------------------------------------
 def create(conn, %{"api_key" => api_key, "data" => department_data, "parent_id" => parent_id, "is_faculty" => is_faculty, "initial_load" => initial_load}) do
-  # IO.inspect(parent_id, label: "HITTING THE CREATE FUNCTION IN DEPARTMENT CONTROLLER")
   # Logger.debug "IM:C.create: data: #{inspect(department_data)}"
   handle_request_from_be(conn, api_key, :create, [department_data, parent_id, is_faculty])
 end
 
 
 def create(conn, %{"api_key" => api_key, "data" => department_data, "parent_id" => parent_id, "is_faculty" => is_faculty}) do
-  # IO.inspect(parent_id, label: "HITTING THE CREATE FUNCTION IN DEPARTMENT CONTROLLER")
   # Logger.debug "IM:C.create: data: #{inspect(department_data)}"
   handle_request_from_be(conn, api_key, :create, [department_data, parent_id, is_faculty])
 end
 
   # Create [POST /departments/:id]
+  def create(conn, %{"api_key" => api_key, "data" => %{"initial_load" => "true"} = department_data,}) do
+
+    Logger.debug "M:C.create: data: #{inspect(department_data)}"
+    handle_request_from_be(conn, api_key, :create, [department_data, true])
+  end
+
   def create(conn, %{"api_key" => api_key, "data" => department_data}) do
-    Logger.debug "IM:C.create: data: #{inspect(department_data)}"
+    Logger.debug "M:C.create: data: #{inspect(department_data)}"
     handle_request_from_be(conn, api_key, :create, [department_data])
   end
+
+
 
   # Update [PUT /departments/:id]
   def update(conn, %{"api_key" => api_key, "id" => id, "data" => department_data}) do

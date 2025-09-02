@@ -11,6 +11,28 @@ defmodule GupIndexManager.Resource.Departments do
     |> create()
   end
 
+  def create(%{"id" => id} = department_data, true) when not is_nil(id) do
+    id = Map.get(department_data, "id", nil)
+    db_department = GupIndexManager.Model.Department.find_department_by_id(id)
+    attrs = %{
+      "id" => id,
+      "is_faculty" => Map.get(department_data, "is_faculty", false),
+      "parent_id" => Map.get(department_data, "parent_id", nil),
+      "json" => department_data |> strip_non_stored_properties() |> Jason.encode!(),
+    }
+
+    db_department = db_department
+    |> Department.changeset(attrs)
+    |> GupIndexManager.Repo.insert_or_update()
+    |> elem(1)
+    re_index_and_report_to_gup(true)
+
+
+    %{"status" => "ok",
+      "id" => id,
+    }
+  end
+
   def create(%{"id" => id} = department_data) when not is_nil(id) do
     id = Map.get(department_data, "id", nil)
     db_department = GupIndexManager.Model.Department.find_department_by_id(id)
@@ -82,6 +104,15 @@ defmodule GupIndexManager.Resource.Departments do
       "status" => "ok",
       "id" =>  id
     }
+  end
+
+  def re_index_and_report_to_gup(initial_load = true) do
+    # Index.reindex_departments()
+    # |> case do
+    #   {:ok, _} -> update_gup()
+    #   {:error, error} -> IO.inspect(error, label: "Error reindexing departments")
+    # end
+    {:ok, %{"message" => "Load Departments", "initial_load" => initial_load}}
   end
 
   def re_index_and_report_to_gup() do
