@@ -273,6 +273,11 @@ defmodule GupAdmin.Resource.Person do
     Search.search_persons(q)
   end
 
+  def search_persons_gup_person_ids(ids) do
+    Search.search_persons_gup_person_ids(ids)
+  end
+
+
   def serach_merged_persons(q) do
     Search.search_merged_persons(q)
   end

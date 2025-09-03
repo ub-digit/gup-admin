@@ -236,6 +236,36 @@ defmodule GupAdmin.Resource.Search.Query do
     }
   end
 
+  def search_persons_gup_person_ids(ids) do
+    #TODO: Validation? Should perform this in controller?
+    ids = ids
+      |> String.split(";")
+      |> Enum.map(&String.to_integer/1)
+
+    %{
+      # @query_limit,
+      size: 100,
+      query: %{
+        bool: %{
+          filter: [
+            %{
+              bool: %{
+                must: %{
+                  terms: %{
+                    "names.gup_person_id" => ids
+                  }
+                },
+                must_not: [
+                  %{term: %{deleted: true}}
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  end
+
   def search_merged_persons(term \\ "") do
     # %{
     #   "track_total_hits" => true,
