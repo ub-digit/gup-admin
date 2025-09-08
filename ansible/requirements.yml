@@ -1,0 +1,3 @@
+---
+- src: https://github.com/ub-digit/ub-ansible-deploy.git
+  version: master

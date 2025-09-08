@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Exit on error
+set -e
+
+if [[ -z "$1" ]]; then
+    echo "Usage: $0 <target>"
+    echo "<target> must be on of staging, lab or production"
+    exit 0;
+fi
+
+targets="staging lab production"
+target=$1
+
+if [[ ! " $targets " =~ " $target " ]]; then
+    echo "<target> must be on of staging, lab, prod or production"
+    exit 1;
+fi
+
+#./run-playbook.sh $target export-db
+cd ../docker
+
+RUNNING=$(docker compose ps admin-db -q)
+if [[ -z "$RUNNING" ]]; then
+  echo "The service 'admin-db' is down, run docker compose up -d admin-db in docker directory"
+  exit 1;
+fi
+
+RUNNING=$(docker compose ps index-manager-db -q)
+if [[ -z "$RUNNING" ]]; then
+  echo "The service 'index-manager-db' is down, run docker compose up -d index-manager-db in docker directory"
+  exit 1;
+fi
+
+docker compose exec admin-db bash -c 'psql -d postgres -U $POSTGRES_USER -c "DROP DATABASE IF EXISTS $POSTGRES_DB;"'
+docker compose exec admin-db bash -c 'psql -d postgres -U $POSTGRES_USER -c "CREATE DATABASE $POSTGRES_DB;"'
+docker compose exec -T admin-db bash -c 'psql -d $POSTGRES_DB $POSTGRES_USER' < ../ansible/data/database.sql
+
+docker compose exec index-manager-db bash -c 'psql -d postgres -U $POSTGRES_USER -c "DROP DATABASE IF EXISTS $POSTGRES_DB;"'
+docker compose exec index-manager-db bash -c 'psql -d postgres -U $POSTGRES_USER -c "CREATE DATABASE $POSTGRES_DB;"'
+docker compose exec -T index-manager-db bash -c 'psql -d $POSTGRES_DB $POSTGRES_USER' < ../ansible/data/index-manager-database.sql
+
+echo "Databases has been imported"
