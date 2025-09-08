@@ -307,6 +307,23 @@ defmodule GupAdmin.Resource.Search do
 
 
   def get_all_persons() do
+    # query = %{
+    #   "track_total_hits" => true,
+    #   "size" => @query_limit,
+    #   "query" => %{
+    #     "bool" => %{
+    #       "must" => %{
+    #         "match_all" => %{}
+    #       },
+    #       "must_not" => %{
+    #         "term" => %{
+    #           "deleted" => true
+    #         }
+    #       }
+    #     }
+    #   }
+    # }
+
     query = %{
       "track_total_hits" => true,
       "size" => @query_limit,
@@ -321,7 +338,14 @@ defmodule GupAdmin.Resource.Search do
             }
           }
         }
-      }
+      },
+      "sort" => [
+        %{
+          "updated_at" => %{
+            "order" => "desc"
+          }
+        }
+      ]
     }
     {:ok, %{body: %{"hits" => hits}}} = Elastix.Search.search(elastic_url(), @persons_index, [], query)
     data = hits
