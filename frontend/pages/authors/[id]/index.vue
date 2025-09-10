@@ -46,24 +46,6 @@
 
       <div id="departments" class="row mb-3">
         <div class="col">
-          <div class="row mb-3">
-            <div class="col-3">
-              <strong>Primär tillhörighet:</strong>
-            </div>
-            <div class="col">
-              <div v-if="authorCurrentDepartment">
-                {{ authorCurrentDepartment?.name }}
-                <br />
-                <span style="font-size: 0.7rem">
-                  {{ authorCurrentDepartment?.start_date }}
-                  <span v-if="authorCurrentDepartment?.end_date">
-                    - {{ authorCurrentDepartment?.end_date }}</span
-                  ></span
-                >
-              </div>
-              <span v-else> Saknas </span>
-            </div>
-          </div>
           <div class="row">
             <div class="col-3">
               <strong>Alla tillhörigheter:</strong>
