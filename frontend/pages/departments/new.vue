@@ -1,7 +1,7 @@
 <template>
   <div v-if="department" class="row">
     <div class="col">
-      <h2>Skapa ny institution</h2>
+      <h2>Skapa ny organisation</h2>
 
       <DepartmentForm
         :department="department"

@@ -4,7 +4,7 @@
       <DepartmentBreadcrumb :department="department" />
     </div>
     <div class="col">
-      <h2>Redigera institution</h2>
+      <h2>Redigera organisation</h2>
 
       <DepartmentForm
         :department="department"

@@ -68,8 +68,8 @@ export const useLocaleStore = defineStore("locale", {
         "views.publications.post.fields.version_created_by": "av",
         "views.publications.post.fields.updated_at": "Uppdaterad",
         "views.publications.post.fields.version_updated_by": "av",
-        "views.publications.post.result_list.header": "Möjliga dubletter",
-        "views.publications.post.result_list_by_id.header": "Dubletter på id",
+        "views.publications.post.result_list.header": "Möjliga dubbletter",
+        "views.publications.post.result_list_by_id.header": "Dubbletter på id",
         "views.publications.post.result_list.no_gup_posts_by_id_found":
           "Inga gup-poster med dubletter på id hittades",
         "views.publications.post.result_list_by_title.header":
