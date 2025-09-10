@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   }
   const config = useRuntimeConfig();
   const query = getQuery(event);
-  query.api_key = config.ADMIN_BACKEND_API_KEY;
+  query.api_key = config.BACKEND_API_KEY;
   interface AuthorObject {
     data: Author[];
   }

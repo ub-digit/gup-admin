@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
   }
   const config = useRuntimeConfig();
   const query = getQuery(event);
-  query.api_key = config.ADMIN_BACKEND_API_KEY;
+  query.api_key = config.BACKEND_API_KEY;
   console.log(config.API_BASE_URL);
 
   /*const res: IdentifierArray = [

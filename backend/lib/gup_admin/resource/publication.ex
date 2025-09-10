@@ -7,7 +7,7 @@ defmodule GupAdmin.Resource.Publication do
 
   # post to external site with httpoison
   def post_publication_to_gup(id, gup_user) do
-    api_key = System.fetch_env!("GUP_API_KEY")
+    api_key = System.fetch_env!("GUP_BACKEND_API_KEY")
     url = "#{gup_server_base_url()}/v1/drafts_admin?api_key=#{api_key}&username=#{gup_user}"
     pub = show_raw(id)
     body = %{"publication" => pub} |> Jason.encode!()
@@ -15,7 +15,7 @@ defmodule GupAdmin.Resource.Publication do
   end
 
   def merge_publications(gup_id, publication_id, gup_user) do
-    api_key = System.get_env("GUP_API_KEY")
+    api_key = System.get_env("GUP_BACKEND_API_KEY")
     gup_id = gup_id |> String.split("_") |> List.last()
     merge_with_id = String.contains?(publication_id, "gup")
     |> case do
