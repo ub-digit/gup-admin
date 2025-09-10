@@ -12,7 +12,7 @@ defmodule GupIndexManager.Resource.Gup do
   end
 
   def gup_backand_api_key() do
-    System.fetch_env!("GUP_API_KEY")
+    System.fetch_env!("GUP_BACKEND_API_KEY")
   end
 
   def next_gup_id_url(entity_type) do
