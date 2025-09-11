@@ -304,7 +304,20 @@ defmodule GupAdmin.Resource.Search do
     }
   end
 
-
+  defp persons_search_result(query) do
+    {:ok, %{body: %{"hits" => hits}}} = Elastix.Search.search(elastic_url(), @persons_index, [], query)
+    data = hits
+      |> Map.get("hits")
+      |> Enum.take(50)
+      |> Enum.map(fn dep -> Map.get(dep, "_source") end)
+      |> sort_names_on_primary()
+      |> sort_person_departments_on_current()
+    %{
+      "total" => Map.get(hits, "total") |> Map.get("value"),
+      "data" => data,
+      "showing" => length(data)
+    }
+  end
 
   def get_all_persons() do
     # query = %{
@@ -347,41 +360,26 @@ defmodule GupAdmin.Resource.Search do
         }
       ]
     }
-    {:ok, %{body: %{"hits" => hits}}} = Elastix.Search.search(elastic_url(), @persons_index, [], query)
-    data = hits
-    |> Map.get("hits")
-    |> Enum.take(50)
-    |> Enum.map(fn dep -> Map.get(dep, "_source") end)
-    |> sort_names_on_primary()
-    |> sort_person_departments_on_current()
-    %{
-      "total" => Map.get(hits, "total") |> Map.get("value"),
-      "data" => data,
-      "showing" => length(data)
-    }
+    persons_search_result(query)
   end
 
   def search_persons("") do
     get_all_persons()
   end
 
-  def search_persons(q) do
-    query = Query.search_persons(q)
+  def search_persons(query) do
+    query = Query.search_persons(query)
     IO.inspect(query, label: "search_persons query")
     Elastix.Search.search(elastic_url(), @persons_index, [], query)
-    {:ok, %{body: %{"hits" => hits}}} = Elastix.Search.search(elastic_url(), @persons_index, [], query)
-    data = hits
-    |> Map.get("hits")
-    |> Enum.take(50)
-    |> Enum.map(fn dep -> Map.get(dep, "_source") end)
-    |> sort_names_on_primary()
-    |> sort_person_departments_on_current()
-    %{
-      "total" => Map.get(hits, "total") |> Map.get("value"),
-      "data" => data,
-      "showing" => length(data)
-    }
+    persons_search_result(query)
+  end
 
+
+  def search_persons_gup_person_ids(ids) do
+    query = Query.search_persons_gup_person_ids(ids)
+    IO.inspect(ids, label: "search_persons_gup_person_ids ids")
+    Elastix.Search.search(elastic_url(), @persons_index, [], query)
+    persons_search_result(query)
   end
 
   def get_person_count do

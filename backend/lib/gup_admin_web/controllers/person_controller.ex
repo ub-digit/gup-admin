@@ -112,6 +112,9 @@ defmodule GupAdminWeb.PersonController do
     json conn, Person.search_persons(q)
   end
 
+  def search(conn, %{"gup_person_ids" => ids}) do
+    json conn, Person.search_persons_gup_person_ids(ids)
+  end
 
   def search(conn, _params) do
     json conn, Person.get_all_persons()
