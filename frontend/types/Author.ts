@@ -10,7 +10,7 @@ export const zDepartment = z.object({
 });
 
 export const zNameform = z.object({
-  first_name: z.string(),
+  first_name: z.string().nullish(),
   last_name: z.string(),
   full_name: z.string().nullish(),
   gup_person_id: z.number().nullish(),
