@@ -1,0 +1,6 @@
+---
+all:
+  hosts:
+    dev:
+      ansible_host: gup-admin-dev.ub.gu.se
+      ansible_user: apps
