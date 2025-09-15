@@ -6,7 +6,7 @@ if [[ -z "$2" ]]; then
     exit 0;
 fi
 
-targets="staging lab production"
+targets="dev staging lab production"
 target=$1
 playbook=$2
 
