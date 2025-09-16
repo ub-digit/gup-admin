@@ -59,6 +59,7 @@
               id="parentID"
               v-model="selectedDepartment"
               :options="departments"
+              :custom-label="deptLabel"
               :internal-search="false"
               placeholder="Välj förälder"
               track-by="id"
@@ -187,6 +188,11 @@ if (
 } else {
   selectedDepartment.value = null;
 }
+
+const deptLabel = (opt: Department) => {
+  if (!opt) return "";
+  return opt.end_year ? `${opt.name_sv} (-${opt.end_year})` : opt.name_sv;
+};
 
 function saveDepartment() {
   if (departmentReactive.value.is_faculty) {
