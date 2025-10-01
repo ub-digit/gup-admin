@@ -160,75 +160,11 @@ defmodule GupAdmin.Resource.Search do
   end
   # TODO: Move to query module
   def search_departments(%{"query" => query}) do
-    # q = %{
-    #   "track_total_hits" => true,
-    #   "query" => %{
-    #     "bool" => %{
-    #       "must" => [
-    #         %{
-    #           "query_string" => %{
-    #             "default_operator" => "AND",
-    #             "fields" => ["name^15"],
-    #             "query" => query
-    #           }
-    #         },
-            # %{
-            #   "range" => %{
-            #     "start_year" => %{
-            #       "lte" => year
-            #     }
-            #   }
-            # },
-            # %{
-            #   "bool" => %{
-            #     "should" => [
-            #       %{
-            #         "range" => %{
-            #           "end_year" => %{
-            #             "gte" => year
-            #           }
-            #         }
-            #       },
-            #       %{
-            #         "bool" => %{
-            #           "must_not" => %{
-            #             "exists" => %{
-            #               "field" => "end_year"
-            #             }
-            #           }
-            #         }
-            #       }
-            #     ]
-            #   }
-            # }
-    #       ]
-    #     }
-    #   }
-    # }
 
-    # q = %{
-    #   "track_total_hits" => true,
-    #   "query" => %{
-    #     "bool" => %{
-    #       "must" => [
-    #         if String.trim(query) == "" do
-    #           %{"match_all" => %{}}
-    #         else
-    #           %{
-    #             "query_string" => %{
-    #               "default_operator" => "AND",
-    #               "fields" => ["name^15", "name_en^15", "orgdbid^10"],
-    #               "query" => query
-    #             }
-    #           }
-    #         end
-    #       ]
-    #     }
-    #   }
-    # }
 
     q = %{
       "track_total_hits" => true,
+      "size" => 50,
       "query" => %{
         "bool" => %{
           "must" => [
