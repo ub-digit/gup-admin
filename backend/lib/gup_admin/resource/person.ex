@@ -1,4 +1,5 @@
 defmodule GupAdmin.Resource.Person do
+  alias Hex.HTTP
   alias GupAdmin.Resource.Person.PersonValidator
   alias GupAdmin.Resource.Search
   alias Elastix, as: SE
@@ -11,6 +12,7 @@ defmodule GupAdmin.Resource.Person do
   # IM/im = index manager
   # SE/se = search engine (Elasticsearch)
 
+  @im_merge_endpoint     "/persons"
   @im_endpoint           "/api/persons"
   @index_name            "persons"
   @send_and_receive_json [{"Content-Type", "application/json"}, {"Accept", "application/json"}]
@@ -281,4 +283,62 @@ defmodule GupAdmin.Resource.Person do
   def serach_merged_persons(q) do
     Search.search_merged_persons(q)
   end
+
+  def try_merge_gup_admin_person(gup_admin_id) do
+    Search.get_person(gup_admin_id)
+    |> evaluate_person_for_merge()
+    |> respond_to_merge_attempt()
+  end
+
+  defp respond_to_merge_attempt(:not_found), do: :not_found
+  defp respond_to_merge_attempt(:nothing_to_do), do: :nothing_to_do
+  defp respond_to_merge_attempt(response) do
+    response
+  end
+
+  def evaluate_person_for_merge(%{"data" =>nil}), do: :not_found
+  def evaluate_person_for_merge(%{"data" => data}) do
+    identifiers = data["identifiers"]
+    case length(identifiers) do
+      0 -> :nothing_to_do
+      _ -> try_execute_merge(data)
+
+    end
+  end
+
+  def try_execute_merge(person_data) do
+   generate_single_name_form_data(person_data)
+   |> Enum.map(fn single_name_person_data ->
+        # for each single name person data, try to merge in index_manager
+        url = im_base_url() <> @im_merge_endpoint <> "?api_key=" <> im_api_key()
+        headers = @send_and_receive_json
+        method = :post
+        body = single_name_person_data
+        HTTPoison.post(url, %{"data" => single_name_person_data} |> Jason.encode!(), [{"Content-Type", "application/json"}])
+        # TODO: Handle errore
+        |> elem(1)
+        |> Map.get(:body)
+        |> Jason.decode()
+        |> elem(1)
+        |> Map.get("data")
+        |> Map.get("id")
+
+      end)
+    |> Enum.uniq()
+    |> List.last()
+  end
+
+  def generate_single_name_form_data(person_data) do
+    person_objects = []
+    person_data["names"]
+   # for each name in names, create a new person object with that name only
+    Enum.map(person_data["names"], fn name ->
+    person_data
+    |> Map.put("names", [name])
+  end)
+
+  end
+
+
+
 end
