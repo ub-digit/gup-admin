@@ -110,7 +110,10 @@ defmodule GupIndexManager.Resource.Index.Config do
       },
       "mappings" => %{
         "properties" => %{
-          "name" => %{
+          "updated_at" => %{
+            "type" => "date"
+          },
+          "name_en" => %{
             "fields" => %{
               "sort" => %{
                 "type" => "icu_collation_keyword",
@@ -121,7 +124,18 @@ defmodule GupIndexManager.Resource.Index.Config do
             "type" => "text",
             "analyzer" => "autocomplete",
             "search_analyzer" => "standard_truncate"
-
+          },
+          "name_sv" => %{
+            "fields" => %{
+              "sort" => %{
+                "type" => "icu_collation_keyword",
+                "language" => "sv",
+                "country" => "SE"
+              }
+            },
+            "type" => "text",
+            "analyzer" => "autocomplete",
+            "search_analyzer" => "standard_truncate"
           }
         }
       }
