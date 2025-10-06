@@ -101,12 +101,12 @@ defmodule GupAdmin.Resource.Person do
                                                                body:    body)
      map = elem(r, 1)
      f = elem(r, 0)
-     id = try_merge_gup_admin_person(id)
+     new_id = try_merge_gup_admin_person(id)
     #  body = Map.get(map, :success) |> Map.get(:body) #|> Map.put("id", id)
     # response = {f, %{success: %{body: body,  status_code: 200}}}
     # # rr = {f, map |> put_in([:success, :body], "id", id)}
     # IO.inspect(r == response, label: "RESPONSE EQUALS EXPECTED RESPONSE XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx")
-    resp = {f, map |> Map.put(:id, id) }
+    resp = {f, map |> Map.put(:id, new_id) }
     IO.inspect(resp, label: "RESPONSE WITH ID XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX     ")
     resp
 
