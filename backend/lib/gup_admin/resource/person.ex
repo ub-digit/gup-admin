@@ -97,8 +97,19 @@ defmodule GupAdmin.Resource.Person do
     end
   end
   defp do_update({:ok, body}, id) do
-    handle_request_to_im(:put, "#{@im_endpoint}/#{id}", [200], headers: @send_and_receive_json,
+    r = handle_request_to_im(:put, "#{@im_endpoint}/#{id}", [200], headers: @send_and_receive_json,
                                                                body:    body)
+     map = elem(r, 1)
+     f = elem(r, 0)
+     id = try_merge_gup_admin_person(id)
+    #  body = Map.get(map, :success) |> Map.get(:body) #|> Map.put("id", id)
+    # response = {f, %{success: %{body: body,  status_code: 200}}}
+    # # rr = {f, map |> put_in([:success, :body], "id", id)}
+    # IO.inspect(r == response, label: "RESPONSE EQUALS EXPECTED RESPONSE XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx")
+    resp = {f, map |> Map.put(:id, id) }
+    IO.inspect(resp, label: "RESPONSE WITH ID XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX     ")
+    resp
+
   end
   defp do_update({:error, error_message}, _id) do
     {:error, map2json_error_map(error_message)}
@@ -285,6 +296,7 @@ defmodule GupAdmin.Resource.Person do
   end
 
   def try_merge_gup_admin_person(gup_admin_id) do
+    IO.inspect("YAHOOO YAHOOO YAHOOO YAHOOO YAHOOO YAHOOO YAHOOO YAHOOO YAHOOO YAHOOO YAHOOO YAHOOO YAHOOO - Merging person with gup_admin_id: #{gup_admin_id} -y")
     Search.get_person(gup_admin_id)
     |> evaluate_person_for_merge()
     |> respond_to_merge_attempt()
