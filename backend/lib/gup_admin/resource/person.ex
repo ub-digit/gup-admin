@@ -101,7 +101,14 @@ defmodule GupAdmin.Resource.Person do
                                                                body:    body)
      map = elem(r, 1)
      f = elem(r, 0)
-     new_id = try_merge_gup_admin_person(id)
+     merge_id = try_merge_gup_admin_person(id)
+
+     new_id = case merge_id do
+       :not_found -> id
+       :nothing_to_do -> id
+       _ -> merge_id
+     end
+
     #  body = Map.get(map, :success) |> Map.get(:body) #|> Map.put("id", id)
     # response = {f, %{success: %{body: body,  status_code: 200}}}
     # # rr = {f, map |> put_in([:success, :body], "id", id)}
