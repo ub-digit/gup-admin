@@ -109,15 +109,11 @@ defmodule GupAdmin.Resource.Person do
        _ -> merge_id
      end
 
-    #  body = Map.get(map, :success) |> Map.get(:body) #|> Map.put("id", id)
-    # response = {f, %{success: %{body: body,  status_code: 200}}}
-    # # rr = {f, map |> put_in([:success, :body], "id", id)}
-    # IO.inspect(r == response, label: "RESPONSE EQUALS EXPECTED RESPONSE XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx")
-    resp = {f, map |> Map.put(:id, new_id) }
-    IO.inspect(resp, label: "RESPONSE WITH ID XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX     ")
-    resp
-
+    body = Map.get(map, :success) |> Map.get(:body) |> Map.put("id", new_id)
+    alt_resp = {f, %{success: %{body: body,  status_code: 200}}}
+    alt_resp
   end
+
   defp do_update({:error, error_message}, _id) do
     {:error, map2json_error_map(error_message)}
   end
