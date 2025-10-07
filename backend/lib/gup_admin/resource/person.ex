@@ -100,7 +100,7 @@ defmodule GupAdmin.Resource.Person do
     r = handle_request_to_im(:put, "#{@im_endpoint}/#{id}", [200], headers: @send_and_receive_json,
                                                                body:    body)
      map = elem(r, 1)
-     f = elem(r, 0)
+     status = elem(r, 0)
      merge_id = try_merge_gup_admin_person(id)
 
      new_id = case merge_id do
@@ -110,8 +110,8 @@ defmodule GupAdmin.Resource.Person do
      end
 
     body = Map.get(map, :success) |> Map.get(:body) |> Map.put("id", new_id)
-    alt_resp = {f, %{success: %{body: body,  status_code: 200}}}
-    alt_resp
+    {status, %{success: %{body: body,  status_code: 200}}}
+
   end
 
   defp do_update({:error, error_message}, _id) do
