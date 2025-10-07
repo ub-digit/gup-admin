@@ -37,7 +37,7 @@ const saveAuthor = async (data: Author) => {
   if (res?.status === "success") {
     router.push({
       name: "authors-id",
-      params: { id: route.params.id },
+      params: { id: res?.id },
       query: { ...route.query },
     });
   } else if (res?.status === "error") {

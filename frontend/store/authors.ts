@@ -142,6 +142,7 @@ export const useAuthorsStore = defineStore("authorsStore", () => {
       if (data?.value?.success?.data.status === "ok") {
         return {
           status: "success",
+          id: data?.value?.success?.data.id,
           errors: [],
         };
       } else if (data?.value?.errors.validation.length > 0) {
