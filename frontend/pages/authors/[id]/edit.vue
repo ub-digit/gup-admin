@@ -26,7 +26,7 @@ const route = useRoute();
 const router = useRouter();
 const storeAuthor = useAuthorsStore();
 const { author } = storeToRefs(storeAuthor);
-const { fetchAuthorById, updateAuthor } = storeAuthor;
+const { fetchAuthorById, updateAuthor, fetchAuthors } = storeAuthor;
 const submittedData: Ref<Author | null> = ref(null);
 const errors: Ref<string[]> = ref([]);
 
@@ -35,6 +35,7 @@ await fetchAuthorById(route.params.id as string);
 const saveAuthor = async (data: Author) => {
   const res = await updateAuthor(route.params.id as string, data);
   if (res?.status === "success") {
+    fetchAuthors();
     router.push({
       name: "authors-id",
       params: { id: res?.id },
