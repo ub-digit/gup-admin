@@ -1,9 +1,18 @@
 defmodule GupIndexManager.Resource.Publication do
   alias GupIndexManager.Model.Publication
   alias GupIndexManager.Resource.Index
+  alias GupIndexManager.Resource.Persons
 
   def create_or_update(data) do
-    id =  Map.get(data, "id")
+
+    id = Map.get(data, "id")
+    authors_before_update = Index.get_publication(id)
+    |> Map.get("_source")
+    |> Map.get("authors", [])
+
+    combined_authors = (authors_before_update ++ Map.get(data, "authors", []))
+    |> Enum.uniq_by(fn author -> get_author_name(author) end)
+
     attended = Map.get(data, "attended", :attended_not_found)
     data = data |> Map.put("origin_id", String.split(id, "_") |> List.last())
 
@@ -20,7 +29,11 @@ defmodule GupIndexManager.Resource.Publication do
     db_publication
     |> Publication.changeset(attrs)
     |> GupIndexManager.Repo.insert_or_update()
+
+    Persons.update_has_publications_flag(combined_authors)
+
     Index.update_publication(attrs)
+
   end
 
   def get_attended_deleted(id, :attended_not_found) do

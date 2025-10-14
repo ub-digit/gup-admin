@@ -165,4 +165,32 @@ defmodule GupIndexManager.Resource.Persons do
     |> Person.changeset(attrs)
     |> GupIndexManager.Repo.update()
   end
+
+  #-----------------------------------------------------------------------------------------------
+
+  def update_has_publications_flag(authors) do
+    Enum.each(authors, fn author ->
+      gup_person_id = Map.get(author, "person", []) |> List.first() |> Map.get("gup_person_id", nil)
+      case gup_person_id do
+        nil -> :ok
+        _ ->
+          db_person = Person.find_by_gup_person_id(gup_person_id)
+          has_publications = db_person.has_publications || true
+          attrs = %{
+            "json" => db_person.json,
+            "has_publications" => has_publications
+          }
+          db_person
+          |> Person.changeset(attrs)
+          |> GupIndexManager.Repo.update()
+          |> elem(1)
+          |> set_meta(attrs)
+          |> copy_identifiers_to_nested()
+          |> update_index()
+      end
+    end)
+  end
+  #-----------------------------------------------------------------------------------------------
+
+
 end

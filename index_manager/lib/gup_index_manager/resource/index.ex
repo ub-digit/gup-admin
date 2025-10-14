@@ -256,4 +256,19 @@ defmodule GupIndexManager.Resource.Index do
         end
     end
   end
+
+  def update_index_persons_with_has_publication_flag do
+    q = %{
+      "query" => %{
+        "match_all" => %{}
+      },
+      "script" => %{
+        "source" => "ctx._source['has_publication'] = params.has_publication",
+        "lang" => "painless",
+        "params" => %{
+          "has_publication" => false
+        }
+      }
+    }
+  end
  end
