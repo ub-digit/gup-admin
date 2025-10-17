@@ -299,7 +299,6 @@ defmodule GupAdmin.Resource.Person do
   end
 
   def try_merge_gup_admin_person(gup_admin_id) do
-    IO.inspect("YAHOOO YAHOOO YAHOOO YAHOOO YAHOOO YAHOOO YAHOOO YAHOOO YAHOOO YAHOOO YAHOOO YAHOOO YAHOOO - Merging person with gup_admin_id: #{gup_admin_id} -y")
     Search.get_person(gup_admin_id)
     |> evaluate_person_for_merge()
     |> respond_to_merge_attempt()
@@ -344,16 +343,25 @@ defmodule GupAdmin.Resource.Person do
   end
 
   def generate_single_name_form_data(person_data) do
-    person_objects = []
-    person_data["names"]
-   # for each name in names, create a new person object with that name only
-    Enum.map(person_data["names"], fn name ->
-    person_data
-    |> Map.put("names", [name])
-  end)
 
+    # Check if person_data["identifiers"] has the identifier "POP_ID"
+    force_primary_name = Enum.any?(person_data["identifiers"], fn id -> id == "POP_ID" end)
+    # for each name in names, create a new person object with that name only
+    person_data["names"]
+      |> Enum.map(fn name ->
+        person_data |> Map.put("names", [name])
+        |> set_force_primary_name(force_primary_name, name)
+      end)
   end
 
+  def set_force_primary_name(data, true, %{"primary" => true}) do
+    Map.put(data, "force_primary_name", true)
+  end
 
-
+  def set_force_primary_name(data, false, name) do
+    name |> Map.put("primary", false)
+    data
+    |> Map.put("names", [name])
+    |> Map.put("force_primary_name", false)
+  end
 end

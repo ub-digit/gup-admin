@@ -416,7 +416,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   def get_aggregated_names(existing_data) do
     Enum.reduce(existing_data, [], fn existing_person, acc ->
       Enum.reduce(Map.get(existing_person, "names", []), acc, fn name, acc ->
-        [name | acc]
+        [name |> Map.put("primary", false) | acc]
       end)
     end)
     |> List.flatten()
