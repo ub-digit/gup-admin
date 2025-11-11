@@ -1,0 +1,18 @@
+---
+GIT_REVISION: '{{ git_revision }}'
+GIT_REVISION_GUP_IMPORTS: '{{ git_revision_gup_imports }}'
+FRONTEND_HOST_PORT: '127.0.0.1:{{ frontend_host_port}}'
+BACKEND_HOST_PORT: '127.0.0.1:{{ backend_host_port}}'
+INDEX_MANAGER_BACKEND_HOST_PORT: '127.0.0.1:{{ index_manager_backend_host_port }}'
+ELASTICSEARCH_HOST_PORT: '127.0.0.1:{{ elasticsearch_host_port }}'
+KIBANA_HOST_PORT: '127.0.0.1:{{ kibana_host_port }}'
+
+DB_DATA_HOST_PATH: '{{ db_data_dir }}'
+ELASTICSEARCH_DATA_HOST_PATH: '{{ elasticsearch_data_dir }}'
+INDEX_MANAGER_DB_DATA_HOST_PATH: '{{ index_manager_db_data_dir }}'
+KIBANA_DATA_HOST_PATH: '{{ kibana_data_dir }}'
+BACKEND_SCOPUS_NORMALISED_HOST_PATH: '{{ backend_scopus_normalised_data_dir }}'
+BACKEND_SOURCE_HOST_PATH: '{{ backend_source_data_dir }}'
+FRONTEND_ALLOW_AUTHOR_EDIT: 'false'
+BACKEND_PUBLIC_URL: 'https://{{ backend_hostname }}'
+FRONTEND_PUBLIC_URL: 'https://{{ frontend_hostname }}'

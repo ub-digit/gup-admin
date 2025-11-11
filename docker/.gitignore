@@ -1,4 +1,13 @@
 /pgdata
-/scopus-files/*
-#*-initdb.d
-/data
+/scopus-files
+/scopus-scripts
+/scopus-normalised
+/*-initdb.d/*
+!/admin-db-postgres-initdb.d/.gitkeep
+!/index-manager-db-postgres-initdb.d/create.sql
+/index-manager-db-data
+/admin-db-data
+/elasticsearch-data
+/kibana-data
+/_source
+/scopus-normalised

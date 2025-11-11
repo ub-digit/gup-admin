@@ -1,0 +1,58 @@
+<VirtualHost *:80>
+    ServerName {{ frontend_hostname }}
+    Redirect permanent / https://{{ frontend_hostname }}/
+</VirtualHost>
+
+<VirtualHost *:443>
+    ServerName {{ frontend_hostname }}
+    FallbackResource /index.html
+
+    ProxyPreserveHost Off
+
+    # Used for Prometheus
+    ProxyPass        /check http://localhost:{{ frontend_host_port }}/favicon.ico
+    ProxyPassReverse /check http://localhost:{{ frontend_host_port }}/favicon.ico
+
+    ProxyPass        /oai http://localhost:10471/oai/api
+    ProxyPassReverse /oai http://localhost:10471/oai/api
+
+    ProxyPass        /index-manager http://localhost:{{ index_manager_backend_host_port }}/
+    ProxyPassReverse /index-manager http://localhost:{{ index_manager_backend_host_port }}/
+    ProxyPass        /kibana http://localhost:{{ kibana_host_port }}/kibana
+    ProxyPassReverse /kibana http://localhost:{{ kibana_host_port }}/kibana
+    ProxyPass        / http://localhost:{{ frontend_host_port }}/
+    ProxyPassReverse / http://localhost:{{ frontend_host_port }}/
+
+    SSLEngine on
+    SSLCertificateFile /etc/ssl/apache2/certs/ub-gu-se.pem
+    SSLCertificateKeyFile /etc/ssl/apache2/private/ub-gu-se.key
+    SSLCertificateChainFile /etc/ssl/apache2/certs/interm_geant.pem
+
+    <Location /kibana>
+        AuthType Basic
+        AuthName gup-admin
+        AuthBasicProvider file
+        AuthUserFile "/etc/apache2/conf-enabled/.htpasswd"
+        Require valid-user
+    </Location>
+
+    <Location /check>
+        AuthType None
+        Require all granted
+    </Location>
+
+    <Location /oai>
+        AuthType None
+        Require all granted
+    </Location>
+
+    <Location /index-manager>
+        AuthType None
+        Require all granted
+    </Location>
+    <Location /index-manager/>
+        AuthType None
+        Require all granted
+    </Location>
+
+</VirtualHost>
