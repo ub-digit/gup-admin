@@ -17,21 +17,22 @@ defmodule GupIndexManager.Resource.Index.Query do
           "bool" => %{
             "must" => [
               %{
-                "term" => %{
-                  "deleted" => false
-                }
-
-              },
-              %{
                 "query_string" => %{
                   "fields" => ["identifiers.value.keyword"],
-                  "query" => "\"" <> identifier["value"] <> "\"" #escape_characters(identifier["identifier_value"]),
+                  "query" => "\"" <> identifier["value"] <> "\""
                 }
               },
               %{
                 "query_string" => %{
                   "fields" => ["identifiers.code"],
                   "query" => identifier["code"]
+                }
+              }
+            ],
+            "must_not" => [
+              %{
+                "term" => %{
+                  "deleted" => true
                 }
               }
             ]

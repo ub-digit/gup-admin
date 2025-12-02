@@ -97,9 +97,23 @@ defmodule GupAdmin.Resource.Person do
     end
   end
   defp do_update({:ok, body}, id) do
-    handle_request_to_im(:put, "#{@im_endpoint}/#{id}", [200], headers: @send_and_receive_json,
+    r = handle_request_to_im(:put, "#{@im_endpoint}/#{id}", [200], headers: @send_and_receive_json,
                                                                body:    body)
+     map = elem(r, 1)
+     status = elem(r, 0)
+     merge_id = try_merge_gup_admin_person(id)
+
+     new_id = case merge_id do
+       :not_found -> id
+       :nothing_to_do -> id
+       _ -> merge_id
+     end
+
+    body = Map.get(map, :success) |> Map.get(:body) |> Map.put("id", new_id)
+    {status, %{success: %{body: body,  status_code: 200}}}
+
   end
+
   defp do_update({:error, error_message}, _id) do
     {:error, map2json_error_map(error_message)}
   end
@@ -308,6 +322,7 @@ defmodule GupAdmin.Resource.Person do
 
   def try_execute_merge(person_data) do
    generate_single_name_form_data(person_data)
+   |> sort_on_primary_name()
    |> Enum.map(fn single_name_person_data ->
         # for each single name person data, try to merge in index_manager
         url = im_base_url() <> @im_merge_endpoint <> "?api_key=" <> im_api_key()
@@ -329,16 +344,34 @@ defmodule GupAdmin.Resource.Person do
   end
 
   def generate_single_name_form_data(person_data) do
-    person_objects = []
-    person_data["names"]
-   # for each name in names, create a new person object with that name only
-    Enum.map(person_data["names"], fn name ->
-    person_data
-    |> Map.put("names", [name])
-  end)
 
+    # Check if person_data["identifiers"] has the identifier "POP_ID"
+    force_primary_name = Enum.any?(person_data["identifiers"], fn id -> id == "POP_ID" end)
+    # for each name in names, create a new person object with that name only
+    person_data["names"]
+      |> Enum.map(fn name ->
+        person_data |> Map.put("names", [name])
+        # |> set_force_primary_name(force_primary_name, name)
+      end)
   end
 
+  def sort_on_primary_name(data) do
+    Enum.sort_by(data, fn person -> Enum.any?(person["names"], fn names -> names["primary"] == true end ) end, :desc)
+  end
 
+  def set_force_primary_name(data) do
+    Enum.sort_by(data, fn person -> Enum.any?(person["names"], fn names -> names["primary"] == true end ) end, :desc)
+  end
 
+  def set_force_primary_name(data, false, name) do
+    name = name|> Map.put("primary", false)
+    data
+    |> Map.put("names", [name])
+    |> Map.put("force_primary_name", false)
+  end
+
+  def set_force_primary_name(data, true, name) do
+    data
+    |> Map.put("names", [name])
+  end
 end
