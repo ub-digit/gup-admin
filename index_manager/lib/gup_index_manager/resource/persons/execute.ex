@@ -52,12 +52,12 @@ defmodule GupIndexManager.Resource.Persons.Execute do
     old_name = Enum.find(data["names"], fn name -> name["gup_person_id"] == gup_person_id end)
     names = Map.get(data, "names", [])
     |> Enum.filter(fn name -> name["gup_person_id"] != gup_person_id end)
-    |> Enum.map(fn existing_name -> Map.put(existing_name, "primary", false) end)
+    # |> Enum.map(fn existing_name -> Map.put(existing_name, "primary", false) end)
     new_name = %{
       "first_name" => name["first_name"],
       "last_name" => name["last_name"],
       "gup_person_id" => gup_person_id,
-      "primary" => true,
+      "primary" => name["primary"],
       "full_name" => "#{name["first_name"]} #{name["last_name"]}",
       "start_date" => name["start_date"] || old_name["start_date"] || nil,
       "end_date" => name["end_date"] || old_name["end_date"] || nil
@@ -71,7 +71,7 @@ defmodule GupIndexManager.Resource.Persons.Execute do
   def execute_action(data, {:update_name, name}) do
     # Names has the same gup_person_id, so update the name and dates
     name = Map.put(name, "full_name", "#{name["first_name"]} #{name["last_name"]}")
-    |> Map.put("primary", true)
+    |> Map.put("primary", name["primary"] || false)
     id = name["gup_person_id"]
     |> IO.inspect(label: "ID ---<")
     names = Map.get(data, "names", [])
@@ -92,7 +92,7 @@ defmodule GupIndexManager.Resource.Persons.Execute do
 
   def execute_action(data, {:set_primary_name, _name_data}) do
     names = Map.get(data, "names", [])
-    |> set_primary_name_to_false()
+    # |> set_primary_name_to_false()
 
     Map.put(data, "names", names)
   end
