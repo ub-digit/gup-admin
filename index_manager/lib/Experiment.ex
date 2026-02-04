@@ -151,5 +151,9 @@ defmodule Experiment do
      "Sending #{type} to gup"
    end
 
+   def a do
+      [%{id: 2, name: "Alice"}, %{id: 33, name: "Bob"}]
+      |> Enum.into(%{}, fn %{id: id, name: name} -> {id, name} end)
+    end
 
 end

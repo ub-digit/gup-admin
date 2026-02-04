@@ -49,20 +49,20 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   #   If incomming data has an id (gup_admin_id) it's an exixsting person in gup-admin and should probably only be "saved" as is.
   #   (above might not be true, if the person has had new identifiers added)
   #
-  ############################################################################################################################
+  ###########################################r(person_input_data), remove_p#################################################################################
 
   def merge(person_input_data) do
     with {true, person_input_data} <- meets_minimum_person_requirements(person_input_data) do
        person_input_data
        |> sanitize_data()
-       |> IO.inspect(label: "---------------------------------------------------------------xxxxxxxxxx--------------------------------------------------------\n ")
        |> exists_in_index()
+       |> change_primary_name_only()
        |> determine_primary_name()
        |> colliding_identifiers()
        |> input_data_has_gup_person_id()
        |> has_matching_gup_person_id()
        |> set_primary_and_secondary_data()
-       |> show_data_before_merge()
+      #  |> show_data_before_merge()
        |> merge_person()
        |> create_or_update_person()
        #TODO: move this outside of the pipe in order to run tests without commenting out below call
@@ -80,6 +80,32 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     end
   end
 
+  def change_primary_name_only({_exixts_in_index = true, person_input_data, existing_data}) do
+    # check if only primary name is changed in input data compared to existing data
+    input_names = Map.get(person_input_data, "names", [])
+    existing_names = Enum.flat_map(existing_data, fn person -> Map.get(person, "names", []) end)
+    primary_name_changed = has_primary_name_changed?(input_names, existing_names)
+    case primary_name_changed do
+      true ->
+        {:update_primary_name_only, person_input_data}
+      false ->
+        {true, person_input_data, existing_data}
+    end
+  end
+
+  def change_primary_name_only(_exixts_in_index = false, data), do: {false, data}
+
+  def has_primary_name_changed?(a, b) do
+  b_map = for x <- b, into: %{}, do: {x["gup_person_id"], x["primary"]}
+
+  Enum.all?(a, fn x ->
+    case Map.fetch(b_map, x["gup_person_id"]) do
+      {:ok, primary_b} -> x["primary"] == primary_b
+      :error -> true
+    end
+    end)
+end
+
   def show_data_before_merge({:ok, primary_data, secondary_data, person_input_data} = data) do
     IO.inspect(primary_data, label: "PRIMARY DATA BEFORE MERGE")
     IO.inspect(secondary_data, label: "SECONDARY DATA BEFORE MERGE")
@@ -91,18 +117,22 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   #  Determine primary name
   #############################################################################################################################
 
+  defp determine_primary_name({:update_primary_name_only,  person_input_data}) do
+      {:update_primary_name_only, person_input_data}
+  end
+
+
   defp determine_primary_name({_person_exist_in_index = false, person_input_data, _existing_data = []}) do
     # Person does not exist in index, pass through
     {false, person_input_data}
   end
 
 
+
   defp determine_primary_name({_person_exist_in_index = true, %{"force_primary_name" => true} = person_input_data, existing_data}) do
 
     # Person exists in index, and force_primary_name is true, search input data for primary name and set all other names to secondary
-    # existing_names = get_aggregated_names(existing_data)
-    # |> Enum.map(fn name -> Map.put(name, "primary", false) end)
-    # existing_data = Map.put(existing_data, "names", existing_names)
+
 
     existing_data = remove_primary_names(existing_data)
 
@@ -130,20 +160,29 @@ defmodule GupIndexManager.Resource.Persons.Merger do
 
     {person_input_data_fixed_names, existing_data_fixed_names} = case {input_data_has_any_identifier, existing_data_has_any_identifier} do
       {true, true} ->
-        IO.inspect("BOTH INPUT DATA AND EXISTING DATA HAS IDENTIFIERS")
-        {set_primary_name_in_input_data(person_input_data), remove_primary_names(existing_data)}
+
+        # Kolla alla namn i input data samt exixting data om input data har ett primary name som skiljer sig från exixting data primary name, sätt det som primary i input data och ta bort primary i exixting data
+
+        # IO.inspect(person_input_data["names"], label: "BOTH INPUT DATA AND EXISTING DATA HAS IDENTIFIERS +c +c +c + c+ c+ c+ c+ c+ c+ c+ c+ c+ c+ c+ c+ c+ c")
+        input_data = set_primary_name_in_input_data(person_input_data)
+        existing_data = remove_primary_names(existing_data)
+        # IO.inspect(input_data["names"], label: "INPUT DATA NAMES AFTER SETTING PRIMARY NAME IN INPUT DATA ")
+        # IO.inspect(existing_data["names"], label: "EXISTING DATA AFTER REMOVING PRIMARY NAMES")
+        {input_data, existing_data}
         # {person_input_data, existing_data}
-      {true, false} -> IO.inspect("ONLY INPUT DATA HAS IDENTIFIERS")
-      {false, true} -> IO.inspect("ONLY EXISTING DATA HAS IDENTIFIERS")
+      {true, false} -> {set_primary_name_in_input_data(person_input_data), remove_primary_names(existing_data)}
+      {false, true} -> {remove_primary_names(person_input_data), existing_data} ## ONLY EXISTING DATA HAS IDENTIFIERS
       {false, false} ->
         IO.inspect("NEITHER INPUT DATA NOR EXISTING DATA HAS IDENTIFIERS")
         {set_primary_name_in_input_data(person_input_data), remove_primary_names(existing_data)}
 
     end
 
-     IO.inspect(existing_data, label: "---------------------------------------------------------------existing data--------------------------------------------\n ")
-     IO.inspect(person_input_data, label: "---------------------------------------------------------------person input data--------------------------------------------\n ")
-     IO.inspect("NEITHER INPUT DATA NOR EXISTING DATA HAS IDENTIFIERS") # keep input names as is, remove primary from existing data
+
+
+    #  IO.inspect(existing_data, label: "---------------------------------------------------------------existing data--------------------------------------------\n ")
+    #  IO.inspect(person_input_data, label: "---------------------------------------------------------------person input data--------------------------------------------\n ")
+    #  IO.inspect("NEITHER INPUT DATA NOR EXISTING DATA HAS IDENTIFIERS") # keep input names as is, remove primary from existing data
 
 
 
@@ -156,6 +195,8 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     #  end
     {true, person_input_data_fixed_names, existing_data_fixed_names}
   end
+
+
 
   defp set_primary_name_based_on_identifiers(existing_data) do
     identifier = has_any_identifier(existing_data, ["POP_ID"])
@@ -179,10 +220,12 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   end
 
   defp set_primary_name_in_input_data(person_input_data) do
-    names = Map.get(person_input_data, "names", [])
-    |> Enum.map(fn name -> Map.put(name, "primary", false) end)
-    names = set_first_name_as_primary(names)
-    Map.put(person_input_data, "names", names)
+    # names = Map.get(person_input_data, "names", [])
+    # |> Enum.map(fn name -> Map.put(name, "primary", false) end)
+    # names = set_first_name_as_primary(names)
+    # IO.inspect(names, label: "NAMES WITH PRIMARY SET IN INPUT DATA ><<<>>>>><<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+    # Map.put(person_input_data, "names", names)
+    person_input_data
   end
 
   def has_any_identifier(data, identifiers_to_check_for) do
@@ -314,6 +357,8 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   ############################################################################################################################
 
   defp exists_in_index(person_input_data) do
+
+
     #IO.puts("CHECK IF PERSON EXISTS IN INDEX")
     gup_admin_id_matches = match_by_gup_admin_id(person_input_data)
     #IO.inspect(gup_admin_id_matches, label: "GUP ADMIN ID MATCHES")
@@ -381,8 +426,13 @@ defmodule GupIndexManager.Resource.Persons.Merger do
       |> Enum.map(fn name -> Map.put(name, "primary", false) end)
       Map.put(person, "names", names)
     end)
-    |> IO.inspect(label: "REMOVE PRIMARY NAMES --------------------------------------------------------------------------------------\n")
   end
+
+
+  def colliding_identifiers({:update_primary_name_only, person_input_data}) do
+    {:update_primary_name_only, person_input_data}
+  end
+
 
   ############################################################################################################################
   #
@@ -410,6 +460,10 @@ defmodule GupIndexManager.Resource.Persons.Merger do
       true -> {:error, "Colliding ORCID and/or X_ACCOUNT", {person_input_data, existing_data}}
       false -> {false, person_input_data, existing_data}
     end
+  end
+
+  def has_matching_gup_person_id({:update_primary_name_only, person_input_data}) do
+    {:update_primary_name_only, person_input_data}
   end
 
   # Passthrough error
@@ -476,7 +530,14 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   def compare_identifiers(incoming, existing),
     do: _colliding = incoming["value"] != existing["value"]
 
-  ############################################################################################################################
+
+
+  def input_data_has_gup_person_id({:update_primary_name_only, person_input_data}) do
+    {:update_primary_name_only, person_input_data}
+  end
+
+
+    ############################################################################################################################
   #
   #   Check if the person input data has a gup_person_id
   #
@@ -511,6 +572,10 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   #
   ############################################################################################################################
 
+  def set_primary_and_secondary_data({:update_primary_name_only, person_input_data}) do
+    {:update_primary_name_only, person_input_data}
+  end
+
   def set_primary_and_secondary_data({_has_matching_gup_person_id = false, %{"id" => id} = person_input_data, existing_data}) when not is_nil(id) do
   # IO.inspect(id, label: "ID IN SET PRIMARY AND SECONDARY DATA WITH EXISTING GUP ADMIN ID")
     # Dont mind this for now
@@ -520,8 +585,8 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   end
 
   def set_primary_and_secondary_data({_has_matching_gup_person_id = false, person_input_data, existing_data}) do
-    IO.inspect(person_input_data, label: "PERSON INPUT DATA IN SET PRIMARY AND SECONDARY DATA WITHOUT MATCHING GUP PERSON ID xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
-    IO.inspect(existing_data, label: "EXISTING DATA IN SET PRIMARY AND SECONDARY DATA WITHOUT MATCHING GUP PERSON ID xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+    # IO.inspect(person_input_data, label: "PERSON INPUT DATA IN SET PRIMARY AND SECONDARY DATA WITHOUT MATCHING GUP PERSON ID xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+    # IO.inspect(existing_data, label: "EXISTING DATA IN SET PRIMARY AND SECONDARY DATA WITHOUT MATCHING GUP PERSON ID xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
     # IO.puts(" # incomming data has a gup person id that does not match any existing gup person id")
     # incomming data has a gup person id that does not match any existing gup person id
     # There is exixting data in the index
@@ -539,8 +604,8 @@ defmodule GupIndexManager.Resource.Persons.Merger do
   # The incomming data has a gup_person_id that matches an existing gup_person_id
   def set_primary_and_secondary_data({_has_matching_gup_person_id = true, gup_person_id, person_input_data, existing_data}) do
 
-    IO.inspect(person_input_data, label: "xxxxxxxxxxxxxxx PERSON INPUT DATA IN SET PRIMARY AND SECONDARY DATA WITHOUT MATCHING GUP PERSON ID xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
-    IO.inspect(existing_data, label: "xxxxxxxxxxxxxxx EXISTING DATA IN SET PRIMARY AND SECONDARY DATA WITHOUT MATCHING GUP PERSON ID xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+    # IO.inspect(person_input_data, label: "xxxxxxxxxxxxxxx PERSON INPUT DATA IN SET PRIMARY AND SECONDARY DATA WITHOUT MATCHING GUP PERSON ID xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+    # IO.inspect(existing_data, label: "xxxxxxxxxxxxxxx EXISTING DATA IN SET PRIMARY AND SECONDARY DATA WITHOUT MATCHING GUP PERSON ID xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
     # person exists in index
     # no colliding identifiers
     # person input data has a gup_person_id that matches an existing gup_person_id
@@ -560,7 +625,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     secondary_data = secondary_data ++ [person_input_data]
 
 
-    IO.inspect(primary_data, label: "HELLLLLOOOO")
+    # IO.inspect(primary_data, label: "HELLLLLOOOO")
     {:ok, primary_data, secondary_data, person_input_data}
   end
 
@@ -578,6 +643,11 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     end)
     |> List.flatten()
   end
+
+  def merge_person({:update_primary_name_only, person_input_data}) do
+    {:ok, person_input_data, :no_actions}
+  end
+
   def merge_person({:ok, data}) do
     # IO.inspect(data, label: "DATA")
     # name = Map.get(data, "names", []) |> List.first() |> Map.put("primary", true)
@@ -636,17 +706,19 @@ defmodule GupIndexManager.Resource.Persons.Merger do
 
   # TODO: needs rewrite to make code more readable. Split into smaller functions
   def merge_names(primary_data, secondary_data, person_input_data) do
-      IO.inspect(primary_data, label: "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<PRIMARY DATA in MERGE NAMES")
-      IO.inspect(secondary_data, label: "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<SECONDARY DATA in MERGE NAMES")
     # merge the names from secondary data into primary data
     # if a name form in secondary data has the same gup_person_id as a name form in primary data, update first_name and last_name in primary data
     # if a name form in secondary data does not exist in primary data, add it to primary data
     # if a name form in secondary data does not have a gup_person_id that exists in primary data, acquire a new gup_person_id from gup
 
+    input_names = Map.get(person_input_data, "names", [])
+    |> IO.inspect(label: "INPUT NAMES IN MERGE NAMES")
+
     primary_names = Map.get(primary_data, "names", [])
     |> IO.inspect(label: "PRIMARY NAMES")
     # primary_has_pop_id = has_pop_id(primary_data)
     secondary_names = get_aggregated_names(secondary_data)
+    IO.inspect(secondary_names, label: "SECONDARY NAMES")
     # secondary_has_pop_id = has_pop_id(secondary_data)
     |> Enum.filter(fn name ->
       is_existing_name_form(primary_names, name) == false
@@ -654,19 +726,14 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     # check if the new/existing names have a gup_person_id
     name_actions = Enum.map(secondary_names, fn secondary_name ->
       Enum.any?(primary_names, fn primary_name ->
-        primary_name["gup_person_id"] == secondary_name["gup_person_id"] |> IO.inspect(label: ">>>>>>>>>>>>>>>>>>>>>>>>>>CHECKING IF NAME EXISTS BASED ON GUP PERSON ID<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+        primary_name["gup_person_id"] == secondary_name["gup_person_id"] and
+        primary_name["start_date"] == secondary_name["start_date"] and
+        primary_name["end_date"] == secondary_name["end_date"]
       end)
-      |> IO.inspect(label: ">>>>>>>>>>>>>>>>>>>>>>>>>>CHECKING IF NAME EXISTS BASED ON GUP PERSON ID<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
       |> case do
         true ->
-          IO.puts("primary name has the same gup_person_id as secondary name" )
-
-
-
-
           {:update_name, secondary_name} # update first_name and last_name and dates, names has the same gup_person_id
         false ->
-          IO.inspect("<<<<<<<<<<<<<<<<<<<<<<<primary name does not have the same gup_person_id as secondary name" )
           # check if first_name and last_name are EXACTLY the same as in primary data
           # if so, do nothing
           # else acquire a new gup_person_id
@@ -680,16 +747,13 @@ defmodule GupIndexManager.Resource.Persons.Merger do
           end)
           |> case do
             true ->
-              IO.inspect("update name form dates")
               update_name_form_dates(primary_names, secondary_name)
             false ->
-              IO.inspect("needs new gup person id")
               needs_new_gup_person_id(secondary_name)
           end
       end
     end)
     |> List.flatten()
-    |> IO.inspect(label: "--------------------------NAME ACTIONS--------------------------------------------\n ")
 
     # force = Map.get(person_input_data, "force_primary_name", true)
     # case force do
