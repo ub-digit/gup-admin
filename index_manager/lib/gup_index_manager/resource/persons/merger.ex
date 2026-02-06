@@ -56,6 +56,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
        person_input_data
        |> sanitize_data()
        |> exists_in_index()
+      #  |> IO.inspect(label: "EXISTS IN INDEX RESULT")
        |> change_primary_name_only()
        |> determine_primary_name()
        |> colliding_identifiers()
@@ -80,6 +81,10 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     end
   end
 
+  def change_primary_name_only({_exixts_in_index = true, person_input_data, existing_data}) when length(existing_data) > 1 do
+    {true, person_input_data, existing_data}
+  end
+
   def change_primary_name_only({_exixts_in_index = true, person_input_data, existing_data}) do
     # check if only primary name is changed in input data compared to existing data
     input_names = Map.get(person_input_data, "names", [])
@@ -87,6 +92,7 @@ defmodule GupIndexManager.Resource.Persons.Merger do
     primary_name_changed = has_primary_name_changed?(input_names, existing_names)
     case primary_name_changed do
       true ->
+        IO.inspect("Primary name has changed")
         {:update_primary_name_only, person_input_data}
       false ->
         {true, person_input_data, existing_data}
@@ -100,7 +106,9 @@ defmodule GupIndexManager.Resource.Persons.Merger do
 
   Enum.all?(a, fn x ->
     case Map.fetch(b_map, x["gup_person_id"]) do
-      {:ok, primary_b} -> x["primary"] == primary_b
+      {:ok, primary_b} ->
+        IO.inspect(x, label: "CHECKING NAME FOR PRIMARY CHANGE")
+        x["primary"] == primary_b
       :error -> true
     end
     end)
@@ -175,24 +183,7 @@ end
       {false, false} ->
         IO.inspect("NEITHER INPUT DATA NOR EXISTING DATA HAS IDENTIFIERS")
         {set_primary_name_in_input_data(person_input_data), remove_primary_names(existing_data)}
-
     end
-
-
-
-    #  IO.inspect(existing_data, label: "---------------------------------------------------------------existing data--------------------------------------------\n ")
-    #  IO.inspect(person_input_data, label: "---------------------------------------------------------------person input data--------------------------------------------\n ")
-    #  IO.inspect("NEITHER INPUT DATA NOR EXISTING DATA HAS IDENTIFIERS") # keep input names as is, remove primary from existing data
-
-
-
-    # Person exists in index, and force_primary_name is false, clear primary names in input data
-    # Iterate through existing data and and if in the list existing_data. Check in each items "identifiers"-list. If there is no identifier with the code "POP_ID" or "X_ACCOUNT", set all names to primary false
-    #  has_any_identifier(existing_data, ["POP_ID", "X_ACCOUNT"])
-    #  |> case do
-    #   true -> existing_data = set_primary_name_based_on_identifiers(existing_data)
-    #   false -> person_input_data = set_primary_name_in_input_data(person_input_data)
-    #  end
     {true, person_input_data_fixed_names, existing_data_fixed_names}
   end
 
