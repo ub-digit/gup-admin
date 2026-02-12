@@ -17,7 +17,7 @@ defmodule GupIndexManager.Resource.Persons.Merger.Identifiers do
   def colliding_identifiers({_exists_in_index = false, person_input_data, []}), do:  {:ok, person_input_data}
   def colliding_identifiers({_exists_in_index = true, meta_data, existing_data}) do
     # Check within existing records have different "value" for the same "code" in identifiers. Do NOT include person at this stage.
-    identifiers_to_check = [@orcid_code, @x_account_code]
+    identifiers_to_check = [@orcid_code, @x_account_code] # should POP_ID be included?
     [existing_data | [meta_data]]
     |> List.flatten()
     |> Enum.flat_map(fn record -> Enum.filter(record["identifiers"], fn identifier -> identifier["code"] in identifiers_to_check end) end)

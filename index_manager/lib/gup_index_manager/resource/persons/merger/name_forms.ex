@@ -30,4 +30,24 @@ defmodule GupIndexManager.Resource.Persons.Merger.NameForms do
   defp get_primary_name_from_record(record) do
     Enum.find(record["names"], fn name -> Map.get(name, "primary", false) == true end) || List.first(record["names"])
   end
+
+  def is_same_name_form?(name_form1, name_form2) do
+  # First & last name must match in all cases
+  names_match? =
+    name_form1["first_name"] == name_form2["first_name"] &&
+    name_form1["last_name"] == name_form2["last_name"]
+
+  # Now check IDs only if both forms actually have them
+  ids_match? =
+    case {Map.has_key?(name_form1, "gup_person_id"), Map.has_key?(name_form2, "gup_person_id")} do
+      {true, true} ->
+        name_form1["gup_person_id"] == name_form2["gup_person_id"]
+
+      # If only one has id → we don't consider it a mismatch (usually)
+      {_, _} ->
+        true
+    end
+
+  names_match? && ids_match? # If this returns true the are considered the same name form.
+end
 end

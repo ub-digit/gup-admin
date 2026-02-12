@@ -168,19 +168,17 @@ defmodule Experiment do
         },
         %{
           "identifiers" => [
-            %{"code" => "OC", "value" => "123"},
             %{"code" => "XA", "value" => "ABC"}
           ]
         },
         %{
           "identifiers" => [
-            %{"code" => "OC", "value" => "123"},
-            %{"code" => "XA", "value" => "ABC"}
+
           ]
         },
         %{
           "identifiers" => [
-            %{"code" => "OC", "value" => "123"},
+            %{"code" => "OC", "value" => "12s3"},
             %{"code" => "XA", "value" => "ABC"}
           ]
         }
@@ -195,6 +193,25 @@ defmodule Experiment do
 
 
 
+    end
+
+    def compare_name_forms do
+      name_form1 = %{"first_name" => "John", "last_name" => "Smith", "gup_person_id" => "123"}
+      name_form2 = %{"first_name" => "John", "last_name" => "Smith", "gup_person_id" => "123"}
+      name_form3 = %{"first_name" => "John", "last_name" => "Smith", "gup_person_id" => "456"}
+      name_form4 = %{"first_name" => "John", "last_name" => "Smith"}
+
+      IO.inspect(GupIndexManager.Resource.Persons.Merger.NameForms.is_same_name_form(name_form1, name_form2), label: "Name form 1 vs 2 (should be true)")
+      IO.inspect(GupIndexManager.Resource.Persons.Merger.NameForms.is_same_name_form(name_form1, name_form3), label: "Name form 1 vs 3 (should be false)")
+      IO.inspect(GupIndexManager.Resource.Persons.Merger.NameForms.is_same_name_form(name_form1, name_form4), label: "Name form 1 vs 4 (should be true)")
+      IO.inspect(GupIndexManager.Resource.Persons.Merger.NameForms.is_same_name_form(name_form3, name_form4), label: "Name form 3 vs 4 (should be true)")
+
+    end
+
+    def m_m do
+      a = %{"names" => [%{"first_name" => "John", "last_name" => "Smith", "primary" => true}]}
+      b = %{"names" => [%{"first_name" => "Johnddd", "last_name" => "Smsssith"}]}
+      Map.merge(a, b) |> IO.inspect(label: "Merged map")
     end
 
 end
