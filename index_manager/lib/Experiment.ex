@@ -156,4 +156,45 @@ defmodule Experiment do
       |> Enum.into(%{}, fn %{id: id, name: name} -> {id, name} end)
     end
 
+
+    def fm do
+      existing_identifiers = [
+        %{
+          "identifiers" => [
+            %{"code" => "OC", "value" => "123"},
+            %{"code" => "XA", "value" => "ABC"},
+            %{"code" => "Hej", "value" => "123"},
+          ]
+        },
+        %{
+          "identifiers" => [
+            %{"code" => "OC", "value" => "123"},
+            %{"code" => "XA", "value" => "ABC"}
+          ]
+        },
+        %{
+          "identifiers" => [
+            %{"code" => "OC", "value" => "123"},
+            %{"code" => "XA", "value" => "ABC"}
+          ]
+        },
+        %{
+          "identifiers" => [
+            %{"code" => "OC", "value" => "123"},
+            %{"code" => "XA", "value" => "ABC"}
+          ]
+        }
+      ]
+      |> Enum.flat_map(fn record -> Enum.filter(record["identifiers"], fn identifier -> identifier["code"] ==  "OC" ||  identifier["code"] == "XA" end) end)
+      |> Enum.group_by(& &1["code"])
+      |> Enum.any?(fn {_code, maps} ->
+        values = Enum.map(maps, & &1["value"])
+        length(Enum.uniq(values)) > 1
+      end)
+      |> IO.inspect(label: "Colliding identifiers")
+
+
+
+    end
+
 end

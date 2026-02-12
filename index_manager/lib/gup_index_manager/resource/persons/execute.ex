@@ -73,13 +73,13 @@ defmodule GupIndexManager.Resource.Persons.Execute do
     name = Map.put(name, "full_name", "#{name["first_name"]} #{name["last_name"]}")
     |> Map.put("primary", name["primary"] || false)
     id = name["gup_person_id"]
-    |> IO.inspect(label: "ID ---<")
+    # |> IO.inspect(label: "ID ---<")
     names = Map.get(data, "names", [])
     |> Enum.filter(fn name -> name["gup_person_id"] != id end)
     |> Enum.map(fn existing_name -> Map.put(existing_name, "primary", false) end)
     new_names = List.insert_at(names, 0, name)
     Map.put(data, "names", new_names)
-    |> IO.inspect(label: "names ---<")
+    # |> IO.inspect(label: "names ---<")
     # IO.inspect(new_names, label: "new_names")
     # data
   end

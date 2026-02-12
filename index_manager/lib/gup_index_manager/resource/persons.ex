@@ -41,7 +41,9 @@ defmodule GupIndexManager.Resource.Persons do
     case String.to_integer(url_id) == data_id do
 
        true ->
-        _merge_actions_list = GupIndexManager.Resource.Persons.Merger.merge(person_data_as_map) # Check if for no delete actions
+        IO.inspect("ID MATCH BETWEEN URL AND DATA, PROCEEDING WITH UPDATE")
+        # _merge_actions_list = GupIndexManager.Resource.Persons.Merger.merge(person_data_as_map) # Check if for no delete actions
+        _merge_actions_list = GupIndexManager.Resource.Persons.Merger2.merge(person_data_as_map) # Check if for no delete actions
 
         # TODO: Check merge_actions_list for delete actions and abort if found
         person_data_as_map = check_for_missing_gup_person_id(person_data_as_map)
