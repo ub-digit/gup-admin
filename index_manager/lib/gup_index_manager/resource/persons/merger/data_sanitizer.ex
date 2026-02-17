@@ -6,16 +6,18 @@ defmodule GupIndexManager.Resource.Persons.Merger.DataSanitizer do
   ############################################################################################################################
 
   def sanitize_data(data) do
-    %{
-      "id" => Map.get(data, "id", nil),
-      "names" => sanitize_names(Map.get(data, "names", [])),
-      "departments" => Map.get(data, "departments", []),
-      "identifiers" => Map.get(data, "identifiers", []),
-      "year_of_birth" => get_year_of_birth(Map.get(data, "year_of_birth", nil)),
-      "email" => Map.get(data, "email", nil),
-      "deleted" => Map.get(data, "deleted", false),
-      "is_merged" => Map.get(data, "is_merged", false),
-      "force_primary_name" => Map.get(data, "force_primary_name", false)
+    {:ok,
+      %{
+        "id" => Map.get(data, "id", nil),
+        "names" => sanitize_names(Map.get(data, "names", [])),
+        "departments" => Map.get(data, "departments", []),
+        "identifiers" => Map.get(data, "identifiers", []),
+        "year_of_birth" => get_year_of_birth(Map.get(data, "year_of_birth", nil)),
+        "email" => Map.get(data, "email", nil),
+        "deleted" => Map.get(data, "deleted", false),
+        "is_merged" => Map.get(data, "is_merged", false),
+        "force_primary_name" => Map.get(data, "force_primary_name", false)
+      }
     }
   end
 

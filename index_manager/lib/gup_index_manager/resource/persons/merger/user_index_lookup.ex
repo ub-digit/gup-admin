@@ -6,11 +6,11 @@ defmodule GupIndexManager.Resource.Persons.Merger.UserIndexLookup do
   #
   ############################################################################################################################
 
-  def lookup(person_input_data) do
+  def lookup(meta_data) do
     # Find matches in index by gup_admin_id, gup_person_id and identifiers
-    gup_admin_id_matches = match_by_gup_admin_id(person_input_data)
-    gup_person_id_matches = match_by_gup_person_id(person_input_data)
-    identifier_matches = match_by_identifiers(person_input_data)
+    gup_admin_id_matches = match_by_gup_admin_id(meta_data)
+    gup_person_id_matches = match_by_gup_person_id(meta_data)
+    identifier_matches = match_by_identifiers(meta_data)
 
     # Combine and deduplicate matches
     matches =
@@ -20,39 +20,38 @@ defmodule GupIndexManager.Resource.Persons.Merger.UserIndexLookup do
 
     remapped = remap_person_data(matches)
     |> Enum.uniq()
-    {length(remapped) > 0, person_input_data, remapped}
+    {:ok, meta_data, remapped}
   end
 
-  defp match_by_gup_person_id(person_input_data) do
-    name = List.first(Map.get(person_input_data, "names", []))
+  defp match_by_gup_person_id(meta_data) do
+    name = List.first(Map.get(meta_data, "names", []))
     id = Map.get(name, "gup_person_id")
     case id do
       nil ->
         []
-
       _ ->
         case GupIndexManager.Resource.Index.Search.find_person_by_gup_id(id) do
           {false, _} -> []
-          {true, existing_person_data} -> existing_person_data
+          {true, existing_records_data} -> existing_records_data
         end
     end
   end
 
-  defp match_by_gup_admin_id(person_input_data) do
-    id = Map.get(person_input_data, "id", nil)
+  defp match_by_gup_admin_id(meta_data) do
+    id = Map.get(meta_data, "id", nil)
     case id do
       nil ->
         []
       _ ->
         case GupIndexManager.Resource.Index.Search.find_person_by_gup_admin_id(id) do
           {false, _} -> []
-          {true, existing_person_data} -> existing_person_data
+          {true, existing_records_data} -> existing_records_data
         end
     end
   end
 
-  defp match_by_identifiers(person_input_data) do
-     GupIndexManager.Resource.Index.Search.find_person_by_identifiers(person_input_data["identifiers"]) |> elem(1)
+  defp match_by_identifiers(meta_data) do
+     GupIndexManager.Resource.Index.Search.find_person_by_identifiers(meta_data["identifiers"]) |> elem(1)
   end
 
   defp remap_person_data(hits) do
@@ -61,7 +60,6 @@ defmodule GupIndexManager.Resource.Persons.Merger.UserIndexLookup do
       hit
       |> Map.get("_source")
     end)
-    |> Enum.filter(fn person -> Map.get(person, "deleted", false) == false end)
+    |> Enum.filter(fn record -> Map.get(record, "deleted", false) == false end)
   end
-
 end

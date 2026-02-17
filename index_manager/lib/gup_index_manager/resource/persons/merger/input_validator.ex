@@ -11,6 +11,10 @@ defmodule GupIndexManager.Resource.Persons.Merger.InputValidator do
     |> is_valid_gup_name_form()
     |> has_identifiers()
     |> validate_requirements()
+    |> case do
+      {true, person_input_data} -> {:ok, person_input_data}
+      {false, person_input_data} -> {:error, :invalid_input_data, person_input_data}
+    end
   end
 
   defp has_gup_admin_id(person_input_data) do

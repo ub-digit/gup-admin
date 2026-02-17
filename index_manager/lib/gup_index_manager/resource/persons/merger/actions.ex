@@ -1,37 +1,83 @@
 defmodule GupIndexManager.Resource.Persons.Merger.Actions do
   alias GupIndexManager.Resource.Persons.Merger.NameForms
-  def generate_actions({:error, reason, {meta_data, existing_data}}), do: {:error, reason, {meta_data, existing_data}}
-  def generate_actions({:ok, meta_data}) do
-    # only actions are to check if person has a gup_perosn_id and if not aquire one, and then create user in db and index.
+
+  def generate_actions({:error, reason, {meta_data, possible_candidates}}), do: {:error, reason, {meta_data, possible_candidates}}
+  def generate_actions({meta_data, _possible_candidates = []}) do
+      # No existing data, so this is a new person, we need to create a new record in the index and db.
+      # Check if meta_data has a gup_person_id, if not aquire one.
+      # Create user in db and index.
+
+
+      names_without_gup_person_id = meta_data["names"] || [] |> Enum.filter(fn name -> !NameForms.has_gup_person_id?(name) end)
+      actions =
+      Enum.reduce(names_without_gup_person_id, [], fn name, actions ->
+        #add this to actions {:aquire_gup_person_id, gup_person_id} for every name without gup_person_id
+        actions ++ [{:aquire_gup_person_id, name}]
+      end)
+      |> mandatory_actions(meta_data)
+      data = Map.delete(meta_data, "primary_name")
+      {:ok, data, actions}
+
   end
-  def generate_actions({false, meta_data, existing_data}) do
+  def generate_actions({meta_data, possible_candidates}) do
     # bulk of merge logic goes here.
     # Pick one of the exixting records as primary_record and add all data from the other record(s)
     # to the primary record, check if a new gup_person_id needs to be aquired in meta_data. check if meta_data name_forms already exists in existing data.
     # if a merge has occured between any two records, set the all but primary to "deleted".
-    {primary_record, secondary_records} = List.pop_at(existing_data, 0)
+    {primary_record, secondary_records} = List.pop_at(possible_candidates, 0)
 
-    # first merge all the secondary records into the primary record.
-    actions = generate_existing_records_actions(primary_record, secondary_records)
-    # maybe combine names, identifiers fom primary  and secondary data to  compare with meta_data
+    actions = []
+    |> name_actions(primary_record, secondary_records ++ [meta_data])
+    |> identifier_actions(primary_record, secondary_records ++ [meta_data])
+    |> deparment_actions(primary_record, secondary_records ++ [meta_data])
+    |> mandatory_actions(meta_data)
+    |> delete_merged_records(secondary_records)
 
+    data = Map.delete(meta_data, "primary_name")
+     {:ok, data, actions}
   end
 
-  def generate_existing_records_actions(_primary_record, _secondary_records = []), do: []
-  def generate_existing_records_actions(primary_record, secondary_records) do
-    gen_name_actions(primary_record, secondary_records)
-  end
 
-  defp gen_name_actions(primary_record, secondary_records) do
-    secondary_names = secondary_records |> Enum.flat_map(& &1["names"])
-    primary_names = primary_record["names"]
-    # For each name in the secondary records, check if it already exists in the primary record, if not add an action to add it.
-    Enum.flat_map(secondary_names, fn secondary_name ->
-      if Enum.any?(primary_names, fn primary_name -> NameForms.is_same_name_form?(primary_name, secondary_name) end) do
-        []
-      else
-        [%{action: "add_name", name: secondary_name}]
+
+  defp name_actions(actions, primary_record, other_records) do
+    primary_record_names = primary_record["names"] || []
+    other_names = Enum.flat_map(other_records, fn record -> record["names"] || [] end)
+    # check for names that doesnt exist in primary record, but exists in other records, and add action to add this name to primary record.
+    new_names = Enum.filter(other_names, fn name -> name not in primary_record_names end)
+    actions ++ Enum.map(new_names, fn name ->
+      case NameForms.has_existing_gup_peron_id?(name, primary_record_names) do
+        true -> {:update_name, name}
+        false -> {:add_name, name}
       end
+      {:add_name, name}
+    end)
+  end
+
+  defp identifier_actions(actions, primary_record, other_records) do
+    primary_record_identifiers = primary_record["identifiers"] || []
+    other_identifiers = Enum.flat_map(other_records, fn record -> record["identifiers"] || [] end)
+    # check for identifiers that doesnt exist in primary record, but exists in other records, and add action to add this identifier to primary record.
+    new_identifiers = Enum.filter(other_identifiers, fn identifier -> identifier not in primary_record_identifiers end)
+    actions ++ Enum.map(new_identifiers, fn identifier ->
+      {:add_identifier, identifier}
+    end)
+  end
+
+  defp deparment_actions(actions, primary_record, other_records) do
+    primary_record_departments = primary_record["departments"] || []
+    other_departments = Enum.flat_map(other_records, fn record -> record["departments"] || [] end)
+    # check for departments that doesnt exist in primary record, but exists in other records, and add action to add this department to primary record.
+    new_departments = Enum.filter(other_departments, fn department -> department not in primary_record_departments end)
+    actions ++ Enum.map(new_departments, fn department ->
+      {:add_department, department}
+    end)
+  end
+
+  defp mandatory_actions(actions, meta_data), do: actions ++ [{:set_primary_name, meta_data["primary_name"]}, {:create_or_update_person}]
+
+  defp delete_merged_records(actions, secondary_records) do
+    actions ++ Enum.map(secondary_records, fn record ->
+      {:delete_person, record["id"]}
     end)
   end
 end

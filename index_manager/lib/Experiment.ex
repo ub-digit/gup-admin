@@ -200,11 +200,13 @@ defmodule Experiment do
       name_form2 = %{"first_name" => "John", "last_name" => "Smith", "gup_person_id" => "123"}
       name_form3 = %{"first_name" => "John", "last_name" => "Smith", "gup_person_id" => "456"}
       name_form4 = %{"first_name" => "John", "last_name" => "Smith"}
+      name_form5 = %{"first_name" => "John B", "last_name" => "Smith", "gup_person_id" => "123"}
 
-      IO.inspect(GupIndexManager.Resource.Persons.Merger.NameForms.is_same_name_form(name_form1, name_form2), label: "Name form 1 vs 2 (should be true)")
-      IO.inspect(GupIndexManager.Resource.Persons.Merger.NameForms.is_same_name_form(name_form1, name_form3), label: "Name form 1 vs 3 (should be false)")
-      IO.inspect(GupIndexManager.Resource.Persons.Merger.NameForms.is_same_name_form(name_form1, name_form4), label: "Name form 1 vs 4 (should be true)")
-      IO.inspect(GupIndexManager.Resource.Persons.Merger.NameForms.is_same_name_form(name_form3, name_form4), label: "Name form 3 vs 4 (should be true)")
+      IO.inspect(GupIndexManager.Resource.Persons.Merger.NameForms.is_same_name_form?(name_form1, name_form2), label: "Name form 1 vs 2 (should be true)")
+      IO.inspect(GupIndexManager.Resource.Persons.Merger.NameForms.is_same_name_form?(name_form1, name_form3), label: "Name form 1 vs 3 (should be false)")
+      IO.inspect(GupIndexManager.Resource.Persons.Merger.NameForms.is_same_name_form?(name_form1, name_form4), label: "Name form 1 vs 4 (should be true)")
+      IO.inspect(GupIndexManager.Resource.Persons.Merger.NameForms.is_same_name_form?(name_form3, name_form4), label: "Name form 3 vs 4 (should be true)")
+      IO.inspect(GupIndexManager.Resource.Persons.Merger.NameForms.is_same_name_form?(name_form1, name_form5), label: "Name form 1 vs 5 (should be true)")
 
     end
 
@@ -214,4 +216,44 @@ defmodule Experiment do
       Map.merge(a, b) |> IO.inspect(label: "Merged map")
     end
 
-end
+    def da do
+      data = %{
+
+      }
+
+      with {:ok, data} <- db(data),
+           {:ok, data} <- dc(data) do
+          IO.inspect("All steps succeeded: #{inspect(data)}")
+        else
+          {:error, reason, data} ->
+            IO.inspect("Error in processing: #{reason}, data: #{inspect(data)}")
+        end
+    end
+
+    def db(data) do
+      {:ok, data |> Map.put(:b, "Result from b")}
+    end
+
+    def dc(data) do
+      {:ok, data |> Map.put(:c, "Result from c")}
+    end
+
+    def m_names do
+      p1 = %{"names" => [%{"first_name" => "John", "last_name" => "Smith", "primary" => true, "gup_person_id" => 1}]}
+      p2 = %{"names" => [%{"first_name" => "John", "last_name" => "Smithy", "primary" => false, "gup_person_id" => 1}]}
+
+      # compare the names in p1 and p2, if they have the same gup_person_id, update the names in p1.
+      p1_names = Map.get(p1, "names", [])
+      p2_names = Map.get(p2, "names", [])
+
+      updated_names = Enum.map(p2_names, fn name2 ->
+        case Enum.find(p1_names, fn name1 -> name1["gup_person_id"] == name2["gup_person_id"] end) do
+          nil -> name2
+          name1 -> Map.merge(name1, name2)
+        end
+      end)
+      Map.put(p1, "names", updated_names) |> IO.inspect(label: "Updated")
+
+
+    end
+  end
