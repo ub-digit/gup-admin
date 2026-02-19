@@ -20,6 +20,7 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
 
   end
   def generate_actions({meta_data, possible_candidates}) do
+
     # bulk of merge logic goes here.
     # Pick one of the exixting records as primary_record and add all data from the other record(s)
     # to the primary record, check if a new gup_person_id needs to be aquired in meta_data. check if meta_data name_forms already exists in existing data.
@@ -30,11 +31,10 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
     |> name_actions(primary_record, secondary_records ++ [meta_data])
     |> identifier_actions(primary_record, secondary_records ++ [meta_data])
     |> deparment_actions(primary_record, secondary_records ++ [meta_data])
-    |> mandatory_actions(meta_data)
     |> delete_merged_records(secondary_records)
+    |> mandatory_actions(meta_data)
 
-    data = Map.delete(meta_data, "primary_name")
-     {:ok, data, actions}
+     {:ok, primary_record, actions}
   end
 
 
@@ -44,12 +44,21 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
     other_names = Enum.flat_map(other_records, fn record -> record["names"] || [] end)
     # check for names that doesnt exist in primary record, but exists in other records, and add action to add this name to primary record.
     new_names = Enum.filter(other_names, fn name -> name not in primary_record_names end)
+    IO.inspect([new_names, primary_record_names], label: "name_actions - names")
     actions ++ Enum.map(new_names, fn name ->
-      case NameForms.has_existing_gup_peron_id?(name, primary_record_names) do
+      case NameForms.has_existing_gup_person_id?(name, primary_record_names) do
         true -> {:update_name, name}
-        false -> {:add_name, name}
+        false ->
+          Enum.any?(primary_record_names, fn existing_name -> NameForms.is_same_name_form?(name, existing_name) end)
+          |> case do
+            true -> []
+            false -> {:add_name, name}
+          end
+          # case NameForms.is_non_existing_name_form?(name, primary_record_names) do
+          #   true -> {:add_name, name}
+          #   false -> []
+          # end
       end
-      {:add_name, name}
     end)
   end
 
@@ -73,7 +82,9 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
     end)
   end
 
-  defp mandatory_actions(actions, meta_data), do: actions ++ [{:set_primary_name, meta_data["primary_name"]}, {:create_or_update_person}]
+  defp mandatory_actions(actions, meta_data) do
+    actions ++ [{:set_primary_name, meta_data["primary_name"]}, {:create_or_update_person}]
+  end
 
   defp delete_merged_records(actions, secondary_records) do
     actions ++ Enum.map(secondary_records, fn record ->

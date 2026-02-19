@@ -47,7 +47,7 @@ defmodule GupIndexManager.Resource.Persons.Merger.NameForms do
 
     # Now check IDs only if both forms actually have them
     ids_match? =
-      case {Map.has_key?(name_form1, "gup_person_id"), Map.has_key?(name_form2, "gup_person_id")} do
+      case {not is_nil(Map.get(name_form1, "gup_person_id", nil)), not is_nil(Map.get(name_form2, "gup_person_id", nil))} do
         {true, true} ->
           name_form1["gup_person_id"] == name_form2["gup_person_id"]
 
@@ -55,7 +55,12 @@ defmodule GupIndexManager.Resource.Persons.Merger.NameForms do
         {_, _} ->
           true
       end
-
+      IO.inspect("---------------------- COMPARING NAME FORMS ----------------------")
+      IO.inspect(name_form1, label: "Name form 1")
+      IO.inspect(name_form2, label: "Name form 2")
+      IO.inspect(ids_match?, label: "IDs match?")
+      IO.inspect(names_match?, label: "Names match?")
+      IO.inspect("-------------------------------------------------------------------")
     # If this returns true the are considered the same name form.
     names_match? && ids_match?
   end
@@ -64,12 +69,17 @@ defmodule GupIndexManager.Resource.Persons.Merger.NameForms do
     Map.has_key?(name_form, "gup_person_id") && name_form["gup_person_id"] != nil
   end
 
-  def has_existing_gup_peron_id?(name_form, existing_name_forms) do
+  def has_existing_gup_person_id?(name_form, existing_name_forms) do
     Enum.any?(existing_name_forms, fn existing_name_form ->
       Map.has_key?(existing_name_form, "gup_person_id") &&
         existing_name_form["gup_person_id"] == name_form["gup_person_id"]
     end)
   end
 
+  def is_non_existing_name_form?(name_form, existing_name_forms) do
+    Enum.any?(existing_name_forms, fn existing_name_form ->
+      is_same_name_form?(name_form, existing_name_form) |> IO.inspect(label: "Comparing with existing name form")
+    end)
+  end
 
 end
