@@ -26,7 +26,10 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
     # to the primary record, check if a new gup_person_id needs to be aquired in meta_data. check if meta_data name_forms already exists in existing data.
     # if a merge has occured between any two records, set the all but primary to "deleted".
     {primary_record, secondary_records} = List.pop_at(possible_candidates, 0)
-
+    IO.inspect("sosososososososososososososososososososososososo")
+    IO.inspect(primary_record, label: "Primary record")
+    IO.inspect(secondary_records, label: "Secondary records")
+    IO.inspect("sosososososososososososososososososososososososo")
     actions = []
     |> name_actions(primary_record, secondary_records ++ [meta_data])
     |> identifier_actions(primary_record, secondary_records ++ [meta_data])
@@ -64,7 +67,8 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
     primary_record_identifiers = primary_record["identifiers"] || []
     other_identifiers = Enum.flat_map(other_records, fn record -> record["identifiers"] || [] end)
     # check for identifiers that doesnt exist in primary record, but exists in other records, and add action to add this identifier to primary record.
-    new_identifiers = Enum.filter(other_identifiers, fn identifier -> identifier not in primary_record_identifiers end)
+    new_identifiers = Enum.filter(other_identifiers, fn identifier -> identifier not in primary_record_identifiers end) |> Enum.uniq()
+
     actions ++ Enum.map(new_identifiers, fn identifier ->
       {:add_identifier, identifier}
     end)
@@ -74,7 +78,7 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
     primary_record_departments = primary_record["departments"] || []
     other_departments = Enum.flat_map(other_records, fn record -> record["departments"] || [] end)
     # check for departments that doesnt exist in primary record, but exists in other records, and add action to add this department to primary record.
-    new_departments = Enum.filter(other_departments, fn department -> department not in primary_record_departments end)
+    new_departments = Enum.filter(other_departments, fn department -> department not in primary_record_departments end) |> Enum.uniq()
     actions ++ Enum.map(new_departments, fn department ->
       {:add_department, department}
     end)
@@ -86,15 +90,15 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
     end)
   end
 
-  defp mandatory_actions(actions, meta_data, combined_data) do
+  defp mandatory_actions(actions, meta_data, _combined_data) do
     # if primary name is the same in existing data as in meta_data, skip that action
 
-    actions
-    |> Kernel.++(
-      case NameForms.is_primary_name_form?(meta_data["primary_name"], combined_data) do
-      true -> []
-      false -> [{:set_primary_name, meta_data["primary_name"]}]
-    end)
-    |> Kernel.++([{:create_or_update_person}])
+    actions ++ [{:set_primary_name, meta_data["primary_name"]}, {:create_or_update_person}] |> List.flatten()    # |> Kernel.++(
+    #   case Enum.any?(actions, fn action -> elem) do
+    #   true -> []
+    #   false -> [{:set_primary_name, meta_data["primary_name"]}]
+    # end)
+    # |> Kernel.++([{:create_or_update_person}])
+
   end
 end
