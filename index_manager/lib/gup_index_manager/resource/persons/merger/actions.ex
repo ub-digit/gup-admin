@@ -1,4 +1,5 @@
 defmodule GupIndexManager.Resource.Persons.Merger.Actions do
+  alias Postgrex.Extensions.Name
   alias GupIndexManager.Resource.Persons.Merger.NameForms
 
   def generate_actions({:error, reason, {meta_data, possible_candidates}}), do: {:error, reason, {meta_data, possible_candidates}}
@@ -7,14 +8,13 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
       # Check if meta_data has a gup_person_id, if not aquire one.
       # Create user in db and index.
 
-
       names_without_gup_person_id = meta_data["names"] || [] |> Enum.filter(fn name -> !NameForms.has_gup_person_id?(name) end)
       actions =
       Enum.reduce(names_without_gup_person_id, [], fn name, actions ->
         #add this to actions {:aquire_gup_person_id, gup_person_id} for every name without gup_person_id
-        actions ++ [{:aquire_gup_person_id, name}]
+        actions ++ [{:acquire_gup_person_id, name}]
       end)
-      |> mandatory_actions(meta_data)
+      |> mandatory_actions(meta_data, [])
       data = Map.delete(meta_data, "primary_name")
       {:ok, data, actions}
 
@@ -32,34 +32,32 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
     |> identifier_actions(primary_record, secondary_records ++ [meta_data])
     |> deparment_actions(primary_record, secondary_records ++ [meta_data])
     |> delete_merged_records(secondary_records)
-    |> mandatory_actions(meta_data)
+    |> mandatory_actions(meta_data, [primary_record | secondary_records])
 
      {:ok, primary_record, actions}
   end
-
-
 
   defp name_actions(actions, primary_record, other_records) do
     primary_record_names = primary_record["names"] || []
     other_names = Enum.flat_map(other_records, fn record -> record["names"] || [] end)
     # check for names that doesnt exist in primary record, but exists in other records, and add action to add this name to primary record.
-    new_names = Enum.filter(other_names, fn name -> name not in primary_record_names end)
-    IO.inspect([new_names, primary_record_names], label: "name_actions - names")
+    new_names = NameForms.aggregate_new_names(other_names, primary_record_names)
     actions ++ Enum.map(new_names, fn name ->
       case NameForms.has_existing_gup_person_id?(name, primary_record_names) do
         true -> {:update_name, name}
         false ->
           Enum.any?(primary_record_names, fn existing_name -> NameForms.is_same_name_form?(name, existing_name) end)
           |> case do
-            true -> []
-            false -> {:add_name, name}
+            true -> [] # maybe update exixting name if new start_date or end_date is present.
+            false ->
+              case NameForms.has_gup_person_id?(name) do
+                true -> {:add_name, name}
+                false -> {:acquire_gup_person_id, name} # aquire_goup_person_id action will trigger :add_name action after a gup_person_id has been aquired and added to the name form.
+              end
           end
-          # case NameForms.is_non_existing_name_form?(name, primary_record_names) do
-          #   true -> {:add_name, name}
-          #   false -> []
-          # end
       end
     end)
+    |> List.flatten()
   end
 
   defp identifier_actions(actions, primary_record, other_records) do
@@ -82,13 +80,21 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
     end)
   end
 
-  defp mandatory_actions(actions, meta_data) do
-    actions ++ [{:set_primary_name, meta_data["primary_name"]}, {:create_or_update_person}]
-  end
-
   defp delete_merged_records(actions, secondary_records) do
     actions ++ Enum.map(secondary_records, fn record ->
       {:delete_person, record["id"]}
     end)
+  end
+
+  defp mandatory_actions(actions, meta_data, combined_data) do
+    # if primary name is the same in existing data as in meta_data, skip that action
+
+    actions
+    |> Kernel.++(
+      case NameForms.is_primary_name_form?(meta_data["primary_name"], combined_data) do
+      true -> []
+      false -> [{:set_primary_name, meta_data["primary_name"]}]
+    end)
+    |> Kernel.++([{:create_or_update_person}])
   end
 end

@@ -84,16 +84,24 @@ defmodule GupIndexManager.Resource.Persons.Execute do
     # data
   end
 
-  def execute_action(data, {:acquire_gup_id, name_data}) do
+  def execute_action(data, {:acquire_gup_person_id, name_data}) do
     name_data = Map.put(name_data, "gup_person_id", GupIndexManager.Resource.Gup.get_next_gup_id(GupIndexManager.Resource.Gup.people()))
     Logger.debug("IM:R.execute_action: acquire_gup_id: #{inspect(name_data)}")
     execute_action(data, {:add_name, name_data})
   end
 
-  def execute_action(data, {:set_primary_name, _name_data}) do
+  def execute_action(data, {:set_primary_name, name_data}) do
     names = Map.get(data, "names", [])
-    # |> set_primary_name_to_false()
-
+    |> Enum.map(fn name ->
+      Map.put(name, "primary", false)
+    end)
+    |> Enum.map(fn name ->
+      if name["first_name"] == name_data["first_name"] && name["last_name"] == name_data["last_name"] do
+        Map.put(name, "primary", true)
+      else
+        name
+      end
+    end)
     Map.put(data, "names", names)
   end
 

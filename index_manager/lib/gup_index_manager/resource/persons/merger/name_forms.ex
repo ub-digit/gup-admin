@@ -55,12 +55,7 @@ defmodule GupIndexManager.Resource.Persons.Merger.NameForms do
         {_, _} ->
           true
       end
-      IO.inspect("---------------------- COMPARING NAME FORMS ----------------------")
-      IO.inspect(name_form1, label: "Name form 1")
-      IO.inspect(name_form2, label: "Name form 2")
-      IO.inspect(ids_match?, label: "IDs match?")
-      IO.inspect(names_match?, label: "Names match?")
-      IO.inspect("-------------------------------------------------------------------")
+
     # If this returns true the are considered the same name form.
     names_match? && ids_match?
   end
@@ -81,5 +76,21 @@ defmodule GupIndexManager.Resource.Persons.Merger.NameForms do
       is_same_name_form?(name_form, existing_name_form) |> IO.inspect(label: "Comparing with existing name form")
     end)
   end
+
+  def is_primary_name_form?(primary_name_form, data) do
+    name_forms = Enum.flat_map(data, fn p -> p["names"] end)
+    Enum.any?(name_forms, fn name_form ->
+      is_same_name_form?(primary_name_form, name_form) && Map.get(name_form, "primary", false) == true
+    end)
+  end
+
+  def aggregate_new_names(other_names, primary_record_names) do
+    other_names
+    |> Enum.filter(fn name -> not Enum.any?(primary_record_names, fn existing_name ->
+        is_same_name_form?(name, existing_name)
+      end)
+    end)
+  end
+
 
 end

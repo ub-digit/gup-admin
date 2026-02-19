@@ -15,8 +15,15 @@ defmodule GupIndexManager.Resource.Persons.Merger2 do
          {:ok, meta_data, possible_candidates} <- Identifiers.colliding_identifiers({meta_data, possible_candidates}),
          {:ok, data, actions} <- Actions.generate_actions({meta_data, possible_candidates})
          do
-          IO.inspect(actions, label: "ACTIONS GENERATED")
+          actions = case actions do
+            [{:create_or_update_person}] ->
+              IO.inspect("NO ACTIONS NEEDED ABORT!ABORT! ABORT!")
+              {:no_actions_needed}
+            actions -> actions
+          end
           {:ok, data, actions}
+
+          # |> tap_it("Final output from merger")
     else
       {:error, :invalid_input_data, meta_data} -> {:error, :invalid_input_data, meta_data}
       {:error, reason, {meta_data, possible_candidates}} -> {:error, reason, {meta_data, possible_candidates}}
@@ -34,10 +41,11 @@ defmodule GupIndexManager.Resource.Persons.Merger2 do
 
   def test_data do
     %{
-      "id" => "123",
       "names" => [
-        %{ "last_name" => "Smith", "primary" => true},
         %{"first_name" => "John", "last_name" => "Smith"}
+      ],
+      "identifiers" => [
+        %{"code" => "WOS_DAISNG_ID", "value" => "asdssdasdasaaaaaaaaaaaaaaaaaaaaaaaaa"}
       ]
     }
   end
