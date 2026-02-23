@@ -8,6 +8,7 @@ defmodule GupIndexManager.Resource.Persons.Merger2 do
   require Logger
 
   def merge(meta_data) do
+    IO.inspect("MERGE STARTED")
     with {:ok, meta_data} <- InputValidator.validate(meta_data),
          {:ok, meta_data} <- DataSanitizer.sanitize_data(meta_data),
          {:ok, meta_data, possible_candidates} <- UserIndexLookup.lookup(meta_data), # {:ok, data, existing_data} or {:ok, data, []}
@@ -15,12 +16,13 @@ defmodule GupIndexManager.Resource.Persons.Merger2 do
          {:ok, meta_data, possible_candidates} <- Identifiers.colliding_identifiers({meta_data, possible_candidates}),
          {:ok, data, actions} <- Actions.generate_actions({meta_data, possible_candidates})
          do
-          # actions = case actions do
-          #   [{:create_or_update_person}] ->
-          #     IO.inspect("NO ACTIONS NEEDED ABORT!ABORT! ABORT!")
-          #     {:no_actions_needed}
-          #   actions -> actions
+          actions = case actions do
+            [{:create_or_update_person}] ->
+              IO.inspect("NO ACTIONS NEEDED ABORT!ABORT! ABORT!")
+              {:no_actions_needed}
+            actions -> actions
           end
+          IO.inspect("BLÖBLBLSLDLSD")
           {:ok, data, actions}
 
     else
@@ -36,5 +38,18 @@ defmodule GupIndexManager.Resource.Persons.Merger2 do
     data
   end
 
+  # Test data for debugging.
+  # delete this when done.
 
+  def test_data do
+    %{
+      "names" => [
+        %{"first_name" => "Abel", "Kain" => "Smith"}
+      ],
+      "force_primary_name" => true,
+      "identifiers" => [
+        %{"code" => "CID", "value" => "flfllfsasaaaalf"},
+      ]
+    }
+  end
 end
