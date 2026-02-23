@@ -41,22 +41,26 @@ defmodule GupIndexManager.Resource.Persons do
     case String.to_integer(url_id) == data_id do
 
        true ->
-        IO.inspect("ID MATCH BETWEEN URL AND DATA, PROCEEDING WITH UPDATE")
         # _merge_actions_list = GupIndexManager.Resource.Persons.Merger.merge(person_data_as_map) # Check if for no delete actions
         status = GupIndexManager.Resource.Persons.Merger2.merge(person_data_as_map) |> IO.inspect(label: "RESULT AFTER MERGE IN PERSON.EX")# Check if for no delete actions
-        res = case status do
+        case status do
           {:ok, data, {:no_actions_needed}} -> {:ok, data} #{:ok, data, :no_actions_needed}
           {:error, reason, error_log_data} -> {:error, reason, error_log_data}
           {:ok, data, actions} -> {:ok, data, actions} |> GupIndexManager.Resource.Persons.Execute.execute_actions() |> GupIndexManager.Resource.Gup.update_gup(_initial_load = false, _entity_type = GupIndexManager.Resource.Gup.people())
         end
-        # TODO: Check merge_actions_list for delete actions and abort if found
-      #   person_data_as_map = check_for_missing_gup_person_id(person_data_as_map)
-      #   create_or_update_person(person_data_as_map)
-         res = GupIndexManager.Resource.Gup.update_gup(person_data_as_map, _initial_load = false, _entity_type = GupIndexManager.Resource.Gup.people())
-         case res do
+
+        |> case do
           {:ok, _person_data} -> %{"status" => "ok"}
-          _ -> {:error, %{errors: %{im_message: "ERROR_SENDING_DATA_TO_GUP"}}}
+          {:error, reason, error_log_data} -> {:error, reason, error_log_data}
+          {:ok, person_data, _actions} ->
+            GupIndexManager.Resource.Gup.update_gup(person_data_as_map, _initial_load = false, _entity_type = GupIndexManager.Resource.Gup.people())
+            |> case do
+              {:ok, _person_data} -> %{"status" => "ok"}
+              _                   -> {:error, %{errors: %{im_message: "ERROR_SENDING_DATA_TO_GUP"}}}
+            end
           end
+
+
         false -> {:error, %{errors: %{im_message: "ID_MISMATCH_BETWEEN_URL_AND_DATA"}}}
     end
   end

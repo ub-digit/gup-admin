@@ -8,7 +8,6 @@ defmodule GupIndexManagerWeb.PersonController do
   def create_or_update(conn,  %{"data" => data, "api_key" => api_key} = params) do
     force_primary_name = Map.get(params, "force_primary_name", false)
     initial_load = Map.get(params, "initial_load", false)
-    # Logger.debug "IM:C.create_or_update: force_primary_name: #{inspect(force_primary_name)}"
     case ControllerHelpers.check_api_key(api_key) do
       true ->
         Persons.Merger2.merge(Map.put(data, "force_primary_name", force_primary_name == "true")) #|> Persons.Execute.execute_actions() |> GupIndexManager.Resource.Gup.update_gup(initial_load == "true", _entity_type = GupIndexManager.Resource.Gup.people()) |> respond(conn)

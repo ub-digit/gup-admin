@@ -26,10 +26,6 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
     # to the primary record, check if a new gup_person_id needs to be aquired in meta_data. check if meta_data name_forms already exists in existing data.
     # if a merge has occured between any two records, set the all but primary to "deleted".
     {primary_record, secondary_records} = List.pop_at(possible_candidates, 0)
-    IO.inspect("sosososososososososososososososososososososososo")
-    IO.inspect(primary_record, label: "Primary record")
-    IO.inspect(secondary_records, label: "Secondary records")
-    IO.inspect("sosososososososososososososososososososososososo")
     actions = []
     |> name_actions(primary_record, secondary_records ++ [meta_data])
     |> identifier_actions(primary_record, secondary_records ++ [meta_data])
@@ -64,7 +60,7 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
   end
 
   defp identifier_actions(actions, primary_record, other_records) do
-    primary_record_identifiers = primary_record["identifiers"] || []
+    primary_record_identifiers = primary_record["identifiers"] || [] |> Enum.uniq()
     other_identifiers = Enum.flat_map(other_records, fn record -> record["identifiers"] || [] end)
     # check for identifiers that doesnt exist in primary record, but exists in other records, and add action to add this identifier to primary record.
     new_identifiers = Enum.filter(other_identifiers, fn identifier -> identifier not in primary_record_identifiers end) |> Enum.uniq()
