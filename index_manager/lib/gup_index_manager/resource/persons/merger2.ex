@@ -16,13 +16,11 @@ defmodule GupIndexManager.Resource.Persons.Merger2 do
          {:ok, meta_data, possible_candidates} <- Identifiers.colliding_identifiers({meta_data, possible_candidates}),
          {:ok, data, actions} <- Actions.generate_actions({meta_data, possible_candidates})
          do
-          actions = case actions do
-            [{:create_or_update_person}] ->
-              IO.inspect("NO ACTIONS NEEDED ABORT!ABORT! ABORT!")
-              {:no_actions_needed}
-            actions -> actions
-          end
-          IO.inspect("BLÖBLBLSLDLSD")
+          # actions = case actions do
+          #   [{:create_or_update_person}] ->
+          #     {:no_actions_needed}
+          #   actions -> actions
+          # end
           {:ok, data, actions}
 
     else

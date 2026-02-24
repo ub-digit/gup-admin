@@ -16,8 +16,7 @@ defmodule GupIndexManager.Resource.Persons.Merger.NameForms do
   end
 
   # Figure out the primary name based on identifiers
-  def set_primary_name({%{"force_primary_name" => false} = meta_data, possible_candidates})
-      when length(possible_candidates) > 0 do
+  def set_primary_name({%{"force_primary_name" => false} = meta_data, possible_candidates}) when length(possible_candidates) > 0 do
     # Check if any of the existing records have a POP_ID identifier, if so use the primary name from that record
     primary_name_record =
       Enum.find(possible_candidates, fn record ->
@@ -31,6 +30,16 @@ defmodule GupIndexManager.Resource.Persons.Merger.NameForms do
     meta_data =
       Map.put(meta_data, "primary_name", get_primary_name_from_record(primary_name_record))
 
+      # extra check to see if its just a primary name change in a single post
+      meta_data = case length(possible_candidates) do
+        1 -> # could be same record
+          case meta_data["id"] == possible_candidates |> List.first() |> Map.get("id") do
+            true -> Map.put(meta_data, "primary_name", get_primary_name_from_record(meta_data))
+            false -> meta_data
+          end
+
+        _ -> meta_data
+      end
     {:ok, meta_data, possible_candidates}
   end
 
