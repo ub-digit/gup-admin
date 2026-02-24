@@ -31,6 +31,12 @@ defmodule GupIndexManager.Resource.Persons.Execute do
     Map.put(data, "departments", department_data)
   end
 
+  def execute_action(data, {:add_department, department_data}) do
+    departments = Map.get(data, "departments", [])
+    new_departments = List.insert_at(departments, 0, department_data)
+    Map.put(data, "departments", new_departments)
+  end
+
   def execute_action(data, {:create_or_update_person}) do
     # Send data to create_or_update_person
     # IO.puts "Create or update person"

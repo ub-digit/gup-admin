@@ -8,7 +8,6 @@ defmodule GupIndexManager.Resource.Persons.Merger2 do
   require Logger
 
   def merge(meta_data) do
-    IO.inspect("MERGE STARTED")
     with {:ok, meta_data} <- InputValidator.validate(meta_data),
          {:ok, meta_data} <- DataSanitizer.sanitize_data(meta_data),
          {:ok, meta_data, possible_candidates} <- UserIndexLookup.lookup(meta_data), # {:ok, data, existing_data} or {:ok, data, []}

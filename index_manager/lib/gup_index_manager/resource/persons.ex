@@ -42,9 +42,9 @@ defmodule GupIndexManager.Resource.Persons do
 
        true ->
         # _merge_actions_list = GupIndexManager.Resource.Persons.Merger.merge(person_data_as_map) # Check if for no delete actions
-        status = GupIndexManager.Resource.Persons.Merger2.merge(person_data_as_map) |> IO.inspect(label: "RESULT AFTER MERGE IN PERSON.EX")# Check if for no delete actions
+        status = GupIndexManager.Resource.Persons.Merger2.merge(person_data_as_map) #|> IO.inspect(label: "RESULT AFTER MERGE IN PERSON.EX")# Check if for no delete actions
         case status do
-          {:ok, data, {:no_actions_needed}} -> {:ok, data} #{:ok, data, :no_actions_needed}
+          # {:ok, data, {:no_actions_needed}} -> {:ok, data} #{:ok, data, :no_actions_needed}
           {:error, reason, error_log_data} -> {:error, reason, error_log_data}
           {:ok, data, actions} -> {:ok, data, actions} |> GupIndexManager.Resource.Persons.Execute.execute_actions() |> GupIndexManager.Resource.Gup.update_gup(_initial_load = false, _entity_type = GupIndexManager.Resource.Gup.people())
         end
@@ -53,7 +53,7 @@ defmodule GupIndexManager.Resource.Persons do
           {:ok, _person_data} -> %{"status" => "ok"}
           {:error, reason, error_log_data} -> {:error, reason, error_log_data}
           {:ok, person_data, _actions} ->
-            GupIndexManager.Resource.Gup.update_gup(person_data_as_map, _initial_load = false, _entity_type = GupIndexManager.Resource.Gup.people())
+            GupIndexManager.Resource.Gup.update_gup(person_data, _initial_load = false, _entity_type = GupIndexManager.Resource.Gup.people())
             |> case do
               {:ok, _person_data} -> %{"status" => "ok"}
               _                   -> {:error, %{errors: %{im_message: "ERROR_SENDING_DATA_TO_GUP"}}}
