@@ -18,7 +18,7 @@ defmodule GupIndexManager.Resource.Index do
   def rebuild_publication_index_bulk(limit \\ 10000, offset \\ 0) do
     Logger.info("Rebuilding index posts #{offset} to #{offset + limit}")
     # Fetch publication range from the database
-    from(p in Model.Publication, select: p, limit: ^limit, offset: ^offset)
+    from(p in Model.Publication, select: p, limit: ^limit, offset: ^offset, order_by: [asc: p.id])
     |> GupIndexManager.Repo.all()
     |> build_bulk_rows()
     |> bulk_index(limit, offset)
