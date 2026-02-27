@@ -15,21 +15,29 @@ data_dirs:
     path: /data/gup-admin/index-manager-db
     owner: 999
     group: 999
-    push: false
-    pull: false
+    push: true
+    pull: true
   backend_source_data_dir:
     path: /data/gup-admin/_source
+    push: true
+    pull: true
   backend_scopus_normalised_data_dir:
     path: /data/gup-admin/scopus-normalised
+    push: true
+    pull: true
   scopus_normalised_json_files_data_dir:
     path: /data/gup-admin/scopus-files
-  scopus_scripts_data_dir:
-    path: /data/gup-admin/scopus-scripts
+    push: true
+    pull: true
   elasticsearch_data_dir:
     path: /data/gup-admin/elasticsearch
     owner: 1000
     group: 1000
+    push: true
+    pull: true
   kibana_data_dir:
     path: /data/gup-admin/kibana
     owner: 1000
     group: 1000
+    push: true
+    pull: true
