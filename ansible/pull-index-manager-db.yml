@@ -1,8 +1,8 @@
 ---
-- name: Export index manager database
+- name: Pull index manager database
   hosts: all
   roles:
-  - role: ub-ansible-export-db
+  - role: ub-ansible-deploy-export-db
     vars:
       db_service: index-manager-db
       database_variant: postgres

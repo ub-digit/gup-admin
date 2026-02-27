@@ -5,9 +5,9 @@
 /*-initdb.d/*
 !/admin-db-postgres-initdb.d/.gitkeep
 !/index-manager-db-postgres-initdb.d/create.sql
-/index-manager-db-data
-/admin-db-data
-/elasticsearch-data
-/kibana-data
+/index-manager-db
+/db
+/elasticsearch
+/kibana
 /_source
 /scopus-normalised
