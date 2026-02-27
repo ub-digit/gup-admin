@@ -1,3 +1,0 @@
----
-- import_playbook: export-backend-db.yml
-- import_playbook: export-index-manager-db.yml
