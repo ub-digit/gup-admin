@@ -19,17 +19,25 @@ data_dirs:
     pull: false
   backend_source_data_dir:
     path: /data/gup-admin/_source
-  backend_scopus_normalised_data_dir:
-    path: /data/gup-admin/scopus-normalised
-  scopus_normalised_json_files_data_dir:
+    push: true
+    pull: true
+  backend_scopus_normalized_data_dir:
+    path: /data/gup-admin/scopus-normalized
+    push: true
+    pull: true
+  scopus_normalized_json_files_data_dir:
     path: /data/gup-admin/scopus-files
-  scopus_scripts_data_dir:
-    path: /data/gup-admin/scopus-scripts
+    push: true
+    pull: true
   elasticsearch_data_dir:
     path: /data/gup-admin/elasticsearch
     owner: 1000
     group: 1000
+    push: true
+    pull: true
   kibana_data_dir:
     path: /data/gup-admin/kibana
     owner: 1000
     group: 1000
+    push: true
+    pull: true
