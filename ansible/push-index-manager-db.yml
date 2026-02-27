@@ -1,8 +1,8 @@
 ---
-- name: Import index manager database
+- name: Push index manager database
   hosts: all
   roles:
-  - role: ub-ansible-import-db
+  - role: ub-ansible-deploy-import-db
     vars:
       db_service: index-manager-db
       database_variant: postgres

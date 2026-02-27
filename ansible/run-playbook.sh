@@ -6,7 +6,7 @@ if [[ -z "$2" ]]; then
     exit 0;
 fi
 
-targets="dev staging lab production"
+targets="staging lab production dev"
 target=$1
 playbook=$2
 
@@ -25,4 +25,4 @@ shift;
 shift;
 
 set -x
-ansible-playbook --vault-password-file .vault_password -i inventory/$target.yml  $playbook.yml $@
+ansible-playbook --vault-password-file ~/.config/ub-ansible-deploy/.vault_password -i inventory/$target.yml  $playbook.yml $@

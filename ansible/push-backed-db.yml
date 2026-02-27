@@ -1,8 +1,8 @@
 ---
-- name: Export database
+- name: Push backend database
   hosts: all
   roles:
-  - role: ub-ansible-export-db
+  - role: ub-ansible-deploy-import-db
     vars:
       db_service: admin-db
       database_variant: postgres

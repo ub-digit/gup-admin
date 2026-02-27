@@ -29,7 +29,7 @@ services:
     volumes:
       # Temporary fix until real index is in place
       - ${BACKEND_SOURCE_HOST_PATH}:/app/data/_source
-      - ${BACKEND_SCOPUS_NORMALISED_HOST_PATH}:/app/data/scopus-normalised
+      - ${BACKEND_SCOPUS_NORMALIZED_HOST_PATH}:/app/data/scopus-normalized
     ports:
       - "${BACKEND_HOST_PORT}:4000"
     networks:
@@ -92,7 +92,7 @@ services:
       - GUP_ADMIN_BASE_URL=${INDEX_MANAGER_URL} #???? container env variable should be prefixed INDEX_MANAGER instead?
     tty: true
     volumes:
-      - ${SCOPUS_NORMALISED_JSON_FILES_HOST_PATH}:/data/files/scopus-normalised
+      - ${SCOPUS_NORMALIZED_JSON_FILES_HOST_PATH}:/data/files/scopus-normalized
       - ${SCOPUS_SCRIPTS_HOST_PATH}:/data/scripts
     ports:
       - ${ELASTICSEARCH_HOST_PORT}:9200

@@ -1,0 +1,5 @@
+---
+- name: Pull data
+  hosts: all
+  roles:
+  - role: ub-ansible-pull-data

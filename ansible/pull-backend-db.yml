@@ -1,8 +1,8 @@
 ---
-- name: Import database
+- name: Pull backend database
   hosts: all
   roles:
-  - role: ub-ansible-import-db
+  - role: ub-ansible-deploy-export-db
     vars:
       db_service: admin-db
       database_variant: postgres
