@@ -1,0 +1,49 @@
+---
+- name: Pull data
+  hosts: all
+  tags: [pull]
+  roles:
+  - role: ub-ansible-pull-data
+  - role: ub-ansible-deploy-export-db
+    vars:
+      db_service: postgres
+      database_variant: postgres
+      db_dump_filename: database.sql
+
+- name: Decrypt local docker secrets
+  hosts: localhost
+  gather_facts: false
+  tags: [init]
+  roles:
+  - role: ub-ansible-decrypt-local-docker-secrets
+
+- name: Set current inventory hostname
+  hosts: all
+  gather_facts: false
+  tags: [pull]
+  tasks:
+    - name: Remember current inventory hostname for later
+      ansible.builtin.set_fact:
+        current_inventory_hostname: "{{ inventory_hostname }}"
+
+- name: Synchronize local docker data directories
+  hosts: localhost
+  tags: [init]
+  roles:
+  - role: ub-ansible-sync-local-docker-data-dirs
+    vars:
+      docker_command: docker compose
+      data_dirs: '{{ hostvars[ansible_play_batch[0]].data_dirs }}'
+
+- name: Import database
+  hosts: localhost
+  gather_facts: false
+  tags: [init]
+  roles:
+  - role: ub-ansible-import-db
+    vars:
+      docker_directory_path: "{{ [playbook_dir, '../docker'] | path_join }}"
+      docker_command: docker compose
+      db_service: db
+      database_variant: postgres
+      db_dump_filename: database.sql

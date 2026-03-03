@@ -1,9 +1,11 @@
 #!/bin/bash
-
-mkdir scopus-files
-mkdir scopus-files/testdata
-mkdir data/admin-db
-mkdir data/elasticsearch
-mkdir data/index-manager-db
-mkdir admin-db-initdb.d
-mkdir index-manager-db-initdb.d
+mkdir -p db-postgres-initdb.d
+mkdir -p index-manager-db-postgres-initdb.d
+mkdir -p admin-db-data
+mkdir -p elasticsearch-data
+mkdir -p index-manager-db-data
+mkdir -p scopus-files
+mkdir -p scopus-scripts
+mkdir -p kibana-data
+mkdir -p _source
+mkdir -p scopus-normalised

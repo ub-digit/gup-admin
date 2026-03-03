@@ -1,0 +1,43 @@
+---
+docker_git_repo_url: https://github.com/ub-digit/gup-admin.git
+docker_directory: './docker' # Default is './docker'
+app_name: gup-admin
+
+data_dir: /data/gup-admin
+data_dirs:
+  db_data_dir:
+    path: /data/gup-admin/db
+    owner: 999
+    group: 999
+    push: false
+    pull: false
+  index_manager_db_data_dir:
+    path: /data/gup-admin/index-manager-db
+    owner: 999
+    group: 999
+    push: true
+    pull: true
+  backend_source_data_dir:
+    path: /data/gup-admin/_source
+    push: true
+    pull: true
+  backend_scopus_normalised_data_dir:
+    path: /data/gup-admin/scopus-normalised
+    push: true
+    pull: true
+  scopus_normalised_json_files_data_dir:
+    path: /data/gup-admin/scopus-files
+    push: true
+    pull: true
+  elasticsearch_data_dir:
+    path: /data/gup-admin/elasticsearch
+    owner: 1000
+    group: 1000
+    push: true
+    pull: true
+  kibana_data_dir:
+    path: /data/gup-admin/kibana
+    owner: 1000
+    group: 1000
+    push: true
+    pull: true

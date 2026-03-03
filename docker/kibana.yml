@@ -1,0 +1,9 @@
+logging:
+  appenders:
+    console_json:
+      type: console
+      layout:
+        type: json
+  root:
+    appenders: [console_json]
+    level: info

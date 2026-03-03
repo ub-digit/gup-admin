@@ -3,52 +3,48 @@ services:
   admin-frontend:
     image: docker.ub.gu.se/gup-admin-frontend:${GIT_REVISION}${PLATFORM}
     restart: always
-    ports:
-      - "${ADMIN_FRONTEND_HOST_PORT}:5000"
+    env_file:
+      - secrets.env
     environment:
-      NUXT_API_BASE_URL: "http://admin-backend:4000/"
-      NUXT_ADMIN_BACKEND_API_KEY: ${ADMIN_BACKEND_API_KEY}
-      NUXT_PUBLIC_ALLOW_AUTHOR_EDIT: ${ADMIN_FRONTEND_ALLOW_AUTHOR_EDIT}
+      NUXT_API_BASE_URL: "${BACKEND_BASE_URL}"
+      NUXT_PUBLIC_ALLOW_AUTHOR_EDIT: ${FRONTEND_ALLOW_AUTHOR_EDIT}
       NUXT_GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
-      NUXT_GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
       NUXT_GU_CLIENT_ID: ${GU_CLIENT_ID}
-      NUXT_GU_CLIENT_SECRET: ${GU_CLIENT_SECRET}
       NUXT_AUTH_USERS: ${AUTH_USERS}
-      NUXT_SECRET_KEY_BASE: "${SECRET_KEY_BASE}"
-      NUXT_AUTH_ORIGIN: "${AUTH_ORIGIN}"
-      NUXT_AUTH_BASE_URL: "${AUTH_ORIGIN}/api/auth"
       NUXT_PUBLIC_DISALLOW_EDIT_PERSON_IDENTIFICATION_CODES: "${DISALLOW_EDIT_PERSON_IDENTIFICATION_CODES}"
+    ports:
+      - "${FRONTEND_HOST_PORT}:5000"
     networks:
       - gup-admin
   admin-backend:
     image: docker.ub.gu.se/gup-admin-backend:${GIT_REVISION}${PLATFORM}
     restart: always
-    ports:
-      - "${ADMIN_BACKEND_HOST_PORT}:4000"
+    env_file:
+      - secrets.env
     environment:
       ELASTICSEARCH_URL: "${ELASTICSEARCH_URL}"
-      GUP_INDEX_MANAGER_URL: "${INDEX_MANAGER_URL}"
-      GUP_INDEX_MANAGER_API_KEY: "${INDEX_MANAGER_API_KEY}"
-      GUP_SERVER_BASE_URL: "${GUP_BACKEND_BASE_URL}"
-      GUP_API_KEY: "${GUP_BACKEND_API_KEY}"
-      SECRET_KEY_BASE: "${SECRET_KEY_BASE}"
-      ADMIN_BACKEND_API_KEY: "${ADMIN_BACKEND_API_KEY}"
+      INDEX_MANAGER_URL: "${INDEX_MANAGER_URL}"
       VALID_PERSON_IDENTIFICATION_CODES: "${VALID_PERSON_IDENTIFICATION_CODES}"
       EXCLUDE_PERSON_IDENTIFICATION_CODES: "${EXCLUDE_PERSON_IDENTIFICATION_CODES}"
+    volumes:
+      # Temporary fix until real index is in place
+      - ${BACKEND_SOURCE_HOST_PATH}:/app/data/_source
+      - ${BACKEND_SCOPUS_NORMALISED_HOST_PATH}:/app/data/scopus-normalised
+    ports:
+      - "${BACKEND_HOST_PORT}:4000"
     networks:
       - gup
       - gup-admin
   index-manager-backend:
     image: docker.ub.gu.se/gup-admin-index-manager-backend:${GIT_REVISION}${PLATFORM}
     restart: always
+    env_file:
+      - secrets.env
     environment:
       ELASTICSEARCH_URL: "${ELASTICSEARCH_URL}"
-      GUP_INDEX_MANAGER_API_KEY: "${INDEX_MANAGER_API_KEY}"
       GUP_SERVER_BASE_URL: "${GUP_BACKEND_BASE_URL}"
-      GUP_API_KEY: "${GUP_BACKEND_API_KEY}"
-      SECRET_KEY_BASE: "${SECRET_KEY_BASE}"
     ports:
-      - "${INDEX_MANAGER_HOST_PORT}:4000"
+      - "${INDEX_MANAGER_BACKEND_HOST_PORT}:4000"
     networks:
       - gup
       - gup-admin
@@ -56,31 +52,29 @@ services:
     image: postgres:12
     restart: always
     environment:
-      POSTGRES_USER: "${ADMIN_DB_USER}"
-      POSTGRES_PASSWORD: "${ADMIN_DB_PASSWORD}"
-      POSTGRES_DB: "${ADMIN_DB_NAME}"
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+      POSTGRES_DB: "${DB_NAME}"
     volumes:
-      - ./admin-db-initdb.d:/docker-entrypoint-initdb.d
-      - ${ADMIN_DB_DATA_HOST_PATH}:/var/lib/postgresql/data
+      - ./db-postgres-initdb.d:/docker-entrypoint-initdb.d
+      - ${DB_DATA_HOST_PATH}:/var/lib/postgresql/data
     networks:
       - gup-admin
   index-manager-db:
     image: postgres:12
     restart: always
     environment:
-      POSTGRES_USER: "${ADMIN_DB_USER}"
-      POSTGRES_PASSWORD: "${ADMIN_DB_USER}"
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_USER}"
       POSTGRES_DB: "${INDEX_MANAGER_DB_NAME}"
     volumes:
-      - ./index-manager-db-initdb.d:/docker-entrypoint-initdb.d
+      - ./index-manager-db-postgres-initdb.d:/docker-entrypoint-initdb.d
       - ${INDEX_MANAGER_DB_DATA_HOST_PATH}:/var/lib/postgresql/data
     networks:
       - gup-admin
   elasticsearch:
     image: docker.ub.gu.se/gup-admin-elasticsearch:${GIT_REVISION}${PLATFORM}
     restart: always
-    ports:
-      - ${ELASTICSEARCH_HOST_PORT}:9200
     environment:
       - xpack.security.enabled=false
       - "discovery.type=single-node"
@@ -92,13 +86,32 @@ services:
   gup-imports:
     image: docker.ub.gu.se/gup-imports:${GIT_REVISION_GUP_IMPORTS}
     restart: always
+    env_file:
+      - secrets.env
     environment:
       - GUP_ADMIN_BASE_URL=${INDEX_MANAGER_URL} #???? container env variable should be prefixed INDEX_MANAGER instead?
-      - GUP_ADMIN_API_KEY=${INDEX_MANAGER_API_KEY}
     tty: true
     volumes:
-      - ${HOST_SCOPUS_NORMALISED_JSON_FILES_DIR}:/data/files/scopus-normalised
-      - ${HOST_SCRIPT_FILES_DIR}:/data/scripts
+      - ${SCOPUS_NORMALISED_JSON_FILES_HOST_PATH}:/data/files/scopus-normalised
+      - ${SCOPUS_SCRIPTS_HOST_PATH}:/data/scripts
+    ports:
+      - ${ELASTICSEARCH_HOST_PORT}:9200
+    networks:
+      - gup-admin
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.18.0
+    restart: always
+    environment:
+      SERVER_NAME: ${KIBANA_SERVER_NAME}
+      SERVER_PUBLIC_URL: ${KIBANA_PUBLIC_URL}
+      ELASTICSEARCH_HOSTS: '["${ELASTICSEARCH_URL}"]'
+      SERVER_BASEPATH: ${KIBANA_SERVER_BASEPATH}
+      SERVER_REWRITEBASEPATH: "true"
+    volumes:
+      - ${KIBANA_DATA_HOST_PATH}:/usr/share/kibana/data
+      - ./kibana.yml:/usr/share/kibana/config/kibana.yml:ro
+    ports:
+      - ${KIBANA_HOST_PORT}:5601
     networks:
       - gup-admin
 networks:
