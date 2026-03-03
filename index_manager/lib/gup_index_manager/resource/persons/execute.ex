@@ -28,6 +28,11 @@ defmodule GupIndexManager.Resource.Persons.Execute do
   end
 
   def execute_action(data, {:update_departments, department_data}) do
+    # remove all departments that has the same name as department_data
+      departments = Map.get(data, "departments", [])
+      |> Enum.filter(fn department -> department["name"] != department_data["name"] end)
+      |> List.insert_at(0, department_data)
+      |> IO.inspect(label: "Departments after update")
     Map.put(data, "departments", department_data)
   end
 
@@ -91,7 +96,7 @@ defmodule GupIndexManager.Resource.Persons.Execute do
   # end
 
   def execute_action(data, {:update_name, name}) do
-    name_to_update = Enum.find(data["names"], fn n -> n["id"] == name["id"] end)
+    name_to_update = Enum.find(data["names"], fn n -> n["gup_person_id"] == name["gup_person_id"] end)
     start_date = name["start_date"] || name_to_update["start_date"] || nil
     end_date = name["end_date"] || name_to_update["end_date"] || nil
     updated_name =
@@ -102,7 +107,7 @@ defmodule GupIndexManager.Resource.Persons.Execute do
     |> Map.put("full_name", "#{name["first_name"]} #{name["last_name"]}")
 
     names = Map.get(data, "names", [])
-    |> Enum.filter(fn n -> n["id"] != name["id"] end)
+    |> Enum.filter(fn n -> n["gup_person_id"] != name["gup_person_id"] end)
     |> Kernel.++([updated_name])
     |> List.flatten()
 
@@ -123,7 +128,12 @@ defmodule GupIndexManager.Resource.Persons.Execute do
     end)
     |> Enum.map(fn name ->
       if name["first_name"] == name_data["first_name"] && name["last_name"] == name_data["last_name"] do
-        Map.put(name, "primary", true)
+        # check if name and name_data both have a non-nil value for gup_person_id.
+        if name["gup_person_id"] && name_data["gup_person_id"] && name["gup_person_id"] != name_data["gup_person_id"] do
+          Map.put(name, "primary", false)
+        else
+          Map.put(name, "primary", true)
+        end
       else
         name
       end

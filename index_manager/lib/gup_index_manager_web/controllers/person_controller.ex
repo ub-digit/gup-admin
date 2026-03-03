@@ -10,7 +10,7 @@ defmodule GupIndexManagerWeb.PersonController do
     initial_load = Map.get(params, "initial_load", false)
     case ControllerHelpers.check_api_key(api_key) do
       true ->
-        Persons.Merger2.merge(Map.put(data, "force_primary_name", force_primary_name == "true")) #|> Persons.Execute.execute_actions() |> GupIndexManager.Resource.Gup.update_gup(initial_load == "true", _entity_type = GupIndexManager.Resource.Gup.people()) |> respond(conn)
+        Persons.Merger2.merge(Map.put(data, "force_primary_name", force_primary_name == "true")) |> Persons.Execute.execute_actions() |> GupIndexManager.Resource.Gup.update_gup(initial_load == "true", _entity_type = GupIndexManager.Resource.Gup.people()) |> respond(conn)
         json Plug.Conn.put_status(conn, 201), %{status: "201", message: "Person created or updated"}
       false ->
         json Plug.Conn.put_status(conn, 401), %{status: "401", message: "error, unauthorized key"}

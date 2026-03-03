@@ -8,6 +8,7 @@ defmodule GupIndexManager.Resource.Persons.Merger2 do
   require Logger
 
   def merge(meta_data) do
+    IO.inspect("MERGE STARTED WITH META_DATA")
     with {:ok, meta_data} <- InputValidator.validate(meta_data),
          {:ok, meta_data} <- DataSanitizer.sanitize_data(meta_data),
          {:ok, meta_data, possible_candidates} <- UserIndexLookup.lookup(meta_data), # {:ok, data, existing_data} or {:ok, data, []}
@@ -20,11 +21,17 @@ defmodule GupIndexManager.Resource.Persons.Merger2 do
           #     {:no_actions_needed}
           #   actions -> actions
           # end
-          {:ok, data, actions}
 
+          # IO.inspect(data, label: "DATA AFTER MERGE")
+          IO.inspect("-----------------------------------------------------------------------------------------------")
+          IO.inspect(actions, label: "ACTIONS")
+          IO.inspect("-----------------------------------------------------------------------------------------------")
+
+          {:ok, data, actions}
     else
-      {:error, :invalid_input_data, meta_data} -> {:error, :invalid_input_data, meta_data}
-      {:error, reason, {meta_data, possible_candidates}} -> {:error, reason, {meta_data, possible_candidates}}
+      {:error, :invalid_input_data, meta_data} -> {:error, :invalid_input_data, meta_data} |> IO.inspect(label: "INVALID_INPUT_DATA_ERROR_IN_MERGE")
+      {:error, reason, {meta_data, possible_candidates}} -> {:error, reason, {meta_data, possible_candidates}} |> IO.inspect(label: "ERROR IN MERGE")
+      error -> {:error, :unexpected_error, error} |> IO.inspect(label: "UNEXPECTED ERROR IN MERGE")
 
     end
   end

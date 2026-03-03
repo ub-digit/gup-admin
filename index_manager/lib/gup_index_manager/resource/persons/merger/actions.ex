@@ -12,13 +12,14 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
       actions =
       Enum.reduce(names_without_gup_person_id, [], fn name, actions ->
         #add this to actions {:aquire_gup_person_id, gup_person_id} for every name without gup_person_id
+
         actions ++ [{:acquire_gup_person_id, name}]
       end)
       |> mandatory_actions(meta_data, [])
       data = Map.delete(meta_data, "primary_name")
       {:ok, data, actions}
-
   end
+
   def generate_actions({meta_data, possible_candidates}) do
 
     # bulk of merge logic goes here.
@@ -73,11 +74,35 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
   defp deparment_actions(actions, primary_record, other_records) do
     primary_record_departments = primary_record["departments"] || []
     other_departments = Enum.flat_map(other_records, fn record -> record["departments"] || [] end)
-    # check for departments that doesnt exist in primary record, but exists in other records, and add action to add this department to primary record.
-    new_departments = Enum.filter(other_departments, fn department -> department not in primary_record_departments end) |> Enum.uniq()
-    actions ++ Enum.map(new_departments, fn department ->
-      {:add_department, department}
-    end)
+      # check if any department in other_deps does not exists in prim_deps by comparing name TODO: ORGDB_ID is not present, shouldnt it be?
+      new_deps = Enum.filter(other_departments, fn other_dep ->
+        not Enum.any?(primary_record_departments, fn prim_dep ->
+          # prim_dep["orgdb_id"] == other_dep["orgdb_id"] &&
+          prim_dep["name"] == other_dep["name"]
+        end)
+      end)
+
+      #now check if any department in other_deps has the same orgdb_id and name as a department in prim_deps but a different start_date.
+      new_deps ++ Enum.filter(other_departments, fn other_dep ->
+        Enum.any?(primary_record_departments, fn prim_dep ->
+          # prim_dep["orgdb_id"] == other_dep["orgdb_id"] &&
+          prim_dep["name"] == other_dep["name"] && prim_dep["start_date"] != other_dep["start_date"]
+        end)
+      end)
+      |> List.flatten()
+      |> Enum.uniq()
+
+      deps_to_update = Enum.filter(other_departments, fn other_dep ->
+        Enum.any?(primary_record_departments, fn prim_dep ->
+          # prim_dep["orgdb_id"] == other_dep["orgdb_id"] &&
+          prim_dep["name"] == other_dep["name"] && prim_dep["end_date"] != other_dep["end_date"] && prim_dep["start_date"] == other_dep["start_date"]
+        end)
+      end)
+      actions ++ Enum.map(new_deps, fn department ->
+        {:add_department, department}
+      end) ++ Enum.map(deps_to_update, fn department ->
+        {:update_department, department}
+      end)
   end
 
   defp delete_merged_records(actions, secondary_records) do
@@ -88,7 +113,7 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
 
   defp mandatory_actions(actions, meta_data, _combined_data) do
     # if primary name is the same in existing data as in meta_data, skip that action
-
+    IO.inspect("Mandatory actions check ---<")
     actions ++ [{:set_primary_name, meta_data["primary_name"]}, {:create_or_update_person}] |> List.flatten()    # |> Kernel.++(
     #   case Enum.any?(actions, fn action -> elem) do
     #   true -> []
@@ -96,5 +121,13 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
     # end)
     # |> Kernel.++([{:create_or_update_person}])
 
+  end
+
+
+  def get_utc_date_now do
+    DateTime.utc_now()
+    |> DateTime.truncate(:second)
+    |> DateTime.to_iso8601()
+    |> String.trim_trailing("Z")
   end
 end

@@ -19,6 +19,7 @@ defmodule GupIndexManager.Resource.Persons.Merger.Identifiers do
     identifiers_to_look_for = [@orcid_code, @x_account_code, @pop_id_code] # should POP_ID be included?
     [possible_candidates | [meta_data]]
     |> List.flatten()
+    |> IO.inspect(label: "RECORDS TO CHECK FOR COLLIDING IDENTIFIERS")
     |> Enum.flat_map(fn record -> Enum.filter(record["identifiers"], fn identifier -> identifier["code"] in identifiers_to_look_for end) end)
     |> Enum.group_by(& &1["code"])
     |> Enum.any?(fn {_code, maps} ->
@@ -26,7 +27,10 @@ defmodule GupIndexManager.Resource.Persons.Merger.Identifiers do
       length(Enum.uniq(values)) > 1
     end)
     |> case do
-      true -> {:error, "Colliding ORCID and/or X_ACCOUNT and/or POP_ID", {meta_data, possible_candidates}}
+      true ->
+        ids = Enum.flat_map([possible_candidates | [meta_data]] |> List.flatten(), fn record -> Enum.filter(record["identifiers"], fn identifier -> identifier["code"] in identifiers_to_look_for end) end)
+        IO.inspect(ids, label: "identifiers to check")
+        {:error, "Colliding ORCID and/or X_ACCOUNT and/or POP_ID", {meta_data, possible_candidates}}
       false -> {:ok, meta_data, possible_candidates}
     end
   end
