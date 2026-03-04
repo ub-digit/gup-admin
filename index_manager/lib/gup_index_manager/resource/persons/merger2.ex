@@ -21,7 +21,6 @@ defmodule GupIndexManager.Resource.Persons.Merger2 do
       {:error, :invalid_input_data, meta_data} -> {:error, :invalid_input_data, meta_data} |> IO.inspect(label: "INVALID_INPUT_DATA_ERROR_IN_MERGE")
       {:error, reason, {meta_data, possible_candidates}} -> {:error, reason, {meta_data, possible_candidates}} |> IO.inspect(label: "ERROR IN MERGE")
       error -> {:error, :unexpected_error, error} |> IO.inspect(label: "UNEXPECTED ERROR IN MERGE")
-
     end
   end
 
@@ -29,20 +28,5 @@ defmodule GupIndexManager.Resource.Persons.Merger2 do
   def tap_it(data, msg \\ "") do
     Logger.debug("#{msg}: #{inspect(data, pretty: true)}")
     data
-  end
-
-  # Test data for debugging.
-  # delete this when done.
-
-  def test_data do
-    %{
-      "names" => [
-        %{"first_name" => "Abel", "Kain" => "Smith"}
-      ],
-      "force_primary_name" => true,
-      "identifiers" => [
-        %{"code" => "CID", "value" => "flfllfsasaaaalf"},
-      ]
-    }
   end
 end
