@@ -58,43 +58,6 @@ defmodule GupIndexManager.Resource.Persons.Execute do
     Map.put(data, "names", new_names)
   end
 
-  # def execute_action(data, {:update_name, name, gup_person_id}) do
-  #   # no gup_person_id in incoming name, but it matches the name in the data
-  #   old_name = Enum.find(data["names"], fn name -> name["gup_person_id"] == gup_person_id end)
-  #   names = Map.get(data, "names", [])
-  #   |> Enum.filter(fn name -> name["gup_person_id"] != gup_person_id end)
-  #   # |> Enum.map(fn existing_name -> Map.put(existing_name, "primary", false) end)
-  #   new_name = %{
-  #     "first_name" => name["first_name"],
-  #     "last_name" => name["last_name"],
-  #     "gup_person_id" => gup_person_id,
-  #     "primary" => name["primary"],
-  #     "full_name" => "#{name["first_name"]} #{name["last_name"]}",
-  #     "start_date" => name["start_date"] || old_name["start_date"] || nil,
-  #     "end_date" => name["end_date"] || old_name["end_date"] || nil
-  #   }
-
-  #   new_names = List.insert_at(names, 0, new_name)
-  #   |> IO.inspect(label: "New names")
-  #   Map.put(data, "names", new_names)
-  # end
-
-  # def execute_action(data, {:update_name, name}) do
-  #   # Names has the same gup_person_id, so update the name and dates
-  #   name = Map.put(name, "full_name", "#{name["first_name"]} #{name["last_name"]}")
-  #   |> Map.put("primary", name["primary"] || false)
-  #   id = name["gup_person_id"]
-  #   # |> IO.inspect(label: "ID ---<")
-  #   names = Map.get(data, "names", [])
-  #   |> Enum.filter(fn name -> name["gup_person_id"] != id end)
-  #   |> Enum.map(fn existing_name -> Map.put(existing_name, "primary", false) end)
-  #   new_names = List.insert_at(names, 0, name)
-  #   Map.put(data, "names", new_names)
-  #   # |> IO.inspect(label: "names ---<")
-  #   # IO.inspect(new_names, label: "new_names")
-  #   # data
-  # end
-
   def execute_action(data, {:update_name, name}) do
     name_to_update = Enum.find(data["names"], fn n -> n["gup_person_id"] == name["gup_person_id"] end)
     start_date = name["start_date"] || name_to_update["start_date"] || nil
@@ -200,15 +163,4 @@ defmodule GupIndexManager.Resource.Persons.Execute do
     name_count = Enum.count(names)
     Map.put(data, "name_count", name_count)
   end
-
-
-  # def log_transaction(data, {action, _data}) do
-  #   IO.puts "Logging transaction for user #{action}"
-  #   data
-  # end
-
-  # def log_transaction(data, {action, _data, _id}) do
-  #   IO.puts "Logging transaction for user #{action}"
-  #   data
-  # end
 end

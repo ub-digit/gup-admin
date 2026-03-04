@@ -101,14 +101,6 @@ defmodule GupAdmin.Resource.Person do
                                                                body:    body)
      map = elem(r, 1)
      status = elem(r, 0)
-    #  merge_id = try_merge_gup_admin_person(id)
-
-    #  new_id = case merge_id do
-    #    :not_found -> id
-    #    :nothing_to_do -> id
-    #    _ -> merge_id
-    #  end
-
     body = Map.get(map, :success) |> Map.get(:body) |> Map.put("id", id)
     {status, %{success: %{body: body,  status_code: 200}}}
 
@@ -298,80 +290,4 @@ defmodule GupAdmin.Resource.Person do
     Search.search_merged_persons(q)
   end
 
-  def try_merge_gup_admin_person(gup_admin_id) do
-    Search.get_person(gup_admin_id)
-    |> evaluate_person_for_merge()
-    |> respond_to_merge_attempt()
-  end
-
-  defp respond_to_merge_attempt(:not_found), do: :not_found
-  defp respond_to_merge_attempt(:nothing_to_do), do: :nothing_to_do
-  defp respond_to_merge_attempt(response) do
-    response
-  end
-
-  def evaluate_person_for_merge(%{"data" =>nil}), do: :not_found
-  def evaluate_person_for_merge(%{"data" => data}) do
-    identifiers = data["identifiers"]
-    case length(identifiers) do
-      0 -> :nothing_to_do
-      _ -> try_execute_merge(data)
-
-    end
-  end
-
-  def try_execute_merge(person_data) do
-   generate_single_name_form_data(person_data)
-   |> sort_on_primary_name()
-   |> Enum.map(fn single_name_person_data ->
-        # for each single name person data, try to merge in index_manager
-        url = im_base_url() <> @im_merge_endpoint <> "?api_key=" <> im_api_key()
-        headers = @send_and_receive_json
-        method = :post
-        body = single_name_person_data
-        HTTPoison.post(url, %{"data" => single_name_person_data} |> Jason.encode!(), [{"Content-Type", "application/json"}])
-        # TODO: Handle errore
-        |> elem(1)
-        |> Map.get(:body)
-        |> Jason.decode()
-        |> elem(1)
-        |> Map.get("data")
-        |> Map.get("id")
-
-      end)
-    |> Enum.uniq()
-    |> List.last()
-  end
-
-  def generate_single_name_form_data(person_data) do
-
-    # Check if person_data["identifiers"] has the identifier "POP_ID"
-    force_primary_name = Enum.any?(person_data["identifiers"], fn id -> id == "POP_ID" end)
-    # for each name in names, create a new person object with that name only
-    person_data["names"]
-      |> Enum.map(fn name ->
-        person_data |> Map.put("names", [name])
-        # |> set_force_primary_name(force_primary_name, name)
-      end)
-  end
-
-  def sort_on_primary_name(data) do
-    Enum.sort_by(data, fn person -> Enum.any?(person["names"], fn names -> names["primary"] == true end ) end, :desc)
-  end
-
-  def set_force_primary_name(data) do
-    Enum.sort_by(data, fn person -> Enum.any?(person["names"], fn names -> names["primary"] == true end ) end, :desc)
-  end
-
-  def set_force_primary_name(data, false, name) do
-    name = name|> Map.put("primary", false)
-    data
-    |> Map.put("names", [name])
-    |> Map.put("force_primary_name", false)
-  end
-
-  def set_force_primary_name(data, true, name) do
-    data
-    |> Map.put("names", [name])
-  end
 end
