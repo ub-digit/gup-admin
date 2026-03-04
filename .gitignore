@@ -2,3 +2,4 @@
 docker/.env
 .output/
 */priv/static
+docker/index-manager-db-initdb.d/prod-db-2026-03-03.sql
