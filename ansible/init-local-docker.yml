@@ -6,9 +6,14 @@
   - role: ub-ansible-pull-data
   - role: ub-ansible-deploy-export-db
     vars:
-      db_service: postgres
+      db_service: admin-db
       database_variant: postgres
-      db_dump_filename: database.sql
+      db_dump_filename: backend-database.sql
+  - role: ub-ansible-deploy-export-db
+    vars:
+      db_service: index-manager-db
+      database_variant: postgres
+      db_dump_filename: index-manager-database.sql
 
 - name: Decrypt local docker secrets
   hosts: localhost
@@ -16,16 +21,6 @@
   tags: [init]
   roles:
   - role: ub-ansible-decrypt-local-docker-secrets
-
-# TODO: Can remote this?
-#- name: Set current inventory hostname
-#  hosts: all
-#  gather_facts: false
-# tags: [pull]
-#  tasks:
-#    - name: Remember current inventory hostname for later
-#      ansible.builtin.set_fact:
-#        current_inventory_hostname: "{{ inventory_hostname }}"
 
 - name: Synchronize local docker data directories
   hosts: localhost
@@ -40,11 +35,16 @@
   hosts: localhost
   gather_facts: false
   tags: [init]
+  vars:
+    docker_directory_path: "{{ [playbook_dir, '../docker'] | path_join }}"
+    database_variant: postgres
+    docker_command: docker compose
   roles:
   - role: ub-ansible-import-db
     vars:
-      docker_directory_path: "{{ [playbook_dir, '../docker'] | path_join }}"
-      docker_command: docker compose
-      db_service: db
-      database_variant: postgres
-      db_dump_filename: database.sql
+      db_service: admin-db
+      db_dump_filename: backend-database.sql
+  - role: ub-ansible-import-db
+    vars:
+      db_service: index-manager-db
+      db_dump_filename: index-manager-database.sql

@@ -1,4 +1,4 @@
 .password
 .vault_password
-/data
-!/data/.gitkeep
+data/*
+!data/.gitkeep
