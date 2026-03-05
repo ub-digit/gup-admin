@@ -30,6 +30,7 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
     actions = []
     |> name_actions(primary_record, secondary_records ++ [meta_data])
     |> identifier_actions(primary_record, secondary_records ++ [meta_data])
+    |> IO.inspect(label: "Actions after identifier actions: ")
     |> deparment_actions(primary_record, secondary_records ++ [meta_data])
     |> delete_merged_records(secondary_records)
     |> mandatory_actions(meta_data, [primary_record | secondary_records])
@@ -58,6 +59,28 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
       end
     end)
     |> List.flatten()
+  end
+
+  defp identifier_actions(actions, primary_record, other_records) when length(other_records) == 1 do
+    # Guess this means that the only candidate is the meta_data, so we should check if there are any identifiers in meta_data that are not in primary_record and add actions to add those identifiers to primary_record.
+
+      primary_record_identifiers = primary_record["identifiers"] || [] |> Enum.uniq()
+      other_identifiers = Enum.flat_map(other_records, fn record -> record["identifiers"] || [] end)
+      # check for identifiers that doesnt exist in primary record, but exists in other records, and add action to add this identifier to primary record.
+      new_identifiers = Enum.filter(other_identifiers, fn identifier -> identifier not in primary_record_identifiers end) |> Enum.uniq()
+
+      actions = actions ++ Enum.map(new_identifiers, fn identifier ->
+        {:add_identifier, identifier}
+      end)
+
+
+      # we should also check if there are any identifiers in primary_record that are not in meta_data and add actions to delete those identifiers from primary_record.
+      identifiers_to_delete = Enum.filter(primary_record_identifiers, fn identifier -> identifier not in other_identifiers end)
+
+      actions = actions ++ Enum.map(identifiers_to_delete, fn identifier ->
+        {:delete_identifier, identifier}
+      end)
+      actions
   end
 
   defp identifier_actions(actions, primary_record, other_records) do

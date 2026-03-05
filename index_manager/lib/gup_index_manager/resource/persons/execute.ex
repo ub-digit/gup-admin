@@ -110,6 +110,12 @@ defmodule GupIndexManager.Resource.Persons.Execute do
     Map.put(data, "identifiers", new_identifiers)
   end
 
+  def execute_action(data, {:delete_identifier, identifier_data}) do
+    identifiers = Map.get(data, "identifiers", [])
+    new_identifiers = Enum.filter(identifiers, fn identifier -> identifier["value"] != identifier_data["value"] end)
+    Map.put(data, "identifiers", new_identifiers)
+  end
+
   def execute_action(data, {:delete_person, id}) do
     IO.puts "Deleting person #{id}"
     GupIndexManager.Resource.Persons.delete_person(id)
