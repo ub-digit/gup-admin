@@ -151,5 +151,109 @@ defmodule Experiment do
      "Sending #{type} to gup"
    end
 
+   def a do
+      [%{id: 2, name: "Alice"}, %{id: 33, name: "Bob"}]
+      |> Enum.into(%{}, fn %{id: id, name: name} -> {id, name} end)
+    end
 
-end
+
+    def fm do
+      existing_identifiers = [
+        %{
+          "identifiers" => [
+            %{"code" => "OC", "value" => "123"},
+            %{"code" => "XA", "value" => "ABC"},
+            %{"code" => "Hej", "value" => "123"},
+          ]
+        },
+        %{
+          "identifiers" => [
+            %{"code" => "XA", "value" => "ABC"}
+          ]
+        },
+        %{
+          "identifiers" => [
+
+          ]
+        },
+        %{
+          "identifiers" => [
+            %{"code" => "OC", "value" => "12s3"},
+            %{"code" => "XA", "value" => "ABC"}
+          ]
+        }
+      ]
+      |> Enum.flat_map(fn record -> Enum.filter(record["identifiers"], fn identifier -> identifier["code"] ==  "OC" ||  identifier["code"] == "XA" end) end)
+      |> Enum.group_by(& &1["code"])
+      |> Enum.any?(fn {_code, maps} ->
+        values = Enum.map(maps, & &1["value"])
+        length(Enum.uniq(values)) > 1
+      end)
+      |> IO.inspect(label: "Colliding identifiers")
+
+
+
+    end
+
+    def compare_name_forms do
+      name_form1 = %{"first_name" => "John", "last_name" => "Smith", "gup_person_id" => "123"}
+      name_form2 = %{"first_name" => "John", "last_name" => "Smith", "gup_person_id" => "123"}
+      name_form3 = %{"first_name" => "John", "last_name" => "Smith", "gup_person_id" => "456"}
+      name_form4 = %{"first_name" => "John", "last_name" => "Smith"}
+      name_form5 = %{"first_name" => "John B", "last_name" => "Smith", "gup_person_id" => "123"}
+
+      IO.inspect(GupIndexManager.Resource.Persons.Merger.NameForms.is_same_name_form?(name_form1, name_form2), label: "Name form 1 vs 2 (should be true)")
+      IO.inspect(GupIndexManager.Resource.Persons.Merger.NameForms.is_same_name_form?(name_form1, name_form3), label: "Name form 1 vs 3 (should be false)")
+      IO.inspect(GupIndexManager.Resource.Persons.Merger.NameForms.is_same_name_form?(name_form1, name_form4), label: "Name form 1 vs 4 (should be true)")
+      IO.inspect(GupIndexManager.Resource.Persons.Merger.NameForms.is_same_name_form?(name_form3, name_form4), label: "Name form 3 vs 4 (should be true)")
+      IO.inspect(GupIndexManager.Resource.Persons.Merger.NameForms.is_same_name_form?(name_form1, name_form5), label: "Name form 1 vs 5 (should be true)")
+
+    end
+
+    def m_m do
+      a = %{"names" => [%{"first_name" => "John", "last_name" => "Smith", "primary" => true}]}
+      b = %{"names" => [%{"first_name" => "Johnddd", "last_name" => "Smsssith"}]}
+      Map.merge(a, b) |> IO.inspect(label: "Merged map")
+    end
+
+    def da do
+      data = %{
+
+      }
+
+      with {:ok, data} <- db(data),
+           {:ok, data} <- dc(data) do
+          IO.inspect("All steps succeeded: #{inspect(data)}")
+        else
+          {:error, reason, data} ->
+            IO.inspect("Error in processing: #{reason}, data: #{inspect(data)}")
+        end
+    end
+
+    def db(data) do
+      {:ok, data |> Map.put(:b, "Result from b")}
+    end
+
+    def dc(data) do
+      {:ok, data |> Map.put(:c, "Result from c")}
+    end
+
+    def m_names do
+      p1 = %{"names" => [%{"first_name" => "John", "last_name" => "Smith", "primary" => true, "gup_person_id" => 1}]}
+      p2 = %{"names" => [%{"first_name" => "John", "last_name" => "Smithy", "primary" => false, "gup_person_id" => 1}]}
+
+      # compare the names in p1 and p2, if they have the same gup_person_id, update the names in p1.
+      p1_names = Map.get(p1, "names", [])
+      p2_names = Map.get(p2, "names", [])
+
+      updated_names = Enum.map(p2_names, fn name2 ->
+        case Enum.find(p1_names, fn name1 -> name1["gup_person_id"] == name2["gup_person_id"] end) do
+          nil -> name2
+          name1 -> Map.merge(name1, name2)
+        end
+      end)
+      Map.put(p1, "names", updated_names) |> IO.inspect(label: "Updated")
+
+
+    end
+  end

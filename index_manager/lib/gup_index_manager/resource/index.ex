@@ -6,18 +6,19 @@ defmodule GupIndexManager.Resource.Index do
   import Ecto.Query
   @publications_index "publications"
   @departments_index "departments"
+  @persons_index "persons"
 
   def elastic_url, do: System.get_env("ELASTICSEARCH_URL", "http://localhost:9200")
 
   def get_indexes do
-    [get_persons_index(), @publications_index, @departments_index]
+    [@persons_index, @publications_index, @departments_index]
   end
 
   # ----------------------------- Rebuild index bulk -----------------------------
   def rebuild_publication_index_bulk(limit \\ 10000, offset \\ 0) do
     Logger.info("Rebuilding index posts #{offset} to #{offset + limit}")
     # Fetch publication range from the database
-    from(p in Model.Publication, select: p, limit: ^limit, offset: ^offset)
+    from(p in Model.Publication, select: p, limit: ^limit, offset: ^offset, order_by: [asc: p.id])
     |> GupIndexManager.Repo.all()
     |> build_bulk_rows()
     |> bulk_index(limit, offset)
@@ -61,7 +62,7 @@ defmodule GupIndexManager.Resource.Index do
     Index.delete(elastic_url(), index)
   end
 
-  def get_persons_index, do: Application.get_env(:gup_index_manager, :person_index_name)
+  def get_persons_index, do: @persons_index
   def get_publications_index, do: @publications_index
   def get_departments_index, do: @departments_index
 
@@ -191,7 +192,11 @@ defmodule GupIndexManager.Resource.Index do
     reset_index(@departments_index)
 
     # Get all departments from the database
-    index_data = Model.Department |> GupIndexManager.Repo.all()
+    index_data =
+    Model.Department
+    |> order_by([p], asc: p.id)
+    |> GupIndexManager.Repo.all()
+
     # Create a map with id as key
     |> Enum.reduce(%{}, fn department, acc ->
       Map.put(acc, department.id, %{
@@ -256,4 +261,62 @@ defmodule GupIndexManager.Resource.Index do
         end
     end
   end
- end
+
+  def rebuild_persons_index_bulk(limit \\ 10000, offset \\ 0) do
+    Logger.info("Rebuilding index posts #{offset} to #{offset + limit}")
+    # Fetch publication range from the database
+    Model.Person
+    |> limit(^limit)
+    |> offset(^offset)
+    # order by id to ensure consistent ordering across batches
+    |> order_by([p], asc: p.id)
+    |> GupIndexManager.Repo.all()
+    |> build_person_bulk_rows()
+    |> bulk_person_index(limit, offset)
+  end
+
+  def build_person_bulk_rows([]), do: {:ok, "Done"}
+  def build_person_bulk_rows(persons) do
+    persons
+    |> remap_for_person_index()
+    |> remap_for_person_bulk(@persons_index)
+  end
+
+   @spec remap_for_person_index(any()) :: list()
+   def remap_for_person_index(data) do
+    data
+    |> Enum.map(fn person ->
+      person.json |> Jason.decode!()
+      |> Map.put("created_at", person.inserted_at)
+      |> Map.put("updated_at", person.updated_at)
+      |> Map.put("deleted", person.deleted)
+      |> Map.put("id", person.id)
+      |> copy_identifiers_to_nested()
+    end)
+  end
+
+  defp copy_identifiers_to_nested(data) do
+    identifiers = Map.get(data, "identifiers", [])
+    data = Map.put(data, "nested_identifiers", identifiers)
+    data
+  end
+
+  def remap_for_person_bulk(data, index) do
+    Enum.map(data, fn person ->
+      [%{"index" =>  %{"_index" => index, "_id" => person["id"]}}, person]
+    end)
+    |> List.flatten()
+  end
+
+  def bulk_person_index({:ok, "Done"}, _, _), do: {:ok, "Done"}
+  def bulk_person_index(index_data, limit, offset) do
+    Elastix.Bulk.post(elastic_url(), index_data)
+    # |> case do
+    #   {:ok, %{body: %{ "errors" => _, "items" => items}}} ->  %{"items" => items} |> Jason.encode!() |> IO.puts()
+    #   {:ok, _} -> {:ok, "ok"}
+    # end
+    offset = offset + limit
+    rebuild_persons_index_bulk(limit, offset)
+  end
+
+end
