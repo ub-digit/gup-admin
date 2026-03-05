@@ -11,3 +11,4 @@
 /kibana
 /_source
 /scopus-normalised
+secrets.env

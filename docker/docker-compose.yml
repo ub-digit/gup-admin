@@ -60,6 +60,11 @@ services:
       - ${DB_DATA_HOST_PATH}:/var/lib/postgresql/data
     networks:
       - gup-admin
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   index-manager-db:
     image: postgres:12
     restart: always
@@ -72,6 +77,11 @@ services:
       - ${INDEX_MANAGER_DB_DATA_HOST_PATH}:/var/lib/postgresql/data
     networks:
       - gup-admin
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   elasticsearch:
     image: docker.ub.gu.se/gup-admin-elasticsearch:${GIT_REVISION}${PLATFORM}
     restart: always
