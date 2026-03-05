@@ -75,11 +75,13 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
 
 
       # we should also check if there are any identifiers in primary_record that are not in meta_data and add actions to delete those identifiers from primary_record.
-      identifiers_to_delete = Enum.filter(primary_record_identifiers, fn identifier -> identifier not in other_identifiers end)
+      if other_records |> List.first() |> Map.get("id") do
+        identifiers_to_delete = Enum.filter(primary_record_identifiers, fn identifier -> identifier not in other_identifiers end)
 
-      actions = actions ++ Enum.map(identifiers_to_delete, fn identifier ->
-        {:delete_identifier, identifier}
-      end)
+        actions = actions ++ Enum.map(identifiers_to_delete, fn identifier ->
+          {:delete_identifier, identifier}
+        end)
+      end
       actions
   end
 
