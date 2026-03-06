@@ -32,7 +32,6 @@ defmodule GupIndexManager.Resource.Persons.Execute do
       departments = Map.get(data, "departments", [])
       |> Enum.filter(fn department -> department["name"] != department_data["name"] end)
       |> List.insert_at(0, department_data)
-      |> IO.inspect(label: "Departments after update")
     Map.put(data, "departments", department_data)
   end
 
@@ -54,6 +53,7 @@ defmodule GupIndexManager.Resource.Persons.Execute do
 
   def execute_action(data, {:add_name, name_data}) do
     names = Map.get(data, "names", [])
+    |> delete_unwanted_names(name_data)
     new_names = List.insert_at(names, 0, name_data)
     Map.put(data, "names", new_names)
   end
@@ -168,5 +168,11 @@ defmodule GupIndexManager.Resource.Persons.Execute do
     names = Map.get(data, "names", [])
     name_count = Enum.count(names)
     Map.put(data, "name_count", name_count)
+  end
+
+  defp delete_unwanted_names(names, name_data) do
+    Enum.filter(names, fn name ->
+      !(name["first_name"] == name_data["first_name"] && name["last_name"] == name_data["last_name"] )
+    end)
   end
 end
