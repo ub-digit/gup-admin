@@ -308,7 +308,7 @@ end
 
 
 
-defmodule FixCoruptedData do
+defmodule FixCorruptedData do
   alias GupIndexManager.Model.Person
   alias GupIndexManager.Repo
   import Ecto.Query
