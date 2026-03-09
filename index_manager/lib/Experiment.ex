@@ -256,4 +256,79 @@ defmodule Experiment do
 
 
     end
+
+    def corrupt_db do
+      # get the 10 flrst recorsds from Person in database.
+      GupIndexManager.Model.Person
+      |> limit(10)
+      |> order_by(asc: :id)
+      |> GupIndexManager.Repo.all()
+      |> Enum.each(fn person ->
+        json = person.json |> Jason.decode!() |> add_bad_name_form() |> Jason.encode!()
+        IO.inspect(json, label: "Corrupted json for person with id #{person.id}")
+        person |> Ecto.Changeset.change(json: json)
+        |> GupIndexManager.Repo.update()
+      end)
+
+
+    end
+
+    defp add_bad_name_form(json) do
+      bad_name_form = %{"first_name" => "Corrupted", "last_name" => "Data", "primary" => true, "gup_person_id" => nil}
+      names = Map.get(json, "names", [])
+      new_names = List.insert_at(names, 0, bad_name_form)
+      Map.put(json, "names", new_names)
+    end
+
+
+    def fix_corrupted_data do
+      # from table persons in db select records where json contains gup_person_id":null
+      from(p in GupIndexManager.Model.Person, where: like(p.json, "%gup_person_id\":null%"))
+      |> GupIndexManager.Repo.all()
+      |> Enum.each(fn person ->
+        json = person.json |> Jason.decode!() |> remove_bad_name_form() |> Jason.encode!()
+        person |> Ecto.Changeset.change(json: json) |> GupIndexManager.Repo.update()
+      end)
+    end
+
+  defp remove_bad_name_form(json) do
+    names = Map.get(json, "names", [])
+    new_names = Enum.filter(names, fn name -> name["gup_person_id"] != nil end)
+    if length(new_names) == 0 do
+      raise "No valid name forms left after removing corrupted data"
+    end
+    Map.put(json, "names", new_names)
   end
+
+  def ooo do
+    IO.inspect("GTREDGGGGGG")
+  end
+end
+
+
+
+
+defmodule FixCoruptedData do
+  alias GupIndexManager.Model.Person
+  alias GupIndexManager.Repo
+  import Ecto.Query
+
+  def fix_corrupted_data do
+    # from table persons in db select records where json contains gup_person_id":null
+    from(p in Person, where: like(p.json, "%gup_person_id\":null%"))
+    |> Repo.all()
+    |> Enum.each(fn person ->
+      json = person.json |> Jason.decode!() |> remove_bad_name_form() |> Jason.encode!()
+      person |> Ecto.Changeset.change(json: json) |> Repo.update()
+    end)
+  end
+
+  defp remove_bad_name_form(json) do
+    names = Map.get(json, "names", [])
+    new_names = Enum.filter(names, fn name -> name["gup_person_id"] != nil end)
+    if length(new_names) == 0 do
+      raise "No valid name forms left after removing corrupted data"
+    end
+    Map.put(json, "names", new_names)
+  end
+end
