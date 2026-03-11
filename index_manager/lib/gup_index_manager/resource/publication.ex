@@ -17,83 +17,198 @@ defmodule GupIndexManager.Resource.Publication do
       "publication_id" => id
     }
 
-    db_publication
-    |> Publication.changeset(attrs)
-    |> GupIndexManager.Repo.insert_or_update()
 
-    Index.update_publication(attrs)
+    {:ok, "test"}
+    # db_publication
+    # |> Publication.changeset(attrs)
+    # |> GupIndexManager.Repo.insert_or_update()
+
+    # Index.update_publication(attrs)
   end
+
+  # Will for now assume that a link object/map will be as follows:
+  # %{
+  #   "publication_links_id" => Number(xxxxxxxxx),
+  #   "url" => "https://dx.doi.org/10.1234/example",
+  #   "is_oa" => true/false/nil,
+  #   "last_checked" => "2024-06-01T12:00:00Z",
+  #   "position" => Number(x)
+  # }
+  #
+
 
   def set_open_access(data) do
-    data = build_id_link_pairs(data)
-    |> check_for_open_access()
-    |> set_open_access_state(data)
-    |> Map.put("last_oa_check", DateTime.utc_now() |> DateTime.to_iso8601())
-    |> IO.inspect(label: "Data with Open Access State Set")
-  end
-
-  defp build_id_link_pairs(data) do
-    identifier_links =
-    Map.get(data, "identifiers", [])
-    # |> IO.inspect(label: "Identifiers from Data")
-      |> Enum.filter(fn identifier -> identifier["code"] == "doi" end)
-      |> Enum.map(fn identifier ->
-        link = "https://dx.doi.org/#{identifier["value"]}"
-        {identifier["value"], link}
-      end)
-
-
-    publication_links =
-      Map.get(data, "publication_links", [])
-      |> Enum.map(fn link ->
-        case Regex.run(~r/10\.\S+\/\S+/, link) do
-          [doi] ->
-            {doi, link}
-          _ -> nil
-        end
-      end)
-      # remove nil values
-      |> Enum.filter(& &1)
-
-    (identifier_links ++ publication_links)
-  end
-
-  defp check_for_open_access(doi_link_pairs) do
-    email = Application.get_env(:gup_index_manager, :unpaywall_email, "lassobosso@hotmail.com")
-    doi_link_pairs
-    |> Enum.map(fn {doi, link} ->
-      HTTPoison.get("https://api.unpaywall.org/v2/#{doi}?email=#{email}")
-      |> case do
-        {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-          is_oa = body |> Jason.decode!() |> Map.get("is_oa", false)
-          {doi, link, is_oa}
-        {:ok, %HTTPoison.Response{status_code: 404}} -> {doi, link, false}
-        {:error, %HTTPoison.Error{reason: reason}} ->
-          IO.inspect("Error checking open access for doi #{doi}: #{reason}")
-          {doi, link, false}
-      end
-    end)
-  end
-
-  defp set_open_access_state(doi_links, data) do
+    doi_identifiers = get_doi_idenifiers_values(data)
     publications_links = Map.get(data, "publication_links", [])
-    |> # filter out doi links from publication_links with regex
-      Enum.filter(fn link ->
-        not Regex.match?(~r/10\.\S+\/\S+/, link)
-      end)
+    |> add_non_existing_doi_links_to_publications_links(doi_identifiers)
+    |> check_and_set_open_access_state_for_doi_links()
+    |> IO.inspect(label: "ALL PUBLICATION LINKS AFTER ADDING DOI IDENTIFIERS")
+    # construct_doi_links = doi_identifiers
 
-    new_doi_links = Enum.map(doi_links, fn {_doi, link, is_oa} ->
-      case is_oa do
-        true -> link <> "?open_access=true"
-        false -> link
-      end
-    end)
-    # combine new_doi_links with publications_links and remove duplicates
-    publications_links = (new_doi_links ++ publications_links)
-    |> Enum.uniq()
 
-    Map.put(data, "publication_links", publications_links)
+    # |> Map.put("last_oa_check", DateTime.utc_now() |> DateTime.to_iso8601())
+    # |> IO.inspect(label: "Data with Open Access State Set")
   end
+
+  defp get_doi_idenifiers_values(data) do
+    Map.get(data, "identifiers", [])
+    |> Enum.filter(fn identifier -> identifier["code"] == "doi" end)
+    |> Enum.map(fn identifier -> Map.get(identifier, "value") end) # retruns a list of doi values from identifiers, if no doi identifiers, returns empty list
+  end
+
+   defp get_next_position(publication_links) do
+      publication_links
+      |> Enum.map(fn link -> Map.get(link, "position", 0) end)
+      |> Enum.max(fn -> 0 end) # if publication_links is empty, start with position 0
+      |> Kernel.+(1) # next position will be max position + 1
+  end
+
+  def test do
+    %{
+      "publication_links" => [
+        %{"url" => "https://dx.doi.org/10.1234/example1", "position" => 1, "is_oa" => true, "last_checked" => "2024-06-01T12:00:00Z"},
+        %{"url" => "https://dx.doi.org/10.1111/eci.70176", "position" => 2, "is_oa" => true, "last_checked" => "2024-06-01T12:00:00Z"},
+        %{"url" => "https://whatever.nu", "position" => 4}
+      ],
+      "identifiers" => [
+        %{"code" => "doi", "value" => "10.1234/example1"},
+        %{"code" => "doi", "value" => "10.1234/example3"}
+      ]
+    }
+    |> set_open_access()
+
+
+  end
+
+  defp add_non_existing_doi_links_to_publications_links(publication_links, doi_identifiers) do
+      non_existing_doi_links = doi_identifiers |> Enum.filter(fn doi ->
+      not Enum.any?(publication_links, fn link ->
+        Regex.match?(~r/10\.\S+\/\S+/, link["url"]) and Regex.run(~r/10\.\S+\/\S+/, link["url"]) |> List.first() == doi
+      end)
+    end)
+    Enum.reduce(non_existing_doi_links, publication_links, fn doi, acc ->
+
+      acc ++
+      [%{
+
+        "url" => "https://dx.doi.org/#{doi}",
+        "is_oa" => nil,
+        "last_checked" => nil,
+        "position" => get_next_position(acc)
+
+      }]
+
+    end)
+
+    # existing_doi_links = publication_links
+    # |> Enum.filter(fn link -> Regex.match?(~r/10\.\S+\/\S+/, link) end)
+    # |> Enum.map(fn link ->
+    #   case Regex.run(~r/10\.\S+\/\S+/, link) do
+    #     [doi] -> doi
+    #     _ -> nil
+    #   end
+
+    # end)
+    # |> Enum.filter(& &1) # remove nil values
+
+    # new_doi_links = doi_identifiers
+    # |> Enum.filter(fn doi -> not Enum.member?(existing_doi_links, doi) end)
+    # |> Enum.map(fn doi -> "https://dx.doi.org/#{doi}" end)
+
+    # publication_links ++ new_doi_links
+  end
+
+  defp check_and_set_open_access_state_for_doi_links(publication_links) do
+    email = Application.get_env(:gup_index_manager, :unpaywall_email, "lassobosso@hotmail.com")
+    Enum.map(publication_links, fn link ->
+      case Map.has_key?(link, "is_oa") do # send to should_check_oa?
+        true -> # check oa_state at unpaywall.
+          doi_id = Regex.run(~r/10\.\S+\/\S+/, link["url"]) |> List.first()
+          state = HTTPoison.get("https://api.unpaywall.org/v2/#{doi_id}?email=#{email}")
+          |> IO.inspect(label: "Open Access State for DOI #{doi_id}")
+          |> case do
+            {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+              body
+              |> Jason.decode!()
+              |> Map.get("is_oa", nil)
+            {:ok, %HTTPoison.Response{status_code: 404}} ->
+
+              nil
+            {:error, %HTTPoison.Error{reason: reason}} ->
+              IO.inspect("Error checking open access for link #{link["url"]}: #{reason}")
+              link["is_oa"] # return existing is_oa value if error occurs
+          end
+          Map.put(link, "is_oa", state)
+           |> Map.put("last_checked", DateTime.utc_now() |> DateTime.to_iso8601())
+        false -> link # if link does not have is_oa key, return it as is
+
+      end
+      |> IO.inspect(label: "Link after checking Open Access State")
+    end)
+  end
+
+  # defp build_id_link_pairs(data) do
+  #   identifier_links =
+  #   Map.get(data, "identifiers", [])
+  #   # |> IO.inspect(label: "Identifiers from Data")
+  #     |> Enum.filter(fn identifier -> identifier["code"] == "doi" end)
+  #     |> Enum.map(fn identifier ->
+  #       link = "https://dx.doi.org/#{identifier["value"]}"
+  #       {identifier["value"], link}
+  #     end)
+
+
+  #   publication_links =
+  #     Map.get(data, "publication_links", [])
+  #     |> Enum.map(fn link ->
+  #       case Regex.run(~r/10\.\S+\/\S+/, link) do
+  #         [doi] ->
+  #           {doi, link}
+  #         _ -> nil
+  #       end
+  #     end)
+  #     # remove nil values
+  #     |> Enum.filter(& &1)
+
+  #   (identifier_links ++ publication_links)
+  # end
+
+  # defp check_for_open_access(doi_link_pairs) do
+  #   email = Application.get_env(:gup_index_manager, :unpaywall_email, "lassobosso@hotmail.com")
+  #   doi_link_pairs
+  #   |> Enum.map(fn {doi, link} ->
+  #     HTTPoison.get("https://api.unpaywall.org/v2/#{doi}?email=#{email}")
+  #     |> case do
+  #       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+  #         is_oa = body |> Jason.decode!() |> Map.get("is_oa", false)
+  #         {doi, link, is_oa}
+  #       {:ok, %HTTPoison.Response{status_code: 404}} -> {doi, link, false}
+  #       {:error, %HTTPoison.Error{reason: reason}} ->
+  #         IO.inspect("Error checking open access for doi #{doi}: #{reason}")
+  #         {doi, link, false}
+  #     end
+  #   end)
+  # end
+
+  # defp set_open_access_state(doi_links, data) do
+  #   publications_links = Map.get(data, "publication_links", [])
+  #   |> # filter out doi links from publication_links with regex
+  #     Enum.filter(fn link ->
+  #       not Regex.match?(~r/10\.\S+\/\S+/, link)
+  #     end)
+
+  #   new_doi_links = Enum.map(doi_links, fn {_doi, link, is_oa} ->
+  #     case is_oa do
+  #       true -> link <> "?open_access=true"
+  #       false -> link
+  #     end
+  #   end)
+  #   # combine new_doi_links with publications_links and remove duplicates
+  #   publications_links = (new_doi_links ++ publications_links)
+  #   |> Enum.uniq()
+
+  #   Map.put(data, "publication_links", publications_links)
+  # end
 
 
   # def set_open_access(data) do
