@@ -11,7 +11,7 @@ defmodule GupIndexManager.Resource.Persons.Merger.DataSanitizer do
         "id" => Map.get(data, "id", nil),
         "names" => sanitize_names(Map.get(data, "names", [])),
         "departments" => Map.get(data, "departments", []),
-        "identifiers" => Map.get(data, "identifiers", []),
+        "identifiers" => Map.get(data, "identifiers", []) |> trim_identifier_values(),
         "year_of_birth" => get_year_of_birth(Map.get(data, "year_of_birth", nil)),
         "email" => Map.get(data, "email", nil),
         "deleted" => Map.get(data, "deleted", false),
@@ -19,6 +19,15 @@ defmodule GupIndexManager.Resource.Persons.Merger.DataSanitizer do
         "force_primary_name" => Map.get(data, "force_primary_name", false)
       }
     }
+  end
+
+  def trim_identifier_values(identifiers) do
+    Enum.map(identifiers, fn identifier ->
+      case Map.get(identifier, "value", nil) do
+        nil -> identifier
+        value -> Map.put(identifier, "value", String.trim(value))
+      end
+    end)
   end
 
   defp get_year_of_birth(y_o_b) when is_bitstring(y_o_b), do: String.to_integer(y_o_b)
