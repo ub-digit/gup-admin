@@ -172,7 +172,7 @@ defmodule GupIndexManager.Resource.Persons.Execute do
 
   defp delete_unwanted_names(names, name_data) do
     Enum.filter(names, fn name ->
-      !(name["first_name"] == name_data["first_name"] && name["last_name"] == name_data["last_name"] )
+      !(name["first_name"] == name_data["first_name"] && name["last_name"] == name_data["last_name"] && name["gup_person_id"] == name_data["gup_person_id"])
     end)
   end
 end
