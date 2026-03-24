@@ -111,6 +111,7 @@ defmodule GupIndexManager.Resource.Index do
     |> Jason.decode!()
     |> Map.put("attended", attrs["attended"])
     |> Map.put("deleted", attrs["deleted"])
+    |> Map.put("updated_at", attrs["updated_at"])
 
     Elastix.Document.index(elastic_url(), @publications_index, "_doc", attrs["publication_id"], json, [])
     |> case do
