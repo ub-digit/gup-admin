@@ -111,4 +111,47 @@ defmodule GupIndexManager.Resource.Index.Query do
       "size" => 10000
     }
   end
+
+  def find_publications_by_identifiers([]), do: nil
+  def find_publications_by_identifiers(identifiers) do
+    %{
+      "query" => %{
+        "bool" => %{
+          "should" => publication_identifier_blocks(identifiers)
+        }
+      }
+    }
+  end
+
+  def publication_identifier_blocks(identifiers) do
+    Enum.reduce(identifiers, [], fn identifier, acc ->
+      acc ++ [
+        %{
+          "bool" => %{
+            "must" => [
+              %{
+                "query_string" => %{
+                  "fields" => ["publication_identifiers.identifier_value.keyword"],
+                  "query" => "\"" <> identifier["value"] <> "\""
+                }
+              },
+              %{
+                "query_string" => %{
+                  "fields" => ["publication_identifiers.identifier_code"],
+                  "query" => identifier["code"]
+                }
+              }
+            ],
+            "must_not" => [
+              %{
+                "term" => %{
+                  "deleted" => true
+                }
+              }
+            ]
+          }
+        }
+      ]
+    end)
+  end
 end
