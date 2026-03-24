@@ -24,6 +24,7 @@ export const useFilterStore = defineStore("filterStore", () => {
     needs_attention: boolean | undefined;
     scopus: boolean | undefined;
     wos: boolean | undefined;
+    chalmers: boolean | undefined;
     manual: boolean | undefined;
     pubtype: string;
     query: string | undefined;
@@ -36,6 +37,7 @@ export const useFilterStore = defineStore("filterStore", () => {
     ),
     scopus: getBoolean(route.query.scopus as string),
     wos: getBoolean(route.query.wos as string),
+    chalmers: getBoolean(route.query.chalmers as string),
     manual: getBoolean(route.query.manual as string),
     pubtype: (route.query.pubtype as string)
       ? (route.query.pubtype as string)
@@ -50,6 +52,7 @@ export const useFilterStore = defineStore("filterStore", () => {
     (filters.needs_attention = true),
       (filters.scopus = false),
       (filters.wos = false),
+      (filters.chalmers = false),
       (filters.manual = false),
       (filters.pubtype = ""),
       (filters.query = undefined),

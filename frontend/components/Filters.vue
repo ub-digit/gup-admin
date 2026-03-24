@@ -47,6 +47,17 @@
           <input
             class="form-check-input"
             type="checkbox"
+            id="chalmers"
+            v-model="filters.chalmers"
+          />
+          <label class="form-check-label" for="chalmers">{{
+            t("views.publications.form.chalmers_title")
+          }}</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input
+            class="form-check-input"
+            type="checkbox"
             id="manual"
             v-model="filters.manual"
           />

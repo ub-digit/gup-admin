@@ -51,6 +51,7 @@ export const useLocaleStore = defineStore("locale", {
         "views.publications.form.source_header": "Visa från",
         "views.publications.form.scopus_title": "Scopus",
         "views.publications.form.wos_title": "WoS",
+        "views.publications.form.chalmers_title": "Chalmers",
         "views.publications.form.manual_title": "Manuellt inlagda",
         "views.publications.form.title_label": "Sök på titel eller ID",
         "views.publications.form.pub_type_select_label": "Publikationstyp",
