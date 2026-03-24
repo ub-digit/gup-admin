@@ -36,4 +36,17 @@ defmodule GupIndexManagerWeb.PublicationController do
         json conn, %{status: "error, unauthorized key"}
     end
   end
+
+  def check_identifiers(conn, %{"identifiers" => identifiers, "api_key" => api_key}) when is_list(identifiers) do
+    case ControllerHelpers.check_api_key(api_key) do
+      true ->
+        result = Publication.check_identifiers(identifiers)
+        json conn, %{status: "ok", result: result}
+      false ->
+        json conn, %{status: "error, unauthorized key"}
+    end
+  end
+  def check_identifiers(conn, %{"identifiers" => identifiers, "api_key" => api_key} = params) do
+    check_identifiers(conn, Map.put(params, "identifiers", [identifiers]))
+  end
 end

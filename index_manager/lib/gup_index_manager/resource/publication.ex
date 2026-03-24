@@ -104,4 +104,24 @@ defmodule GupIndexManager.Resource.Publication do
   def mark_as_pending(id) do
     Index.mark_as_pending(id)
   end
+
+  # identifiers is a list of strings which will be
+  # converted to a list of maps with keys "code" and "value"
+  # String is of format "orcid:0000-0001-2345-6789", "scopus_id:123456789", etc.
+  def check_identifiers(identifiers) do
+    # Convert list of strings to list of maps with "code" and "value"
+    identifiers = Enum.map(identifiers, fn identifier ->
+      case String.split(identifier, ":") do
+        [code, value] -> %{"code" => code, "value" => value}
+        _ -> nil
+      end
+    end)
+    Index.check_identifiers(identifiers)
+    # Return true if there are publications, otherwise false
+    |> case do
+      {:ok, []} -> false
+      {:ok, _} -> true
+      {:error, _} -> false
+    end
+  end
 end
