@@ -73,7 +73,8 @@ defmodule GupIndexManager.Resource.Publication do
       "json" => db_publication.json,
       "attended" => db_publication.attended,
       "deleted" => true,
-      "publication_id" => db_publication.publication_id
+      "publication_id" => db_publication.publication_id,
+      "updated_at" => DateTime.utc_now()
     }
     db_publication
     |> Publication.changeset(attrs)
