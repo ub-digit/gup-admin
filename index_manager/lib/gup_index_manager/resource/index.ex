@@ -321,7 +321,7 @@ defmodule GupIndexManager.Resource.Index do
 
   def check_identifiers(identifiers) do
     query = GupIndexManager.Resource.Index.Query.find_publications_by_identifiers(identifiers)
-    Elastix.Search.search(elastic_url(), @publications_index, "_doc", query)
+    Elastix.Search.search(elastic_url(), @publications_index, [], query)
     |> case do
       {:ok, %{body: body}} -> {:ok, body["hits"]["hits"] |> Enum.map(fn hit -> hit["_source"] end)}
       {:error, error} -> {:error, error}
