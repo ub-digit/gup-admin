@@ -14,6 +14,12 @@ defmodule GupIndexManager.Model.Publication do
   @doc false
   def changeset(publication, attrs) do
     publication
+    |> cast(attrs, [:json, :publication_id, :attended, :deleted])
+    |> validate_required([:json, :publication_id, :attended])
+  end
+
+  def delete_changeset(publication, attrs) do
+    publication
     |> cast(attrs, [:json, :publication_id, :attended, :deleted, :updated_at])
     |> validate_required([:json, :publication_id, :attended])
   end

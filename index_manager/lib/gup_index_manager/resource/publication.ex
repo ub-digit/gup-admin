@@ -74,10 +74,10 @@ defmodule GupIndexManager.Resource.Publication do
       "attended" => db_publication.attended,
       "deleted" => true,
       "publication_id" => db_publication.publication_id,
-      "updated_at" => DateTime.utc_now()
+      "updated_at" => NaiveDateTime.utc_now()
     }
     db_publication
-    |> Publication.changeset(attrs)
+    |> Publication.delete_changeset(attrs)
     |> GupIndexManager.Repo.insert_or_update()
     Index.update_publication(attrs)
   end
