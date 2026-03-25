@@ -100,6 +100,50 @@ defmodule Experiment do
     |> bulk_index(limit, offset)
 
   end
+  def rebuild_index_bulk_from_date(min_inserted_at, limit \\ 1, offset \\ 0) do
+    IO.inspect("Rebuilding index posts from #{min_inserted_at}")
+    from(p in GupIndexManager.Model.Publication, select: p, where: p.inserted_at > ^min_inserted_at, order_by: [asc: p.inserted_at], limit: ^limit, offset: ^offset)
+    |> GupIndexManager.Repo.all()
+    |> build_bulk_rows_from_date(limit, offset)
+    |> bulk_index_from_date(min_inserted_at, limit, offset)
+
+  end
+
+  def rebuild_index_for_single_id(publication_id) do
+    IO.inspect("Rebuilding index for publication_id #{publication_id}")
+    from(p in GupIndexManager.Model.Publication, select: p, where: p.publication_id == ^publication_id)
+    |> GupIndexManager.Repo.all()
+    |> build_bulk_rows_from_single_id(1, 0)
+    |> bulk_index_from_single_id(publication_id, 1, 0)
+  end
+
+  def build_bulk_rows_from_single_id([], _limit, _offset), do: {:ok, "Done"}
+  def build_bulk_rows_from_single_id(data, _limit, _offset) do
+    data
+    |> remap_for_index()
+    |> remap_for_bulk("publications")
+  end
+
+  def bulk_index_from_single_id({:ok, "Done"}, publication_id, _, _), do: {:ok, "Done"}
+  def bulk_index_from_single_id(index_data, publication_id, limit, offset) do
+    Elastix.Bulk.post("http://elasticsearch:9200", index_data)
+    offset = offset + limit
+  end
+
+  def build_bulk_rows_from_date([], _limit, _offset), do: {:ok, "Done"}
+  def build_bulk_rows_from_date(data, _limit, _offset) do
+    data
+    |> remap_for_index()
+    |> remap_for_bulk("publications")
+  end
+
+  def bulk_index_from_date({:ok, "Done"}, min_inserted_at, _, _), do: {:ok, "Done"}
+  def bulk_index_from_date(index_data, min_inserted_at, limit, offset) do
+    Elastix.Bulk.post("http://elasticsearch:9200", index_data)
+    offset = offset + limit
+    rebuild_index_bulk_from_date(min_inserted_at, limit, offset)
+  end
+
   def bulk_index({:ok, "Done"}, _, _), do: {:ok, "Done"}
   def bulk_index(index_data, limit, offset) do
     Elastix.Bulk.post("http://elasticsearch:9200", index_data)
