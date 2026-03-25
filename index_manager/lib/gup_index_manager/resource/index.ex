@@ -111,7 +111,12 @@ defmodule GupIndexManager.Resource.Index do
     |> Jason.decode!()
     |> Map.put("attended", attrs["attended"])
     |> Map.put("deleted", attrs["deleted"])
-    |> Map.put("updated_at", attrs["updated_at"])
+
+    # Only populate "updated_at" if there is a value
+    json = case Map.get(attrs, "updated_at") do
+      nil -> json
+      updated_at -> Map.put(json, "updated_at", updated_at)
+    end
 
     Elastix.Document.index(elastic_url(), @publications_index, "_doc", attrs["publication_id"], json, [])
     |> case do
