@@ -12,6 +12,7 @@ defmodule GupAdminWeb.Router do
       "scopus" => :boolean,
       "gup" => :boolean,
       "wos" => :boolean,
+      "chalmers" => :boolean,
       "manual" => :boolean,
       "year" => :integer,
       "needs_attention" => :boolean,

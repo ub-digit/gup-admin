@@ -82,6 +82,7 @@ defmodule GupAdmin.Resource.Search do
     list = [
       {"wos", params["wos"] || nil},
       {"scopus", params["scopus"] || nil},
+      {"chalmers", params["chalmers"] || nil},
       #{"manual", params["manual"] || nil},
       {"gup", params["gup"] || params["manual"] || nil},
     ]
