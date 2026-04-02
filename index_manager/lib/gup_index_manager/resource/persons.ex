@@ -98,6 +98,14 @@ defmodule GupIndexManager.Resource.Persons do
     |> IO.inspect(label: "Person updated")
   end
 
+  def force_reindex_person(id) do
+    db_data = Person.find_by_id(id)
+    data = db_data.json |> Jason.decode!()
+    data2 = set_meta(db_data, data)
+    data3 = copy_identifiers_to_nested(data2)
+    update_index(data3)
+  end
+
   def set_meta(db_data, data) do
     data
     |> Map.put("id", Map.get(db_data, :id))
