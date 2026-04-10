@@ -20,6 +20,7 @@ defmodule GupIndexManager.Resource.Persons.Merger.Identifiers do
     [possible_candidates | [meta_data]]
     |> List.flatten()
     |> Enum.flat_map(fn record -> Enum.filter(record["identifiers"], fn identifier -> identifier["code"] in identifiers_to_look_for end) end)
+    |> trim_values()
     |> Enum.group_by(& &1["code"])
     |> Enum.any?(fn {_code, maps} ->
       values = Enum.map(maps, & &1["value"])
@@ -31,6 +32,12 @@ defmodule GupIndexManager.Resource.Persons.Merger.Identifiers do
         {:error, "Colliding ORCID and/or X_ACCOUNT and/or POP_ID", {meta_data, possible_candidates}}
       false -> {:ok, meta_data, possible_candidates}
     end
+  end
+
+  defp trim_values(identifiers) do
+    Enum.map(identifiers, fn identifier ->
+      Map.update!(identifier, "value", &String.trim/1)
+    end)
   end
 
   def _ORCID_CODE, do: @orcid_code

@@ -88,6 +88,14 @@ defmodule GupIndexManager.Resource.Persons.Execute do
 
   end
 
+  def execute_action(data, {:update_year_of_birth, year_of_birth}) do
+    Map.put(data, "year_of_birth", year_of_birth)
+  end
+
+  def execute_action(data, {:update_email, email}) do
+    Map.put(data, "email", email)
+  end
+
   def execute_action(data, {:acquire_gup_person_id, name_data}) do
     name_data = Map.put(name_data, "gup_person_id", GupIndexManager.Resource.Gup.get_next_gup_id(GupIndexManager.Resource.Gup.people()))
     Logger.debug("IM:R.execute_action: acquire_gup_id: #{inspect(name_data)}")

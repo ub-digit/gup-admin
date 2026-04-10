@@ -28,6 +28,7 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
     # if a merge has occured between any two records, set the all but primary to "deleted".
     {primary_record, secondary_records} = List.pop_at(possible_candidates, 0)
     actions = []
+    |> preserve_base_data_actions(primary_record, secondary_records ++ [meta_data])
     |> name_actions(primary_record, secondary_records ++ [meta_data])
     |> identifier_actions(primary_record, secondary_records ++ [meta_data])
     |> deparment_actions(primary_record, secondary_records ++ [meta_data])
@@ -35,6 +36,20 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
     |> mandatory_actions(meta_data, [primary_record | secondary_records])
 
      {:ok, primary_record, actions}
+  end
+
+  defp preserve_base_data_actions(actions, primary_record, other_records) do
+    year_of_birth = primary_record["year_of_birth"] || other_records |> Enum.map(fn record -> record["year_of_birth"] end) |> Enum.filter(& &1) |> List.first()
+    email = primary_record["email"] || other_records |> Enum.map(fn record -> record["email"] end) |> Enum.filter(& &1) |> List.first()
+    actions ++ if year_of_birth != primary_record["year_of_birth"] do
+      [{:update_year_of_birth, year_of_birth}]
+    else
+      []
+    end ++ if email != primary_record["email"] do
+      [{:update_email, email}]
+    else
+      []
+    end
   end
 
   defp name_actions(actions, primary_record, other_records) do
