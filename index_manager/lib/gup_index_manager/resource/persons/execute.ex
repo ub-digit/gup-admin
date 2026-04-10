@@ -27,12 +27,22 @@ defmodule GupIndexManager.Resource.Persons.Execute do
 
   end
 
-  def execute_action(data, {:update_departments, department_data}) do
+  def execute_action(data, {:update_departments, departments}) when is_list(departments) do
+    Enum.reduce(departments, data, fn department, data ->
+      execute_action(data, {:update_department, department})
+    end)
+  end
+
+  def execute_action(data, {:update_departments, department}) do
+    execute_action(data, {:update_department, department})
+  end
+
+  def execute_action(data, {:update_department, department_data}) do
     # remove all departments that has the same name as department_data
       departments = Map.get(data, "departments", [])
       |> Enum.filter(fn department -> department["name"] != department_data["name"] end)
       |> List.insert_at(0, department_data)
-    Map.put(data, "departments", department_data)
+    Map.put(data, "departments", departments)
   end
 
   def execute_action(data, {:add_department, department_data}) do
