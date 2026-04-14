@@ -3,26 +3,39 @@ defmodule GupIndexManager.Resource.Persons.Merger.NameForms do
   require Logger
 
   # This is a new person with no prior records in the index, we can safely set the primary name to the first name form in the input data
-  def set_primary_name({meta_data, possible_candidates = []}) when length(possible_candidates) < 1 do
+  def set_primary_name({meta_data, matches = []}) when length(matches) < 1 do
     # No existing record, set primary name to the first name form in input data
     meta_data = Map.put(meta_data, "primary_name", get_primary_name_from_record(meta_data))
     {:ok, meta_data, []}
   end
 
   # Force incoming name to be primary.
-  def set_primary_name({%{"force_primary_name" => true} = meta_data, possible_candidates}) do
-    meta_data = Map.put(meta_data, "primary_name", get_primary_name_from_record(meta_data))
-    {:ok, meta_data, possible_candidates}
+  def set_primary_name({%{"force_primary_name" => true} = meta_data, matches}) do
+    matches_names = Enum.flat_map(matches, fn record -> record["names"] || [] end)
+    new_primary_name = get_primary_name_from_record(meta_data)
+    # Check if the new primary name already exists in the existing records, if so we can just set that name form to primary.
+    existing_primary_name_form = Enum.find(matches_names, fn name_form ->
+      is_same_name_form?(name_form, new_primary_name)
+    end)
+    meta_data = if existing_primary_name_form do
+      # We can just set the existing name form to primary, and skip the acquire_gup_person_id action if the existing name form already has a gup_person_id.
+      Map.put(meta_data, "primary_name", nil)
+    else
+      # We need to acquire a gup_person_id for the new primary name form, and then set it to primary.
+      Map.put(meta_data, "primary_name", new_primary_name)
+    end
+    # meta_data = Map.put(meta_data, "primary_name", get_primary_name_from_record(meta_data))
+    {:ok, meta_data, matches}
   end
 
   # Figure out the primary name based on identifiers
-  def set_primary_name({%{"force_primary_name" => false} = meta_data, possible_candidates}) when length(possible_candidates) > 0 do
+  def set_primary_name({%{"force_primary_name" => false} = meta_data, matches}) when length(matches) > 0 do
     # Check if any of the existing records have a POP_ID identifier, if so use the primary name from that record
     primary_name_record =
-      Enum.find(possible_candidates, fn record ->
+      Enum.find(matches, fn record ->
         Identifiers.has_identifier?(record, Identifiers._POP_ID_CODE())
       end) ||
-        Enum.find(possible_candidates, fn record ->
+        Enum.find(matches, fn record ->
           Identifiers.has_identifier?(record, Identifiers._X_ACCOUNT_CODE())
         end) ||
         meta_data
@@ -31,16 +44,16 @@ defmodule GupIndexManager.Resource.Persons.Merger.NameForms do
       Map.put(meta_data, "primary_name", get_primary_name_from_record(primary_name_record))
 
       # extra check to see if its just a primary name change in a single post
-      meta_data = case length(possible_candidates) do
+      meta_data = case length(matches) do
         1 -> # could be same record
-          case meta_data["id"] == possible_candidates |> List.first() |> Map.get("id") do
+          case meta_data["id"] == matches |> List.first() |> Map.get("id") do
             true -> Map.put(meta_data, "primary_name", get_primary_name_from_record(meta_data))
             false -> meta_data
           end
 
         _ -> meta_data
       end
-    {:ok, meta_data, possible_candidates}
+    {:ok, meta_data, matches}
   end
 
   defp get_primary_name_from_record(record) do

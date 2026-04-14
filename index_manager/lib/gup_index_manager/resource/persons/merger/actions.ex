@@ -142,13 +142,13 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
 
   defp mandatory_actions(actions, meta_data, _combined_data) do
     # if primary name is the same in existing data as in meta_data, skip that action
-    actions ++ [{:set_primary_name, meta_data["primary_name"]}, {:create_or_update_person}] |> List.flatten()    # |> Kernel.++(
-    #   case Enum.any?(actions, fn action -> elem) do
-    #   true -> []
-    #   false -> [{:set_primary_name, meta_data["primary_name"]}]
-    # end)
-    # |> Kernel.++([{:create_or_update_person}])
-
+    actions = if !Map.get(meta_data, "primary_name", nil) do
+      actions ++ [{:set_primary_name, meta_data["primary_name"]}]
+    end
+    actions = if length(actions) > 0 do
+      actions ++ [{:create_or_update_person}]
+    end
+    actions |> List.flatten()
   end
 
 
