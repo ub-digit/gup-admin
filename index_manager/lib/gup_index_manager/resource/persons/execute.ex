@@ -101,12 +101,11 @@ defmodule GupIndexManager.Resource.Persons.Execute do
     end)
 
     updated_names =
-    Enum.map_reduce(names, false, fn map, already_found ->
-      IO.inspect(map, label: "map")
-      if not already_found and map["first_name"] == name_data["first_name"] && map["last_name"] == name_data["last_name"]  do
-        {Map.put(map, "primary", true), true}
+    Enum.map_reduce(names, false, fn map, found_state ->
+      if not found_state and map["first_name"] == name_data["first_name"] && map["last_name"] == name_data["last_name"]  do
+        {Map.put(map, "primary", true), :already_found}
       else
-        {map, already_found}
+        {map, found_state}
       end
     end)
     |> elem(0)   # discard the accumulator

@@ -19,7 +19,7 @@ defmodule GupIndexManager.Resource.Persons.Merger.NameForms do
     end)
     meta_data = if existing_primary_name_form do
       # We can just set the existing name form to primary, and skip the acquire_gup_person_id action if the existing name form already has a gup_person_id.
-      Map.put(meta_data, "primary_name", nil)
+      Map.put(meta_data, "primary_name", existing_primary_name_form)
     else
       # We need to acquire a gup_person_id for the new primary name form, and then set it to primary.
       Map.put(meta_data, "primary_name", new_primary_name)
