@@ -94,6 +94,7 @@ defmodule GupIndexManager.Resource.Persons.Execute do
     execute_action(data, {:add_name, name_data})
   end
 
+
   def execute_action(data, {:set_primary_name, name_data}) do
     names = Map.get(data, "names", [])
     |> Enum.map(fn name ->
@@ -101,9 +102,9 @@ defmodule GupIndexManager.Resource.Persons.Execute do
     end)
 
     updated_names =
-    Enum.map_reduce(names, false, fn map, found_state ->
-      if not found_state and map["first_name"] == name_data["first_name"] && map["last_name"] == name_data["last_name"]  do
-        {Map.put(map, "primary", true), :already_found}
+    Enum.map_reduce(names, :not_found, fn map, found_state ->
+      if found_state == :not_found and map["first_name"] == name_data["first_name"] && map["last_name"] == name_data["last_name"]  do
+        {Map.put(map, "primary", true), :found}
       else
         {map, found_state}
       end
