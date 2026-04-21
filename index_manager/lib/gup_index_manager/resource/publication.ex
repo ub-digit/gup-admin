@@ -1,4 +1,5 @@
 defmodule GupIndexManager.Resource.Publication do
+  alias Elastix.JSON
   alias GupIndexManager.Model.Publication
   alias GupIndexManager.Resource.Index
 
@@ -11,7 +12,7 @@ defmodule GupIndexManager.Resource.Publication do
     db_publication = Publication.find_by_publication_id(id)
 
     attrs = %{
-      "json" => data |> Jason.encode!(),
+      "json" => data |> GupIndexManager.Resource.Publications.OpenAccess.set_open_access_link_status() |> JSON.encode!(),
       "attended" => attended,
       "deleted" => deleted,
       "publication_id" => id
@@ -48,7 +49,6 @@ defmodule GupIndexManager.Resource.Publication do
   end
 
   def get_author_name(author) do
-
     first_name = Map.get(author, "person") |> List.first() |> Map.get("first_name")
     |> case do
       nil -> ""
@@ -65,7 +65,6 @@ defmodule GupIndexManager.Resource.Publication do
       0 -> ""
       _ -> fullname
     end
-
   end
 
   def proceed_delete(db_publication) do

@@ -100,6 +100,7 @@ defmodule GupIndexManager.Resource.Index do
     publications
     |> Enum.map(fn publication ->
       publication.json |> Jason.decode!()
+      |> GupIndexManager.Resource.Publications.OpenAccess.set_publication_open_access_status()
       |> Map.put("attended", publication.attended)
       |> Map.put("deleted", publication.deleted)
     end)
@@ -109,6 +110,7 @@ defmodule GupIndexManager.Resource.Index do
     json = attrs
     |> Map.get("json")
     |> Jason.decode!()
+    |> GupIndexManager.Resource.Publications.OpenAccess.set_publication_open_access_status()
     |> Map.put("attended", attrs["attended"])
     |> Map.put("deleted", attrs["deleted"])
 
