@@ -1,6 +1,6 @@
 defmodule GupIndexManager.Resource.Publications.OpenAccess do
-  defp oa_check_interval_days, do: Application.fetch_env!("OPEN_ACCESS_CHECK_INTERVAL_DAYS")
-  defp unpaywall_email, do: Application.fetch_env!("UNPAYWALL_EMAIL")
+  defp oa_check_interval_days, do: System.fetch_env!("OPEN_ACCESS_CHECK_INTERVAL_DAYS") |> String.to_integer()
+  defp unpaywall_email, do: System.fetch_env!("UNPAYWALL_EMAIL")
 
   def set_open_access_link_status(json_map) do
     doi_identifiers = get_doi_idenifiers_values(json_map)
@@ -71,9 +71,6 @@ defmodule GupIndexManager.Resource.Publications.OpenAccess do
   end
 
   defp check_and_set_open_access_state_for_doi_links(publication_links) do
-    # use fetch to raise error if not set
-    email = Application.get_env(:gup_index_manager, :unpaywall_email, "gub-unpawall@nomail.com")
-
     Enum.map(publication_links, fn link ->
       # send to should_check_oa?
       case Map.has_key?(link, "is_oa") and time_to_check_open_access?(link) do
@@ -82,7 +79,7 @@ defmodule GupIndexManager.Resource.Publications.OpenAccess do
           doi_id = Regex.run(~r/10\.\S+\/\S+/, link["url"]) |> List.first()
 
           state =
-            HTTPoison.get("https://api.unpaywall.org/v2/#{doi_id}?email=#{email}")
+            HTTPoison.get("https://api.unpaywall.org/v2/#{doi_id}?email=#{unpaywall_email()}")
             |> IO.inspect(label: "Open Access State for DOI #{doi_id}")
             |> case do
               {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
