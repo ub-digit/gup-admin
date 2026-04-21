@@ -117,31 +117,4 @@ defmodule GupIndexManager.Resource.Publications.OpenAccess do
         date_diff >= oa_check_interval_days()
     end
   end
-
-  def test do
-    %{
-      "publication_links" => [
-        %{
-          "url" => "https://dx.doi.org/10.1234/example1",
-          "position" => 1,
-          "is_oa" => nil,
-          "last_checked" => "2024-06-01"
-        },
-        %{
-          "url" => "https://dx.doi.org/10.1111/eci.70176",
-          "position" => 2,
-          "is_oa" => false,
-          "last_checked" => "2026-06-01"
-        },
-        %{"url" => "https://whatever.nu", "position" => 4}
-      ],
-      "identifiers" => [
-        %{"code" => "doi", "value" => "10.1234/example1"},
-        %{"code" => "doi", "value" => "10.1234/example3"}
-        # %{"code" => "doi", "value" => "10.1371/journal.pone.0004092"}
-      ]
-    }
-    |> set_open_access_link_status()
-    |> set_publication_open_access_status()
-  end
 end
