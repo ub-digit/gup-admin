@@ -15,13 +15,13 @@ defmodule GupIndexManager.Resource.Publications.OpenAccess do
     Map.put(json_map, "publication_links", publications_links)
   end
 
-  def set_publication_open_access_status(json) do
+  def set_publication_open_access_status(json_map) do
     publications_open_access_status =
-      json
+      json_map
       |> Map.get("publication_links", [])
       |> Enum.any?(fn link -> link_is_open_access(link) end)
 
-    Map.put(json, "is_open_access", publications_open_access_status)
+    Map.put(json_map, "is_open_access", publications_open_access_status)
   end
 
   defp link_is_open_access(link) do
