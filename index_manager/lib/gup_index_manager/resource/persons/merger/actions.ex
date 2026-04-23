@@ -39,9 +39,20 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
   end
 
    defp preserve_base_data_actions(actions, primary_record, other_records) do
-    year_of_birth = case primary_record["year_of_birth"] > 1000 do
+    year_of_birth = case is_integer(primary_record["year_of_birth"]) and primary_record["year_of_birth"] > 1000 do
       true -> primary_record["year_of_birth"]
-      false -> other_records |> Enum.map(fn record -> record["year_of_birth"] end) |> Enum.filter(& &1 > 1000) |> List.first()
+      false ->
+        year_of_birth_list =
+        other_records
+        |> Enum.filter(fn record ->
+          yob = record["year_of_bitrh"]
+          is_integer(yob) and yob > 1000
+        end)
+        case year_of_birth_list do
+          [] -> 0
+          [year_of_birth_list | _] -> year_of_birth_list["year_of_birth"]
+        end
+        # |> Enum.map(fn record -> record["year_of_birth"] end) |> Enum.filter(& &1 > 1000 && not is_nil(&1)) |> List.first()
     end
 
     email = primary_record["email"] || other_records |> Enum.map(fn record -> record["email"] end) |> Enum.filter(& &1) |> List.first()
