@@ -1,5 +1,4 @@
 defmodule GupIndexManager.Resource.Persons.Merger.Actions do
-  alias Postgrex.Extensions.Name
   alias GupIndexManager.Resource.Persons.Merger.NameForms
 
   def generate_actions({:error, reason, {meta_data, possible_candidates}}), do: {:error, reason, {meta_data, possible_candidates}}
@@ -39,7 +38,11 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
   end
 
   defp preserve_base_data_actions(actions, primary_record, other_records) do
-    year_of_birth = primary_record["year_of_birth"] || other_records |> Enum.map(fn record -> record["year_of_birth"] end) |> Enum.filter(& &1) |> List.first()
+    year_of_birth = case primary_record["year_of_birth"] > 1000 do
+      true -> primary_record["year_of_birth"]
+      false -> other_records |> Enum.map(fn record -> record["year_of_birth"] end) |> Enum.filter(& &1 > 1000) |> List.first()
+    end
+
     email = primary_record["email"] || other_records |> Enum.map(fn record -> record["email"] end) |> Enum.filter(& &1) |> List.first()
     actions ++ if year_of_birth != primary_record["year_of_birth"] do
       [{:update_year_of_birth, year_of_birth}]
@@ -85,23 +88,18 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
     actions = actions ++ Enum.map(new_identifiers, fn identifier ->
       {:add_identifier, identifier}
     end)
+    id = other_records |> List.first() |> Map.get("id")
+    # we should also check if there are any identifiers in primary_record that are not in meta_data and add actions to delete those identifiers from primary_record.
+    actions = actions ++ if not is_nil(id) do
+      identifiers_to_delete = Enum.filter(primary_record_identifiers, fn identifier -> identifier not in other_identifiers end)
+        Enum.map(identifiers_to_delete, fn identifier ->
+        {:delete_identifier, identifier}
+      end)
 
-
-      id = other_records |> List.first() |> Map.get("id")
-      # we should also check if there are any identifiers in primary_record that are not in meta_data and add actions to delete those identifiers from primary_record.
-      actions = actions ++ if not is_nil(id) do
-        identifiers_to_delete = Enum.filter(primary_record_identifiers, fn identifier -> identifier not in other_identifiers end)
-
-         Enum.map(identifiers_to_delete, fn identifier ->
-          {:delete_identifier, identifier}
-        end)
-
-        else
-          []
-      end
-
-      actions
-
+      else
+        []
+    end
+    actions
   end
 
   defp identifier_actions(actions, primary_record, other_records) do

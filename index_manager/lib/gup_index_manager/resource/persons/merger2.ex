@@ -30,6 +30,4 @@ defmodule GupIndexManager.Resource.Persons.Merger2 do
     Logger.debug("#{msg}: #{inspect(data, pretty: true)}")
     data
   end
-
-
 end
