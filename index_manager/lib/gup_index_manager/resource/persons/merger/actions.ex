@@ -39,23 +39,43 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
   end
 
    defp preserve_base_data_actions(actions, primary_record, other_records) do
-    year_of_birth = case is_integer(primary_record["year_of_birth"]) and primary_record["year_of_birth"] > 1000 do
-      true ->
-        primary_record["year_of_birth"]
-      false ->
+    primary_year_of_birth = primary_record["year_of_birth"] || 0
+    other_years_of_birth = Enum.map(other_records, fn record -> record["year_of_birth"] end) |> Enum.filter(& &1 > 1000 && not is_nil(&1))
 
-          other_records
-          |> Enum.map(fn record -> record["year_of_birth"] end)
-          |> Enum.filter(& &1 > 1000 && not is_nil(&1))
-          |> List.first()
-          |> case do
-            0 -> 0
-            nil -> 0
-            y_o_b -> y_o_b
-          end
+    year_of_birth = case is_integer(primary_year_of_birth) and primary_year_of_birth > 1000 do
+      true ->
+        Enum.filter(other_years_of_birth, fn yob ->  yob != primary_year_of_birth end) |> List.first() || primary_year_of_birth
+      false ->
+        other_years_of_birth |> List.first() || 0
     end
 
-    email = primary_record["email"] || other_records |> Enum.map(fn record -> record["email"] end) |> Enum.filter(& &1) |> List.first()
+
+    # year_of_birth = case is_integer(primary_record["year_of_birth"]) and primary_record["year_of_birth"] > 1000 do
+    #   true ->
+    #     primary_record["year_of_birth"]
+    #   false ->
+
+    #       other_records
+    #       |> Enum.map(fn record -> record["year_of_birth"] end)
+    #       |> Enum.filter(& &1 > 1000 && not is_nil(&1))
+    #       |> List.first()
+    #       |> case do
+    #         0 -> 0
+    #         nil -> 0
+    #         y_o_b -> y_o_b
+    #       end
+    # end
+
+    primary_record_email = primary_record["email"] || ""
+    other_emails = Enum.map(other_records, fn record -> record["email"] end) |> Enum.filter(& &1 != "" && not is_nil(&1))
+
+    email = case primary_record_email do
+      "" ->
+        other_emails |> List.first() || ""
+      email ->
+        Enum.filter(other_emails, fn e -> e != primary_record_email end) |> List.first() || primary_record_email
+    end
+
     actions ++ if year_of_birth != primary_record["year_of_birth"] do
       [{:update_year_of_birth, year_of_birth}]
     else
@@ -65,6 +85,23 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
     else
       []
     end
+  end
+
+  def test do
+    primary_record = %{
+      "year_of_birth" => 0,
+      "email" => ""
+    }
+
+    other_records = [
+      %{
+      "year_of_birth" => 0,
+      "email" => ""}
+    ]
+
+    preserve_base_data_actions([], primary_record, other_records) |> IO.inspect(label: "PRESERVE_BASE_DATA_ACTIONS_TEST")
+
+
   end
 
   defp name_actions(actions, primary_record, other_records) do
