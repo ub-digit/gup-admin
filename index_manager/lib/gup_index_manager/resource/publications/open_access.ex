@@ -1,5 +1,5 @@
 defmodule GupIndexManager.Resource.Publications.OpenAccess do
-  defp oa_check_interval_days, do: System.fetch_env!("OPEN_ACCESS_CHECK_INTERVAL_DAYS") |> String.to_integer()
+  defp oa_check_interval_days, do: String.to_integer(System.fetch_env!("OPEN_ACCESS_CHECK_INTERVAL_DAYS"))
   defp unpaywall_email, do: System.fetch_env!("UNPAYWALL_EMAIL")
 
   def set_open_access_link_status(json_map) do
@@ -34,7 +34,7 @@ defmodule GupIndexManager.Resource.Publications.OpenAccess do
 
   defp get_doi_idenifiers_values(data) do
     Map.get(data, "identifiers", [])
-    |> Enum.filter(fn identifier -> identifier["code"] == "doi" end)
+    |> Enum.filter(fn identifier -> identifier["code"] == "DOI" end)
     |> Enum.map(fn identifier -> Map.get(identifier, "value") end)
   end
 
