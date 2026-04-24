@@ -12,7 +12,7 @@ defmodule GupIndexManager.Resource.Persons.Merger.DataSanitizer do
         "names" => sanitize_names(Map.get(data, "names", [])),
         "departments" => Map.get(data, "departments", []),
         "identifiers" => Map.get(data, "identifiers", []) |> trim_identifier_values(),
-        "year_of_birth" => get_year_of_birth(Map.get(data, "year_of_birth", nil)),
+        "year_of_birth" => get_year_of_birth(Map.get(data, "year_of_birth", nil)) ,
         "email" => Map.get(data, "email", nil),
         "deleted" => Map.get(data, "deleted", false),
         "is_merged" => Map.get(data, "is_merged", false),
@@ -32,7 +32,7 @@ defmodule GupIndexManager.Resource.Persons.Merger.DataSanitizer do
 
   defp get_year_of_birth(y_o_b) when is_bitstring(y_o_b), do: String.to_integer(y_o_b)
   defp get_year_of_birth(y_o_b) when is_integer(y_o_b), do: y_o_b
-  defp get_year_of_birth(_), do: nil
+  defp get_year_of_birth(_), do: 0
 
   defp sanitize_names(names) do
       names
