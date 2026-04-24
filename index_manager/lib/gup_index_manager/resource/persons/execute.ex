@@ -102,24 +102,25 @@ defmodule GupIndexManager.Resource.Persons.Execute do
     execute_action(data, {:add_name, name_data})
   end
 
+
   def execute_action(data, {:set_primary_name, name_data}) do
     names = Map.get(data, "names", [])
     |> Enum.map(fn name ->
       Map.put(name, "primary", false)
     end)
-    |> Enum.map(fn name ->
-      if name["first_name"] == name_data["first_name"] && name["last_name"] == name_data["last_name"] do
-        # check if name and name_data both have a non-nil value for gup_person_id.
-        if name["gup_person_id"] && name_data["gup_person_id"] && name["gup_person_id"] != name_data["gup_person_id"] do
-          Map.put(name, "primary", false)
-        else
-          Map.put(name, "primary", true)
-        end
+
+    updated_names =
+    Enum.map_reduce(names, :not_found, fn map, found_state ->
+      if found_state == :not_found and map["first_name"] == name_data["first_name"] && map["last_name"] == name_data["last_name"]  do
+        {Map.put(map, "primary", true), :found}
       else
-        name
+        {map, found_state}
       end
     end)
-    Map.put(data, "names", names)
+    |> elem(0)   # discard the accumulator
+
+
+    Map.put(data, "names", updated_names)
   end
 
   def execute_action(data, {:add_identifier, identifier_data}) do
