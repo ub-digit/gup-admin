@@ -49,30 +49,13 @@ defmodule GupIndexManager.Resource.Persons.Merger.Actions do
         other_years_of_birth |> List.first() || 0
     end
 
-
-    # year_of_birth = case is_integer(primary_record["year_of_birth"]) and primary_record["year_of_birth"] > 1000 do
-    #   true ->
-    #     primary_record["year_of_birth"]
-    #   false ->
-
-    #       other_records
-    #       |> Enum.map(fn record -> record["year_of_birth"] end)
-    #       |> Enum.filter(& &1 > 1000 && not is_nil(&1))
-    #       |> List.first()
-    #       |> case do
-    #         0 -> 0
-    #         nil -> 0
-    #         y_o_b -> y_o_b
-    #       end
-    # end
-
     primary_record_email = primary_record["email"] || ""
     other_emails = Enum.map(other_records, fn record -> record["email"] end) |> Enum.filter(& &1 != "" && not is_nil(&1))
 
     email = case primary_record_email do
       "" ->
         other_emails |> List.first() || ""
-      email ->
+      _ ->
         Enum.filter(other_emails, fn e -> e != primary_record_email end) |> List.first() || primary_record_email
     end
 
