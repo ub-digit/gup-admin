@@ -9,7 +9,6 @@ defmodule GupIndexManager.Resource.Publications.OpenAccess do
       Map.get(json_map, "publication_links", [])
       |> add_non_existing_doi_links_to_publications_links(doi_identifiers)
       |> check_and_set_open_access_state_for_doi_links()
-      |> IO.inspect(label: "ALL PUBLICATION LINKS AFTER ADDING DOI IDENTIFIERS")
 
     # return the json map with updated publication_links
     Map.put(json_map, "publication_links", publications_links)
@@ -77,33 +76,13 @@ defmodule GupIndexManager.Resource.Publications.OpenAccess do
         # check oa_state at unpaywall.
         true ->
           doi_id = Regex.run(~r/10\.\S+\/\S+/, link["url"]) |> List.first()
-
-          state =
-            HTTPoison.get("https://api.unpaywall.org/v2/#{doi_id}?email=#{unpaywall_email()}")
-            |> IO.inspect(label: "Open Access State for DOI #{doi_id}")
-            |> case do
-              {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-                body
-                |> Jason.decode!()
-                |> Map.get("is_oa", nil)
-
-              {:ok, %HTTPoison.Response{status_code: 404}} ->
-                nil
-
-              {:error, %HTTPoison.Error{reason: reason}} ->
-                IO.inspect("Error checking open access for link #{link["url"]}: #{reason}")
-                # return existing is_oa value if error occurs
-                link["is_oa"]
-            end
-
+          state = get_open_access_state_from_unpaywall(doi_id)
           Map.put(link, "is_oa", state)
           |> Map.put("last_checked", Date.utc_today() |> Date.to_iso8601())
-
         false ->
           # if link does not have is_oa key, return it as is
           link
       end
-      |> IO.inspect(label: "Link after checking Open Access State")
     end)
   end
 
@@ -113,8 +92,24 @@ defmodule GupIndexManager.Resource.Publications.OpenAccess do
       nil -> true
       last_checked ->
         date_diff = Date.utc_today() |> Date.diff(Date.from_iso8601!(last_checked))
-        IO.inspect(date_diff, label: "DAET DIFF")
         date_diff >= oa_check_interval_days()
+    end
+  end
+
+  defp get_open_access_state_from_unpaywall(doi_id) do
+    HTTPoison.get("https://api.unpaywall.org/v2/#{doi_id}?email=#{unpaywall_email()}")
+    |> case do
+      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+        body
+        |> Jason.decode!()
+        |> Map.get("is_oa", nil)
+
+      {:ok, %HTTPoison.Response{status_code: 404}} ->
+        nil
+
+      {:error, %HTTPoison.Error{reason: reason}} ->
+        # return existing is_oa value if error occurs
+        link["is_oa"]
     end
   end
 end
