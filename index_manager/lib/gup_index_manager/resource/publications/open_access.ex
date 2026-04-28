@@ -75,8 +75,8 @@ defmodule GupIndexManager.Resource.Publications.OpenAccess do
       case Map.has_key?(link, "is_oa") and time_to_check_open_access?(link) do
         # check oa_state at unpaywall.
         true ->
-          doi_id = Regex.run(~r/10\.\S+\/\S+/, link["url"]) |> List.first()
-          state = get_open_access_state_from_unpaywall(doi_id)
+
+          state = get_open_access_state_from_unpaywall(link)
           Map.put(link, "is_oa", state)
           |> Map.put("last_checked", Date.utc_today() |> Date.to_iso8601())
         false ->
@@ -96,11 +96,12 @@ defmodule GupIndexManager.Resource.Publications.OpenAccess do
     end
   end
 
-  defp get_open_access_state_from_unpaywall(doi_id) do
-    HTTPoison.get("https://api.unpaywall.org/v2/#{doi_id}?email=#{unpaywall_email()}")
+  defp get_open_access_state_from_unpaywall(link) do
+    doi_id = Regex.run(~r/10\.\S+\/\S+/, link["url"]) |> List.first()
+    is_oa = HTTPoison.get("https://api.unpaywall.org/v2/#{doi_id}?email=#{unpaywall_email()}")
     |> case do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        body
+        is_oa = body
         |> Jason.decode!()
         |> Map.get("is_oa", nil)
 
@@ -109,7 +110,8 @@ defmodule GupIndexManager.Resource.Publications.OpenAccess do
 
       {:error, %HTTPoison.Error{reason: reason}} ->
         # return existing is_oa value if error occurs
-        link["is_oa"]
+        Map.get(link, "is_oa", nil)
     end
+    Map.put(link, "is_oa", is_oa)
   end
 end
