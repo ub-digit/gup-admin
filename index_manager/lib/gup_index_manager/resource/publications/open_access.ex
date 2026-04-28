@@ -77,7 +77,7 @@ defmodule GupIndexManager.Resource.Publications.OpenAccess do
         true ->
 
           state = get_open_access_state_from_unpaywall(link)
-          Map.put(link, "is_oa", state)
+          Map.put(link, "is_oa", Map.get(state, "is_oa", nil))
           |> Map.put("last_checked", Date.utc_today() |> Date.to_iso8601())
         false ->
           # if link does not have is_oa key, return it as is
