@@ -33,7 +33,7 @@ defmodule GupIndexManager.Resource.Publications.OpenAccess do
 
   defp get_doi_idenifiers_values(data) do
     Map.get(data, "identifiers", [])
-    |> Enum.filter(fn identifier -> identifier["code"] == "DOI" end)
+    |> Enum.filter(fn identifier -> identifier["code"] == "doi" end)
     |> Enum.map(fn identifier -> Map.get(identifier, "value") end)
   end
 
@@ -96,7 +96,7 @@ defmodule GupIndexManager.Resource.Publications.OpenAccess do
     end
   end
 
-  defp get_open_access_state_from_unpaywall(link) do
+  def get_open_access_state_from_unpaywall(link) do
     doi_id = Regex.run(~r/10\.\S+\/\S+/, link["url"]) |> List.first()
     is_oa = HTTPoison.get("https://api.unpaywall.org/v2/#{doi_id}?email=#{unpaywall_email()}")
     |> case do
