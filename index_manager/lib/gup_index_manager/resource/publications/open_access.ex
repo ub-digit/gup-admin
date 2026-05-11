@@ -62,7 +62,7 @@ defmodule GupIndexManager.Resource.Publications.OpenAccess do
           %{
             "url" => "https://dx.doi.org/#{doi}",
             "is_oa" => nil,
-            "last_checked" => nil,
+            "checked_at" => nil,
             "position" => get_next_link_position(acc)
           }
         ]
@@ -78,7 +78,7 @@ defmodule GupIndexManager.Resource.Publications.OpenAccess do
 
           state = get_open_access_state_from_unpaywall(link)
           Map.put(link, "is_oa", Map.get(state, "is_oa", nil))
-          |> Map.put("last_checked", Date.utc_today() |> Date.to_iso8601())
+          |> Map.put("checked_at", Date.utc_today() |> Date.to_iso8601())
         false ->
           # if link does not have is_oa key, return it as is
           link
@@ -87,11 +87,11 @@ defmodule GupIndexManager.Resource.Publications.OpenAccess do
   end
 
   defp time_to_check_open_access?(link) do
-    case Map.get(link, "last_checked") do
+    case Map.get(link, "checked_at") do
       # if never checked, we should check it
       nil -> true
-      last_checked ->
-        date_diff = Date.utc_today() |> Date.diff(Date.from_iso8601!(last_checked))
+      checked_at ->
+        date_diff = Date.utc_today() |> Date.diff(Date.from_iso8601!(checked_at))
         date_diff >= oa_check_interval_days()
     end
   end
