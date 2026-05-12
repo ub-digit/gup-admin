@@ -91,7 +91,7 @@ defmodule GupIndexManager.Resource.Publications.OpenAccess do
       # if never checked, we should check it
       nil -> true
       checked_at ->
-        date_diff = Date.utc_today() |> Date.diff(Date.from_iso8601!(checked_at))
+        date_diff = Date.utc_today() |> Date.diff(NaiveDateTime.from_iso8601!(checked_at) |> NaiveDateTime.to_date())
         date_diff >= oa_check_interval_days()
     end
   end
