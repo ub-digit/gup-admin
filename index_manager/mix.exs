@@ -51,7 +51,8 @@ defmodule GupIndexManager.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:elastix, "~> 0.10.0"},
-      {:plug_cowboy, "~> 2.5"}
+      {:plug_cowboy, "~> 2.5"},
+      {:logger_json, "~> 7.0"}
     ]
   end
 

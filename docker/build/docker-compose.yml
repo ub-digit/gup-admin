@@ -1,4 +1,5 @@
 version: '3.7'
+name: gup-admin 
 services:
   admin-frontend:
     image: docker.ub.gu.se/gup-admin-frontend:${GIT_REVISION}${PLATFORM}
@@ -14,10 +15,14 @@ services:
       args:
         - GIT_REPO_URL=${GIT_REPO_URL}
         - GIT_REVISION=${GIT_REVISION}
+      labels:
+        gu.ub.logging_format: ECS
   elasticsearch:
     image: docker.ub.gu.se/gup-admin-elasticsearch:${GIT_REVISION}${PLATFORM}
     build:
       context: ./elasticsearch
+      labels:
+        gu.ub.logging_format: ECS
   index-manager-backend:
     image: docker.ub.gu.se/gup-admin-index-manager-backend:${GIT_REVISION}${PLATFORM}
     build:
@@ -25,3 +30,5 @@ services:
       args:
         - GIT_REPO_URL=${GIT_REPO_URL}
         - GIT_REVISION=${GIT_REVISION}
+      labels:
+        gu.ub.logging_format: ECS
