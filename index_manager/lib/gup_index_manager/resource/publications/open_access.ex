@@ -97,6 +97,12 @@ defmodule GupIndexManager.Resource.Publications.OpenAccess do
   end
 
   defp get_open_access_state_from_unpaywall(link) do
+    case Regex.run(~r/10\.\S+\/\S+/, link["url"]) do
+      [doi_id] -> get_open_access_state_from_unpaywall(link, :doi)
+      _ -> link
+    end
+  end
+  defp get_open_access_state_from_unpaywall(link, :doi) do
     doi_id = Regex.run(~r/10\.\S+\/\S+/, link["url"]) |> List.first()
     is_oa = HTTPoison.get("https://api.unpaywall.org/v2/#{doi_id}?email=#{unpaywall_email()}")
     |> case do
