@@ -1,6 +1,6 @@
 ---
 docker_git_revision: ansible-deploy
-git_revision: author-edit-017
+git_revision: release-2026.06.001
 git_revision_gup_imports: release-2023.08-001
 frontend_host_port: 30410
 backend_host_port: 30415
