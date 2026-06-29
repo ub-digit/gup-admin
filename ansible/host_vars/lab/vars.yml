@@ -1,5 +1,5 @@
 ---
-docker_git_revision: ansible-deploy
+docker_git_revision: ansible-deploy-dev
 git_revision: release-2026.06.001
 git_revision_gup_imports: release-2023.08-001
 frontend_host_port: 30410
@@ -9,3 +9,6 @@ elasticsearch_host_port: 30413
 kibana_host_port: 30416
 backend_hostname: "{{ app_name }}-server-lab.ub.gu.se"
 frontend_hostname: "{{ app_name }}-lab.ub.gu.se"
+
+gup_frontend_public_hostname: "gup.ub.gu.se"
+gup_backend_public_hostname: "gup-server.ub.gu.se"

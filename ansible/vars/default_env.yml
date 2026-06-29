@@ -16,3 +16,6 @@ BACKEND_SOURCE_HOST_PATH: '{{ data_dirs.backend_source.path }}'
 FRONTEND_ALLOW_AUTHOR_EDIT: 'false'
 BACKEND_PUBLIC_URL: 'https://{{ backend_hostname }}'
 FRONTEND_PUBLIC_URL: 'https://{{ frontend_hostname }}'
+
+GUP_FRONTEND_PUBLIC_URL: 'https://{{ gup_frontend_public_hostname }}'
+GUP_BACKEND_PUBLIC_URL: 'https://{{ gup_backend_public_hostname }}'
