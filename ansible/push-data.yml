@@ -1,0 +1,5 @@
+---
+- name: Push data
+  hosts: all
+  roles:
+  - role: ub-ansible-push-data

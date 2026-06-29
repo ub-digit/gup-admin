@@ -17,12 +17,12 @@ defmodule GupAdmin.Resource.Department do
 
   def im_base_url do
     default = "http://index-manager-backend:4000"
-    System.get_env("GUP_INDEX_MANAGER_URL") || default
+    System.get_env("INDEX_MANAGER_URL") || default
   end
 
   def im_api_key do
     default = ""
-    System.get_env("GUP_INDEX_MANAGER_API_KEY") || default
+    System.get_env("INDEX_MANAGER_API_KEY") || default
   end
 
   def se_base_url do
