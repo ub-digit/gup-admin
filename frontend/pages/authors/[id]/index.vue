@@ -197,7 +197,9 @@ console.log(config);
 const getPostsByAuthors = async () => {
   const searchFormatArr = authorGupIds?.value?.map(
     (id) => `authors.person.id:${id}`
-  );
+  ).filter(
+    (id) => id !== "null" && id !== "undefined" && id !== null && id !== undefined
+  )
   const searchStr = searchFormatArr?.join(" OR ");
   await fetchImportedPostsByAuthors(searchStr as string);
 };
