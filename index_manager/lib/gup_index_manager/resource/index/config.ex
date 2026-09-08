@@ -234,4 +234,45 @@ defmodule GupIndexManager.Resource.Index.Config do
       }
     }
   end
+
+  def projects_config do
+   %{
+      settings: %{
+        number_of_shards: 1,
+        number_of_replicas: 1
+      },
+      mappings: %{
+        properties: %{
+          project_id: %{type: "integer"},
+          title: %{type: "text", fields: %{keyword: %{type: "keyword", ignore_above: 256}}},
+          abbrev: %{type: "keyword"},
+          project_number: %{type: "keyword"},
+          description: %{type: "text"},
+          keywords: %{type: "text"},
+          url: %{type: "keyword"},
+          start_year: %{type: "integer"},
+          end_year: %{type: "integer"},
+          listplace: %{type: "integer"}
+        }
+      }
+    }
+  end
+
+  def series_config do
+   %{
+      settings: %{
+        number_of_shards: 1,
+        number_of_replicas: 1
+      },
+      mappings: %{
+        properties: %{
+          series_id: %{type: "integer"},
+          title: %{type: "text", fields: %{keyword: %{type: "keyword", ignore_above: 256}}},
+          issn: %{type: "keyword"},
+          listplace: %{type: "integer"},
+          part: %{type: "keyword"}
+        }
+      }
+    }
+  end
 end

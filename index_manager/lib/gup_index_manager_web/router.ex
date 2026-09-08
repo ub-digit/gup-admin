@@ -38,6 +38,8 @@ defmodule GupIndexManagerWeb.Router do
     delete "/persons/:id", PersonController, :delete
     post   "/departments"    , DepartmentController, :create
     put    "/departments/:id"    , DepartmentController, :update
+    put "/projects", ProjectController, :index_projects
+    put "/series", SeriesController, :index_series
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
