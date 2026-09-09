@@ -4,8 +4,8 @@ defmodule GupIndexManagerWeb.SeriesController do
 
   def index_series(conn, %{"api_key" => api_key, "data" => series_data}) do
      with true <- GupIndexManagerWeb.ControllerHelpers.check_api_key(api_key) do
-      with :ok <- Series.index_series(series_data) do
-        send_response(200, conn, %{message: "Series re-indexed successfully"})
+      with {:ok, _} <- Series.index_series(series_data) do
+        send_response(200, conn, %{message: "Series indexed successfully"})
       else
         {:error, reason} ->
           send_response(500, conn, %{errors: %{im_message: "Failed to index series", reason: reason}})
@@ -18,7 +18,6 @@ defmodule GupIndexManagerWeb.SeriesController do
 
   defp send_response(status, conn, body) do
     conn |> put_status(status)
-
     |> json(body)
   end
 end

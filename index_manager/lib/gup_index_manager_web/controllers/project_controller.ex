@@ -4,8 +4,8 @@ defmodule GupIndexManagerWeb.ProjectController do
 
   def index_projects(conn, %{"api_key" => api_key, "data" => projects_data}) do
      with true <- GupIndexManagerWeb.ControllerHelpers.check_api_key(api_key) do
-      with :ok <- Projects.index_projects(projects_data) do
-        send_response(200, conn, %{message: "Projects re-indexed successfully"})
+      with {:ok, _} <- Projects.index_projects(projects_data) do
+        send_response(200, conn, %{message: "Projects indexed successfully"})
       else
         {:error, reason} ->
           send_response(500, conn, %{errors: %{im_message: "Failed to index projects", reason: reason}})
@@ -18,7 +18,6 @@ defmodule GupIndexManagerWeb.ProjectController do
 
   defp send_response(status, conn, body) do
     conn |> put_status(status)
-
     |> json(body)
   end
 end
