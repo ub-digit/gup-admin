@@ -1,0 +1,3 @@
+---
+- import_playbook: push-backend-db.yml
+- import_playbook: push-index-manager-db.yml

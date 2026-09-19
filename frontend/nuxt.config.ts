@@ -6,7 +6,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     API_BASE_URL: "http://localhost:40415/", // this should point to admin-backend
-    ADMIN_BACKEND_API_KEY: process.env.ADMIN_BACKEND_API_KEY || "",
+    BACKEND_API_KEY: process.env.BACKEND_API_KEY || "",
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID || "",
     GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET || "",
     GU_CLIENT_ID: process.env.GU_CLIENT_ID || "",
