@@ -208,11 +208,12 @@ defmodule GupIndexManager.Resource.Index do
     # Create a map with id as key
     |> Enum.reduce(%{}, fn department, acc ->
       Map.put(acc, department.id, %{
-        id: department.id,
-        parent_id: department.parent_id,
-        is_faculty: department.is_faculty,
-        data: Jason.decode!(department.json) |> Map.put("created_at", department.inserted_at) |>
-          Map.put("updated_at", department.updated_at)
+        data: Jason.decode!(department.json)
+        |> Map.put("created_at", department.inserted_at)
+        |> Map.put("updated_at", department.updated_at)
+        |> Map.put("is_faculty", department.is_faculty)
+        |> Map.put("id", department.id)
+        |> Map.put("parent_id", department.parent_id)
       })
     end)
 
