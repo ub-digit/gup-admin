@@ -1,0 +1,7 @@
+---
+- name: Deploy
+  hosts: all
+  tasks:
+  - name: Deploy app
+    include_role:
+      name: ub-ansible-deploy

@@ -1,0 +1,4 @@
+---
+- import_playbook: pull-db.yml
+- import_playbook: pull-data.yml
+
