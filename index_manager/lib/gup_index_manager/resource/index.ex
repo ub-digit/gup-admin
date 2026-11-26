@@ -7,11 +7,13 @@ defmodule GupIndexManager.Resource.Index do
   @publications_index "publications"
   @departments_index "departments"
   @persons_index "persons"
+  @projects_index "projects"
+  @series_index "series"
 
   def elastic_url, do: System.get_env("ELASTICSEARCH_URL", "http://localhost:9200")
 
   def get_indexes do
-    [@persons_index, @publications_index, @departments_index]
+    [@persons_index, @publications_index, @departments_index, @projects_index, @series_index]
   end
 
   # ----------------------------- Rebuild index bulk -----------------------------
@@ -32,9 +34,9 @@ defmodule GupIndexManager.Resource.Index do
   end
 
   def remap_for_bulk(data, index) do
-    Enum.map(data, fn publication ->
-      [%{"index" =>  %{"_index" => index, "_id" => publication["id"]}},
-      publication]
+    Enum.map(data, fn item_data ->
+      [%{"index" =>  %{"_index" => index, "_id" => item_data["id"]}},
+      item_data]
     end)
     |> List.flatten()
   end
@@ -65,6 +67,9 @@ defmodule GupIndexManager.Resource.Index do
   def get_persons_index, do: @persons_index
   def get_publications_index, do: @publications_index
   def get_departments_index, do: @departments_index
+  def get_projects_index, do: @projects_index
+  def get_series_index, do: @series_index
+
 
   def create_index(index), do: create_index(index, Elastix.Index.exists?(elastic_url(), index))
   def create_index(index, {:ok, true}), do: {:ok, "Index: #{index} already exists"}
@@ -81,6 +86,8 @@ defmodule GupIndexManager.Resource.Index do
 
   defp get_config(@publications_index), do: Config.publications_config()
   defp get_config(@departments_index), do: Config.departments_config()
+  defp get_config(@projects_index), do: Config.projects_config()
+  defp get_config(@series_index), do: Config.series_config()
 
   defp get_config(_), do: Config.persons_config()
 
